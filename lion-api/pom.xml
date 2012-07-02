@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>lion-all</artifactId>
+		<groupId>com.dianping.lion</groupId>
+		<version>2.0.0</version>
+	</parent>
+	<groupId>com.dianping.lion</groupId>
+	<artifactId>lion-api</artifactId>
+	<version>0.0.1</version>
+	<packaging>war</packaging>
+	<name>lion's remote api</name>
+	<dependencies>
+	</dependencies>
+	<build>
+		<finalName>lion-api</finalName>
+	</build>
+</project>
