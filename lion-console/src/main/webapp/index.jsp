@@ -1,5 +1,5 @@
 <html>
-<body>
-<h2>Hello World!</h2>
-</body>
+	<body>
+		<h2>Welcome to Lion-Console!</h2>
+	</body>
 </html>

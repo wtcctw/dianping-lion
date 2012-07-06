@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC 
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.ognl.allowStaticMethodAccess" value="false" />
+	<constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
+
+	<!-- I18N -->
+	<constant name="struts.custom.i18n.resources" value="config/i18n/globalMessages"></constant>
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.locale" value="zh_CN" />
+
+	<constant name="Struts.multipart.parse" value="jakarta" />
+	<constant name="struts.multipart.saveDir" value="/upload_temp" />
+	<constant name="struts.multipart.maxSize" value="4097152" />
+	
+	<constant name="struts.action.excludePattern" value="/static/img/.*" />
+	<!-- TODO 上线改为true -->
+	<constant name="struts.freemarker.templatesCache" value="false" />
+	<constant name="struts.ui.templateSuffix" value="java" />
+	<constant name="struts.ui.theme" value="simple" />
+
+	<include file="config/struts/struts-*.xml" />
+	<package name="default" extends="struts-default">
+		<result-types>
+			<result-type name="freemarker" class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true"/>
+		</result-types>
+		
+		<interceptors>
+			<interceptor-stack name="lionStack">
+				<interceptor-ref name="exception"/>
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="multiselect"/>
+                <interceptor-ref name="params">
+                	<param name="excludeParams">dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
+                </interceptor-ref>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="prepare"/>
+                <interceptor-ref name="chain"/>
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="staticParams"/>
+                <interceptor-ref name="actionMappingParams"/>
+                <interceptor-ref name="params">
+                	<param name="excludeParams">dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
+                </interceptor-ref>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		
+		<default-interceptor-ref name="lionStack" />
+		
+		<!-- <global-results>		
+			<result name="error"  type="freemarker">/WEB-INF/pages/error.ftl</result>		
+		</global-results>
+		<global-exception-mappings>			
+			<exception-mapping result="error"
+				exception="com.dianping.shoppicweb.exception.PicProjectException" />
+		</global-exception-mappings> -->
+		<!-- 
+		<action name="home" class="com.dianping.lion.HomeAction">
+			<result name="success">/WEB-INF/pages/home.jsp</result>
+		</action>
+		 -->
+	</package>
+</struts>

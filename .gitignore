@@ -41,3 +41,7 @@ Thumbs.db
 .classpath
 .project
 .settings/
+.tomcatplugin
+.#webclasspath
+target/
+work/

@@ -15,6 +15,11 @@
 		<name>dianping</name>
 		<url>http://www.dianping.com</url>
 	</organization>
+	<modules>
+		<module>lion-client</module>
+		<module>lion-console</module>
+		<module>lion-api</module>
+	</modules>
 	<scm>
 		<connection>scm:git:http://git.dianpingoa.com/git/lion.git</connection>
 		<developerConnection>scm:git:http://git.dianpingoa.com/git/lion.git</developerConnection>
@@ -39,9 +44,12 @@
 			</plugin>
 		</plugins>
 	</build>
-	<modules>
-		<module>lion-client</module>
-		<module>lion-console</module>
-		<module>lion-api</module>
-	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
