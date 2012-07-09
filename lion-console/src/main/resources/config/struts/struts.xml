@@ -22,8 +22,9 @@
 	<constant name="struts.action.excludePattern" value="/static/img/.*" />
 	<!-- TODO 上线改为true -->
 	<constant name="struts.freemarker.templatesCache" value="false" />
-	<constant name="struts.ui.templateSuffix" value="java" />
 	<constant name="struts.ui.theme" value="simple" />
+	
+	<bean type="org.apache.struts2.components.template.TemplateEngine" name="cftl" class="com.dianping.lion.web.tag.FreemarkerTemplateEngineExt" />
 
 	<include file="config/struts/struts-*.xml" />
 	<package name="default" extends="struts-default">

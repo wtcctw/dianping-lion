@@ -1,3 +1,7 @@
+body {
+	font-family : Tahoma,sans-serif;
+}
+
 .navbar-fixed-top .brand {
   padding-right: 0;
   padding-left: 0;
@@ -12,4 +16,86 @@
 }
 .navbar-fixed-top .brand:hover {
   text-decoration: none;
+}
+
+/*覆写dropdown-big-menu的位置，向右平移*/
+.dropdown-menu.big-menu {
+ 	right: -150px !important;
+}
+
+/*覆写dropdown-big-menu的箭头位置*/
+.dropdown-menu.big-menu:after {
+	right : 163px !important;
+}
+
+/*同上，兼容IE浏览器，IE会生成after和before两个箭头*/
+.dropdown-menu.big-menu:before {
+	right : 163px !important;
+}
+
+.dropdown-menu .divider {
+	height : 0px;
+	border-bottom: 1px dashed white !important;
+}
+
+.pp_location {
+	width: 677px;
+	overflow: hidden;
+	left: 0;
+	top: 26px;
+}
+
+.pp_location dl {
+	margin-bottom: 8px;
+	border-bottom: 1px dashed #E4E4E4;
+	margin: 0;
+	padding: 3px;
+}
+
+.pp_location dt {
+	float: left;
+	width: 90px;
+	color: #999;
+	padding: 0;
+	font-size: 11px;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+	text-transform: uppercase;
+}
+
+.pp_location dd {
+	margin-left: 90px;
+	margin-right: -10px;
+	padding-top: 1px 9;
+}
+
+.pp_location ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.pp_location li {
+	float: left;
+	width: 140px;
+	margin: 0 5px 1px 0;
+	padding: 0;
+}
+
+.pp_location a {
+	padding: 0;
+	white-space: normal;
+}
+
+.Fix:after {
+	clear: both;
+	display: block;
+	height: 0px;
+	content: '\20';
+}
+
+.pop-panel {
+	visibility: hidden;
+	padding: 5px 9px;
+	background: white;
+	color: #61646E;
 }
