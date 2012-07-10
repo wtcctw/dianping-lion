@@ -53,11 +53,12 @@ public abstract class StrutsTagSupport extends StrutsBodyTagSupport {
 	
 	private String templatePath;
 	private String templateDir = "/WEB-INF/tag/";
+	@SuppressWarnings("rawtypes")
 	protected Map parameters = new LinkedHashMap();
 	protected TemplateEngineManager templateEngineManager;
 	private static final Template FORCE_CFTL_ENGINE = new TemplateExt("/.cftl");
 
-	private SpringObjectFactory factory;
+	private static SpringObjectFactory factory;
 
 	private static boolean springContextInitialized;
 	
@@ -95,6 +96,7 @@ public abstract class StrutsTagSupport extends StrutsBodyTagSupport {
 	/**
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	private Map getParameters() {
 		return this.parameters;
 	}
@@ -114,7 +116,7 @@ public abstract class StrutsTagSupport extends StrutsBodyTagSupport {
 			} else {
 				factory = new SpringObjectFactory();
                 factory.setApplicationContext(applicationContext);
-                factory.setAutowireStrategy(AutowireCapableBeanFactory.AUTOWIRE_BY_NAME);
+                factory.setAutowireStrategy(AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
 			}
 			springContextInitialized = true;
 		}
@@ -172,6 +174,7 @@ public abstract class StrutsTagSupport extends StrutsBodyTagSupport {
 	class TemplateRenderingContextExt extends TemplateRenderingContext {
 		private Object tagObj;
 
+		@SuppressWarnings("rawtypes")
 		public TemplateRenderingContextExt(Template template, Writer writer,
 				ValueStack stack, Map params, Object tag) {
 			super(template, writer, stack, params, null);

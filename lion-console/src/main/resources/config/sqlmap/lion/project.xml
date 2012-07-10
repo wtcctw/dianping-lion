@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Project">
+	<typeAlias alias="Team" type="com.dianping.lion.entity.Team" />
+	<typeAlias alias="Product" type="com.dianping.lion.entity.Product" />
+	<typeAlias alias="Project" type="com.dianping.lion.entity.Project" />
+
+	<resultMap id="TeamResultBasic" class="Team">
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="createTime" property="createTime"/>
+		<result column="modifyTime" property="modifyTime"/>
+		<result column="seq" property="seq"/>
+	</resultMap>
+	
+	<resultMap id="TeamResult" class="Team" extends="TeamResultBasic">
+		<result property="products" column="id" select="Project.selectProductsByTeam"/>
+	</resultMap>
+
+	<resultMap id="ProductResultBasic" class="Product">
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="teamId" property="teamId"/>
+		<result column="createTime" property="createTime"/>
+		<result column="modifyTime" property="modifyTime"/>
+		<result column="seq" property="seq"/>
+	</resultMap>
+	
+	<resultMap id="ProductResult" class="Product" extends="ProductResultBasic">
+		<result property="projects" column="id" select="Project.selectProjectsByProduct"/>
+	</resultMap>
+	
+	<resultMap id="ProjectResult" class="Project">
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="productId" property="productId"/>
+		<result column="createTime" property="createTime"/>
+		<result column="modifyTime" property="modifyTime"/>
+		<result column="seq" property="seq"/>
+	</resultMap>
+
+	<select id="getTeams" resultMap="TeamResult">
+		<![CDATA[
+		SELECT id, name, createTime, modifyTime, seq
+		FROM team
+		ORDER BY seq
+		]]>
+    </select>
+    
+    <select id="selectProductsByTeam" resultMap="ProductResult" parameterClass="int">
+    	<![CDATA[
+    	SELECT id, name, teamId, createTime, modifyTime, seq
+    	FROM product
+    	WHERE teamId = #teamId#
+    	ORDER BY seq
+    	]]>
+    </select>
+    
+    <select id="selectProjectsByProduct" resultMap="ProjectResult" parameterClass="int">
+    	<![CDATA[
+    	SELECT id, name, productId, createTime, modifyTime, seq
+    	FROM project
+    	WHERE productId = #productId#
+    	ORDER BY seq
+    	]]>
+    </select>
+    
+</sqlMap>

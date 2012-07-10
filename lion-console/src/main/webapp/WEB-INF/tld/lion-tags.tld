@@ -7,8 +7,8 @@
 	<short-name>lion</short-name>
 	<uri>/lion-tags</uri>
 	<tag>
-		<name>projectNav</name>
-		<tag-class>com.dianping.lion.web.tag.ProjectNavigator</tag-class>
+		<name>MainNav</name>
+		<tag-class>com.dianping.lion.web.tag.MainNavigator</tag-class>
 		<body-content>empty</body-content>
 	</tag>
 </taglib>

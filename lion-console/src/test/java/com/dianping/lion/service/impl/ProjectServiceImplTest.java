@@ -17,9 +17,14 @@ package com.dianping.lion.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import junit.framework.Assert;
 
-import com.dianping.lion.dao.ProjectDao;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.service.ProjectService;
 
@@ -27,14 +32,20 @@ import com.dianping.lion.service.ProjectService;
  * @author danson.liu
  *
  */
-public class ProjectServiceImpl implements ProjectService {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+	"classpath*:config/spring/appcontext-*.xml"	
+})
+public class ProjectServiceImplTest {
 	
 	@Autowired
-	private ProjectDao projectDao;
-
-	@Override
-	public List<Team> getTeams() {
-		return projectDao.getTeams();
+	private ProjectService projectService;
+	
+	@Test
+	public void testGetTeams() {
+		//TODO 修改该test case，先构建数据再恢复现场
+		List<Team> teams = projectService.getTeams();
+		Assert.assertEquals(4, teams.size());
 	}
 
 }

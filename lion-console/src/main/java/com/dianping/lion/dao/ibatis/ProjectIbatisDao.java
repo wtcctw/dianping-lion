@@ -28,12 +28,10 @@ import com.dianping.lion.entity.Team;
  */
 public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectDao {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Team> getTeams() {
-		// TODO Auto-generated method stub
-		return null;
+		return getSqlMapClientTemplate().queryForList("Project.getTeams");
 	}
 
-	
-	
 }

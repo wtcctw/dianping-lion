@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-6
+ * File Created at 2012-7-10
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -13,7 +13,7 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.web.action;
+package com.dianping.lion.web.action.common;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -22,11 +22,6 @@ import com.opensymphony.xwork2.ActionSupport;
  *
  */
 @SuppressWarnings("serial")
-public class ConfigListAction extends ActionSupport {
+public class NavigationAction extends ActionSupport {
 
-	public String execute() {
-		
-		return SUCCESS;
-	}
-	
 }

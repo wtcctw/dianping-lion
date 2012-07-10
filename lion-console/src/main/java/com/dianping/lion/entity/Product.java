@@ -37,6 +37,8 @@ public class Product implements Serializable {
 	
 	private Date modifyTime;
 	
+	private int seq;
+	
 	private List<Project> projects;
 
 	/**
@@ -121,6 +123,20 @@ public class Product implements Serializable {
 	 */
 	public void setProjects(List<Project> projects) {
 		this.projects = projects;
+	}
+
+	/**
+	 * @return the seq
+	 */
+	public int getSeq() {
+		return seq;
+	}
+
+	/**
+	 * @param seq the seq to set
+	 */
+	public void setSeq(int seq) {
+		this.seq = seq;
 	}
 	
 }

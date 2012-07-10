@@ -35,6 +35,8 @@ public class Team implements Serializable {
 	
 	private Date modifyTime;
 	
+	private int seq;
+	
 	private List<Product> products;
 
 	/**
@@ -105,6 +107,34 @@ public class Team implements Serializable {
 	 */
 	public void setProducts(List<Product> products) {
 		this.products = products;
+	}
+
+	/**
+	 * @return the seq
+	 */
+	public int getSeq() {
+		return seq;
+	}
+
+	/**
+	 * @param seq the seq to set
+	 */
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
+	
+	public boolean hasProjectsMoreThan(int count) {
+		if (products == null) {
+			throw new IllegalStateException("Must fetch products first while execute method[Team.hasProjectsMoreThan].");
+		}
+		int projects = 0;
+		for (Product product : products) {
+			if (product.getProjects() == null) {
+				throw new IllegalStateException("Must fetch projects first of class[Product] while execute method[Team.hasProjectsMoreThan].");
+			}
+			projects += product.getProjects().size();
+		}
+		return projects > count;
 	}
 	
 }

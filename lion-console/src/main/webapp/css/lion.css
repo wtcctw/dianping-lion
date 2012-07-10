@@ -36,6 +36,11 @@ body {
 .dropdown-menu .divider {
 	height : 0px;
 	border-bottom: 1px dashed white !important;
+	margin: 1px 1px;
+}
+
+.nav li + .nav-header {
+	margin-top: 2px;
 }
 
 .pp_location {

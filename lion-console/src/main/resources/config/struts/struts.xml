@@ -9,6 +9,7 @@
 	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
 	<constant name="struts.ognl.allowStaticMethodAccess" value="false" />
 	<constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
+	<constant name="struts.action.extension" value="vhtml" />
 
 	<!-- I18N -->
 	<constant name="struts.custom.i18n.resources" value="config/i18n/globalMessages"></constant>
@@ -66,7 +67,7 @@
 				exception="com.dianping.shoppicweb.exception.PicProjectException" />
 		</global-exception-mappings> -->
 		<!-- 
-		<action name="home" class="com.dianping.lion.HomeAction">
+		<action name="navigate" class="com.dianping.lion.HomeAction">
 			<result name="success">/WEB-INF/pages/home.jsp</result>
 		</action>
 		 -->

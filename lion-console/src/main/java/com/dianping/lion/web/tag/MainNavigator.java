@@ -15,23 +15,51 @@
  */
 package com.dianping.lion.web.tag;
 
+import java.util.List;
+
 import javax.servlet.jsp.JspException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dianping.lion.entity.Team;
+import com.dianping.lion.service.ProjectService;
 
 /**
  * @author danson.liu
  *
  */
 @SuppressWarnings("serial")
-public class ProjectNavigator extends StrutsTagSupport {
+public class MainNavigator extends StrutsTagSupport {
+	
+	@Autowired
+	private ProjectService projectService;
+	
+	private List<Team> teams;
 
-	public ProjectNavigator() {
-		setTemplateName("project-nav.ftl");
+	public MainNavigator() {
+		setTemplateName("main-nav.ftl");
 	}
 	
 	@Override
 	protected int doFinalStartTag() throws JspException {
-		// TODO Auto-generated method stub
+		parseMainMenu();
+		this.teams = projectService.getTeams();
 		return SKIP_BODY;
+	}
+
+	/**
+	 * 
+	 */
+	private void parseMainMenu() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * @return the teams
+	 */
+	public List<Team> getTeams() {
+		return teams;
 	}
 
 }

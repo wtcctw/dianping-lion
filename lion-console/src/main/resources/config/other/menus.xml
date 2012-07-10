@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menus>
+	<menu name="project">
+		<sub-menu name="configitem" label="配置项" url="config/configList.vhtml"/>
+		<sub-menu name="projectmember" label="人员管理" url=""/>
+	</menu>
+	
+	<group label="个人中心">
+		<menu name="workbench" label="工作台" url=""/>
+		<menu name="userlog" label="操作日志" url=""/>
+	</group>
+	
+	<group label="系统选项">
+		<menu name="projectconfig" label="产品线配置" url=""/>
+		<menu name="oplog" label="操作日志" url=""/>
+		<menu name="aboutlion" label="关于lion" url=""/>
+	</group>
+</menus>

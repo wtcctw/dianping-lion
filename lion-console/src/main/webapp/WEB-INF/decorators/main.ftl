@@ -44,7 +44,7 @@
 		        </ul>
 	          	
 	          	<ul class="nav pull-right">
-	          		<@lion.projectNav/>
+	          		<@lion.MainNav/>
 		            <li class="dropdown">
 		              <a href="#" class="dropdown-toggle" data-toggle="dropdown">个人中心 <b class="caret"></b></a>
 		              <ul class="dropdown-menu">

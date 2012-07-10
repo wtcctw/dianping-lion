@@ -35,6 +35,8 @@ public class Project implements Serializable {
 	private Date createTime;
 	
 	private Date modifyTime;
+	
+	private int seq;
 
 	/**
 	 * @return the id
@@ -104,6 +106,20 @@ public class Project implements Serializable {
 	 */
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
+	}
+
+	/**
+	 * @return the seq
+	 */
+	public int getSeq() {
+		return seq;
+	}
+
+	/**
+	 * @param seq the seq to set
+	 */
+	public void setSeq(int seq) {
+		this.seq = seq;
 	}
 	
 }

@@ -48,6 +48,7 @@ public class FreemarkerTemplateEngineExt extends FreemarkerTemplateEngine {
 	
 	private static Logger logger = LoggerFactory.getLogger(FreemarkerTemplateEngineExt.class);
 
+	@SuppressWarnings("rawtypes")
 	public void renderTemplate(TemplateRenderingContext templateContext_) throws Exception {
     	TemplateRenderingContextExt templateContext = (TemplateRenderingContextExt) templateContext_;
 		// get the various items required from the stack
