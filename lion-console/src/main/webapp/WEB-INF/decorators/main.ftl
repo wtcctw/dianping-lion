@@ -55,7 +55,7 @@
 		            <li class="dropdown">
 		              <a href="#" class="dropdown-toggle" data-toggle="dropdown">系统选项 <b class="caret"></b></a>
 		              <ul class="dropdown-menu">
-		                <li><a href="#">产品线配置</a></li>
+		                <li><a href="<@s.url action="projectList" namespace="/system"/>">项目设置</a></li>
 		                <li><a href="#">系统设置</a></li>
 		                <li><a href="#">用户设置</a></li>
 		                <li><a href="#">权限设置</a></li>

@@ -17,6 +17,7 @@ package com.dianping.lion.dao;
 
 import java.util.List;
 
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 
 /**
@@ -26,5 +27,5 @@ import com.dianping.lion.entity.Team;
 public interface ProjectDao {
 
 	List<Team> getTeams();
-	
+	List<Project> getProjects();
 }

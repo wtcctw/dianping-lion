@@ -20,6 +20,7 @@ import java.util.List;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.dianping.lion.dao.ProjectDao;
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 
 /**
@@ -32,6 +33,11 @@ public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectD
 	@Override
 	public List<Team> getTeams() {
 		return getSqlMapClientTemplate().queryForList("Project.getTeams");
+	}
+
+	@Override
+	public List<Project> getProjects() {
+		return getSqlMapClientTemplate().queryForList("Project.getProjects");
 	}
 
 }

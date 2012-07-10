@@ -32,6 +32,8 @@ public class Project implements Serializable {
 	
 	private long productId;
 	
+	private String productName;
+	
 	private Date createTime;
 	
 	private Date modifyTime;
@@ -120,6 +122,14 @@ public class Project implements Serializable {
 	 */
 	public void setSeq(int seq) {
 		this.seq = seq;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
 	}
 	
 }

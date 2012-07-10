@@ -20,6 +20,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.ProjectDao;
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.service.ProjectService;
 
@@ -35,6 +36,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List<Team> getTeams() {
 		return projectDao.getTeams();
+	}
+
+	@Override
+	public List<Project> getProjects() {
+		return this.projectDao.getProjects();
 	}
 
 }
