@@ -23,14 +23,10 @@
 	      		<td>${project.createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 	      		<td>
-	      		    <table class="table">
-	      		    <tbody>
-	      		    <tr>
-				    <td><i class="icon-edit"></i></td>
-					<td><i class="icon-remove"></i></td>
-					</tr>
-					</tbody>
-					</table>
+	      		    <i class="icon-edit"></i>
+	      		    <i></i>
+					<i class="icon-remove"></i>
+					
 			     </td>
 	      	</tr>
 	  	</#list>
