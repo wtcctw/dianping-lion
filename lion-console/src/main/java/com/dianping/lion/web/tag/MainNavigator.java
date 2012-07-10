@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.service.ProjectService;
+import com.dianping.lion.web.tag.MenuManager.NavMenus;
 
 /**
  * @author danson.liu
@@ -35,31 +36,35 @@ public class MainNavigator extends StrutsTagSupport {
 	private ProjectService projectService;
 	
 	private List<Team> teams;
-
+	
+	private NavMenus navMenus;
+	
 	public MainNavigator() {
 		setTemplateName("main-nav.ftl");
 	}
 	
 	@Override
 	protected int doFinalStartTag() throws JspException {
-		parseMainMenu();
-		this.teams = projectService.getTeams();
+		this.navMenus = MenuManager.getNavMenus();
+		if (navMenus.hasProjectMenu()) {
+			this.teams = projectService.getTeams();
+		}
 		return SKIP_BODY;
 	}
 
-	/**
-	 * 
-	 */
-	private void parseMainMenu() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	/**
 	 * @return the teams
 	 */
 	public List<Team> getTeams() {
 		return teams;
+	}
+
+	/**
+	 * @return the navMenus
+	 */
+	public NavMenus getNavMenus() {
+		return navMenus;
 	}
 
 }
