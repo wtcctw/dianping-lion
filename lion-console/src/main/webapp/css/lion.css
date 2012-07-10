@@ -2,6 +2,16 @@ body {
 	font-family : Tahoma,sans-serif;
 }
 
+.noborder {
+	border: 0px solid #ddd;
+}
+.smallpadding{
+	padding: 1px 1px;
+}
+.smallbottommargin{
+	margin: 0 0 8px;
+}
+
 .navbar-fixed-top .brand {
   padding-right: 0;
   padding-left: 0;
