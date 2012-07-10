@@ -34,6 +34,8 @@ public class Project implements Serializable {
 	
 	private String productName;
 	
+	private String teamName;
+	
 	private Date createTime;
 	
 	private Date modifyTime;
@@ -130,6 +132,14 @@ public class Project implements Serializable {
 
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+
+	public String getTeamName() {
+		return teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
 	}
 	
 }

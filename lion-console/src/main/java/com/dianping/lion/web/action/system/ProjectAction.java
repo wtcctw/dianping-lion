@@ -36,7 +36,7 @@ public class ProjectAction extends ActionSupport {
 	private String active = Constants.PROJECT_NAME;
 
 	public String execute() {
-		this.projectService.getProjects();
+		this.projectList = this.projectService.getProjects();
 		this.active = Constants.PROJECT_NAME;
 		return SUCCESS;
 	}
@@ -57,6 +57,22 @@ public class ProjectAction extends ActionSupport {
 
 	public void setProjectService(ProjectService projectService) {
 		this.projectService = projectService;
+	}
+
+	public String getActive() {
+		return active;
+	}
+
+	public void setActive(String active) {
+		this.active = active;
+	}
+
+	public List<Project> getProjectList() {
+		return projectList;
+	}
+
+	public void setProjectList(List<Project> projectList) {
+		this.projectList = projectList;
 	}
 	
 }
