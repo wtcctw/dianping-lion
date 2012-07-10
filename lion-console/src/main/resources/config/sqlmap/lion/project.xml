@@ -65,4 +65,14 @@
     	]]>
     </select>
     
+    <select id="getProjects" resultMap="TeamResult">
+		<![CDATA[
+		SELECT pj.id, pj.name, pj.productId,pd.name productName,pj.createTime, pj.modifyTime, pj.seq
+		FROM project pj,product pd,team t
+		where pd.id = pj.productId
+		and pd.teamId = t.id
+		ORDER BY t.id,pd.id,seq
+		]]>
+    </select>
+    
 </sqlMap>

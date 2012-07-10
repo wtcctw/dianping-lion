@@ -17,6 +17,7 @@ package com.dianping.lion.service;
 
 import java.util.List;
 
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 
 /**
@@ -30,5 +31,11 @@ public interface ProjectService {
 	 * @return
 	 */
 	List<Team> getTeams();
+	
+	/**
+	 * 获取所有的项目信息；
+	 * @return
+	 */
+	List<Project> getProjects();
 	
 }

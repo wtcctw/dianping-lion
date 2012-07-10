@@ -38,7 +38,7 @@
 		</@s.if>
 		<@s.else>
 			<li><@s.if test="%{#menuOrGroup.hasSubMenu()}"><a href="#"></@s.if>
-			<@s.else><a href="<@s.url value="url"/>"></@s.else><@s.property value="label"/></a></li>
+			<@s.else><a href="<@s.url value="%{#menuOrGroup.url}"/>"></@s.else><@s.property value="label"/></a></li>
 		</@s.else>
 	</@s.if>
 	<@s.else>

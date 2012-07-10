@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menus>
 	<menu name="project">
-		<sub-menu name="configitem" label="配置项" url="config/configList.vhtml"/>
+		<sub-menu name="configitem" label="配置项" url="/config/configList.vhtml"/>
 		<sub-menu name="projectmember" label="人员管理" url=""/>
 	</menu>
 	
-	<menu name="testitem" label="测试菜单项" url=""/>
+	<menu name="testitem" label="测试菜单项" url="/system/test.vhtml"/>
 	
 	<group label="个人中心">
 		<group label="base">
@@ -15,7 +15,10 @@
 	</group>
 	
 	<group label="系统选项">
-		<menu name="projectconfig" label="产品线配置" url=""/>
+		<menu name="projectconfig" label="项目设置" url="/system/projectList.vhtml"/>
+		<menu name="syssetting" label="系统设置" url=""/>
+		<menu name="usersetting" label="用户设置" url=""/>
+		<menu name="security" label="权限设置" url=""/>
 		<menu name="oplog" label="操作日志" url=""/>
 		<menu sperator="true"/>
 		<menu name="aboutlion" label="关于lion" url=""/>

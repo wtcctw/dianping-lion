@@ -21,6 +21,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.struts2.dispatcher.Dispatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -43,13 +44,17 @@ public class MenuManager {
 	}
 	
 	public static NavMenus getNavMenus() {
-		if (navMenus == null) {
+		long currentTimeMillis = System.currentTimeMillis();
+		String devMode = Dispatcher.getInstance().getConfigurationManager().getConfiguration().getContainer().getInstance(String.class, "struts.devMode");
+		boolean isDevMode = "true".equals(devMode);
+		if (navMenus == null || isDevMode) {
 			synchronized (MenuManager.class) {
-				if (navMenus == null) {
+				if (navMenus == null || isDevMode) {
 					loadNavMenus();
 				}
 			}
 		}
+		System.out.println(System.currentTimeMillis() - currentTimeMillis);
 		return navMenus;
 	}
 	
