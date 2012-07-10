@@ -30,7 +30,7 @@
 		<result property="projects" column="id" select="Project.selectProjectsByProduct"/>
 	</resultMap>
 	
-	<resultMap id="ProjectResult" class="Project">
+	<resultMap id="ProjectResultBasic" class="Project">
 		<result column="id" property="id"/>
 		<result column="name" property="name"/>
 		<result column="productId" property="productId"/>
@@ -38,7 +38,12 @@
 		<result column="modifyTime" property="modifyTime"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
-
+	
+	<resultMap id="ProjectResult" class="Project" extends="ProjectResultBasic">
+		<result column="productName" property="productName"/>
+		<result column="teamName" property="teamName"/>
+	</resultMap>
+	
 	<select id="getTeams" resultMap="TeamResult">
 		<![CDATA[
 		SELECT id, name, createTime, modifyTime, seq
@@ -56,7 +61,7 @@
     	]]>
     </select>
     
-    <select id="selectProjectsByProduct" resultMap="ProjectResult" parameterClass="int">
+    <select id="selectProjectsByProduct" resultMap="ProjectResultBasic" parameterClass="int">
     	<![CDATA[
     	SELECT id, name, productId, createTime, modifyTime, seq
     	FROM project
@@ -65,13 +70,13 @@
     	]]>
     </select>
     
-    <select id="getProjects" resultMap="TeamResult">
+    <select id="getProjects" resultMap="ProjectResult">
 		<![CDATA[
-		SELECT pj.id, pj.name, pj.productId,pd.name productName,pj.createTime, pj.modifyTime, pj.seq
+		SELECT pj.id, pj.name, pj.productId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
 		FROM project pj,product pd,team t
 		where pd.id = pj.productId
 		and pd.teamId = t.id
-		ORDER BY t.id,pd.id,seq
+		ORDER BY t.seq,pd.seq,pj.seq
 		]]>
     </select>
     

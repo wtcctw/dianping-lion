@@ -17,6 +17,7 @@ package com.dianping.lion.web.action.system;
 
 import java.util.List;
 
+import com.dianping.lion.Constants;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.service.ProjectService;
 import com.opensymphony.xwork2.ActionSupport;
@@ -32,21 +33,21 @@ public class ProjectAction extends ActionSupport {
 	
 	private List<Project> projectList;
 	
-//	private String active = Constants.PROJECT_NAME;
+	private String active = Constants.PROJECT_NAME;
 
 	public String execute() {
-		this.projectService.getProjects();
-//		this.active = Constants.PROJECT_NAME;
+		this.projectList = this.projectService.getProjects();
+		this.active = Constants.PROJECT_NAME;
 		return SUCCESS;
 	}
 	
 	public String productList(){
-//		this.active = Constants.PRODUCT_NAME;
+		this.active = Constants.PRODUCT_NAME;
 		return SUCCESS;
 	}
 	
 	public String teamList(){
-//		this.active = Constants.TEAM_NAME;
+		this.active = Constants.TEAM_NAME;
 		return SUCCESS;
 	}
 
@@ -56,6 +57,22 @@ public class ProjectAction extends ActionSupport {
 
 	public void setProjectService(ProjectService projectService) {
 		this.projectService = projectService;
+	}
+
+	public String getActive() {
+		return active;
+	}
+
+	public void setActive(String active) {
+		this.active = active;
+	}
+
+	public List<Project> getProjectList() {
+		return projectList;
+	}
+
+	public void setProjectList(List<Project> projectList) {
+		this.projectList = projectList;
 	}
 	
 }
