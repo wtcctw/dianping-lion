@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<package name="system" namespace="/system" extends="default">
+		
+		<action name="projectList" class="com.dianping.lion.web.action.system.ProjectAction">
+			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
+		</action>
+		<action name="productList" class="com.dianping.lion.web.action.system.ProjectAction" method="productList">
+			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
+		</action>
+		<action name="teamList" class="com.dianping.lion.web.action.system.ProjectAction" method="teamList">
+			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
+		</action>
+		
+	</package>
+
+</struts>
