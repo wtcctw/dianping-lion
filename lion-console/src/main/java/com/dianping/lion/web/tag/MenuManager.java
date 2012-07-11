@@ -21,13 +21,15 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.struts2.dispatcher.Dispatcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.dianping.lion.Constants;
+
 /**
+ * 一级导航菜单
  * @author danson.liu
  *
  */
@@ -44,17 +46,13 @@ public class MenuManager {
 	}
 	
 	public static NavMenus getNavMenus() {
-		long currentTimeMillis = System.currentTimeMillis();
-		String devMode = Dispatcher.getInstance().getConfigurationManager().getConfiguration().getContainer().getInstance(String.class, "struts.devMode");
-		boolean isDevMode = "true".equals(devMode);
-		if (navMenus == null || isDevMode) {
+		if (navMenus == null || Constants.isDevMode()) {
 			synchronized (MenuManager.class) {
-				if (navMenus == null || isDevMode) {
+				if (navMenus == null || Constants.isDevMode()) {
 					loadNavMenus();
 				}
 			}
 		}
-		System.out.println(System.currentTimeMillis() - currentTimeMillis);
 		return navMenus;
 	}
 	
@@ -153,6 +151,31 @@ public class MenuManager {
 			return false;
 		}
 		
+		public SubMenu getDefaultAccessiableSubMenu(String menu) {
+			Menu menuObj = getMenu(menu);
+			if (menuObj == null) {
+				return null;
+			}
+			return menuObj.getDefaultSubMenu();
+		}
+		
+		public Menu getMenu(String menu) {
+			for (Object menuOrGroup : menuOrGroups) {
+				if (menuOrGroup instanceof MenuGroup) {
+					MenuGroup menuGroup = (MenuGroup) menuOrGroup;
+					Menu menu_ = menuGroup.getMenu(menu);
+					if (menu_ != null) {
+						return menu_;
+					}
+				} else if (menuOrGroup instanceof Menu) {
+					if (menu.equals(((Menu) menuOrGroup).name)) {
+						return (Menu) menuOrGroup;
+					}
+				}
+			}
+			return null;
+		}
+		
 	}
 	
 	public static class MenuGroup {
@@ -161,11 +184,40 @@ public class MenuManager {
 		public void addGroup(MenuGroup group) {
 			menuOrGroups.add(group);
 		}
+		
+		public Menu getMenu(String menu) {
+			for (Object menuOrGroup : menuOrGroups) {
+				if (menuOrGroup instanceof MenuGroup) {
+					Menu menuObj = ((MenuGroup) menuOrGroup).getMenu(menu);
+					if (menuObj != null) {
+						return menuObj;
+					}
+				} else if (menuOrGroup instanceof Menu) {
+					if (menu.equals(((Menu) menuOrGroup).name)) {
+						return (Menu) menuOrGroup;
+					}
+				}
+			}
+			return null;
+		}
 		public void addMenu(Menu menu) {
 			menuOrGroups.add(menu);
 		}
 		public void addSubMenu(SubMenu subMenu) {
 			menuOrGroups.add(subMenu);
+		}
+		public SubMenu getDefaultSubMenu() {
+			for (Object menuOrGroup : menuOrGroups) {
+				if (menuOrGroup instanceof SubMenu) {
+					return (SubMenu) menuOrGroup;
+				} else if (menuOrGroup instanceof MenuGroup) {
+					SubMenu subMenu = ((MenuGroup) menuOrGroup).getDefaultSubMenu();
+					if (subMenu != null) {
+						return subMenu;
+					}
+				}
+			}
+			return null;
 		}
 	}
 	
@@ -180,6 +232,19 @@ public class MenuManager {
 		}
 		public void addSubMenu(SubMenu subMenu) {
 			subMenuOrGroups.add(subMenu);
+		}
+		public SubMenu getDefaultSubMenu() {
+			for (Object subMenuOrGroup : subMenuOrGroups) {
+				if (subMenuOrGroup instanceof SubMenu) {
+					return (SubMenu) subMenuOrGroup;
+				} else if (subMenuOrGroup instanceof MenuGroup) {
+					SubMenu subMenu = ((MenuGroup) subMenuOrGroup).getDefaultSubMenu();
+					if (subMenu != null) {
+						return subMenu;
+					}
+				}
+			}
+			return null;
 		}
 		public boolean hasSubMenu() {
 			return !subMenuOrGroups.isEmpty();	//不对空的group进行判断

@@ -13,7 +13,7 @@
 							<dd>
 								<ul class="Fix">
 									<@s.iterator value="#product.projects" var="project">
-									<li><a href="<@s.url action="configList" namespace="/config"/>?menu=project&pid=${id}"><@s.property value="name"/></a></li>
+									<li><a href="<@s.url action="navigate" namespace="/"/>?menu=project&pid=${id}"><@s.property value="name"/></a></li>
 									</@s.iterator>
 								</ul>
 							</dd>
@@ -27,7 +27,7 @@
 				<@s.iterator value="#team.products" var="product" status="productStatus">
 			  	<li class="nav-header"><@s.property value="name"/></li>
 			  	<@s.iterator value="#product.projects" var="project">
-			    <li><a href="<@s.url action="configList" namespace="/config"/>?menu=project&pid=${id}"><@s.property value="name"/></a></li>
+			    <li><a href="<@s.url action="navigate" namespace="/"/>?menu=project&pid=${id}"><@s.property value="name"/></a></li>
 			    </@s.iterator>
 			    <@s.if test="!#productStatus.last"><li class="divider"></li></@s.if>
 			    </@s.iterator>
@@ -37,7 +37,7 @@
 			</@s.iterator>
 		</@s.if>
 		<@s.else>
-			<li><@s.if test="%{#menuOrGroup.hasSubMenu()}"><a href="#"></@s.if>
+			<li><@s.if test="%{#menuOrGroup.hasSubMenu()}"><a href="<@s.url action="navigate" namespace="/"/>?menu=${name}"></@s.if>
 			<@s.else><a href="<@s.url value="%{#menuOrGroup.url}"/>"></@s.else><@s.property value="label"/></a></li>
 		</@s.else>
 	</@s.if>
@@ -49,7 +49,11 @@
 	          	<@s.if test="%{#menuOrGroup_ instanceof com.dianping.lion.web.tag.MenuManager$MenuGroup}">
 	          	<li class="nav-header"><@s.property value="label"/></li>
 	          		<@s.iterator value="#menuOrGroup_.menuOrGroups" var="menu">
-	          		<li><a href="#"><@s.property value="label"/></a></li>
+	          		<li>
+	          			<@s.if test="%{#menu.hasSubMenu()}"><a href="<@s.url action="navigate" namespace="/"/>?menu=${name}"></@s.if>
+	          			<@s.else><a href="<@s.url value="%{#menu.url}"/>"></@s.else>
+	          			<@s.property value="label"/></a>
+	          		</li>
 	          		</@s.iterator>
 	          		<@s.if test="!#itemStatus.last"><li class="divider"></li></@s.if>
 	          	</@s.if>
@@ -57,7 +61,11 @@
 	          	<li class="divider"></li>
 	          	</@s.elseif>
 	          	<@s.else>
-	          	<li><a href="#"><@s.property value="label"/></a></li>
+	          	<li>
+	          		<@s.if test="%{#menuOrGroup_.hasSubMenu()}"><a href="<@s.url action="navigate" namespace="/"/>?menu=${name}"></@s.if>
+	          		<@s.else><a href="<@s.url value="%{#menuOrGroup_.url}"/>"></@s.else>
+	          		<@s.property value="label"/></a>
+	          	</li>
 	          	</@s.else>
             </@s.iterator>
           </ul>

@@ -5,12 +5,7 @@
 	<div class="container-fluid">
 	<div class="row">
 		<div class="span12">
-			Welcome to Lion!<br/>Welcome to Lion!<br/>
-			Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>
-			Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>
-			Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>
-			Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>
-			Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>Welcome to Lion!<br/>
+			Lion项目介绍.
 		</div>
 	</div>
 	</div>

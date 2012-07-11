@@ -11,4 +11,9 @@
 		<tag-class>com.dianping.lion.web.tag.MainNavigator</tag-class>
 		<body-content>empty</body-content>
 	</tag>
+	<tag>
+		<name>SubNav</name>
+		<tag-class>com.dianping.lion.web.tag.SubNavigator</tag-class>
+		<body-content>empty</body-content>
+	</tag>
 </taglib>

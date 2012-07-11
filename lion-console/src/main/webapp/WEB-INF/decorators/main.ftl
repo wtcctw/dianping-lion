@@ -32,11 +32,14 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-	        <a class="brand" href="./index.html">Lion</a>
+	        <a class="brand" href="<@s.url value="/"/>">Lion</a>
 	        <div class="nav-collapse">
 		        <ul class="nav">
+		        	<@lion.SubNav/>
+		        	<!--
 		        	<li><a href="#">配置项</a></li>
 		        	<li><a href="#">人员管理</a></li>
+		        	-->
 		        </ul>
 		        <ul class="nav pull-right">
 		        	<li><a href="#">登录</a></li>
