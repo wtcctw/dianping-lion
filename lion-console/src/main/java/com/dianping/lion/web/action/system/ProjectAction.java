@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.Team;
 import com.dianping.lion.service.ProjectService;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -32,11 +33,13 @@ public class ProjectAction extends ActionSupport {
 	private ProjectService projectService;
 	
 	private List<Project> projectList;
+	private List<Team> teamList;
 	
 	private String active = Constants.PROJECT_NAME;
 
 	public String execute() {
 		this.projectList = this.projectService.getProjects();
+		this.teamList = this.projectService.getTeams();
 		this.active = Constants.PROJECT_NAME;
 		return SUCCESS;
 	}
@@ -73,6 +76,14 @@ public class ProjectAction extends ActionSupport {
 
 	public void setProjectList(List<Project> projectList) {
 		this.projectList = projectList;
+	}
+
+	public List<Team> getTeamList() {
+		return teamList;
+	}
+
+	public void setTeamList(List<Team> teamList) {
+		this.teamList = teamList;
 	}
 	
 }
