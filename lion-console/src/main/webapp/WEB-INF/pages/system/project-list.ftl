@@ -10,7 +10,7 @@
 	      <th>项目名</th>
 	      <th>创建时间</th>
 	      <th>更新时间</th>
-	      <th>操作<i class="icon-plus pull-right"/></th>
+	      <th >操作<i class="icon-plus pull-right"/></th>
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -22,9 +22,11 @@
 	      		<td>${project.name}</td>
 	      		<td>${project.createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
-	      		<td>
+	      		<td style="text-align:center;">
+	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 	      		    <i class="icon-edit"></i>
-	      		    <i></i>
+	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 					<i class="icon-remove"></i>
 					
 			     </td>
