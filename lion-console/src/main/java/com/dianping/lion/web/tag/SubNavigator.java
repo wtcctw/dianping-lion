@@ -27,8 +27,6 @@ import com.dianping.lion.web.tag.MenuManager.Menu;
 @SuppressWarnings("serial")
 public class SubNavigator extends StrutsTagSupport {
 	
-	private String menu;
-	
 	private Menu mainMenu;
 	
 	private String query;	//include menu if exists
@@ -39,22 +37,15 @@ public class SubNavigator extends StrutsTagSupport {
 
 	@Override
 	protected int doFinalStartTag() throws JspException {
+		String menu = getRequest().getParameter("menu");
 		if (menu != null) {
 			mainMenu = MenuManager.getNavMenus().getMenu(menu);
-//			query = "menu=" + ;
+			query = "menu=" + menu;
 			if (MenuManager.MENU_PROJECT.equals(menu)) {
-//				query
+				query += "&pid=" + getRequest().getParameter("pid");
 			}
 		}
 		return SKIP_BODY;
-	}
-
-	public String getMenu() {
-		return menu;
-	}
-
-	public void setMenu(String menu) {
-		this.menu = menu;
 	}
 
 	public Menu getMainMenu() {
@@ -63,6 +54,20 @@ public class SubNavigator extends StrutsTagSupport {
 
 	public void setMainMenu(Menu mainMenu) {
 		this.mainMenu = mainMenu;
+	}
+
+	/**
+	 * @return the query
+	 */
+	public String getQuery() {
+		return query;
+	}
+
+	/**
+	 * @param query the query to set
+	 */
+	public void setQuery(String query) {
+		this.query = query;
 	}
 
 }
