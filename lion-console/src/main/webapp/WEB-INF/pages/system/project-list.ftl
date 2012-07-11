@@ -36,8 +36,4 @@
 </table>
 </div>
 </div>
-<<<<<<< HEAD
 <#include "/WEB-INF/pages/system/project-footer.ftl"> 
-=======
-<#include "/WEB-INF/pages/system/project-footer.ftl"> 
->>>>>>> branch 'master' of http://git.dianpingoa.com/git/lion.git
