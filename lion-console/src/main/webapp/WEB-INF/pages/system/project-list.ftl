@@ -80,11 +80,8 @@
 	$(document).ready(function(){
 		$("#teamSelect").change(function(){
 			$("option[team]").removeClass("hide");
+			$("#productSelect option:first").attr("selected","true");
 			if($(this).children('option:selected').val() > 0){
-				
-				if($("#productSelect").children('option:selected').attr("team") != $(this).children('option:selected').val()){
-					$("#productSelect option:first").attr("selected","true");
-				}
 				
 				$("option[team]").addClass("hide");
 				$("option[team="+$(this).children('option:selected').val()+"]").removeClass("hide");
