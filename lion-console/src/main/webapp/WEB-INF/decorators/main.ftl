@@ -13,6 +13,9 @@
 	<link href="<@s.url value="/css/google-prettify.css"/>" rel="stylesheet" type="text/css" />
 	<link href="<@s.url value="/css/lion.css"/>" rel="stylesheet" type="text/css" />
 	<link rel="shortcut icon" href="<@s.url value="/img/favicon.ico"/>">
+	<script type="text/javascript" src="<@s.url value="/js/jquery.js"/>"></script>
+	<script type="text/javascript" src="<@s.url value="/js/bootstrap.js"/>"></script>
+	<script type="text/javascript" src="<@s.url value="/js/lion.js"/>"></script>
     <style type="text/css">
 		body {
 			position: relative;
@@ -61,9 +64,5 @@
 	<div class="container">
 		<footer class="footer"><center>©2012 Dianping平台架构, Mail: <a href="mailto:www@dianping.com">www@dianping.com</a></center></footer>
 	</div>
-	
-	<script type="text/javascript" src="<@s.url value="/js/jquery.js"/>"></script>
-	<script type="text/javascript" src="<@s.url value="/js/bootstrap.js"/>"></script>
-	<script type="text/javascript" src="<@s.url value="/js/lion.js"/>"></script>
 </body>
 </html>

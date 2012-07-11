@@ -1,6 +1,6 @@
 <@s.iterator value="navMenus.menuOrGroups" var="menuOrGroup">
 	<@s.if test="%{#menuOrGroup instanceof com.dianping.lion.web.tag.MenuManager$Menu}">
-		<@s.if test="%{#menuOrGroup.name == 'project'}">
+		<@s.if test="%{#menuOrGroup.name == @com.dianping.lion.web.tag.MenuManager@MENU_PROJECT}">
 			<@s.iterator value="teams" var="team">
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><@s.property value="name"/> <b class="caret"></b></a>

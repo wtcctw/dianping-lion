@@ -38,6 +38,7 @@ public class MenuManager {
 	private static final String TAG_GROUP = "group";
 	private static final String TAG_MENU = "menu";
 	private static final String TAG_SUBMENU = "sub-menu";
+	public static final String MENU_PROJECT = "project";
 	
 	private static NavMenus navMenus;
 	
@@ -144,7 +145,7 @@ public class MenuManager {
 		
 		public boolean hasProjectMenu() {
 			for (Object item : menuOrGroups) {
-				if ((item instanceof Menu) && "project".equals(((Menu) item).name)) {
+				if ((item instanceof Menu) && MENU_PROJECT.equals(((Menu) item).name)) {
 					return true;
 				}
 			}
