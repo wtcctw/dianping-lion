@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
@@ -126,6 +127,10 @@ public abstract class StrutsTagSupport extends StrutsBodyTagSupport {
 	}
 
 	protected abstract int doFinalStartTag() throws JspException;
+	
+	protected ServletRequest getRequest() {
+		return pageContext.getRequest();
+	}
 	
 	@Inject
     public void setTemplateEngineManager(TemplateEngineManager mgr) {

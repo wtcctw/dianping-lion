@@ -17,6 +17,8 @@ package com.dianping.lion.web.tag;
 
 import javax.servlet.jsp.JspException;
 
+import com.dianping.lion.web.tag.MenuManager.Menu;
+
 /**
  * 二级导航菜单
  * @author danson.liu
@@ -24,11 +26,43 @@ import javax.servlet.jsp.JspException;
  */
 @SuppressWarnings("serial")
 public class SubNavigator extends StrutsTagSupport {
+	
+	private String menu;
+	
+	private Menu mainMenu;
+	
+	private String query;	//include menu if exists
+	
+	public SubNavigator() {
+		setTemplateName("sub-nav.ftl");
+	}
 
 	@Override
 	protected int doFinalStartTag() throws JspException {
-		// TODO Auto-generated method stub
-		return 0;
+		if (menu != null) {
+			mainMenu = MenuManager.getNavMenus().getMenu(menu);
+//			query = "menu=" + ;
+			if (MenuManager.MENU_PROJECT.equals(menu)) {
+//				query
+			}
+		}
+		return SKIP_BODY;
+	}
+
+	public String getMenu() {
+		return menu;
+	}
+
+	public void setMenu(String menu) {
+		this.menu = menu;
+	}
+
+	public Menu getMainMenu() {
+		return mainMenu;
+	}
+
+	public void setMainMenu(Menu mainMenu) {
+		this.mainMenu = mainMenu;
 	}
 
 }

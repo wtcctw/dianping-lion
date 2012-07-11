@@ -19,8 +19,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author danson.liu
@@ -29,34 +32,57 @@ import java.util.Map.Entry;
 public class UrlUtils {
 	
 	public static String resolveUrl(String url, Map<String, ?> parameters) {
+		if (url == null) {
+			throw new NullPointerException("Param[url] cannot be null.");
+		}
 		try{
 			StringBuilder finalUrl = new StringBuilder(url);
 			int index = 0;
-			for (Entry<String, ?> entry : parameters.entrySet()) {
-				Collection<Object> paramValues = new ArrayList<Object>();
-				Object paramValue = entry.getValue();
-				Class<? extends Object> paramClass = paramValue.getClass();
-				if (Collection.class.isInstance(paramValue)) {
-					paramValues.addAll((Collection<?>) paramValue);
-				} else if (paramClass.isArray()) {
-					Object[] valueArray = (Object[]) paramValue;
-					for (Object value : valueArray) {
-						paramValues.add(value);
+			if (parameters != null) {
+				for (Entry<String, ?> entry : parameters.entrySet()) {
+					Collection<Object> paramValues = new ArrayList<Object>();
+					Object paramValue = entry.getValue();
+					Class<? extends Object> paramClass = paramValue.getClass();
+					if (Collection.class.isInstance(paramValue)) {
+						paramValues.addAll((Collection<?>) paramValue);
+					} else if (paramClass.isArray()) {
+						Object[] valueArray = (Object[]) paramValue;
+						for (Object value : valueArray) {
+							paramValues.add(value);
+						}
+					} else {
+						paramValues.add(paramValue);
 					}
-				} else {
-					paramValues.add(paramValue);
-				}
-				for (Object value : paramValues) {
-					finalUrl.append(index ++ == 0 && finalUrl.indexOf("?") == -1 ? "?" : "&")
-							.append(entry.getKey())
-							.append("=")
-							.append(URLEncoder.encode(value.toString(), "utf-8"));
+					for (Object value : paramValues) {
+						finalUrl.append(index ++ == 0 && finalUrl.indexOf("?") == -1 ? "?" : "&")
+								.append(entry.getKey())
+								.append("=")
+								.append(URLEncoder.encode(value.toString(), "utf-8"));
+					}
 				}
 			}
 			return finalUrl.toString();
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static List<String> getParameterNames(String url) {
+		if (url == null) {
+			throw new NullPointerException("Param[url] cannot be null.");
+		}
+		List<String> parameterNames = new ArrayList<String>();
+		String queryString = StringUtils.substringAfter(url, "?");
+		if (queryString != null) {
+			String[] segments = StringUtils.split(queryString, "&");
+			for (String segment : segments) {
+				String param = StringUtils.substringBefore(segment, "=");
+				if (!parameterNames.contains(param)) {
+					parameterNames.add(param);
+				}
+			}
+		}
+		return parameterNames;
 	}
 
 }
