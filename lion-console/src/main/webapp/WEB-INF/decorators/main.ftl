@@ -32,40 +32,21 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-	        <a class="brand" href="./index.html">Lion</a>
+	        <a class="brand" href="<@s.url value="/"/>">Lion</a>
 	        <div class="nav-collapse">
 		        <ul class="nav">
+		        	<@lion.SubNav/>
+		        	<!--
 		        	<li><a href="#">配置项</a></li>
 		        	<li><a href="#">人员管理</a></li>
+		        	-->
 		        </ul>
-		          
 		        <ul class="nav pull-right">
 		        	<li><a href="#">登录</a></li>
 		        </ul>
-	          	
 	          	<ul class="nav pull-right">
 	          		<@lion.MainNav/>
-		            <li class="dropdown">
-		              <a href="#" class="dropdown-toggle" data-toggle="dropdown">个人中心 <b class="caret"></b></a>
-		              <ul class="dropdown-menu">
-		                <li><a href="#">工作台</a></li>
-		                <li><a href="#">操作日志</a></li>
-		              </ul>
-		            </li>
-		            <li class="dropdown">
-		              <a href="#" class="dropdown-toggle" data-toggle="dropdown">系统选项 <b class="caret"></b></a>
-		              <ul class="dropdown-menu">
-		                <li><a href="<@s.url action="projectList" namespace="/system"/>">项目设置</a></li>
-		                <li><a href="#">系统设置</a></li>
-		                <li><a href="#">用户设置</a></li>
-		                <li><a href="#">权限设置</a></li>
-		                <li><a href="#">操作日志</a></li>
-		                <li class="divider"></li>
-		                <li><a href="#">关于Lion</a></li>
-		              </ul>
-		            </li>
-	          </ul>
-          
+	          	</ul>
         	</div><!-- /.nav-collapse -->
         </div>
       </div>

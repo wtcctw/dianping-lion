@@ -66,10 +66,8 @@
 			<exception-mapping result="error"
 				exception="com.dianping.shoppicweb.exception.PicProjectException" />
 		</global-exception-mappings> -->
-		<!-- 
-		<action name="navigate" class="com.dianping.lion.HomeAction">
-			<result name="success">/WEB-INF/pages/home.jsp</result>
+		<action name="navigate" class="com.dianping.lion.web.action.common.NavigationAction">
+			<result name="success" type="redirect">${redirectUrl}</result>
 		</action>
-		 -->
 	</package>
 </struts>

@@ -15,6 +15,13 @@
  */
 package com.dianping.lion.web.action.common;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.interceptor.ServletRequestAware;
+
+import com.dianping.lion.util.UrlUtils;
+import com.dianping.lion.web.tag.MenuManager;
+import com.dianping.lion.web.tag.MenuManager.SubMenu;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -22,6 +29,46 @@ import com.opensymphony.xwork2.ActionSupport;
  *
  */
 @SuppressWarnings("serial")
-public class NavigationAction extends ActionSupport {
+public class NavigationAction extends ActionSupport implements ServletRequestAware {
+
+	private String menu;
+	
+	private String redirectUrl;
+
+	private HttpServletRequest request;
+
+	@SuppressWarnings("unchecked")
+	public String execute() {
+		SubMenu subMenu = MenuManager.getNavMenus().getDefaultAccessiableSubMenu(menu);
+		String subMenuUrl = subMenu.url;
+		redirectUrl = UrlUtils.resolveUrl(subMenuUrl, request.getParameterMap());
+		return SUCCESS;
+	}
+
+	/**
+	 * @return the menu
+	 */
+	public String getMenu() {
+		return menu;
+	}
+
+	/**
+	 * @param menu the menu to set
+	 */
+	public void setMenu(String menu) {
+		this.menu = menu;
+	}
+
+	/**
+	 * @return the redirectUrl
+	 */
+	public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+	@Override
+	public void setServletRequest(HttpServletRequest request) {
+		this.request = request;
+	}
 
 }
