@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="OperationLog">
+	<typeAlias alias="OpLog" type="com.dianping.lion.entity.OperationLog" />
+
+	<resultMap id="OperationLogResult" class="OpLog">
+		<result column="id" property="id"/>
+		<result column="opType" property="opType"/>
+		<result column="opUserId" property="opUserId"/>
+		<result column="opUserIp" property="opUserIp"/>
+		<result column="envId" property="envId"/>
+		<result column="opTime" property="opTime"/>
+		<result column="envId" property="envId"/>
+		<result column="projectId" property="projectId"/>
+		<result column="content" property="content"/>
+	</resultMap>
+	
+	<select id="getOpLogs" resultMap="OperationLogResult">
+		<![CDATA[
+		SELECT id, opType, opUserId, opUserIp, envId, opTime, projectId, content
+		FROM op_log
+		ORDER BY opTime
+		]]>
+    </select>
+    
+</sqlMap>

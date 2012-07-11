@@ -10,4 +10,6 @@
 	
 	<bean id="projectService" class="com.dianping.lion.service.impl.ProjectServiceImpl"/>
 	
+	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
+	
 </beans>

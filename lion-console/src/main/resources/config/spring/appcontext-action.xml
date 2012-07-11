@@ -8,12 +8,7 @@
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	
-	<bean id="projectDao" class="com.dianping.lion.dao.ibatis.ProjectIbatisDao">
-		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
-	</bean>
-	
-	<bean id="operationLogDao" class="com.dianping.lion.dao.ibatis.OperationLogIbatisDao">
-		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+	<bean id="Lion.OperationLogAction" class="com.dianping.lion.web.action.system.OperationLogAction">
 	</bean>
 	
 </beans>

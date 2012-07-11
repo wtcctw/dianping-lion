@@ -6,7 +6,7 @@
                     to ensure that input is correct and output is localized.
                     The Struts Tags can be used with JSP FreeMarker or Velocity."]]></description>
   <display-name>"Struts Tags"</display-name>
-  <tlib-version>2.2.3</tlib-version>
+  <tlib-version>2.2</tlib-version>
   <short-name>s</short-name>
   <uri>/struts-tags</uri>
   <tag>
