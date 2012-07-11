@@ -22,7 +22,7 @@
 	      		<td>${project.name}</td>
 	      		<td>${project.createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
-	      		<td style="text-align:center;">
+				<td style="text-align:center;">
 	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 	      		    <i class="icon-edit"></i>
@@ -36,4 +36,8 @@
 </table>
 </div>
 </div>
+<<<<<<< HEAD
 <#include "/WEB-INF/pages/system/project-footer.ftl"> 
+=======
+<#include "/WEB-INF/pages/system/project-footer.ftl"> 
+>>>>>>> branch 'master' of http://git.dianpingoa.com/git/lion.git
