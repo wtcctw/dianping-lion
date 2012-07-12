@@ -37,6 +37,7 @@ public class Config implements Serializable {
 	private Date createTime;
 	private Date modifyTime;
 	private boolean deleted;
+	private int seq;
 	/**
 	 * @return the id
 	 */
@@ -156,6 +157,18 @@ public class Config implements Serializable {
 	 */
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+	/**
+	 * @return the seq
+	 */
+	public int getSeq() {
+		return seq;
+	}
+	/**
+	 * @param seq the seq to set
+	 */
+	public void setSeq(int seq) {
+		this.seq = seq;
 	}
 
 

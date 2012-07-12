@@ -7,9 +7,10 @@
 		lazyLoadingEnabled="false" maxRequests="3000" maxSessions="3000"
 		maxTransactions="3000" useStatementNamespaces="true"/>
 		
+	<sqlMap resource="config/sqlmap/lion/environment.xml"/>
 	<sqlMap resource="config/sqlmap/lion/project.xml"/>
 	<sqlMap resource="config/sqlmap/lion/oplog.xml"/>
-	<sqlMap resource="config/sqlmap/lion/environment.xml"/>
+	<sqlMap resource="config/sqlmap/lion/config.xml"/>
     
     
 </sqlMapConfig>

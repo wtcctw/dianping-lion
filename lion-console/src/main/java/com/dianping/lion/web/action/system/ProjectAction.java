@@ -21,14 +21,14 @@ import com.dianping.lion.Constants;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.service.ProjectService;
-import com.opensymphony.xwork2.ActionSupport;
+import com.dianping.lion.web.action.common.AbstractLionAction;
 
 /**
  * @author xiangbin.miao
  *
  */
 @SuppressWarnings("serial")
-public class ProjectAction extends ActionSupport {
+public class ProjectAction extends AbstractLionAction {
 	
 	private ProjectService projectService;
 	

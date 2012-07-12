@@ -15,10 +15,21 @@
  */
 package com.dianping.lion.service;
 
+import java.util.List;
+
+import com.dianping.lion.vo.ConfigInstanceVo;
+
 /**
  * @author danson.liu
  *
  */
 public interface ConfigService {
+
+	/**
+	 * @param projectId
+	 * @param env
+	 * @return
+	 */
+	List<ConfigInstanceVo> findInstanceVos(int projectId, int envId);
 
 }

@@ -13,23 +13,31 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.dao;
+package com.dianping.lion.web.action.common;
 
-import java.util.List;
-
-import com.dianping.lion.vo.ConfigInstanceVo;
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * @author danson.liu
  *
  */
-public interface ConfigDao {
+@SuppressWarnings("serial")
+public class AbstractLionAction extends ActionSupport {
+
+	protected String menu;
 
 	/**
-	 * @param projectId
-	 * @param envId
-	 * @return
+	 * @return the menu
 	 */
-	List<ConfigInstanceVo> findInstanceVos(int projectId, int envId);
+	public String getMenu() {
+		return menu;
+	}
 
+	/**
+	 * @param menu the menu to set
+	 */
+	public void setMenu(String menu) {
+		this.menu = menu;
+	}
+	
 }

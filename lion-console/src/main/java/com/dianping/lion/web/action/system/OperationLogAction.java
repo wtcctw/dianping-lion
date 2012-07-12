@@ -21,10 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.service.OperationLogService;
-import com.opensymphony.xwork2.ActionSupport;
+import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
-public class OperationLogAction extends ActionSupport {
+public class OperationLogAction extends AbstractLionAction {
 	
 	@Autowired
 	private OperationLogService operationLogService;

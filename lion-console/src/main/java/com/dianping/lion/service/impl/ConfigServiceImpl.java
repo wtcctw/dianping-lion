@@ -15,12 +15,26 @@
  */
 package com.dianping.lion.service.impl;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.service.ConfigService;
+import com.dianping.lion.vo.ConfigInstanceVo;
 
 /**
  * @author danson.liu
  *
  */
 public class ConfigServiceImpl implements ConfigService {
+	
+	@Autowired
+	private ConfigDao configDao;
+
+	@Override
+	public List<ConfigInstanceVo> findInstanceVos(int projectId, int envId) {
+		return configDao.findInstanceVos(projectId, envId);
+	}
 
 }

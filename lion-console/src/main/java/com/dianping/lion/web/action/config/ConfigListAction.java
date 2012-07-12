@@ -19,18 +19,18 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
-import com.opensymphony.xwork2.ActionSupport;
+import com.dianping.lion.vo.ConfigInstanceVo;
+import com.dianping.lion.web.action.common.AbstractLionAction;
 
 /**
  * @author danson.liu
  *
  */
 @SuppressWarnings("serial")
-public class ConfigListAction extends ActionSupport {
+public class ConfigListAction extends AbstractLionAction {
 	
 	@Autowired
 	private ConfigService configService;
@@ -38,37 +38,65 @@ public class ConfigListAction extends ActionSupport {
 	@Autowired
 	private EnvironmentService environmentService;
 	
-	private Integer env;
+	private Integer envId;
 	
-//	private int 
+	private int projectId;
 	
 	private List<Environment> environments;
 	
-	private List<ConfigInstance> configInsts;
+	private List<ConfigInstanceVo> configInsts;
 
 	public String execute() {
 		this.environments = environmentService.findAll();
-		if (env == null) {
-			env = !environments.isEmpty() ? environments.get(0).getId() : null;
+		if (envId == null) {
+			envId = !environments.isEmpty() ? environments.get(0).getId() : null;
 		}
-		if (env != null) {
-//			configInsts = configService.findInstances();
+		if (envId != null) {
+			configInsts = configService.findInstanceVos(projectId, envId);
 		}
 		return SUCCESS;
 	}
 
 	/**
-	 * @return the env
+	 * @return the envId
 	 */
-	public Integer getEnv() {
-		return env;
+	public Integer getEnvId() {
+		return envId;
 	}
 
 	/**
-	 * @param env the env to set
+	 * @param envId the envId to set
 	 */
-	public void setEnv(Integer env) {
-		this.env = env;
+	public void setEnvId(Integer envId) {
+		this.envId = envId;
+	}
+
+	/**
+	 * @return the pid
+	 */
+	public int getPid() {
+		return projectId;
+	}
+
+	/**
+	 * @param pid the pid to set
+	 */
+	public void setPid(int pid) {
+		this.projectId = pid;
+	}
+
+	/**
+	 * @return the configInsts
+	 */
+	public List<ConfigInstanceVo> getConfigInsts() {
+		return configInsts;
+	}
+
+	/**
+	 * @return the environments
+	 */
+	public List<Environment> getEnvironments() {
+		return environments;
 	}
 	
 }
