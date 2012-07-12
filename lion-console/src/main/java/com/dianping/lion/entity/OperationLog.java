@@ -15,14 +15,13 @@
  */
 package com.dianping.lion.entity;
 
-import java.io.Serializable;
 import java.util.Date;
+import com.dianping.lion.util.OperationTypeEnum;
 
 /**
  * @author youngphy.yang
  */
-@SuppressWarnings("serial")
-public class OperationLog implements Serializable {
+public class OperationLog {
 	
 	private int id;
 	private int opType;
@@ -30,8 +29,13 @@ public class OperationLog implements Serializable {
 	private String opUserIp;
 	private int envId;
 	private Date opTime;
-	private int projectId;
+	private int projectId;	
 	private String content;
+	
+	private String opName;
+	private String projectName;
+	private String envName;
+	private String opUserName;
 	
 	public int getId() {
 		return id;
@@ -44,6 +48,7 @@ public class OperationLog implements Serializable {
 	}
 	public void setOpType(int opType) {
 		this.opType = opType;
+		opName = OperationTypeEnum.fromInt(opType).getValue();
 	}
 	public int getOpUserId() {
 		return opUserId;
@@ -81,5 +86,28 @@ public class OperationLog implements Serializable {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+	public String getOpName() {
+		return opName;
+	}
+	public void setOpName(String opName) {
+		this.opName = opName;
+	}
+	public String getProjectName() {
+		return projectName;
+	}
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+	public String getEnvName() {
+		return envName;
+	}
+	public void setEnvName(String envName) {
+		this.envName = envName;
+	}
+	public String getOpUserName() {
+		return opUserName;
+	}
+	public void setOpUserName(String opUserName) {
+		this.opUserName = opUserName;
+	}
 }

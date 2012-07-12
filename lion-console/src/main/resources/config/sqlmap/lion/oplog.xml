@@ -7,19 +7,59 @@
 		<result column="id" property="id"/>
 		<result column="opType" property="opType"/>
 		<result column="opUserId" property="opUserId"/>
+		<result column="opUserName" property="opUserName"/>
 		<result column="opUserIp" property="opUserIp"/>
 		<result column="envId" property="envId"/>
+		<result column="envName" property="envName"/>
 		<result column="opTime" property="opTime"/>
 		<result column="envId" property="envId"/>
 		<result column="projectId" property="projectId"/>
+		<result column="projectName" property="projectName"/>
 		<result column="content" property="content"/>
 	</resultMap>
 	
 	<select id="getOpLogs" resultMap="OperationLogResult">
 		<![CDATA[
-		SELECT id, opType, opUserId, opUserIp, envId, opTime, projectId, content
-		FROM op_log
-		ORDER BY opTime
+		SELECT
+		  T2.id,
+		  opType,
+		  opUserId,
+		  opUserName,
+		  opUserIp,
+		  envId,
+		  environment.name AS envName,
+		  opTime,
+		  projectId,
+		  projectName,
+		  content
+		FROM (SELECT
+		        T1.id,
+		        opType,
+		        opUserId,
+		        user.name AS opUserName,
+		        opUserIp,
+		        envId,
+		        opTime,
+		        projectId,
+		        projectName,
+		        content
+		      FROM (SELECT
+		              ol.id  AS id,
+		              opType,
+		              opUserId,
+		              opUserIp,
+		              envId,
+		              opTime,
+		              projectId,
+		              p.name  AS projectName,
+		              content
+		            FROM op_log AS ol
+		              LEFT JOIN project AS p
+		                ON ol.projectId = p.id) AS T1
+		        LEFT JOIN user
+		          ON T1.opUserId = user.id) AS T2
+		  LEFT JOIN environment
+		    ON environment.id = T2.envId
 		]]>
     </select>
     
