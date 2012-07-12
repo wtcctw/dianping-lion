@@ -26,11 +26,11 @@ import java.util.Date;
 @SuppressWarnings("serial")
 public class Project implements Serializable {
 
-	private long id;
+	private int id;
 	
 	private String name;
 	
-	private long productId;
+	private int productId;
 	
 	private String productName;
 	
@@ -45,14 +45,14 @@ public class Project implements Serializable {
 	/**
 	 * @return the id
 	 */
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -73,15 +73,43 @@ public class Project implements Serializable {
 	/**
 	 * @return the productId
 	 */
-	public long getProductId() {
+	public int getProductId() {
 		return productId;
 	}
 
 	/**
 	 * @param productId the productId to set
 	 */
-	public void setProductId(long productId) {
+	public void setProductId(int productId) {
 		this.productId = productId;
+	}
+
+	/**
+	 * @return the productName
+	 */
+	public String getProductName() {
+		return productName;
+	}
+
+	/**
+	 * @param productName the productName to set
+	 */
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	/**
+	 * @return the teamName
+	 */
+	public String getTeamName() {
+		return teamName;
+	}
+
+	/**
+	 * @param teamName the teamName to set
+	 */
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
 	}
 
 	/**
@@ -126,20 +154,4 @@ public class Project implements Serializable {
 		this.seq = seq;
 	}
 
-	public String getProductName() {
-		return productName;
-	}
-
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-
-	public String getTeamName() {
-		return teamName;
-	}
-
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
-	}
-	
 }

@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-9
+ * File Created at 2012-7-12
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -19,26 +19,19 @@ import java.util.List;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
-import com.dianping.lion.dao.ProjectDao;
-import com.dianping.lion.entity.Project;
-import com.dianping.lion.entity.Team;
+import com.dianping.lion.dao.EnvironmentDao;
+import com.dianping.lion.entity.Environment;
 
 /**
  * @author danson.liu
  *
  */
-public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectDao {
+public class EnvironmentIbatisDao extends SqlMapClientDaoSupport implements EnvironmentDao {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Team> getTeams() {
-		return getSqlMapClientTemplate().queryForList("Project.getTeams");
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Project> getProjects() {
-		return getSqlMapClientTemplate().queryForList("Project.getProjects");
+	public List<Environment> findAll() {
+		return getSqlMapClientTemplate().queryForList("Environment.findAll");
 	}
 
 }

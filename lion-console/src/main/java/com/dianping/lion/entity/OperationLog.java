@@ -15,12 +15,14 @@
  */
 package com.dianping.lion.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author youngphy.yang
  */
-public class OperationLog {
+@SuppressWarnings("serial")
+public class OperationLog implements Serializable {
 	
 	private int id;
 	private int opType;

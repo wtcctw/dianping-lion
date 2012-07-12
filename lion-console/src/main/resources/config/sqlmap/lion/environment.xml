@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Environment">
+	<typeAlias alias="Environment" type="com.dianping.lion.entity.Environment" />
+
+	<resultMap id="EnvironmentResult" class="Environment">
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="ips" property="ips"/>
+		<result column="seq" property="seq"/>
+	</resultMap>
+	
+	<select id="findAll" resultMap="EnvironmentResult">
+		<![CDATA[
+		SELECT id, name, ips, seq
+		FROM environment
+		ORDER BY seq, id
+		]]>
+    </select>
+    
+</sqlMap>

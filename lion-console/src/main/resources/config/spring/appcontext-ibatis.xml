@@ -31,6 +31,8 @@
 			<tx:method name="update*" propagation="REQUIRED" />
 			<tx:method name="modify*" propagation="REQUIRED" />
 			<tx:method name="get*" read-only="true" propagation="REQUIRED" />
+			<tx:method name="find*" read-only="true" propagation="REQUIRED" />
+			<tx:method name="load*" read-only="true" propagation="REQUIRED" />
 			<tx:method name="*" />
 		</tx:attributes>
 	</tx:advice>
