@@ -1,37 +1,34 @@
+<#--搜索栏-->
+<table class="table table-bordered table-striped table-condensed">
 
-<div class="row">
-<div class="span12">
+<table>
+
+<#--内容栏-->
 <table class="table table-bordered table-striped table-condensed">
 	  <thead>
 	    <tr>
 	      <th>序号</th>
-	      <th>业务组</th>
-	      <th>所属产品线</th>
-	      <th>项目名</th>
+	      <th>操作类型</th>
+	      <th>操作人员</th>
+	      <th>操作主机</th>
+	      <th>环境</th>
 	      <th>创建时间</th>
-	      <th>更新时间</th>
-	      <th >操作<i class="icon-plus pull-right"/></th>
+	      <th>项目</th>
+	      <th>内容</th>
 	    </tr>
 	  </thead>
 	  <tbody>
-	  	<!--<#list operationLogs as OperationLog>
+	  	<#list operationLogs as operationLog>
 	  		<tr>
-	      		<td>${project_index + 1}</td>
-	      		<td>${project.teamName}</td>
-	      		<td>${project.productName}</td>
-	      		<td>${project.name}</td>
-	      		<td>${project.createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
-	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
-	      		<td>
-	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-	      		    <i class="icon-edit"></i>
-	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-					<i class="icon-remove"></i>
-					
-			     </td>
+	      		<td>${operationLog_index + 1}</td>
+	      		<td>${operationLog.opName}</td>
+	      		<td>${operationLog.opUserName}</td>
+	      		<td>${operationLog.opUserIp}</td>
+	      		<td>${operationLog.envName}</td>
+	      		<td>${operationLog.opTime?string("yyyy-MM-dd HH:mm:ss")}</td>
+	      		<td>${operationLog.projectName}</td>
+	      		<td style="max-width:300px;word-break:break-all;">${operationLog.content}</td>
 	      	</tr>
-	  	</#list>-->
+	  	</#list>
 	  </tbody>
 </table>
-</div>
-</div>

@@ -19,7 +19,7 @@
 		<menu name="syssetting" label="系统设置" url="/"/>
 		<menu name="usersetting" label="用户设置" url="/"/>
 		<menu name="security" label="权限设置" url="/"/>
-		<menu name="oplog" label="操作日志" url="/"/>
+		<menu name="oplog" label="操作日志" url="/system/opLogList.vhtml"/>
 		<menu sperator="true"/>
 		<menu name="aboutlion" label="关于lion" url="/"/>
 	</group>
