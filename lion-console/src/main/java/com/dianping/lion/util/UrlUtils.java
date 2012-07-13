@@ -68,7 +68,7 @@ public class UrlUtils {
 		if (url == null) {
 			throw new NullPointerException("Param[url] cannot be null.");
 		}
-		return (url.contains("?") ? "&" : "?") + resolveUrl(parameters);
+		return url + (url.contains("?") ? "&" : "?") + resolveUrl(parameters);
 	}
 	
 	public static List<String> getParameterNames(String url) {
