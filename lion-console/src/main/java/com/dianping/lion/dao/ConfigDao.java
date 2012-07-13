@@ -17,6 +17,7 @@ package com.dianping.lion.dao;
 
 import java.util.List;
 
+import com.dianping.lion.entity.Config;
 import com.dianping.lion.vo.ConfigInstanceVo;
 
 /**
@@ -31,5 +32,28 @@ public interface ConfigDao {
 	 * @return
 	 */
 	List<ConfigInstanceVo> findInstanceVos(int projectId, int envId);
+
+	/**
+	 * @param configId
+	 * @return
+	 */
+	Config getConfig(int configId);
+
+	/**
+	 * @param configId
+	 * @return
+	 */
+	Config getNextConfig(int configId);
+	
+	/**
+	 * @param configId
+	 * @return
+	 */
+	Config getPrevConfig(int configId);
+
+	/**
+	 * @param config
+	 */
+	void update(Config config);
 
 }

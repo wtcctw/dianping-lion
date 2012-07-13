@@ -14,6 +14,7 @@
 		<result column="createUserId" property="createUserId"/>
 		<result column="modifyUserId" property="modifyUserId"/>
 		<result column="createTime" property="createTime"/>
+		<result column="modifyTime" property="modifyTime"/>
 		<result column="isDel" property="deleted"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
@@ -52,5 +53,38 @@
 		</isEqual>
 		ORDER BY c.seq, c.id
     </select>
+    
+    <select id="getConfig" resultMap="ConfigResult" parameterClass="map">
+    	SELECT * 
+    	FROM config 
+    	WHERE id = #configId#
+    	<isEqual property="includeDeleted" compareValue="false">
+			and isDel = 0
+		</isEqual>
+    </select>
+    
+    <select id="getNextConfig" resultMap="ConfigResult" parameterClass="int">
+    	SELECT c2.*
+    	FROM config c1 INNER JOIN config c2 ON c1.projectId = c2.projectId
+    	WHERE c1.id = #configId# AND c2.seq > c1.seq AND c2.isDel = 0
+    	ORDER BY c2.seq, c2.id
+    	LIMIT 1 
+    </select>
+    
+    <select id="getPrevConfig" resultMap="ConfigResult" parameterClass="int">
+    	<![CDATA[
+    	SELECT c2.*
+    	FROM config c1 INNER JOIN config c2 ON c1.projectId = c2.projectId
+    	WHERE c1.id = #configId# AND c2.seq < c1.seq AND c2.isDel = 0
+    	ORDER BY c2.seq desc, c2.id desc
+    	LIMIT 1 
+    	]]>
+    </select>
+    
+    <update id="updateConfig" parameterClass="Config">
+    	UPDATE config
+    	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = #modifyTime#, isDel = #deleted#, seq = #seq#
+    	WHERE id = #id#
+    </update>
     
 </sqlMap>

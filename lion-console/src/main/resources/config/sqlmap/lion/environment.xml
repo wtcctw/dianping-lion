@@ -6,13 +6,14 @@
 	<resultMap id="EnvironmentResult" class="Environment">
 		<result column="id" property="id"/>
 		<result column="name" property="name"/>
+		<result column="label" property="label"/>
 		<result column="ips" property="ips"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
 	
 	<select id="findAll" resultMap="EnvironmentResult">
 		<![CDATA[
-		SELECT id, name, ips, seq
+		SELECT id, name, label, ips, seq
 		FROM environment
 		ORDER BY seq, id
 		]]>

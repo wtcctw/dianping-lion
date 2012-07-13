@@ -30,6 +30,10 @@
 		<result property="projects" column="id" select="Project.selectProjectsByProduct"/>
 	</resultMap>
 	
+	<resultMap id="ProductReverseResult" class="Product" extends="ProductResultBasic">
+		<result property="team" column="teamId" select="Project.getTeam"/>
+	</resultMap>
+	
 	<resultMap id="ProjectResultBasic" class="Project">
 		<result column="id" property="id"/>
 		<result column="name" property="name"/>
@@ -42,6 +46,10 @@
 	<resultMap id="ProjectResult" class="Project" extends="ProjectResultBasic">
 		<result column="productName" property="productName"/>
 		<result column="teamName" property="teamName"/>
+	</resultMap>
+	
+	<resultMap id="ProjectReverseResult" class="Project" extends="ProjectResultBasic">
+		<result property="product" column="productId" select="Project.getProduct"/>
 	</resultMap>
 	
 	<select id="getTeams" resultMap="TeamResult">
@@ -79,5 +87,21 @@
 		ORDER BY t.seq,pd.seq,pj.seq
 		]]>
     </select>
+    
+    <select id="getTeam" resultMap="TeamResultBasic" parameterClass="int">
+    	<![CDATA[SELECT * FROM team WHERE id = #teamId#]]>
+    </select>
+    
+    <select id="getProduct" resultMap="ProductReverseResult" parameterClass="int">
+    	<![CDATA[SELECT * FROM product WHERE id = #productId#]]>
+    </select>
+    
+    <select id="getProject" resultMap="ProjectReverseResult" parameterClass="int">
+    	<![CDATA[SELECT * FROM project WHERE id = #projectId#]]>
+    </select>
+    
+    <statement id="lockProject" parameterClass="int">
+    	<![CDATA[SELECT 1 FROM project WHERE id = #projectId# FOR UPDATE]]>
+    </statement>
     
 </sqlMap>

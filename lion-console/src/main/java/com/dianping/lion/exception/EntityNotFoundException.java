@@ -13,35 +13,30 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.service;
-
-import java.util.List;
-
-import com.dianping.lion.vo.ConfigInstanceVo;
+package com.dianping.lion.exception;
 
 /**
+ * 数据实体不存在异常
  * @author danson.liu
  *
  */
-public interface ConfigService {
+@SuppressWarnings("serial")
+public class EntityNotFoundException extends RuntimeException {
 
-	/**
-	 * @param projectId
-	 * @param env
-	 * @return
-	 */
-	List<ConfigInstanceVo> findInstanceVos(int projectId, int envId);
+	public EntityNotFoundException() {
+		this("Entity not found.");
+	}
 
-	/**
-	 * @param projectId
-	 * @param configId
-	 */
-	void moveDown(int projectId, int configId);
+	public EntityNotFoundException(String message) {
+		super(message);
+	}
 
-	/**
-	 * @param projectId
-	 * @param configId
-	 */
-	void moveUp(int projectId, Integer configId);
+	public EntityNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
+	public EntityNotFoundException(Throwable cause) {
+		super(cause);
+	}
+	
 }

@@ -31,13 +31,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class UrlUtils {
 	
-	public static String resolveUrl(String url, Map<String, ?> parameters) {
-		if (url == null) {
-			throw new NullPointerException("Param[url] cannot be null.");
-		}
-		try{
-			StringBuilder finalUrl = new StringBuilder(url);
-			int index = 0;
+	public static String resolveUrl(Map<String, ?> parameters) {
+		StringBuilder url = new StringBuilder();
+		int index = 0;
+		try {
 			if (parameters != null) {
 				for (Entry<String, ?> entry : parameters.entrySet()) {
 					Collection<Object> paramValues = new ArrayList<Object>();
@@ -54,17 +51,24 @@ public class UrlUtils {
 						paramValues.add(paramValue);
 					}
 					for (Object value : paramValues) {
-						finalUrl.append(index ++ == 0 && finalUrl.indexOf("?") == -1 ? "?" : "&")
+						url.append(index ++ == 0 ? "" : "&")
 								.append(entry.getKey())
 								.append("=")
 								.append(URLEncoder.encode(value.toString(), "utf-8"));
 					}
 				}
 			}
-			return finalUrl.toString();
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
+		return url.toString();
+	}
+	
+	public static String resolveUrl(String url, Map<String, ?> parameters) {
+		if (url == null) {
+			throw new NullPointerException("Param[url] cannot be null.");
+		}
+		return (url.contains("?") ? "&" : "?") + resolveUrl(parameters);
 	}
 	
 	public static List<String> getParameterNames(String url) {

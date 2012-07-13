@@ -27,6 +27,7 @@ public class Environment implements Serializable {
 
 	private int id;
 	private String name;
+	private String label;
 	private String ips;
 	private int seq;
 	/**
@@ -76,6 +77,18 @@ public class Environment implements Serializable {
 	 */
 	public void setSeq(int seq) {
 		this.seq = seq;
+	}
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
 	}
 	
 }

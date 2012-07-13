@@ -38,4 +38,6 @@ public interface ProjectService {
 	 */
 	List<Project> getProjects();
 	
+	Project getProject(int projectId);
+	
 }

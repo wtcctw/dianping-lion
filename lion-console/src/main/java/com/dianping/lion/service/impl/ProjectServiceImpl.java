@@ -43,4 +43,9 @@ public class ProjectServiceImpl implements ProjectService {
 		return this.projectDao.getProjects();
 	}
 
+	@Override
+	public Project getProject(int projectId) {
+		return projectDao.getProject(projectId);
+	}
+
 }

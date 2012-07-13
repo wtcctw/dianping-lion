@@ -72,4 +72,31 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return getSqlMapClientTemplate().queryForList("Config.findInstancesByProjectAndEnv", params);
 	}
 
+	@Override
+	public Config getConfig(int configId) {
+		return getConfig(configId, false);
+	}
+	
+	private Config getConfig(int configId, boolean includeDeleted) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("configId", configId);
+		params.put("includeDeleted", includeDeleted);
+		return (Config) getSqlMapClientTemplate().queryForObject("Config.getConfig", params);
+	}
+
+	@Override
+	public Config getNextConfig(int configId) {
+		return (Config) getSqlMapClientTemplate().queryForObject("Config.getNextConfig", configId);
+	}
+
+	@Override
+	public Config getPrevConfig(int configId) {
+		return (Config) getSqlMapClientTemplate().queryForObject("Config.getPrevConfig", configId);
+	}
+
+	@Override
+	public void update(Config config) {
+		getSqlMapClientTemplate().update("Config.updateConfig", config);
+	}
+
 }

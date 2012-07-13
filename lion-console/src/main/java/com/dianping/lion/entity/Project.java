@@ -32,6 +32,12 @@ public class Project implements Serializable {
 	
 	private int productId;
 	
+	/**
+	 * 不一定存在，视不同的dao方法而定，具体查看相关sqlmap文件(ReverseResult包含该值)
+	 */
+	private Product product;
+	
+	//TODO remove me!!! by danson.liu, 向彬操作
 	private String productName;
 	
 	private String teamName;
@@ -152,6 +158,20 @@ public class Project implements Serializable {
 	 */
 	public void setSeq(int seq) {
 		this.seq = seq;
+	}
+
+	/**
+	 * @return the product
+	 */
+	public Product getProduct() {
+		return product;
+	}
+
+	/**
+	 * @param product the product to set
+	 */
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 
 }

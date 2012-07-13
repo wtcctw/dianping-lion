@@ -27,5 +27,11 @@ import com.dianping.lion.entity.Team;
 public interface ProjectDao {
 
 	List<Team> getTeams();
+	
 	List<Project> getProjects();
+	
+	Project getProject(int projectId);
+	
+	void lockProject(int projectId);
+	
 }
