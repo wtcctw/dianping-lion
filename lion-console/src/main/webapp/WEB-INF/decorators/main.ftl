@@ -16,6 +16,7 @@
 	<script type="text/javascript" src="<@s.url value="/js/jquery.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/bootstrap.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/lion.js"/>"></script>
+	<script type="text/javascript" src="<@s.url value="/js/system/operation-log.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/Mootools-core.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/my97/WdatePicker.js"/>"></script>
     <style type="text/css">

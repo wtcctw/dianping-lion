@@ -15,10 +15,15 @@
  */
 package com.dianping.lion.web.action.system;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Environment;
@@ -35,7 +40,7 @@ import com.dianping.lion.web.action.common.AbstractLionAction;
 import com.google.gson.Gson;
 
 @SuppressWarnings("serial")
-public class OperationLogAction extends AbstractLionAction {
+public class OperationLogAction extends AbstractLionAction implements ServletRequestAware{
 	
 	@Autowired
 	private OperationLogService operationLogService;
@@ -53,6 +58,7 @@ public class OperationLogAction extends AbstractLionAction {
 	private List<OperationLog> operationLogs;
 	
 	//搜索条件
+	private HttpServletRequest request;
 	private List<Project> projects;
 	private List<User> users;
 	private Map<Integer, String> opTypes = new LinkedHashMap<Integer, String>();
@@ -73,8 +79,14 @@ public class OperationLogAction extends AbstractLionAction {
 	}
 	
 	public String getOpLogList() {
-		Gson gson = new Gson();
-		OperationLogSearch operationLogSearch = gson.fromJson(clientdata,OperationLogSearch.class);
+		OperationLogSearch operationLogSearch = new OperationLogSearch();
+		operationLogSearch.setContent(request.getParameter("content"));
+		operationLogSearch.setEnv(Integer.valueOf(request.getParameter("env")));
+		operationLogSearch.setFrom(request.getParameter("from"));
+		operationLogSearch.setTo(request.getParameter("to"));
+		operationLogSearch.setOpType(Integer.valueOf(request.getParameter("opType")));
+		operationLogSearch.setUser(Integer.valueOf(request.getParameter("user")));
+		operationLogSearch.setProject(Integer.valueOf(request.getParameter("project")));
 		operationLogSearch.setContent("%"+operationLogSearch.getContent()+"%");
 		operationLogs = operationLogService.getLogList(operationLogSearch);
 		return SUCCESS;
@@ -112,14 +124,27 @@ public class OperationLogAction extends AbstractLionAction {
 		return envs;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void initializePage() {
 		projects = projectService.getProjects();
+		Collections.sort(projects, new Comparator() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				return ((Project)o1).getName().compareTo(((Project)o2).getName());
+			}
+		});
 		users = userService.findAll();
 		envs = environmentService.findAll();
 		opTypes.put(-1, "任意类型");
 		for(int i = 0; i < OperationTypeEnum.values().length; i++) {
 			opTypes.put(i, OperationTypeEnum.values()[i].getValue());
 		}
+	}
+
+	@Override
+	public void setServletRequest(HttpServletRequest request) {
+		this.request =  request;
+		
 	}
 	
 }
