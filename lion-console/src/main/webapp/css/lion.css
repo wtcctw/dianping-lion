@@ -138,3 +138,22 @@ table.lion {
 		margin-left: -30px;
 	}
 }
+
+/*==============extend jquery ui===============*/
+.ui-widget-header {
+	background : whiteSmoke;
+}
+
+/*==============extend jquery dialog===============*/
+.ui-dialog .ui-dialog-buttonpane button {
+	margin : .5em .4em .5em 1.5em;
+	-webkit-border-radius : 4px;
+	border-radius : 4px;
+	-moz-border-radius : 4px;
+	border : 1px solid #CCC;
+	background-color: white;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+	padding : .3em 1em 0 .4em;
+}

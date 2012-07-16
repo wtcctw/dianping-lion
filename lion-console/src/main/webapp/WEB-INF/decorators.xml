@@ -7,6 +7,7 @@
     	<!-- 
     	<pattern>/index.jsp</pattern>
     	 -->
+    	<pattern>/index.ftl</pattern>
         <pattern>/styles/*</pattern>
         <pattern>/scripts/*</pattern>
         <pattern>/images/*</pattern>

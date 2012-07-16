@@ -47,8 +47,8 @@
 		<div class="row">
 			<div class="span12" style="padding:1px;">
 				<strong>Tooltips：</strong>
-				<i class="icon-remove icon-intro" data-original-title="清除配置值" data-content="清除指定配置项在当前环境下的设定值."></i>
-				<i class="icon-trash icon-intro" style="margin-left: 10px;" data-original-title="删除配置项" data-content="完全删除该配置项，所有环境下不再存在该配置项值."></i>
+				<i class="icon-trash icon-intro" data-original-title="清除配置值" data-content="清除指定配置项在当前环境下的设定值."></i>
+				<i class="icon-remove icon-intro" style="margin-left: 10px;" data-original-title="删除配置项" data-content="完全删除该配置项，所有环境下不再存在该配置项值."></i>
 				<i class="icon-arrow-up icon-intro" style="margin-left: 10px;" data-original-title="上移" data-content="上移配置项的位置，将相关的配置项编排在一起."></i>
 				<i class="icon-arrow-down icon-intro" style="margin-left: 10px;" data-original-title="下移" data-content="下移配置项的位置，将相关的配置项编排在一起."></i>
 			</div>
@@ -100,12 +100,13 @@
 				  		<td>
 				  			<i class="icon-edit"></i>
 				  			<@s.if test="%{#configVo.hasInstance}">
-				  			<a href="<@s.url action="clearInstance" namespace="/config"/>?${queryStr}&${criteriaStr}&configId=${config.id}" rel="tooltip" data-original-title="清除配置值">
-				  				<i class="icon-remove"></i>
+				  			<a href="<@s.url action="clearInstance" namespace="/config"/>?${queryStr}&${criteriaStr}&configId=${config.id}" rel="tooltip" data-original-title="清除配置值"
+				  				class="clearLink">
+				  				<i class="icon-trash"></i>
 				  			</a>
 				  			</@s.if>
 				  			<a href="<@s.url action="delete" namespace="/config"/>?${queryStr}&configId=${config.id}" rel="tooltip" data-original-title="删除配置项">
-				  				<i class="icon-trash"></i>
+				  				<i class="icon-remove"></i>
 				  			</a>
 				  			<a href="<@s.url action="configMoveUp" namespace="/config"/>?${queryStr}&configId=${config.id}" rel="tooltip" data-original-title="上移">
 				  				<i class="icon-arrow-up"></i>
@@ -121,8 +122,34 @@
 			</div>
 		</div>
 	</div>
+	
 	<script language="javascript">
-		$("[rel=tooltip]").tooltip();
-		$(".icon-intro").popover();
+		
+		$(function(){
+			$("[rel=tooltip]").tooltip();
+			$(".icon-intro").popover();
+			
+			var $clearAlert = $("<div>确认清除该配置项值?<br/>该操作不可恢复.</div>")
+					.dialog({
+						autoOpen : false,
+						resizable : false,
+						modal : true,
+						title : "提示框",
+						height : 140,
+						buttons : {
+							"是" : function() {
+								$(location).attr("href", $(this).data("location"));
+							},
+							"否" : function() {$(this).dialog("close");}
+						}
+					});
+			
+			$(".clearLink").click(function() {
+				$clearAlert.dialog("open");
+				$clearAlert.data("location", $(this).attr("href"));
+				return false;
+			});
+		
+		});
 	</script>
 </body>
