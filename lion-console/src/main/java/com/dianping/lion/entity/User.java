@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-15
+ * File Created at 2012-7-12
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -15,30 +15,48 @@
  */
 package com.dianping.lion.entity;
 
-import java.io.Serializable;
+import java.util.Date;
 
 /**
- * 系统用户
- * @author danson.liu
+ * User
+ * @author youngphy.yang
  *
  */
-@SuppressWarnings("serial")
-public class User implements Serializable {
-
+public class User {
 	private int id;
-
-	/**
-	 * @return the id
-	 */
+	private String loginName;
+	private String name;
+	private String email;
+	private Date createTime;
+	
 	public int getId() {
 		return id;
 	}
-
-	/**
-	 * @param id the id to set
-	 */
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+	public String getLoginName() {
+		return loginName;
+	}
+	public void setLoginName(String loginName) {
+		this.loginName = loginName;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public Date getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
 }

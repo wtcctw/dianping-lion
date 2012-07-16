@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.dianping.lion.dao.OperationLogDao;
 import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationLogSearch;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -38,9 +39,28 @@ public class OpeationLogIbatisDaoTest {
 	private OperationLogDao operationLogDao;
 
 	@Test
-	public void testGetTeams() {
+	public void testGetLogs() {
 		List<OperationLog> opeationLogs = operationLogDao.getLogs();
 		Assert.assertNotNull(opeationLogs);
+	}
+	
+	@Test
+	public void testGetLogList() {
+		OperationLogSearch operationLogSearch = new OperationLogSearch();
+		List<OperationLog> opeationLogs = operationLogDao.getLogList(operationLogSearch);
+		Assert.assertNotNull(opeationLogs);
+
+		operationLogSearch.setContent("%xxxxttt%");
+		operationLogSearch.setProject(234235);
+		opeationLogs = operationLogDao.getLogList(operationLogSearch);
+		Assert.assertTrue(opeationLogs.size() == 0);
+		
+		operationLogSearch.setContent("");
+		operationLogSearch.setProject(-1);
+		operationLogSearch.setFrom("2012-07-16");
+		operationLogSearch.setTo("2012-07-18");
+		opeationLogs = operationLogDao.getLogList(operationLogSearch);
+		Assert.assertTrue(opeationLogs.size() != 0);
 	}
 
 }

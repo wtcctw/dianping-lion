@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.OperationLogDao;
 import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationLogSearch;
 import com.dianping.lion.service.OperationLogService;
 
 public class OperationLogServiceImpl implements OperationLogService {
@@ -31,5 +32,10 @@ public class OperationLogServiceImpl implements OperationLogService {
 	@Override
 	public List<OperationLog> getLogs() {
 		return operationLogDao.getLogs();
+	}
+
+	@Override
+	public List<OperationLog> getLogList(OperationLogSearch operationLogSearch) {
+		return operationLogDao.getLogList(operationLogSearch);
 	}
 }

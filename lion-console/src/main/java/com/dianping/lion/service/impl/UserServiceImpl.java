@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-9
+ * File Created at 2012-7-12
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -13,15 +13,24 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.dao;
+package com.dianping.lion.service.impl;
 
 import java.util.List;
 
-import com.dianping.lion.entity.OperationLog;
-import com.dianping.lion.entity.OperationLogSearch;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public interface OperationLogDao {
+import com.dianping.lion.dao.UserDao;
+import com.dianping.lion.entity.User;
+import com.dianping.lion.service.UserService;
 
-	List<OperationLog> getLogs();
-	List<OperationLog> getLogList(OperationLogSearch operationLogSearch);
+public class UserServiceImpl implements UserService {
+	
+	@Autowired
+	private UserDao userDao;
+
+	@Override
+	public List<User> findAll() {
+		return userDao.findAll();
+	}
+
 }

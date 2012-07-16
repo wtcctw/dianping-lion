@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-9
+ * File Created at 2012-7-12
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -19,22 +19,19 @@ import java.util.List;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
-import com.dianping.lion.dao.OperationLogDao;
-import com.dianping.lion.entity.OperationLog;
-import com.dianping.lion.entity.OperationLogSearch;
+import com.dianping.lion.dao.UserDao;
+import com.dianping.lion.entity.User;
 
-public class OperationLogIbatisDao extends SqlMapClientDaoSupport implements OperationLogDao {
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<OperationLog> getLogs() {
-		return getSqlMapClientTemplate().queryForList("OperationLog.getOpLogs");
-	}
+/**
+ * @author danson.liu
+ *
+ */
+public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<OperationLog> getLogList(OperationLogSearch operationLogSearch) {
-		return getSqlMapClientTemplate().queryForList("OperationLog.getOpLogList",operationLogSearch);
+	public List<User> findAll() {
+		return getSqlMapClientTemplate().queryForList("User.findAll");
 	}
 
 }

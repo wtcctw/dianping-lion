@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="User">
+	<typeAlias alias="User" type="com.dianping.lion.entity.User" />
+
+	<resultMap id="UserResult" class="User">
+		<result column="id" property="id"/>
+		<result column="loginName" property="loginName"/>
+		<result column="name" property="name"/>
+		<result column="email" property="email"/>
+		<result column="createTime" property="createTime"/>
+	</resultMap>
+	
+	<select id="findAll" resultMap="UserResult">
+		<![CDATA[
+		SELECT id, loginName, name, email, createTime
+		FROM user
+		ORDER BY id
+		]]>
+    </select>
+    
+</sqlMap>

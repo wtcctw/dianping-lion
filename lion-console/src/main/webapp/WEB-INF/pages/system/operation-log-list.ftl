@@ -1,19 +1,14 @@
-<#--搜索栏-->
-<table class="table table-bordered table-striped table-condensed">
-
-<table>
-
 <#--内容栏-->
-<table class="table table-bordered table-striped table-condensed">
+<table id="table-oplog-list" class="table table-bordered table-striped table-condensed">
 	  <thead>
 	    <tr>
-	      <th>序号</th>
-	      <th>操作类型</th>
-	      <th>操作人员</th>
-	      <th>操作主机</th>
-	      <th>环境</th>
-	      <th>创建时间</th>
-	      <th>项目</th>
+	      <th style="width: 30px">序号</th>
+	      <th style="width: 100px">操作类型</th>
+	      <th style="width: 60px">操作人员</th>
+	      <th style="width: 60px">操作主机</th>
+	      <th style="width: 30px">环境</th>
+	      <th style="width: 70px">创建时间</th>
+	      <th style="width: 120px">项目</th>
 	      <th>内容</th>
 	    </tr>
 	  </thead>
@@ -27,7 +22,7 @@
 	      		<td>${operationLog.envName}</td>
 	      		<td>${operationLog.opTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 	      		<td>${operationLog.projectName}</td>
-	      		<td style="max-width:300px;word-break:break-all;">${operationLog.content}</td>
+	      		<td style="word-break:break-all;">${operationLog.content}</td>
 	      	</tr>
 	  	</#list>
 	  </tbody>
