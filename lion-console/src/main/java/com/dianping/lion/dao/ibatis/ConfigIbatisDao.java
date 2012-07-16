@@ -110,20 +110,28 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 	}
 	
 	@Override
-	public void deleteInstance(int configId, int envId) {
+	public int deleteInstance(int configId, Integer envId) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("configId", configId);
 		params.put("envId", envId);
 		params.put("currentUser", SecurityUtils.getCurrentUser().getId());
-		getSqlMapClientTemplate().update("Config.deleteInstance", params);
+		return getSqlMapClientTemplate().update("Config.deleteInstance", params);
 	}
 	
 	@Override
-	public void deleteStatus(int configId, int envId) {
+	public int deleteStatus(int configId, Integer envId) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("configId", configId);
 		params.put("envId", envId);
-		getSqlMapClientTemplate().delete("Config.deleteStatus", params);
+		return getSqlMapClientTemplate().delete("Config.deleteStatus", params);
+	}
+	
+	@Override
+	public int delete(int configId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("configId", configId);
+		params.put("currentUser", SecurityUtils.getCurrentUser().getId());
+		return getSqlMapClientTemplate().update("Config.deleteConfig", params);
 	}
 	
 	private Map<String, Object> parameters(Integer projectId, Integer envId, Boolean includeDeleted) {

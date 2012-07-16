@@ -81,31 +81,44 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 		return SUCCESS;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public String clearInstance() {
 		configService.clearInstance(configId, envId);
-		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId", "criteria.key", "criteria.status");
+		createQueryParam2();
 		return SUCCESS;
 	}
 	
-	@SuppressWarnings("unchecked")
+	public String delete() {
+		configService.delete(configId);
+		createQueryParam2();
+		return SUCCESS;
+	}
+	
 	public String moveUp() {
 		try {
 			configService.moveUp(projectId, configId);
 		} catch (EntityNotFoundException e) {
 		}
-		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId");
+		createQueryParam1();
 		return SUCCESS;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public String moveDown() {
 		try {
 			configService.moveDown(projectId, configId);
 		} catch (EntityNotFoundException e) {
 		}
-		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId");
+		createQueryParam1();
 		return SUCCESS;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void createQueryParam1() {
+		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId");
+	}
+
+	@SuppressWarnings("unchecked")
+	private void createQueryParam2() {
+		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId", "criteria.key", "criteria.status");
 	}
 
 	/**

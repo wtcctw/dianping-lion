@@ -105,9 +105,23 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public void clearInstance(int configId, int envId) {
-		configDao.deleteInstance(configId, envId);
+		int deleted = configDao.deleteInstance(configId, envId);
 		configDao.deleteStatus(configId, envId);
-		//TODO 从相应环境的zookeeper中移除该config值
+		if (deleted > 0) {
+			//TODO 从相应环境的zookeeper中移除该config值
+			
+		}
+	}
+
+	@Override
+	public void delete(int configId) {
+		int deleted = configDao.delete(configId);
+		configDao.deleteInstance(configId, null);
+		configDao.deleteStatus(configId, null);
+		if (deleted > 0) {
+			//TODO 从各个环境的zookeeper中移除该config值
+			
+		}
 	}
 
 }

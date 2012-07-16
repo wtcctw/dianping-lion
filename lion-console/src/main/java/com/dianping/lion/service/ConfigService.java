@@ -52,4 +52,10 @@ public interface ConfigService {
 	 */
 	void clearInstance(int configId, int envId);
 
+	/**
+	 * 删除指定配置项
+	 * @param configId
+	 */
+	void delete(int configId);
+
 }

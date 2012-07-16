@@ -33,3 +33,8 @@ function displayLogContent() {
 	req.send();
 	
 }
+
+function appendcontext() {
+		
+}
+}

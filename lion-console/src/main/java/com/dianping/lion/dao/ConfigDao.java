@@ -87,17 +87,23 @@ public interface ConfigDao {
 	Map<Integer, ConfigStatus> findConfigStatus(int projectId, int envId);
 
 	/**
-	 * 删除指定配置项在指定环境下的所有配置实例(软删除)
+	 * 删除指定配置项在指定环境下的所有配置实例(软删除)，envId=null表示删除所有环境下的
 	 * @param configId
 	 * @param envId
 	 */
-	void deleteInstance(int configId, int envId);
+	int deleteInstance(int configId, Integer envId);
 
 	/**
-	 * 删除指定配置项在指定环境下的状态记录
+	 * 删除指定配置项在指定环境下的状态记录，envId=null表示删除所有环境下的
 	 * @param configId
 	 * @param envId
 	 */
-	void deleteStatus(int configId, int envId);
+	int deleteStatus(int configId, Integer envId);
+	
+	/**
+	 * 删除指定配置项(软删除)
+	 * @param configId
+	 */
+	int delete(int configId);
 
 }

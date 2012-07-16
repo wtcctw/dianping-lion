@@ -1,5 +1,6 @@
 <head>
 	<title>业务配置</title>
+	<script type="text/javascript" src="<@s.url value="/js/biz/config/config-list.js"/>"></script>
 </head>
 <body>
 	<div class="container">
@@ -105,7 +106,8 @@
 				  				<i class="icon-trash"></i>
 				  			</a>
 				  			</@s.if>
-				  			<a href="<@s.url action="delete" namespace="/config"/>?${queryStr}&configId=${config.id}" rel="tooltip" data-original-title="删除配置项">
+				  			<a href="<@s.url action="delete" namespace="/config"/>?${queryStr}&configId=${config.id}" rel="tooltip" data-original-title="删除配置项"
+				  				class="deleteLink">
 				  				<i class="icon-remove"></i>
 				  			</a>
 				  			<a href="<@s.url action="configMoveUp" namespace="/config"/>?${queryStr}&configId=${config.id}" rel="tooltip" data-original-title="上移">
@@ -122,34 +124,4 @@
 			</div>
 		</div>
 	</div>
-	
-	<script language="javascript">
-		
-		$(function(){
-			$("[rel=tooltip]").tooltip();
-			$(".icon-intro").popover();
-			
-			var $clearAlert = $("<div>确认清除该配置项值?<br/>该操作不可恢复.</div>")
-					.dialog({
-						autoOpen : false,
-						resizable : false,
-						modal : true,
-						title : "提示框",
-						height : 140,
-						buttons : {
-							"是" : function() {
-								$(location).attr("href", $(this).data("location"));
-							},
-							"否" : function() {$(this).dialog("close");}
-						}
-					});
-			
-			$(".clearLink").click(function() {
-				$clearAlert.dialog("open");
-				$clearAlert.data("location", $(this).attr("href"));
-				return false;
-			});
-		
-		});
-	</script>
 </body>

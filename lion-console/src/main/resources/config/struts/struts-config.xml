@@ -22,6 +22,14 @@
 			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
 		</action>
 		
+		<action name="delete" class="com.dianping.lion.web.action.config.ConfigAction" method="delete">
+			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
+		</action>
+		
+		<action name="add" class="com.dianping.lion.web.action.config.ConfigAction" method="add">
+			<result name="success">/WEB-INF/pages/config/config-add.ftl</result>
+		</action>
+		
 	</package>
 
 </struts>

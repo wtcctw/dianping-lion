@@ -113,15 +113,21 @@
     	WHERE id = #id#
     </update>
     
+    <update id="deleteConfig" parameterClass="map">
+    	UPDATE config
+    	SET isDel = 1, modifyUserId = #currentUser#, modifyTime = NOW()
+    	WHERE id = #configId# AND isDel = 0
+    </update>
+    
     <update id="deleteInstance" parameterClass="map">
     	UPDATE config_instance
     	SET isDel = 1, modifyUserId = #currentUser#, modifyTime = NOW()
-    	WHERE configId = #configId# AND envId = #envId# AND isDel = 0
+    	WHERE configId = #configId# <isNotNull property="envId"> AND envId = #envId#</isNotNull> AND isDel = 0
     </update>
     
     <delete id="deleteStatus" parameterClass="map">
 	    DELETE FROM config_status
-	    WHERE configId = #configId# AND envId = #envId#
+	    WHERE configId = #configId# <isNotNull property="envId"> AND envId = #envId#</isNotNull>
     </delete>
     
 </sqlMap>
