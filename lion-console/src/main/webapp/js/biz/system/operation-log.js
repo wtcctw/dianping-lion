@@ -53,13 +53,12 @@ $(document).ready(function() {
     			from : from,
     			to : to
     	};
-//    	var myjson = JSON.encode(clientdata);
         $.ajax({
             type: "GET",
             contentType: "application/json",
             url: "/system/opLogListAjax.vhtml",
-//            data: 'clientdata=' + encodeURIComponent(myjson),
-            data: "{content:'"+content+"',project:'"+project+"',opType:'"+opType+"',user:"+user+"',env:'"+env+"',from:'"+from+"',to:'"+to+"}",
+            data : clientdata,
+//            data: "{content:'"+content+"',project:'"+project+"',opType:'"+opType+"',user:"+user+"',env:'"+env+"',from:'"+from+"',to:'"+to+"+"'}",
 //            data: "{\"content\":'zhangsan'}",
             dataType: 'html',
             success: function(result) {
