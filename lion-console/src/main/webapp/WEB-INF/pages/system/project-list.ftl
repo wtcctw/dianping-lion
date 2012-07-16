@@ -1,5 +1,15 @@
-<#include "/WEB-INF/pages/system/project-header.ftl"> 
-<form class="form-horizontal">
+
+<head>
+	<title>项目设置</title>
+</head>
+<body>
+<input type="hidden" id="teamSelected" value="${teamSelect}" />
+<input type="hidden" id="productSelected" value="${productSelect}" />
+<div class="container">
+		
+<#include "/WEB-INF/pages/system/project-span.ftl"> 
+
+<form id="projectQuery" class="form-horizontal" action="projectList.vhtml" method="post">
 <div class="row">
 
 <div class="span3">
@@ -16,14 +26,14 @@
 	            </div>
 	    </div>
 	   
-	</form>
+
 </div>
 <div class="span3">
 		<div class="control-group">
 	            <label class="control-label" style="width:50px" for="productSelect">产品线</label>
 	            <div class="controls" style="margin-left:60px">
 	              <select id="productSelect">
-	                <option value=0>所有的</option>
+	                <option team=0 value=0>所有的</option>
 	                <#list teamList as team>
 	                	<#list team.products as product>
 	                	<option team=${team.id} value=${product.id}>${product.name}</option>
@@ -32,6 +42,9 @@
 	              </select>
 	            </div>
 	    </div>
+</div>
+<div class="span1">
+	<button id="query_btn" type="submit" class="btn">查询</button>
 </div>
 </div>
 </form>
@@ -74,18 +87,46 @@
 </div>
 </div>
 <script language="javascript">
-	$(document).ready(function(){
-		$("#teamSelect").change(function(){
-			$("option[team]").removeClass("hide");
+
+	function linkage(){
+		$("option[team]").removeClass("hide");
+		if($("#teamSelect").children('option:selected').val() != $("#productSelect").children('option:selected').attr("team")){
+			$("#productSelect option").removeAttr("selected");
 			$("#productSelect option:first").attr("selected","true");
-			if($(this).children('option:selected').val() > 0){
-				
-				$("option[team]").addClass("hide");
-				$("option[team="+$(this).children('option:selected').val()+"]").removeClass("hide");
-			}
-		});
+		}
 		
+		if($("#teamSelect").children('option:selected').val() > 0){
+			
+			$("option[team]").addClass("hide");
+			$("option[team="+$("#teamSelect").children('option:selected').val()+"]").removeClass("hide");
+		}
+	}
+
+	$(document).ready(function(){
+		
+		$("#teamSelect").find("option").removeAttr("selected");
+		var teamS = "option[value='"+$("#teamSelected").attr("value")+"']"
+		$("#teamSelect").find(teamS).attr("selected","true");
+		
+		$("#productSelect").find("option").removeAttr("selected");
+		var productS = "option[value='"+$("#productSelected").attr("value")+"']"
+		$("#productSelect").find(productS).attr("selected","true");
+		
+		linkage();
+		//联动select
+		$("#teamSelect").change(linkage);
+		//提交
+		$("#query_btn").click(function(){
+			var purl = "projectList.vhtml?teamSelect="+$("#teamSelect").children('option:selected').val()+"&productSelect="+$("#productSelect").children('option:selected').val();
+			$("#projectQuery").attr("action",purl);
+			$("#projectQuery").submit();
+		});
 	});
+	
+	
 </script>
-<#include "/WEB-INF/pages/system/project-footer.ftl"> 
+
+	</div>
+</body>
+
 

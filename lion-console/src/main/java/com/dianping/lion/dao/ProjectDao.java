@@ -16,6 +16,7 @@
 package com.dianping.lion.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
@@ -33,5 +34,7 @@ public interface ProjectDao {
 	Project getProject(int projectId);
 	
 	void lockProject(int projectId);
+	
+	List<Project> getProjectsByTeamAndProduct(Map param);
 	
 }

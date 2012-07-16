@@ -16,6 +16,7 @@
 package com.dianping.lion.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
@@ -37,6 +38,12 @@ public interface ProjectService {
 	 * @return
 	 */
 	List<Project> getProjects();
+	
+	/**
+	 * 获取符合条件的项目信息；
+	 * @return
+	 */
+	List<Project> getProjectsByTeamAndProduct(Map param);
 	
 	Project getProject(int projectId);
 	
