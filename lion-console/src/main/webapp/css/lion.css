@@ -1,5 +1,5 @@
 body {
-	font-family : Tahoma,sans-serif;
+	font-family : "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .noborder {
@@ -113,4 +113,28 @@ body {
 	padding: 5px 9px;
 	background: white;
 	color: #61646E;
+}
+
+form.lion > label:first-child {
+	margin-left: 7px;
+}
+
+form.lion > *+label, form.lion > *+button {
+	margin-left: 25px;
+}
+
+table.lion {
+	margin-top: 10px;
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+	.alert-lion {
+		margin-left: -20px;
+	}
+}
+
+@media (min-width: 1200px) {
+	.alert-lion {
+		margin-left: -30px;
+	}
 }

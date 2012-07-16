@@ -15,7 +15,6 @@
  */
 package com.dianping.lion.dao.ibatis;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,51 +24,26 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
-import com.dianping.lion.vo.ConfigInstanceVo;
+import com.dianping.lion.entity.ConfigStatus;
+import com.dianping.lion.util.SecurityUtils;
 
 /**
  * @author danson.liu
  *
  */
 public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao {
-
-	@Override
-	public List<ConfigInstanceVo> findInstanceVos(int projectId, int envId) {
-		List<Config> configs = findConfigsByProject(projectId, false);
-		List<ConfigInstanceVo> instanceVos = new ArrayList<ConfigInstanceVo>(configs.size());
-		if (!configs.isEmpty()) {
-			Map<Integer, ConfigInstance> instances = findInstanceMapByProjectAndEnv(projectId, envId, false);
-			for (Config config : configs) {
-				instanceVos.add(new ConfigInstanceVo(config, instances.get(config.getId())));
-			}
-		}
-		return instanceVos;
-	}
 	
 	@SuppressWarnings("unchecked")
-	private List<Config> findConfigsByProject(int projectId, boolean includeDeleted) {
+	public List<Config> findConfigsByProject(int projectId, boolean includeDeleted) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("projectId", projectId);
 		params.put("includeDeleted", includeDeleted);
 		return getSqlMapClientTemplate().queryForList("Config.findConfigsByProject", params);
 	}
 	
-	private Map<Integer, ConfigInstance> findInstanceMapByProjectAndEnv(int projectId, int envId, boolean includeDeleted) {
-		List<ConfigInstance> instances = findInstancesByProjectAndEnv(projectId, envId, includeDeleted);
-		Map<Integer, ConfigInstance> map = new HashMap<Integer, ConfigInstance>(instances.size());
-		for (ConfigInstance instance : instances) {
-			map.put(instance.getConfigId(), instance);
-		}
-		return map;
-	}
-	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	private List<ConfigInstance> findInstancesByProjectAndEnv(int projectId, int envId, boolean includeDeleted) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("projectId", projectId);
-		params.put("envId", envId);
-		params.put("includeDeleted", includeDeleted);
-		return getSqlMapClientTemplate().queryForList("Config.findInstancesByProjectAndEnv", params);
+		return getSqlMapClientTemplate().queryForList("Config.findInstancesByProjectAndEnv", parameters(projectId, envId, includeDeleted));
 	}
 
 	@Override
@@ -97,6 +71,67 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 	@Override
 	public void update(Config config) {
 		getSqlMapClientTemplate().update("Config.updateConfig", config);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<Integer, ConfigInstance> findDefaultInstances(int projectId, int envId, boolean includeDeleted) {
+		List<ConfigInstance> instances = getSqlMapClientTemplate().queryForList("Config.findDefaultInstances", 
+				parameters(projectId, envId, includeDeleted));
+		Map<Integer, ConfigInstance> instanceMap = new HashMap<Integer, ConfigInstance>(instances.size());
+		for (ConfigInstance instance : instances) {
+			instanceMap.put(instance.getConfigId(), instance);
+		}
+		return instanceMap;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> findHasInstanceConfigs(int projectId, int envId) {
+		return getSqlMapClientTemplate().queryForList("Config.findHasInstanceConfigs", parameters(projectId, envId, null));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> findHasContextInstConfigs(int projectId, int envId) {
+		return getSqlMapClientTemplate().queryForList("Config.findHasContextInstConfigs", parameters(projectId, envId, null));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<Integer, ConfigStatus> findConfigStatus(int projectId, int envId) {
+		List<ConfigStatus> statusList = getSqlMapClientTemplate().queryForList("Config.findConfigStatuses", 
+				parameters(projectId, envId, null));
+		Map<Integer, ConfigStatus> statusMap = new HashMap<Integer, ConfigStatus>(statusList.size());
+		for (ConfigStatus status : statusList) {
+			statusMap.put(status.getConfigId(), status);
+		}
+		return statusMap;
+	}
+	
+	@Override
+	public void deleteInstance(int configId, int envId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("configId", configId);
+		params.put("envId", envId);
+		params.put("currentUser", SecurityUtils.getCurrentUser().getId());
+		getSqlMapClientTemplate().update("Config.deleteInstance", params);
+	}
+	
+	@Override
+	public void deleteStatus(int configId, int envId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("configId", configId);
+		params.put("envId", envId);
+		getSqlMapClientTemplate().delete("Config.deleteStatus", params);
+	}
+	
+	private Map<String, Object> parameters(Integer projectId, Integer envId, Boolean includeDeleted) {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("projectId", projectId);
+		parameters.put("envId", envId);
+		parameters.put("includeDeleted", includeDeleted);
+		return parameters;
 	}
 
 }

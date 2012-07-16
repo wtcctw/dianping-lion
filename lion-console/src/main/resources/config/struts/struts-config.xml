@@ -18,6 +18,10 @@
 			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
 		</action>
 		
+		<action name="clearInstance" class="com.dianping.lion.web.action.config.ConfigAction" method="clearInstance">
+			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
+		</action>
+		
 	</package>
 
 </struts>
