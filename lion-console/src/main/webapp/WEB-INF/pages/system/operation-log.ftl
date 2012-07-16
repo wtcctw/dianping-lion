@@ -1,10 +1,6 @@
-<!-- <head>
-<script>
-$(function(){	
-$('#dp3').datepicker();
-});
-</script>
-</head> -->
+<head>
+	<script type="text/javascript" src="<@s.url value="/js/biz/system/operation-log.js"/>"></script>
+</head>
 	<div class="container">
 		<div class="row">
 			<div class="span12">

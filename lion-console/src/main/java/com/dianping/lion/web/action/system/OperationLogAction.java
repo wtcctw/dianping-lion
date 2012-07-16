@@ -79,6 +79,8 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 	}
 	
 	public String getOpLogList() {
+/*		Gson gson = new Gson();
+		OperationLogSearch operationLogSearch2 = gson.fromJson(clientdata, OperationLogSearch.class);*/
 		OperationLogSearch operationLogSearch = new OperationLogSearch();
 		operationLogSearch.setContent(request.getParameter("content"));
 		operationLogSearch.setEnv(Integer.valueOf(request.getParameter("env")));
