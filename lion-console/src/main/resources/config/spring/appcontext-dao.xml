@@ -28,8 +28,4 @@
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
 	
-	<bean id="environmentDao" class="com.dianping.lion.dao.ibatis.EnvironmentIbatisDao">
-		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
-	</bean>
-	
 </beans>
