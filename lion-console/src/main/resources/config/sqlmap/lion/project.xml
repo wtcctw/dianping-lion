@@ -88,6 +88,24 @@
 		]]>
     </select>
     
+    <select id="getProjectsByTeamAndProduct" resultMap="ProjectResult" parameterClass="java.util.Map">
+		
+		SELECT pj.id, pj.name, pj.productId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
+		FROM project pj,product pd,team t
+		where pd.id = pj.productId
+		and pd.teamId = t.id
+		<dynamic>
+		<isGreaterThan prepend="and" property="teamId" compareValue="0">
+             pd.teamId = #teamId#
+        </isGreaterThan>
+        <isGreaterThan prepend="and" property="productId" compareValue="0">
+             pj.productId = #productId#
+        </isGreaterThan>
+        </dynamic>
+		ORDER BY t.seq,pd.seq,pj.seq
+		
+    </select>
+    
     <select id="getTeam" resultMap="TeamResultBasic" parameterClass="int">
     	<![CDATA[SELECT * FROM team WHERE id = #teamId#]]>
     </select>

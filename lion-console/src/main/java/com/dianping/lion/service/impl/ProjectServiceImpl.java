@@ -16,6 +16,7 @@
 package com.dianping.lion.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,6 +47,11 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Project getProject(int projectId) {
 		return projectDao.getProject(projectId);
+	}
+
+	@Override
+	public List<Project> getProjectsByTeamAndProduct(Map param) {
+		return projectDao.getProjectsByTeamAndProduct(param);
 	}
 
 }
