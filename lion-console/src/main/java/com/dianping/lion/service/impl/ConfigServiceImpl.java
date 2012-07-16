@@ -107,6 +107,7 @@ public class ConfigServiceImpl implements ConfigService {
 	public void clearInstance(int configId, int envId) {
 		configDao.deleteInstance(configId, envId);
 		configDao.deleteStatus(configId, envId);
+		//TODO 从相应环境的zookeeper中移除该config值
 	}
 
 }
