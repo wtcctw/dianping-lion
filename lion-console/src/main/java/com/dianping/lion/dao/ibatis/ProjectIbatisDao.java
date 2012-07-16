@@ -16,6 +16,7 @@
 package com.dianping.lion.dao.ibatis;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
@@ -39,6 +40,21 @@ public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectD
 	@Override
 	public List<Project> getProjects() {
 		return getSqlMapClientTemplate().queryForList("Project.getProjects");
+	}
+
+	@Override
+	public Project getProject(int projectId) {
+		return (Project) getSqlMapClientTemplate().queryForObject("Project.getProject", projectId);
+	}
+
+	@Override
+	public void lockProject(int projectId) {
+		getSqlMapClientTemplate().update("Project.lockProject", projectId);
+	}
+
+	@Override
+	public List<Project> getProjectsByTeamAndProduct(Map param) {
+		return getSqlMapClientTemplate().queryForList("Project.getProjectsByTeamAndProduct",param);
 	}
 
 }

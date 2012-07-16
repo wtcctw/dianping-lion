@@ -6,8 +6,20 @@
 
 	<package name="config" namespace="/config" extends="default">
 		
-		<action name="configList" class="com.dianping.lion.web.action.config.ConfigListAction">
+		<action name="configList" class="com.dianping.lion.web.action.config.ConfigAction" method="list">
 			<result name="success">/WEB-INF/pages/config/config-list.ftl</result>
+		</action>
+		
+		<action name="configMoveUp" class="com.dianping.lion.web.action.config.ConfigAction" method="moveUp">
+			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
+		</action>
+		
+		<action name="configMoveDown" class="com.dianping.lion.web.action.config.ConfigAction" method="moveDown">
+			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
+		</action>
+		
+		<action name="clearInstance" class="com.dianping.lion.web.action.config.ConfigAction" method="clearInstance">
+			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
 		</action>
 		
 	</package>

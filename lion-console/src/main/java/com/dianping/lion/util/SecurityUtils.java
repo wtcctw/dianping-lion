@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-9
+ * File Created at 2012-7-15
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -13,28 +13,21 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.dao;
+package com.dianping.lion.util;
 
-import java.util.List;
-import java.util.Map;
-
-import com.dianping.lion.entity.Project;
-import com.dianping.lion.entity.Team;
+import com.dianping.lion.entity.User;
 
 /**
  * @author danson.liu
  *
  */
-public interface ProjectDao {
+public class SecurityUtils {
+	
+	public static User getCurrentUser() {
+		//TODO remove mock, implement me!
+		User user = new User();
+		user.setId(0);
+		return user;
+	}
 
-	List<Team> getTeams();
-	
-	List<Project> getProjects();
-	
-	Project getProject(int projectId);
-	
-	void lockProject(int projectId);
-	
-	List<Project> getProjectsByTeamAndProduct(Map param);
-	
 }

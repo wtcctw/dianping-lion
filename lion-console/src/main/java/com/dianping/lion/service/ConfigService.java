@@ -15,10 +15,41 @@
  */
 package com.dianping.lion.service;
 
+import java.util.List;
+
+import com.dianping.lion.vo.ConfigCriteria;
+import com.dianping.lion.vo.ConfigVo;
+
 /**
  * @author danson.liu
  *
  */
 public interface ConfigService {
+
+	/**
+	 * @param criteria 
+	 * @param env
+	 * @return
+	 */
+	List<ConfigVo> findConfigVos(ConfigCriteria criteria);
+
+	/**
+	 * @param projectId
+	 * @param configId
+	 */
+	void moveDown(int projectId, int configId);
+
+	/**
+	 * @param projectId
+	 * @param configId
+	 */
+	void moveUp(int projectId, Integer configId);
+
+	/**
+	 * 清除指定配置项在指定环境下的值
+	 * @param configId
+	 * @param envId
+	 */
+	void clearInstance(int configId, int envId);
 
 }

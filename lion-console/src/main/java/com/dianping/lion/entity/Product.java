@@ -33,6 +33,8 @@ public class Product implements Serializable {
 	
 	private int teamId;
 	
+	private Team team;
+	
 	private Date createTime;
 	
 	private Date modifyTime;
@@ -139,5 +141,18 @@ public class Product implements Serializable {
 		this.projects = projects;
 	}
 
-	
+	/**
+	 * @return the team
+	 */
+	public Team getTeam() {
+		return team;
+	}
+
+	/**
+	 * @param team the team to set
+	 */
+	public void setTeam(Team team) {
+		this.team = team;
+	}
+
 }

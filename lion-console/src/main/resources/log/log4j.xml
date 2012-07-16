@@ -57,7 +57,7 @@
 	</logger>
 
 	<logger name="java.sql">
-		<level value="WARN" />
+		<level value="DEBUG" />
 	</logger>
 	
 	<logger name="org.apache.struts2">

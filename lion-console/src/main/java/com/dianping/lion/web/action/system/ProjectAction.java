@@ -15,20 +15,26 @@
  */
 package com.dianping.lion.web.action.system;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.service.ProjectService;
-import com.opensymphony.xwork2.ActionSupport;
+import com.dianping.lion.web.action.common.AbstractLionAction;
 
 /**
  * @author xiangbin.miao
  *
  */
 @SuppressWarnings("serial")
-public class ProjectAction extends ActionSupport {
+public class ProjectAction extends AbstractLionAction implements ServletRequestAware{
 	
 	private ProjectService projectService;
 	
@@ -36,9 +42,16 @@ public class ProjectAction extends ActionSupport {
 	private List<Team> teamList;
 	
 	private String active = Constants.PROJECT_NAME;
+	private HttpServletRequest request;
+	
+	private int teamSelect = 0;
+	private int productSelect = 0;
 
 	public String execute() {
-		this.projectList = this.projectService.getProjects();
+		Map param = new HashMap();
+		param.put("teamId", this.teamSelect);
+		param.put("productId", this.productSelect);
+		this.projectList = this.projectService.getProjectsByTeamAndProduct(param);
 		this.teamList = this.projectService.getTeams();
 		this.active = Constants.PROJECT_NAME;
 		return SUCCESS;
@@ -84,6 +97,27 @@ public class ProjectAction extends ActionSupport {
 
 	public void setTeamList(List<Team> teamList) {
 		this.teamList = teamList;
+	}
+
+	public int getTeamSelect() {
+		return teamSelect;
+	}
+
+	public void setTeamSelect(int teamSelect) {
+		this.teamSelect = teamSelect;
+	}
+
+	public int getProductSelect() {
+		return productSelect;
+	}
+
+	public void setProductSelect(int productSelect) {
+		this.productSelect = productSelect;
+	}
+
+	@Override
+	public void setServletRequest(HttpServletRequest request) {
+		this.request = request;
 	}
 	
 }

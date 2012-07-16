@@ -1,5 +1,5 @@
 /**
- * Project: com.dianping.lion.lion-console-0.0.1-new
+ * Project: com.dianping.lion.lion-console-0.0.1
  * 
  * File Created at 2012-7-12
  * $Id$
@@ -59,5 +59,4 @@ public class User {
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
-	
 }
