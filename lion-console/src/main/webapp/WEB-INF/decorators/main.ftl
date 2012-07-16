@@ -14,12 +14,11 @@
 	<link href="<@s.url value="/css/jquery-ui-1.8.21.custom.css"/>" rel="stylesheet" type="text/css" />
 	<link href="<@s.url value="/css/lion.css"/>" rel="stylesheet" type="text/css" />
 	<link rel="shortcut icon" href="<@s.url value="/img/favicon.ico"/>">
-	<#include "/WEB-INF/pages/common/common.ftl">
 	<script type="text/javascript" src="<@s.url value="/js/jquery.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/jquery-ui-1.8.21.custom.min.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/bootstrap.js"/>"></script>
-	<script type="text/javascript" src="<@s.url value="/js/lion.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/my97/WdatePicker.js"/>"></script>
+	<#include "/WEB-INF/pages/common/common.ftl">
     <style type="text/css">
 		body {
 			position: relative;
