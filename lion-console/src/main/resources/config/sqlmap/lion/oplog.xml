@@ -2,7 +2,9 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <sqlMap namespace="OperationLog">
 	<typeAlias alias="OpLog" type="com.dianping.lion.entity.OperationLog" />
-
+	<typeAlias alias="OpLogSearch"
+		type="com.dianping.lion.entity.OperationLogSearch" />
+		
 	<resultMap id="OperationLogResult" class="OpLog">
 		<result column="id" property="id"/>
 		<result column="opType" property="opType"/>
@@ -62,5 +64,42 @@
 		    ON environment.id = T2.envId
 		]]>
     </select>
+    <select id="getOpLogList" resultMap="OperationLogResult" parameterClass="OpLogSearch">
+	    <![CDATA[
+		SELECT OL.id, opType, opUserIp, opUserId, U.name as opUserName, envId, E.name envName,opTime, projectId, project.name projectName, content
+		FROM op_log AS OL,
+		  user AS U,
+		  environment AS E,
+		  project
+		WHERE OL.envId = E.id
+		    AND OL.opUserId = U.id
+		    AND OL.projectId = project.id
+		]]>
+		<dynamic>
+		    	<isNotEqual prepend="AND" property="project" compareValue="-1">
+            		OL.projectId=#project#
+        		</isNotEqual>
+        		<isNotEqual prepend="AND" property="user" compareValue="-1">
+            		OL.opUserId=#user#
+        		</isNotEqual>
+        		<isNotEqual prepend="AND" property="opType" compareValue="-1">
+            		OL.opType=#opType#
+        		</isNotEqual>
+        		<isNotEqual prepend="AND" property="env" compareValue="-1">
+            		OL.envId=#env#
+        		</isNotEqual>
+        		<isNotEqual prepend="AND" property="content" compareValue="">
+            		content like #content#
+        		</isNotEqual>
+        		<isNotEmpty prepend="AND" property="from">
+            		OL.opTime >= #from#
+        		</isNotEmpty>
+        		<isNotEmpty prepend="AND" property="to">
+        			<![CDATA[
+            		OL.opTime <= #to#
+            		]]>
+        		</isNotEmpty>
+		</dynamic>
+	</select>
     
 </sqlMap>

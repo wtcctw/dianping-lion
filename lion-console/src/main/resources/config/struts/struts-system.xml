@@ -15,7 +15,10 @@
 		<action name="teamList" class="com.dianping.lion.web.action.system.ProjectAction" method="teamList">
 			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
 		</action>
-		<action name="opLogList" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogs">
+		<action name="opLog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogs">
+			<result name="success">/WEB-INF/pages/system/operation-log.ftl</result>
+		</action>
+		<action name="opLogListAjax" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogList">
 			<result name="success">/WEB-INF/pages/system/operation-log-list.ftl</result>
 		</action>
 		

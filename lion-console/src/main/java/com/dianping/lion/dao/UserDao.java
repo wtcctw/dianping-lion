@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-9
+ * File Created at 2012-7-12
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -17,11 +17,10 @@ package com.dianping.lion.dao;
 
 import java.util.List;
 
-import com.dianping.lion.entity.OperationLog;
-import com.dianping.lion.entity.OperationLogSearch;
+import com.dianping.lion.entity.User;
 
-public interface OperationLogDao {
+public interface UserDao {
 
-	List<OperationLog> getLogs();
-	List<OperationLog> getLogList(OperationLogSearch operationLogSearch);
+	List<User> findAll();
+	
 }

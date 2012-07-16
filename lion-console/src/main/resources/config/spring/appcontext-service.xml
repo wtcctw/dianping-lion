@@ -13,5 +13,7 @@
 	<bean id="configService" class="com.dianping.lion.service.impl.ConfigServiceImpl"/>
 	
 	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
+	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl"/>
+	<bean id="environmentService" class="com.dianping.lion.service.impl.EnvironmentServiceImpl"/>
 	
 </beans>

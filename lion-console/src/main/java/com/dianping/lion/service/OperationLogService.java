@@ -18,6 +18,7 @@ package com.dianping.lion.service;
 import java.util.List;
 
 import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationLogSearch;
 
 public interface OperationLogService {
 
@@ -27,4 +28,9 @@ public interface OperationLogService {
 	 */
 	List<OperationLog> getLogs();
 	
+	/**
+	 * 根据搜索条件查找 操作日志信息，按时间倒排
+	 * @return
+	 */
+	List<OperationLog> getLogList(OperationLogSearch operationLogSearch);
 }
