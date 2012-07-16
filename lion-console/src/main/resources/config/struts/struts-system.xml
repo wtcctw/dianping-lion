@@ -21,6 +21,9 @@
 		<action name="opLogListAjax" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogList">
 			<result name="success">/WEB-INF/pages/system/operation-log-list.ftl</result>
 		</action>
+		<action name="appoplog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogsByProject">
+			<result name="success">/WEB-INF/pages/system/operation-log-project.ftl</result>
+		</action>
 		
 	</package>
 

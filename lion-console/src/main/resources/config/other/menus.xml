@@ -2,6 +2,7 @@
 <menus>
 	<menu name="project">
 		<sub-menu name="configitem" label="配置项" url="/config/configList.vhtml"/>
+		<sub-menu name="appoplog" label="操作日志" url="/system/appoplog.vhtml"/>
 		<!-- 
 		<sub-menu name="projectmember" label="人员管理" url="/"/>
 		 -->

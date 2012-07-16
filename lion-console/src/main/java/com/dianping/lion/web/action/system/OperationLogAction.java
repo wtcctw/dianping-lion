@@ -64,13 +64,9 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 	private Map<Integer, String> opTypes = new LinkedHashMap<Integer, String>();
 	private List<Environment> envs;
 	
-	//data from frontend
-	private String clientdata;
-
-/*	public String execute() {
-		operationLogs = operationLogService.getLogs();
-		return SUCCESS;
-	}*/
+	//for project search
+	private int pid = -1;
+	private String projectName;
 	
 	public String getOpLogs() {
 		initializePage();
@@ -92,12 +88,42 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 		return SUCCESS;
 	}
 	
-	public String getClientdata() {
-		return clientdata;
+	public String getOpLogsByProject() {
+		initializePage();
+		OperationLogSearch operationLogSearch = new OperationLogSearch();
+		operationLogSearch.setProject(pid);
+		operationLogs = operationLogService.getLogList(operationLogSearch);
+		return SUCCESS;
+	}
+	
+	public String getOpLogListByProject() {
+		OperationLogSearch operationLogSearch = new OperationLogSearch();
+		operationLogSearch.setContent(request.getParameter("content"));
+		operationLogSearch.setEnv(Integer.valueOf(request.getParameter("env")));
+		operationLogSearch.setFrom(request.getParameter("from"));
+		operationLogSearch.setTo(request.getParameter("to"));
+		operationLogSearch.setOpType(Integer.valueOf(request.getParameter("opType")));
+		operationLogSearch.setUser(Integer.valueOf(request.getParameter("user")));
+		operationLogSearch.setProject(Integer.valueOf(request.getParameter("project")));
+		operationLogSearch.setContent("%"+operationLogSearch.getContent()+"%");
+		operationLogs = operationLogService.getLogList(operationLogSearch);
+		return SUCCESS;
+	}
+	
+	public int getPid() {
+		return pid;
 	}
 
-	public void setClientdata(String clientdata) {
-		this.clientdata = clientdata;
+	public void setPid(int pid) {
+		this.pid = pid;
+	}
+	
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
 	}
 
 	public OperationLogService getOperationLogService() {
@@ -126,6 +152,10 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 
 	@SuppressWarnings("unchecked")
 	protected void initializePage() {
+		if(pid != -1) {
+			Project project = projectService.getProject(pid);
+			projectName = project.getName();
+		}
 		projects = projectService.getProjects();
 		Collections.sort(projects, new Comparator() {
 			@Override
