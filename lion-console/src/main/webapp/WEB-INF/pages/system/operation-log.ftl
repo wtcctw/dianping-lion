@@ -14,20 +14,20 @@ $('#dp3').datepicker();
 	 <td>
             <label class="control-label" for="select01">项目</label>  
 			<@s.select id="log-project" list=r"projects" listKey="id" listValue="name" theme="simple" headerKey="-1" headerValue="任意项目"/>  
-            <label class="control-label" for="select01">操作类型</label>  
+            <label class="control-label" for="select02">操作类型</label>  
             <div class="controls">  
 			<@s.select id="log-opType" list=r"opTypes" listKey="key" listValue="value" theme="simple"/> 
 	 </td>
 	 <td style="border: 0px">
-            <label class="control-label" for="select01">操作人员</label>  
+            <label class="control-label" for="select03">操作人员</label>  
 <@s.select id="log-user" list=r"users" listKey="id" listValue="name" theme="simple" headerKey="-1" headerValue="任意人员"/>
-            <label class="control-label" for="select01">环境</label>  
+            <label class="control-label" for="select04">环境</label>  
 <@s.select id="log-env" list=r"envs" listKey="id" listValue="name" theme="simple" headerKey="-1" headerValue="任意环境"/>
 	 </td>
 	 <td style="border: 0px">
-            <label class="control-label" for="select01">开始时间</label>
+            <label class="control-label" for="select05">开始时间</label>
 			<input type="text" id="input-time-start-log"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',lang:'zh-cn'})"/>
-            <label class="control-label" for="select01">结束时间</label>
+            <label class="control-label" for="select06">结束时间</label>
 			<input type="text" id="input-time-end-log"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd  HH:mm',lang:'zh-cn'})"/>
 	 </td>
 	 <td style="border: 0px">
@@ -36,7 +36,7 @@ $('#dp3').datepicker();
     </td>
     <td style="text-align:right;border: 0px;vertical-align: bottom">
 	      <div>
-            <button type="submit" class="btn" onclick="displayLogContent()">检索</button>  
+            <button id="button-query-log" type="submit" class="btn"">检索</button>  
           </div> 
 	 </td>
 	 </tr>
