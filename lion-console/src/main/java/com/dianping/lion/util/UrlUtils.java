@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -31,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class UrlUtils {
 	
-	public static String resolveUrl(Map<String, ?> parameters) {
+	public static String resolveUrl(Map<String, ?> parameters, String... includes) {
 		StringBuilder url = new StringBuilder();
 		int index = 0;
 		try {
@@ -39,22 +40,24 @@ public class UrlUtils {
 				for (Entry<String, ?> entry : parameters.entrySet()) {
 					Collection<Object> paramValues = new ArrayList<Object>();
 					Object paramValue = entry.getValue();
-					Class<? extends Object> paramClass = paramValue.getClass();
-					if (Collection.class.isInstance(paramValue)) {
-						paramValues.addAll((Collection<?>) paramValue);
-					} else if (paramClass.isArray()) {
-						Object[] valueArray = (Object[]) paramValue;
-						for (Object value : valueArray) {
-							paramValues.add(value);
+					if (ArrayUtils.isEmpty(includes) || ArrayUtils.contains(includes, entry.getKey())) {
+						Class<? extends Object> paramClass = paramValue.getClass();
+						if (Collection.class.isInstance(paramValue)) {
+							paramValues.addAll((Collection<?>) paramValue);
+						} else if (paramClass.isArray()) {
+							Object[] valueArray = (Object[]) paramValue;
+							for (Object value : valueArray) {
+								paramValues.add(value);
+							}
+						} else {
+							paramValues.add(paramValue);
 						}
-					} else {
-						paramValues.add(paramValue);
-					}
-					for (Object value : paramValues) {
-						url.append(index ++ == 0 ? "" : "&")
-								.append(entry.getKey())
-								.append("=")
-								.append(URLEncoder.encode(value.toString(), "utf-8"));
+						for (Object value : paramValues) {
+							url.append(index ++ == 0 ? "" : "&")
+									.append(entry.getKey())
+									.append("=")
+									.append(URLEncoder.encode(value.toString(), "utf-8"));
+						}
 					}
 				}
 			}
@@ -64,11 +67,15 @@ public class UrlUtils {
 		return url.toString();
 	}
 	
-	public static String resolveUrl(String url, Map<String, ?> parameters) {
+	public static String resolveUrl(String url, Map<String, ?> parameters, String... includes) {
 		if (url == null) {
 			throw new NullPointerException("Param[url] cannot be null.");
 		}
-		return url + (url.contains("?") ? "&" : "?") + resolveUrl(parameters);
+		return resolveUrl(url, resolveUrl(parameters));
+	}
+	
+	public static String resolveUrl(String url, String paramStr) {
+		return url + (url.contains("?") ? "&" : "?") + paramStr;
 	}
 	
 	public static List<String> getParameterNames(String url) {

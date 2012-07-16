@@ -33,9 +33,6 @@
 	            </div>
 	    </div>
 </div>
-<div class="span1">
-	
-</div>
 </div>
 </form>
 <div class="row">

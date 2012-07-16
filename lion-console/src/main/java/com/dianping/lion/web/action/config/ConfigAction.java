@@ -24,11 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.util.UrlUtils;
-import com.dianping.lion.vo.ConfigInstanceVo;
+import com.dianping.lion.vo.ConfigCriteria;
+import com.dianping.lion.vo.ConfigVo;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 /**
@@ -57,9 +59,11 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 	
 	private String query;
 	
+	private ConfigCriteria criteria = new ConfigCriteria();
+	
 	private List<Environment> environments;
 	
-	private List<ConfigInstanceVo> configInsts;
+	private List<ConfigVo> configVos;
 
 	private HttpServletRequest request;
 
@@ -70,24 +74,37 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 			envId = !environments.isEmpty() ? environments.get(0).getId() : null;
 		}
 		if (envId != null) {
-			configInsts = configService.findInstanceVos(projectId, envId);
+			criteria.setProjectId(projectId);
+			criteria.setEnvId(envId);
+			configVos = configService.findConfigVos(criteria);
 		}
 		return SUCCESS;
 	}
 	
 	@SuppressWarnings("unchecked")
+	public String clearInstance() {
+		configService.clearInstance(configId, envId);
+		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId", "criteria.key", "criteria.status");
+		return SUCCESS;
+	}
+	
+	@SuppressWarnings("unchecked")
 	public String moveUp() {
-		//TODO 处理EntityNotFoundException异常
-		configService.moveUp(projectId, configId);
-		query = UrlUtils.resolveUrl(request.getParameterMap());
+		try {
+			configService.moveUp(projectId, configId);
+		} catch (EntityNotFoundException e) {
+		}
+		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId");
 		return SUCCESS;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public String moveDown() {
-		//TODO 处理EntityNotFoundException异常
-		configService.moveDown(projectId, configId);
-		query = UrlUtils.resolveUrl(request.getParameterMap());
+		try {
+			configService.moveDown(projectId, configId);
+		} catch (EntityNotFoundException e) {
+		}
+		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId");
 		return SUCCESS;
 	}
 
@@ -122,8 +139,8 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 	/**
 	 * @return the configInsts
 	 */
-	public List<ConfigInstanceVo> getConfigInsts() {
-		return configInsts;
+	public List<ConfigVo> getConfigVos() {
+		return configVos;
 	}
 
 	/**
@@ -171,6 +188,20 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 	@Override
 	public void setServletRequest(HttpServletRequest request) {
 		this.request = request;
+	}
+
+	/**
+	 * @return the criteria
+	 */
+	public ConfigCriteria getCriteria() {
+		return criteria;
+	}
+
+	/**
+	 * @param criteria the criteria to set
+	 */
+	public void setCriteria(ConfigCriteria criteria) {
+		this.criteria = criteria;
 	}
 	
 }

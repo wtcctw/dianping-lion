@@ -2,8 +2,8 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <sqlMap namespace="Config">
 	<typeAlias alias="Config" type="com.dianping.lion.entity.Config" />
+	<typeAlias alias="ConfigStatus" type="com.dianping.lion.entity.ConfigStatus" />
 	<typeAlias alias="ConfigInstance" type="com.dianping.lion.entity.ConfigInstance" />
-	<typeAlias alias="ConfigInstanceVo" type="com.dianping.lion.entity.ConfigInstanceVo" />
 
 	<resultMap id="ConfigResult" class="Config">
 		<result column="id" property="id"/>
@@ -24,8 +24,6 @@
 		<result column="configId" property="configId"/>
 		<result column="value" property="value"/>
 		<result column="envId" property="envId"/>
-		<result column="isActive" property="active"/>
-		<result column="activeTime" property="activeTime"/>
 		<result column="createUserId" property="createUserId"/>
 		<result column="modifyUserId" property="modifyUserId"/>
 		<result column="createTime" property="createTime"/>
@@ -52,6 +50,34 @@
 			and c.isDel = 0 and i.isDel = 0
 		</isEqual>
 		ORDER BY c.seq, c.id
+    </select>
+    
+    <select id="findDefaultInstances" resultMap="ConfigInstanceResult" parameterClass="map">
+    	SELECT i.*
+    	FROM config c inner join config_instance i on c.id = i.configId
+    	WHERE c.projectId = #projectId# AND i.envId = #envId# AND i.context is null
+    	<isEqual property="includeDeleted" compareValue="false">
+			and c.isDel = 0 and i.isDel = 0
+		</isEqual>
+		ORDER BY c.seq, c.id
+    </select>
+    
+    <select id="findHasInstanceConfigs" resultClass="int" parameterClass="map">
+    	SELECT DISTINCT c.id
+    	FROM config c inner join config_instance i on c.id = i.configId
+    	WHERE c.projectId = #projectId# AND i.envId = #envId# AND c.isDel = 0 AND i.isDel = 0
+    </select>
+    
+    <select id="findHasContextInstConfigs" resultClass="int" parameterClass="map">
+    	SELECT DISTINCT c.id
+    	FROM config c inner join config_instance i on c.id = i.configId
+    	WHERE c.projectId = #projectId# AND i.envId = #envId# AND i.context is not null AND c.isDel = 0 AND i.isDel = 0
+    </select>
+    
+    <select id="findConfigStatuses" resultClass="ConfigStatus" parameterClass="map">
+    	SELECT s.* 
+    	FROM config c inner join config_status s on c.id = s.configId
+    	WHERE c.projectId = #projectId# AND s.envId = #envId#
     </select>
     
     <select id="getConfig" resultMap="ConfigResult" parameterClass="map">
@@ -86,5 +112,16 @@
     	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = #modifyTime#, isDel = #deleted#, seq = #seq#
     	WHERE id = #id#
     </update>
+    
+    <update id="deleteInstance" parameterClass="map">
+    	UPDATE config_instance
+    	SET isDel = 1, modifyUserId = #currentUser#, modifyTime = NOW()
+    	WHERE configId = #configId# AND envId = #envId# AND isDel = 0
+    </update>
+    
+    <delete id="deleteStatus" parameterClass="map">
+	    DELETE FROM config_status
+	    WHERE configId = #configId# AND envId = #envId#
+    </delete>
     
 </sqlMap>

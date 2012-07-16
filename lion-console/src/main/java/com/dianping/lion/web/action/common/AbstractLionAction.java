@@ -25,6 +25,12 @@ import com.opensymphony.xwork2.ActionSupport;
 public class AbstractLionAction extends ActionSupport {
 
 	protected String menu;
+	
+	protected String warnMessage;
+	
+	protected String errorMessage;
+	
+	protected String infoMessage;
 
 	/**
 	 * @return the menu
@@ -38,6 +44,48 @@ public class AbstractLionAction extends ActionSupport {
 	 */
 	public void setMenu(String menu) {
 		this.menu = menu;
+	}
+
+	/**
+	 * @return the warnMessage
+	 */
+	public String getWarnMessage() {
+		return warnMessage;
+	}
+
+	/**
+	 * @param warnMessage the warnMessage to set
+	 */
+	public void setWarnMessage(String warnMessage) {
+		this.warnMessage = warnMessage;
+	}
+
+	/**
+	 * @return the errorMessage
+	 */
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	/**
+	 * @param errorMessage the errorMessage to set
+	 */
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
+	/**
+	 * @return the infoMessage
+	 */
+	public String getInfoMessage() {
+		return infoMessage;
+	}
+
+	/**
+	 * @param infoMessage the infoMessage to set
+	 */
+	public void setInfoMessage(String infoMessage) {
+		this.infoMessage = infoMessage;
 	}
 	
 }
