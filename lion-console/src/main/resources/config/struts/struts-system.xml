@@ -9,6 +9,9 @@
 		<action name="projectList" class="com.dianping.lion.web.action.system.ProjectAction">
 			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
 		</action>
+		<action name="projectAdd" class="com.dianping.lion.web.action.system.ProjectAction" method="projectAdd">
+			<result name="success">/WEB-INF/pages/system/project-add.ftl</result>
+		</action>
 		<action name="productList" class="com.dianping.lion.web.action.system.ProjectAction" method="productList">
 			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
 		</action>
@@ -20,6 +23,9 @@
 		</action>
 		<action name="opLogListAjax" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogList">
 			<result name="success">/WEB-INF/pages/system/operation-log-list.ftl</result>
+		</action>
+		<action name="appoplog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogsByProject">
+			<result name="success">/WEB-INF/pages/system/operation-log-project.ftl</result>
 		</action>
 		
 	</package>

@@ -57,6 +57,11 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		return SUCCESS;
 	}
 	
+	public String projectAdd(){
+		this.teamList = this.projectService.getTeams();
+		return SUCCESS;
+	}
+	
 	public String productList(){
 		this.active = Constants.PRODUCT_NAME;
 		return SUCCESS;

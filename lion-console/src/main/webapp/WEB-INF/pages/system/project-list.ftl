@@ -9,29 +9,20 @@
 		
 <#include "/WEB-INF/pages/system/project-span.ftl"> 
 
-<form id="projectQuery" class="form-horizontal" action="projectList.vhtml" method="post">
-<div class="row">
+<form id="projectQuery" class="form-inline lion" action="projectList.vhtml" method="post">
 
-<div class="span3">
 	
-		<div class="control-group">
-	            <label class="control-label" style="width:50px" for="teamSelect">业务组</label>
-	            <div class="controls" style="margin-left:60px">
+	            <label class="control-label" for="teamSelect">业务组</label>
 	              <select id="teamSelect">
 	                <option value=0>所有的</option>
 	                <#list teamList as team>
 	                	<option value=${team.id}>${team.name}</option>
 					</#list>
 	              </select>
-	            </div>
-	    </div>
 	   
 
-</div>
-<div class="span3">
-		<div class="control-group">
-	            <label class="control-label" style="width:50px" for="productSelect">产品线</label>
-	            <div class="controls" style="margin-left:60px">
+
+	            <label class="control-label" for="productSelect">产品线</label>
 	              <select id="productSelect">
 	                <option team=0 value=0>所有的</option>
 	                <#list teamList as team>
@@ -40,13 +31,9 @@
 	                	</#list>
 					</#list>
 	              </select>
-	            </div>
-	    </div>
-</div>
-<div class="span1">
+
 	<button id="query_btn" type="submit" class="btn">查询</button>
-</div>
-</div>
+
 </form>
 <div class="row">
 <div class="span12">
