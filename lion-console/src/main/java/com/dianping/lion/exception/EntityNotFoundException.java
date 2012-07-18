@@ -21,7 +21,7 @@ package com.dianping.lion.exception;
  *
  */
 @SuppressWarnings("serial")
-public class EntityNotFoundException extends RuntimeException {
+public class EntityNotFoundException extends RuntimeBusinessException {
 
 	public EntityNotFoundException() {
 		this("Entity not found.");

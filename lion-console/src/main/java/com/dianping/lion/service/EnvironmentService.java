@@ -27,4 +27,12 @@ public interface EnvironmentService {
 
 	List<Environment> findAll();
 	
+	Environment findEnvByID(int id);
+	
+	int save(Environment env);
+	
+	void update(Environment env);
+	
+	void delete(int id);
+	
 }
