@@ -29,13 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationLogSearch;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.UserService;
-import com.dianping.lion.util.OperationTypeEnum;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 import com.google.gson.Gson;
 
