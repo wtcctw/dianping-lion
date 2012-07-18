@@ -29,7 +29,7 @@
 		  opUserName,
 		  opUserIp,
 		  envId,
-		  environment.name AS envName,
+		  environment.label AS envName,
 		  opTime,
 		  projectId,
 		  projectName,
@@ -66,7 +66,7 @@
     </select>
     <select id="getOpLogList" resultMap="OperationLogResult" parameterClass="OpLogSearch">
 	    <![CDATA[
-		SELECT OL.id, opType, opUserIp, opUserId, U.name as opUserName, envId, E.name envName,opTime, projectId, project.name projectName, content
+		SELECT OL.id, opType, opUserIp, opUserId, U.name as opUserName, envId, E.label envName,opTime, projectId, project.name projectName, content
 		FROM op_log AS OL,
 		  user AS U,
 		  environment AS E,

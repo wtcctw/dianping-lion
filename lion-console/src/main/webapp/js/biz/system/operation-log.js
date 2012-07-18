@@ -56,7 +56,7 @@ $(document).ready(function() {
         $.ajax({
             type: "GET",
             contentType: "application/json",
-            url: "/system/opLogListAjax.vhtml",
+            url: "/system/opLogListAjax.vhtml".prependcontext(),
             data : clientdata,
 //            data: "{content:'"+content+"',project:'"+project+"',opType:'"+opType+"',user:"+user+"',env:'"+env+"',from:'"+from+"',to:'"+to+"+"'}",
 //            data: "{\"content\":'zhangsan'}",
