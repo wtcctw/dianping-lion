@@ -22,8 +22,8 @@
 	<resultMap id="ConfigInstanceResult" class="ConfigInstance">
 		<result column="id" property="id"/>
 		<result column="configId" property="configId"/>
-		<result column="value" property="value"/>
 		<result column="envId" property="envId"/>
+		<result column="value" property="value"/>
 		<result column="createUserId" property="createUserId"/>
 		<result column="modifyUserId" property="modifyUserId"/>
 		<result column="createTime" property="createTime"/>
@@ -89,12 +89,20 @@
 		</isEqual>
     </select>
     
+    <select id="findConfigByKey" resultMap="ConfigResult" parameterClass="string">
+    	SELECT * FROM config WHERE `key` = #key# AND isDel = 0
+    </select>
+    
     <select id="getNextConfig" resultMap="ConfigResult" parameterClass="int">
     	SELECT c2.*
     	FROM config c1 INNER JOIN config c2 ON c1.projectId = c2.projectId
     	WHERE c1.id = #configId# AND c2.seq > c1.seq AND c2.isDel = 0
     	ORDER BY c2.seq, c2.id
     	LIMIT 1 
+    </select>
+    
+    <select id="getMaxSeq" resultClass="int" parameterClass="int">
+    	SELECT MAX(seq) FROM config WHERE projectId = #projectId#
     </select>
     
     <select id="getPrevConfig" resultMap="ConfigResult" parameterClass="int">
@@ -118,6 +126,14 @@
     	SET isDel = 1, modifyUserId = #currentUser#, modifyTime = NOW()
     	WHERE id = #configId# AND isDel = 0
     </update>
+    
+    <insert id="insertConfig" parameterClass="Config">
+    	INSERT INTO config(`key`, `desc`, type, projectId, createUserId, modifyUserId, createTime, modifyTime, isDel, seq)
+    	VALUES(#key#, #desc#, #type#, #projectId#, #createUserId#, #modifyUserId#, NOW(), NOW(), #deleted#, #seq#)
+    	<selectKey resultClass="int">    
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey> 
+    </insert>
     
     <update id="deleteInstance" parameterClass="map">
     	UPDATE config_instance

@@ -6,28 +6,33 @@
 
 	<package name="config" namespace="/config" extends="default">
 		
-		<action name="configList" class="com.dianping.lion.web.action.config.ConfigAction" method="list">
+		<action name="configList" class="com.dianping.lion.web.action.config.ConfigListAction" method="list">
 			<result name="success">/WEB-INF/pages/config/config-list.ftl</result>
 		</action>
 		
-		<action name="configMoveUp" class="com.dianping.lion.web.action.config.ConfigAction" method="moveUp">
+		<action name="configMoveUp" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveUp">
 			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
 		</action>
 		
-		<action name="configMoveDown" class="com.dianping.lion.web.action.config.ConfigAction" method="moveDown">
+		<action name="configMoveDown" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveDown">
 			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
 		</action>
 		
-		<action name="clearInstance" class="com.dianping.lion.web.action.config.ConfigAction" method="clearInstance">
+		<action name="clearInstance" class="com.dianping.lion.web.action.config.ConfigListAction" method="clearInstance">
 			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
 		</action>
 		
-		<action name="delete" class="com.dianping.lion.web.action.config.ConfigAction" method="delete">
+		<action name="delete" class="com.dianping.lion.web.action.config.ConfigListAction" method="delete">
 			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
 		</action>
 		
-		<action name="add" class="com.dianping.lion.web.action.config.ConfigAction" method="add">
+		<action name="add" class="com.dianping.lion.web.action.config.ConfigListAction" method="add">
 			<result name="success">/WEB-INF/pages/config/config-add.ftl</result>
+		</action>
+		
+		<action name="createConfig" class="com.dianping.lion.web.action.config.ConfigEditAction" method="createConfig">
+			<result name="success">/WEB-INF/pages/config/config-add.ftl</result>
+			<result name="input">/WEB-INF/pages/config/config-add.ftl</result>
 		</action>
 		
 	</package>

@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-12
+ * File Created at 2012-7-17
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -16,26 +16,21 @@
 package com.dianping.lion.exception;
 
 /**
- * 数据实体不存在异常
  * @author danson.liu
  *
  */
 @SuppressWarnings("serial")
-public class EntityNotFoundException extends RuntimeBusinessException {
+public class RuntimeBusinessException extends RuntimeException {
 
-	public EntityNotFoundException() {
-		this("Entity not found.");
-	}
-
-	public EntityNotFoundException(String message) {
+	public RuntimeBusinessException(String message) {
 		super(message);
 	}
 
-	public EntityNotFoundException(String message, Throwable cause) {
+	public RuntimeBusinessException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public EntityNotFoundException(Throwable cause) {
+	public RuntimeBusinessException(Throwable cause) {
 		super(cause);
 	}
 	

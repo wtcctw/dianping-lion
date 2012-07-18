@@ -17,55 +17,25 @@ package com.dianping.lion.web.action.config;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.interceptor.ServletRequestAware;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.dianping.lion.entity.Environment;
-import com.dianping.lion.entity.Project;
 import com.dianping.lion.exception.EntityNotFoundException;
-import com.dianping.lion.service.ConfigService;
-import com.dianping.lion.service.EnvironmentService;
-import com.dianping.lion.service.ProjectService;
-import com.dianping.lion.util.UrlUtils;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
-import com.dianping.lion.web.action.common.AbstractLionAction;
 
 /**
  * @author danson.liu
  *
  */
 @SuppressWarnings("serial")
-public class ConfigAction extends AbstractLionAction implements ServletRequestAware {
-	
-	@Autowired
-	private ConfigService configService;
-	
-	@Autowired
-	private ProjectService projectService;
-	
-	@Autowired
-	private EnvironmentService environmentService;
-	
-	private Integer envId;
-	
-	private int projectId;
-	
-	private Project project;
+public class ConfigListAction extends AbstractConfigAction {
 	
 	private Integer configId;
-	
-	private String query;
 	
 	private ConfigCriteria criteria = new ConfigCriteria();
 	
 	private List<Environment> environments;
 	
 	private List<ConfigVo> configVos;
-
-	private HttpServletRequest request;
 
 	public String list() {
 		this.environments = environmentService.findAll();
@@ -78,6 +48,11 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 			criteria.setEnvId(envId);
 			configVos = configService.findConfigVos(criteria);
 		}
+		return SUCCESS;
+	}
+	
+	public String add() {
+		this.project = projectService.getProject(projectId);
 		return SUCCESS;
 	}
 	
@@ -111,44 +86,6 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 		return SUCCESS;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void createQueryParam1() {
-		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId");
-	}
-
-	@SuppressWarnings("unchecked")
-	private void createQueryParam2() {
-		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId", "criteria.key", "criteria.status");
-	}
-
-	/**
-	 * @return the envId
-	 */
-	public Integer getEnvId() {
-		return envId;
-	}
-
-	/**
-	 * @param envId the envId to set
-	 */
-	public void setEnvId(Integer envId) {
-		this.envId = envId;
-	}
-
-	/**
-	 * @return the pid
-	 */
-	public int getPid() {
-		return projectId;
-	}
-
-	/**
-	 * @param pid the pid to set
-	 */
-	public void setPid(int pid) {
-		this.projectId = pid;
-	}
-
 	/**
 	 * @return the configInsts
 	 */
@@ -164,13 +101,6 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 	}
 
 	/**
-	 * @return the project
-	 */
-	public Project getProject() {
-		return project;
-	}
-
-	/**
 	 * @return the configId
 	 */
 	public Integer getConfigId() {
@@ -182,25 +112,6 @@ public class ConfigAction extends AbstractLionAction implements ServletRequestAw
 	 */
 	public void setConfigId(Integer configId) {
 		this.configId = configId;
-	}
-
-	/**
-	 * @return the query
-	 */
-	public String getQuery() {
-		return query;
-	}
-
-	/**
-	 * @param query the query to set
-	 */
-	public void setQuery(String query) {
-		this.query = query;
-	}
-
-	@Override
-	public void setServletRequest(HttpServletRequest request) {
-		this.request = request;
 	}
 
 	/**

@@ -53,6 +53,19 @@ body {
 	margin-top: 2px;
 }
 
+.form-actions {
+	padding-top : 7px !important;
+	padding-bottom : 8px !important;
+}
+
+.modal-backdrop {
+	background-color : "white";
+}
+
+.modal-backdrop, .modal-backdrop.fade.in {
+	opacity : 0.2;
+}
+
 .pp_location {
 	width: 677px;
 	overflow: hidden;
@@ -127,15 +140,72 @@ table.lion {
 	margin-top: 10px;
 }
 
+table.lion tr {
+	height : 35px;
+}
+
+table.lion tr:hover td {
+	background-color: white !important;
+}
+
+td.lion-label {
+	text-align: right;
+	background-color: #f5f5f5;
+	width : 120px;
+}
+
+table.lion tr:hover td.lion-label {
+	background-color: #f5f5f5 !important;
+}
+
+table.lion td select, td textarea, td input {
+	margin-bottom: 0px !important;
+}
+
+table.lion td label {
+	display : inline;
+	vertical-align: middle;
+	margin-left: 5px;
+}
+
+table.lion td *+input[type="radio"], table.lion td *+input[type="checkbox"],
+.form-horizontal .controls *+input[type="radio"] {
+	margin-left : 20px;
+}
+
+
+
+table.lion td {
+	vertical-align: middle;
+}
+
+table.lion input[type="radio"], input[type="checkbox"] {
+	margin : 0 0;
+}
+
+.form-horizontal .control-lion-group {
+	margin-bottom : 12px;
+}
+
+.form-horizontal .control-lion-label {
+	width : 100px;
+}
+
+.form-horizontal .lion-controls {
+	margin-left : 120px;
+}
+
 @media (min-width: 768px) and (max-width: 979px) {
 	.alert-lion {
 		margin-left: -20px;
+		margin-bottom : 0;
 	}
 }
 
 @media (min-width: 1200px) {
 	.alert-lion {
 		margin-left: -30px;
+		margin-bottom : 0;
 	}
 }
 
@@ -146,14 +216,24 @@ table.lion {
 
 /*==============extend jquery dialog===============*/
 .ui-dialog .ui-dialog-buttonpane button {
-	margin : .5em .4em .5em 1.5em;
+	/*margin : .5em .4em .5em 1.5em;*/
 	-webkit-border-radius : 4px;
 	border-radius : 4px;
 	-moz-border-radius : 4px;
 	border : 1px solid #CCC;
 	background-color: white;
+	min-width: 50px;
 }
 
 .ui-dialog .ui-dialog-buttonpane {
-	padding : .3em 1em 0 .4em;
+	padding : .3em 0 0 0;
+	text-align : center;
+}
+
+.ui-dialog .ui-dialog-buttonpane *+button {
+	margin-left : 25px;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+	float : none;
 }
