@@ -19,4 +19,35 @@
 		]]>
     </select>
     
+    <select id="Environment.findByID" resultMap="EnvironmentResult">
+		<![CDATA[
+		SELECT id, name, label, ips, seq
+		FROM environment
+		where id = #id#
+		ORDER BY seq, id
+		]]>
+    </select>
+    
+    <update id="updateEnv" parameterClass="Environment">
+    	update environment
+		set ips=#ips#,
+			label=#label#,
+			name=#name#,
+			seq=#seq#
+		where id=#id#
+    </update>
+    
+    <delete id="deleteEnv" parameterClass="int">
+		delete from environment where id=#id#
+    </delete>
+    
+    <insert id="insertEnv" parameterClass="Environment">
+    	<![CDATA[
+    	insert into environment(name,label,ips,seq) values(#name#,#label#,#ips#,#seq#);
+		]]>
+    	<selectKey resultClass="int" keyProperty="id">
+             <![CDATA[   select last_insert_id() as id  ]]>
+        </selectKey>
+    </insert>
+    
 </sqlMap>

@@ -32,12 +32,54 @@ public class EnvironmentAction extends AbstractLionAction{
 	//表格内容
 	private List<Environment> environmentList;
 	
+	private Environment environment;
+	private int envId;
+	private String envName;
+	private String envLabel;
+	private String envIps;
+	private int seq;
+	
 	public String getEnvLists() {
 		environmentList = environmentService.findAll();
 		return SUCCESS;
 	}
 	
 	public String addEnv() {
+		return SUCCESS;
+	}
+	
+	public String addEnvSubmit() {
+		Environment environment = new Environment();
+		environment.setId(envId);
+		environment.setIps(envIps);
+		environment.setLabel(envLabel);
+		environment.setName(envName);
+		environment.setSeq(seq);
+		environmentService.save(environment);
+		environmentList = environmentService.findAll();
+		return SUCCESS;
+	}
+	
+	public String editEnv() {
+		environment = environmentService.findEnvByID(envId);
+		return SUCCESS;
+	}
+	
+	public String editEnvSubmit() {
+		Environment environment = new Environment();
+		environment.setId(envId);
+		environment.setIps(envIps);
+		environment.setLabel(envLabel);
+		environment.setName(envName);
+		environment.setSeq(seq);
+		environmentService.update(environment);
+		environmentList = environmentService.findAll();
+		return SUCCESS;
+	}
+	
+	public String deleteEnvAjax() {
+		environmentService.delete(envId);
+		environmentList = environmentService.findAll();
 		return SUCCESS;
 	}
 
@@ -55,6 +97,54 @@ public class EnvironmentAction extends AbstractLionAction{
 
 	public void setEnvironmentList(List<Environment> environmentList) {
 		this.environmentList = environmentList;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	public int getEnvId() {
+		return envId;
+	}
+
+	public void setEnvId(int envId) {
+		this.envId = envId;
+	}
+
+	public String getEnvName() {
+		return envName;
+	}
+
+	public void setEnvName(String envName) {
+		this.envName = envName;
+	}
+
+	public String getEnvLabel() {
+		return envLabel;
+	}
+
+	public void setEnvLabel(String envLabel) {
+		this.envLabel = envLabel;
+	}
+
+	public String getEnvIps() {
+		return envIps;
+	}
+
+	public void setEnvIps(String envIps) {
+		this.envIps = envIps;
+	}
+
+	public int getSeq() {
+		return seq;
+	}
+
+	public void setSeq(int seq) {
+		this.seq = seq;
 	}
 	
 }
