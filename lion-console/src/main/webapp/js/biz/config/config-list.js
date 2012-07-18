@@ -1,3 +1,10 @@
+var Type_String = 5;
+var Type_Number = 10;
+var Type_Bool = 15;
+var Type_List = 20;
+var Type_Map = 25;
+var Type_Ref = 30;
+
 $(function(){
 	$("[rel=tooltip]").tooltip();
 	$(".icon-intro").popover();
@@ -43,5 +50,62 @@ $(function(){
 		$deleteAlert.data("location", $(this).attr("href"));
 		return false;
 	});
+	
+	$("#add-config-btn").click(function() {
+		$("#add-config-modal").modal({
+			backdrop : "static"
+		});
+	});
+	
+	$("#config-type-selector").change(function() {
+		var type = parseInt($(this).val());
+		renderValueComponent(generateValueComponent(type));
+	});
+	
+	$("#ccc").click(function() {
+		$("#modal2").modal({
+			backdrop : "static"
+		});
+	});
+	
+	function renderValueComponent(html) {
+		$("#config-value-container").html(html);
+	}
+	
+	function generateValueComponent(type) {
+		switch (type) {
+			case Type_String : return generateStringComponent();
+			case Type_Number : return generateNumberComponent();
+			case Type_Bool : return generateBoolComponent();
+			case Type_List : return generateListComponent();
+			case Type_Map : return generateMapComponent();
+			case Type_Ref : return generateRefComponent();
+		}
+	}
+	
+	function generateStringComponent() {
+		return "<textarea name='value' rows='5' style='width:350px;'></textarea>";
+	}
+	
+	function generateNumberComponent() {
+		return "<input type='text' name='value' class='input-medium'>";
+	}
+	
+	function generateBoolComponent() {
+		return "<input type='radio' name='value' id='a1' checked='checked'><label for='a1' class='help-inline'>是</label>"
+			+ "<input type='radio' name='value' id='a2'><label for='a2' class='help-inline'>否</label>";
+	}
+	
+	function generateListComponent() {
+		return "";
+	}
+	
+	function generateMapComponent() {
+		return "";
+	}
+	
+	function generateRefComponent() {
+		return "";
+	}
 
 });

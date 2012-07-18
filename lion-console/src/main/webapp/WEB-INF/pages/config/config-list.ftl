@@ -16,7 +16,7 @@
 				  <li>
 				    ${project.name}<span class="divider">></span>
 				  </li>
-				  <li class="active">配置项</li>
+				  <li class="active">配置列表</li>
 				</ul>
 			</div>
 		</div>
@@ -66,8 +66,13 @@
 				      <th width="80">Status</th>
 				      <th width="120">
 				      	操作
+				      	<!--
 				      	<a href="<@s.url action="add" namespace="/config"/>?${queryStr}" rel="tooltip" data-original-title="添加配置项" class="pull-right">
 				      		<i class="icon-plus"></i>
+				      	</a>
+				      	-->
+				      	<a id="add-config-btn" rel="tooltip" data-original-title="添加配置项" class="pull-right">
+				      	<i class="icon-plus"></i>
 				      	</a>
 				      </th>
 				    </tr>
@@ -106,6 +111,9 @@
 				  				<i class="icon-trash"></i>
 				  			</a>
 				  			</@s.if>
+				  			<@s.else>
+				  			<i rel="tooltip" class="icon-trash icon-white" data-original-title="不存在配置值"></i>
+				  			</@s.else>
 				  			<a href="<@s.url action="delete" namespace="/config"/>?${queryStr}&configId=${config.id}" rel="tooltip" data-original-title="删除配置项"
 				  				class="deleteLink">
 				  				<i class="icon-remove"></i>
@@ -122,6 +130,71 @@
 				  </tbody>
 				</table>
 			</div>
+		</div>
+	</div>
+	
+	<div id="add-config-modal" class="modal hide fade">
+		<div class="modal-header">
+          <a class="close" data-dismiss="modal" >&times;</a>
+          <h3>创建配置项</h3>
+        </div>
+        <div class="modal-body">
+        	<form class="form-horizontal">
+        		<fieldset>
+	        		<div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="input01">Key:</label>
+				      <div class="controls lion-controls">
+				        <input type="text" class="input-xlarge" id="input01">
+				      </div>
+				    </div>
+	        		<div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="input02">描述:</label>
+				      <div class="controls lion-controls">
+				        <input type="text" class="input-xlarge" id="input02">
+				      </div>
+				    </div>
+				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="input03">类型:</label>
+				      <div class="controls lion-controls">
+				        <select id="config-type-selector">
+				        	<@s.iterator value="%{@com.dianping.lion.entity.ConfigTypeEnum@values()}">
+				        		<option value="${value}">${label}</option>
+				        	</@s.iterator>
+				        </select>
+				        <input type="checkbox" id="c" checked><label for="c" class="help-inline">trim while string</label>
+				      </div>
+				    </div>
+				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="input04">Value:</label>
+				      <div class="controls lion-controls" id="config-value-container">
+				        <textarea rows="4" style="width:350px;" id="input04"></textarea>
+				      </div>
+				    </div>
+			    </fieldset>
+        	</form>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn" data-dismiss="modal" >关闭</a>
+          <a href="#" id="ccc" class="btn btn-primary">保存更改</a>
+        </div>
+	</div>
+	
+	<div id="modal2" class="modal hide fade">
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<p>Test</p
+		<div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal" >关闭</a>
 		</div>
 	</div>
 </body>

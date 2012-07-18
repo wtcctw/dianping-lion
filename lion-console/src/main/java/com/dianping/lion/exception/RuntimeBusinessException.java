@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-12
+ * File Created at 2012-7-17
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -13,26 +13,25 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.dao;
-
-import java.util.List;
-
-import com.dianping.lion.entity.Environment;
+package com.dianping.lion.exception;
 
 /**
  * @author danson.liu
  *
  */
-public interface EnvironmentDao {
+@SuppressWarnings("serial")
+public class RuntimeBusinessException extends RuntimeException {
 
-	List<Environment> findAll();
-	
-	Environment findEnvByID(int id);
-	
-	int save(Environment env);
-	
-	void update(Environment env);
-	
-	void delete(int id);
+	public RuntimeBusinessException(String message) {
+		super(message);
+	}
+
+	public RuntimeBusinessException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public RuntimeBusinessException(Throwable cause) {
+		super(cause);
+	}
 	
 }
