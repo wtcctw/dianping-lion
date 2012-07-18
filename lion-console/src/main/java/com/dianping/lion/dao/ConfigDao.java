@@ -45,6 +45,13 @@ public interface ConfigDao {
 	Config getNextConfig(int configId);
 	
 	/**
+	 * 获取指定项目下所有配置的最大seq值
+	 * @param projectId
+	 * @return
+	 */
+	int getMaxSeq(int projectId);
+	
+	/**
 	 * 获取上一个有效的Config(按seq排序)
 	 * @param configId
 	 * @return
@@ -85,6 +92,13 @@ public interface ConfigDao {
 	 * @param envId 
 	 */
 	Map<Integer, ConfigStatus> findConfigStatus(int projectId, int envId);
+	
+	/**
+	 * 获取指定key的有效配置项(未软删除)
+	 * @param key
+	 * @return
+	 */
+	Config findConfigByKey(String key);
 
 	/**
 	 * 删除指定配置项在指定环境下的所有配置实例(软删除)，envId=null表示删除所有环境下的
@@ -105,5 +119,11 @@ public interface ConfigDao {
 	 * @param configId
 	 */
 	int delete(int configId);
+
+	/**
+	 * 创建配置项
+	 * @param config
+	 */
+	int create(Config config);
 
 }

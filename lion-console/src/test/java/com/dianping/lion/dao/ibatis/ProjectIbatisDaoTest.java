@@ -20,25 +20,19 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Product;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
+import com.dianping.lion.support.AbstractDaoTestSupport;
 
 /**
  * @author danson.liu
  *
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-	"classpath*:config/spring/appcontext-*.xml"	
-})
-public class ProjectIbatisDaoTest {
+public class ProjectIbatisDaoTest extends AbstractDaoTestSupport {
 	
 	@Autowired
 	private ProjectDao projectDao;

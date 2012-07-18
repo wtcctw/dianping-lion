@@ -134,12 +134,28 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return getSqlMapClientTemplate().update("Config.deleteConfig", params);
 	}
 	
+	@Override
+	public int create(Config config) {
+		return (Integer) getSqlMapClientTemplate().insert("Config.insertConfig", config);
+	}
+	
+	@Override
+	public int getMaxSeq(int projectId) {
+		Object maxSeq = getSqlMapClientTemplate().queryForObject("Config.getMaxSeq", projectId);
+		return maxSeq != null ? (Integer) maxSeq : 0;
+	}
+	
 	private Map<String, Object> parameters(Integer projectId, Integer envId, Boolean includeDeleted) {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("projectId", projectId);
 		parameters.put("envId", envId);
 		parameters.put("includeDeleted", includeDeleted);
 		return parameters;
+	}
+
+	@Override
+	public Config findConfigByKey(String key) {
+		return (Config) getSqlMapClientTemplate().queryForObject("Config.findConfigByKey", key);
 	}
 
 }

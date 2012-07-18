@@ -27,8 +27,11 @@ import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigStatus;
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.exception.EntityNotFoundException;
+import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.ConfigService;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
 
@@ -122,6 +125,23 @@ public class ConfigServiceImpl implements ConfigService {
 			//TODO 从各个环境的zookeeper中移除该config值
 			
 		}
+	}
+
+	@Override
+	public Config create(Config config) {
+		Config configFound = configDao.findConfigByKey(config.getKey());
+		if (configFound != null) {
+			Project project = projectDao.getProject(configFound.getProjectId());
+			throw new RuntimeBusinessException("该配置项已存在(project=" + (project != null ? project.getName() : "***") + ", desc=" + configFound.getDesc() + ")!");
+		}
+		int currentUserId = SecurityUtils.getCurrentUser().getId();
+		int projectId = config.getProjectId();
+		config.setCreateUserId(currentUserId);
+		config.setModifyUserId(currentUserId);
+		projectDao.lockProject(projectId);
+		config.setSeq(configDao.getMaxSeq(projectId) + 1);
+		int newConfigId = configDao.create(config);
+		return configDao.getConfig(newConfigId);
 	}
 
 }
