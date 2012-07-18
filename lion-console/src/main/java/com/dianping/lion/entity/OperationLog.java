@@ -16,7 +16,6 @@
 package com.dianping.lion.entity;
 
 import java.util.Date;
-import com.dianping.lion.util.OperationTypeEnum;
 
 /**
  * @author youngphy.yang

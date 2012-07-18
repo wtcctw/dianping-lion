@@ -52,6 +52,7 @@ public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectD
 		getSqlMapClientTemplate().update("Project.lockProject", projectId);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Project> getProjectsByTeamAndProduct(Map param) {
 		return getSqlMapClientTemplate().queryForList("Project.getProjectsByTeamAndProduct",param);

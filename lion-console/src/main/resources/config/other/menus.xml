@@ -23,7 +23,8 @@
 		<menu name="projectconfig" label="项目设置" url="/system/projectList.vhtml"/>
 		<menu name="syssetting" label="系统设置" url="/"/>
 		<menu name="usersetting" label="用户设置" url="/"/>
-		<menu name="security" label="权限设置" url="/"/>
+		<menu name="security" label="权限设置" url=""/>
+		<menu name="envsetting" label="环境设置" url="/system/envSetting.vhtml"/>
 		<menu name="oplog" label="操作日志" url="/system/opLog.vhtml"/>
 		<menu sperator="true"/>
 		<menu name="aboutlion" label="关于lion" url="/"/>

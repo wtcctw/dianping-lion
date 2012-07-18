@@ -24,6 +24,12 @@
 		<action name="appoplog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogsByProject">
 			<result name="success">/WEB-INF/pages/system/operation-log-project.ftl</result>
 		</action>
+		<action name="envSetting" class="com.dianping.lion.web.action.system.EnvironmentAction" method="getEnvLists">
+			<result name="success">/WEB-INF/pages/system/environment-list.ftl</result>
+		</action>
+		<action name="envAddAjax" class="com.dianping.lion.web.action.system.EnvironmentAction" method="addEnv">
+			<result name="success">/WEB-INF/pages/system/environment-detail.ftl</result>
+		</action>
 		
 	</package>
 
