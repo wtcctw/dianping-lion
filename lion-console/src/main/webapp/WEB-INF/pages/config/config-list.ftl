@@ -33,6 +33,7 @@
 		</div>
 		<#assign queryStr="menu=" + menu + "&pid=" + pid + "&envId=" + envId />
 		<#assign criteriaStr="criteria.key=" + criteria.key + "&criteria.status=" + criteria.status />
+		<@s.hidden name="projectId" id="projectId" value="${pid}"/>
 		<div class="row">
 			<div class="span12">
 			<@s.form cssClass="form-inline lion" action="/config/configList.vhtml?${queryStr}">
@@ -71,8 +72,8 @@
 				      		<i class="icon-plus"></i>
 				      	</a>
 				      	-->
-				      	<a id="add-config-btn" rel="tooltip" data-original-title="添加配置项" class="pull-right">
-				      	<i class="icon-plus"></i>
+				      	<a id="add-config-btn" href="#" rel="tooltip" data-original-title="添加配置项" class="pull-right">
+				      		<i class="icon-plus"></i>
 				      	</a>
 				      </th>
 				    </tr>
@@ -136,46 +137,62 @@
 	<div id="add-config-modal" class="modal hide fade">
 		<div class="modal-header">
           <a class="close" data-dismiss="modal" >&times;</a>
-          <h3>创建配置项</h3>
+          <h3>创建配置项</h3><div class="alert alert-lion">继续添加</div>
         </div>
         <div class="modal-body">
         	<form class="form-horizontal">
         		<fieldset>
 	        		<div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="input01">Key:</label>
+				      <label class="control-label control-lion-label" for="config-key">Key:</label>
 				      <div class="controls lion-controls">
-				        <input type="text" class="input-xlarge" id="input01">
+				        <input type="text" class="input-xlarge" id="config-key">
+				        <span class="help-inline hide message">必填!</span>
 				      </div>
 				    </div>
 	        		<div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="input02">描述:</label>
+				      <label class="control-label control-lion-label" for="config-desc">描述:</label>
 				      <div class="controls lion-controls">
-				        <input type="text" class="input-xlarge" id="input02">
+				        <input type="text" class="input-xlarge" id="config-desc">
+				        <span class="help-inline hide message">必填!</span>
 				      </div>
 				    </div>
 				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="input03">类型:</label>
+				      <label class="control-label control-lion-label" for="config-type-selector">类型:</label>
 				      <div class="controls lion-controls">
 				        <select id="config-type-selector">
 				        	<@s.iterator value="%{@com.dianping.lion.entity.ConfigTypeEnum@values()}">
 				        		<option value="${value}">${label}</option>
 				        	</@s.iterator>
 				        </select>
-				        <input type="checkbox" id="c" checked><label for="c" class="help-inline">trim while string</label>
+				        <input type="checkbox" id="trim-checkbox" checked="checked"><label for="trim-checkbox" class="help-inline">trim while string</label>
 				      </div>
 				    </div>
 				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="input04">Value:</label>
+				      <label class="control-label control-lion-label">环境:</label>
+				      <div class="controls lion-controls">
+				      	<@s.iterator value="environments" status="envStatus">
+				      		<input type="checkbox" name="config-env" id="config-env-${envStatus.index}" value="${id}"
+				      		<@s.if test="%{#envStatus.index == 0}"> checked="checked"</@s.if>
+				      		<@s.if test="%{#envStatus.first || #envStatus.last}"> disabled="disabled"</@s.if>
+				      		><label for="config-env-${envStatus.index}" class="help-inline"
+				      		<@s.if test="%{#envStatus.last}"> rel="tooltip" data-original-title="${label}环境需要单独创建"</@s.if>>${label}</label>
+				      		&nbsp;&nbsp;
+				      	</@s.iterator>
+				      </div>
+				    </div>
+				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="config-value">Value:</label>
 				      <div class="controls lion-controls" id="config-value-container">
-				        <textarea rows="4" style="width:350px;" id="input04"></textarea>
+				        <textarea rows="7" style="width:350px;" id="config-value"></textarea>
 				      </div>
 				    </div>
 			    </fieldset>
         	</form>
         </div>
         <div class="modal-footer">
-          <a href="#" class="btn" data-dismiss="modal" >关闭</a>
-          <a href="#" id="ccc" class="btn btn-primary">保存更改</a>
+          <a href="#" class="btn" data-dismiss="modal">关闭</a>
+          <a href="#" id="save-btn" class="btn btn-primary">&nbsp;&nbsp;保存&nbsp;&nbsp;</a>
+          <a href="#" id="save-deploy-btn" class="btn btn-primary">保存并部署</a>
         </div>
 	</div>
 	

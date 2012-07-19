@@ -15,9 +15,6 @@
  */
 package com.dianping.lion.web.action.config;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Project;
@@ -32,7 +29,7 @@ import com.dianping.lion.web.action.common.AbstractLionAction;
  *
  */
 @SuppressWarnings("serial")
-public class AbstractConfigAction extends AbstractLionAction implements ServletRequestAware {
+public class AbstractConfigAction extends AbstractLionAction {
 
 	protected Integer envId;
 	
@@ -41,8 +38,6 @@ public class AbstractConfigAction extends AbstractLionAction implements ServletR
 	protected Project project;
 	
 	protected String query;
-
-	protected HttpServletRequest request;
 
 	@Autowired
 	protected ConfigService configService;
@@ -117,11 +112,6 @@ public class AbstractConfigAction extends AbstractLionAction implements ServletR
 	 */
 	public void setQuery(String query) {
 		this.query = query;
-	}
-
-	@Override
-	public void setServletRequest(HttpServletRequest request) {
-		this.request = request;
 	}
 	
 }

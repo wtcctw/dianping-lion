@@ -31,13 +31,12 @@ public class ConfigInstance implements Serializable {
 	private int envId;
 	private String value;
 	private String context;
-//	private boolean active;
-//	private Date activeTime;
 	private int createUserId;
 	private int modifyUserId;
 	private Date createTime;
 	private Date modifyTime;
 	private boolean deleted;
+	private String remark;
 	/**
 	 * @return the id
 	 */
@@ -169,6 +168,18 @@ public class ConfigInstance implements Serializable {
 	 */
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+	/**
+	 * @return the remark
+	 */
+	public String getRemark() {
+		return remark;
+	}
+	/**
+	 * @param remark the remark to set
+	 */
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 	
 }
