@@ -37,7 +37,6 @@ import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.UserService;
 import com.dianping.lion.web.action.common.AbstractLionAction;
-import com.google.gson.Gson;
 
 @SuppressWarnings("serial")
 public class OperationLogAction extends AbstractLionAction implements ServletRequestAware{

@@ -22,9 +22,11 @@
 	 </td>
 	 <td style="border: 0px">
             <label class="control-label" for="select05">开始时间</label>
-			<input type="text" id="input-time-start-log"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',lang:'zh-cn'})"/>
+			<input type="text" id="input-time-start-log"  
+			onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',lang:'zh-cn',maxDate:'#F{$dp.$D(\'input-time-end-log\')||\'2020-10-01\'}'})"/>
             <label class="control-label" for="select06">结束时间</label>
-			<input type="text" id="input-time-end-log"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd  HH:mm',lang:'zh-cn'})"/>
+			<input type="text" id="input-time-end-log"  
+			onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',lang:'zh-cn',minDate:'#F{$dp.$D(\'input-time-start-log\')}',maxDate:'2020-10-01'})"/>
 	 </td>
 	 <td style="border: 0px">
              <label>内容</label>  

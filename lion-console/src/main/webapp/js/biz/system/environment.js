@@ -49,6 +49,26 @@ function saveEnv() {
     	envLabel = document.getElementById('input-env-label').value;
     	envIps = document.getElementById('input-env-ips').value;
     	seq = document.getElementById('input-env-seq').value;
+    	if(envName==null ||"" == envName.trim()) {
+    		alert('环境名不能为空');
+    		return;
+    	}
+    	if(envLabel==null ||"" == envLabel.trim()) {
+    		alert('环境别名不能为空');
+    		return;
+    	}
+    	if(envIps==null ||"" == envIps.trim()) {
+    		alert('ZooKeeper地址不能为空');
+    		return;
+    	}
+    	if(!verifyAddress(envIps)) {
+    		alert('ZooKeeper地址不合法');
+    		return;
+    	}
+    	if(seq==null ||"" == seq.trim()) {
+    		alert('环境顺序不能为空');
+    		return;
+    	}
     	var clientdata = {
     			envName : envName,
 //    			envLabel : encodeURI(encodeURI(envLabel)),
@@ -102,4 +122,13 @@ function updateEnv() {
 			bind();
 		}
 	});
+}
+
+function verifyAddress(zookeeperAddress) {
+	var re=/^\w+(\.\w+)+(:\d+)?(,\w+(\.\w+)+(:\d+)?)*$/g; //匹配IP地址的正则表达式
+	//(,\w+(\.\w)+(:\d)?)*
+	if(re.test(zookeeperAddress)) {
+		return true;
+	}
+	return false;
 }
