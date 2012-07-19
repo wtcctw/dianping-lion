@@ -49,4 +49,23 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 		return envMap;
 	}
 
+	public void delete(int id) {
+		environmentDao.delete(id);
+	}
+
+	@Override
+	public int save(Environment env) {
+		return environmentDao.save(env);
+	}
+
+	@Override
+	public void update(Environment env) {
+		environmentDao.update(env);
+	}
+	
+	@Override
+	public Environment findEnvByID(int id) {
+		return environmentDao.findEnvByID(id);
+	}
+
 }

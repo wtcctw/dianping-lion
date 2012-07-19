@@ -20,13 +20,20 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.dianping.lion.dao.OperationLogDao;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationLogSearch;
 import com.dianping.lion.support.AbstractDaoTestSupport;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+	"classpath*:config/spring/appcontext-*.xml"	
+})
 public class OpeationLogIbatisDaoTest extends AbstractDaoTestSupport {
 	
 	@Autowired

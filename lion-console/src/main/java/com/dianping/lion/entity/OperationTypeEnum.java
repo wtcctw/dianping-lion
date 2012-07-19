@@ -13,7 +13,7 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.util;
+package com.dianping.lion.entity;
 
 /**
  * OperationTypeEnum
