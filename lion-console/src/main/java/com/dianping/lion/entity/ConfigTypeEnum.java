@@ -22,7 +22,8 @@ package com.dianping.lion.entity;
  */
 public enum ConfigTypeEnum {
 	
-	String(5, "string"), Number(10, "number"), Boolean(15, "boolean"), List(20, "list"), Map(25, "map/pojo"), Ref(30, "ref");
+	//这里添加配置类型时需要在config-*.js中相应添加Type_*常量
+	String(5, "string"), Number(10, "number"), Boolean(15, "boolean"), List(20, "list"), Map(25, "map/pojo");
 	
 	private int value;
 	

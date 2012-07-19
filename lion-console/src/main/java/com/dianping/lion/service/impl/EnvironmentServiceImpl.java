@@ -15,7 +15,9 @@
  */
 package com.dianping.lion.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,6 +37,16 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	@Override
 	public List<Environment> findAll() {
 		return environmentDao.findAll();
+	}
+
+	@Override
+	public Map<Integer, Environment> findEnvMap() {
+		List<Environment> envList = findAll();
+		Map<Integer, Environment> envMap = new HashMap<Integer, Environment>(envList.size());
+		for (Environment environment : envList) {
+			envMap.put(environment.getId(), environment);
+		}
+		return envMap;
 	}
 
 }

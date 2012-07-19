@@ -47,9 +47,19 @@
 		FROM config c inner join config_instance i on c.id = i.configId
 		WHERE c.projectId = #projectId# AND i.envId = #envId#
 		<isEqual property="includeDeleted" compareValue="false">
-			and c.isDel = 0 and i.isDel = 0
+			AND c.isDel = 0 AND i.isDel = 0
 		</isEqual>
 		ORDER BY c.seq, c.id
+    </select>
+    
+    <select id="findInstance" resultMap="ConfigInstanceResult" parameterClass="map">
+    	SELECT *
+    	FROM config_instance
+    	WHERE configId = #configId# AND envId = #envId#
+    	<isNotNull property="context"> AND context = #context#</isNotNull>
+    	<isNull property="context"> AND context is null</isNull>
+    	<isNull property="includeDeleted"> AND isDel = 0</isNull>
+    	<isNotNull property="includeDeleted"> AND isDel = #includeDeleted#</isNotNull>
     </select>
     
     <select id="findDefaultInstances" resultMap="ConfigInstanceResult" parameterClass="map">
@@ -130,6 +140,14 @@
     <insert id="insertConfig" parameterClass="Config">
     	INSERT INTO config(`key`, `desc`, type, projectId, createUserId, modifyUserId, createTime, modifyTime, isDel, seq)
     	VALUES(#key#, #desc#, #type#, #projectId#, #createUserId#, #modifyUserId#, NOW(), NOW(), #deleted#, #seq#)
+    	<selectKey resultClass="int">    
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey> 
+    </insert>
+    
+    <insert id="insertInstance" parameterClass="ConfigInstance">
+    	INSERT INTO config_instance(configId, envId, value, context, createUserId, modifyUserId, createTime, modifyTime, isDel, remark)
+    	VALUES(#configId#, #envId#, #value#, #context#, #createUserId#, #modifyUserId#, NOW(), NOW(), #deleted#, #remark#)
     	<selectKey resultClass="int">    
             SELECT LAST_INSERT_ID() AS ID
         </selectKey> 

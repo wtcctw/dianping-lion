@@ -128,7 +128,7 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
-	public Config create(Config config) {
+	public int create(Config config) {
 		Config configFound = configDao.findConfigByKey(config.getKey());
 		if (configFound != null) {
 			Project project = projectDao.getProject(configFound.getProjectId());
@@ -140,8 +140,20 @@ public class ConfigServiceImpl implements ConfigService {
 		config.setModifyUserId(currentUserId);
 		projectDao.lockProject(projectId);
 		config.setSeq(configDao.getMaxSeq(projectId) + 1);
-		int newConfigId = configDao.create(config);
-		return configDao.getConfig(newConfigId);
+		return configDao.create(config);
+	}
+
+	@Override
+	public int createInstance(ConfigInstance instance) {
+		ConfigInstance instanceFound = configDao.findInstance(instance.getConfigId(), instance.getEnvId(), instance.getContext());
+		if (instanceFound != null) {
+			String errorMsg = instance.getContext() != null ? "该上下文[context]下配置值已存在!": "默认配置值已存在!";
+			throw new RuntimeBusinessException(errorMsg);
+		}
+		int currentUserId = SecurityUtils.getCurrentUser().getId();
+		instance.setCreateUserId(currentUserId);
+		instance.setModifyUserId(currentUserId);
+		return configDao.createInstance(instance);
 	}
 
 }

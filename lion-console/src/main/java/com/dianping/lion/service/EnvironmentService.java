@@ -16,6 +16,7 @@
 package com.dianping.lion.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dianping.lion.entity.Environment;
 
@@ -26,5 +27,7 @@ import com.dianping.lion.entity.Environment;
 public interface EnvironmentService {
 
 	List<Environment> findAll();
+	
+	Map<Integer, Environment> findEnvMap();
 	
 }

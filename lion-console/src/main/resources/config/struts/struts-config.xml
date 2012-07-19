@@ -30,9 +30,13 @@
 			<result name="success">/WEB-INF/pages/config/config-add.ftl</result>
 		</action>
 		
-		<action name="createConfig" class="com.dianping.lion.web.action.config.ConfigEditAction" method="createConfig">
+		<action name="createConfig" class="com.dianping.lion.web.action.config.ConfigEditAction" method="create">
+			<result name="success" type="stream"/>
+		</action>
+		
+		<action name="createAndDeployConfig" class="com.dianping.lion.web.action.config.ConfigEditAction" method="createAndDeploy">
+			<!-- TODO: remove me -->
 			<result name="success">/WEB-INF/pages/config/config-add.ftl</result>
-			<result name="input">/WEB-INF/pages/config/config-add.ftl</result>
 		</action>
 		
 	</package>

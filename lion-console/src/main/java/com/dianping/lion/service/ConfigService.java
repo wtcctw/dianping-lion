@@ -18,6 +18,7 @@ package com.dianping.lion.service;
 import java.util.List;
 
 import com.dianping.lion.entity.Config;
+import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
 
@@ -63,6 +64,12 @@ public interface ConfigService {
 	 * 创建配置项
 	 * @param config
 	 */
-	Config create(Config config);
+	int create(Config config);
+
+	/**
+	 * 创建配置项实例
+	 * @param instance
+	 */
+	int createInstance(ConfigInstance instance);
 
 }
