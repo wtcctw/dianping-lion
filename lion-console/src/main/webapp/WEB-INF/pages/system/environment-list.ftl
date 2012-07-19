@@ -23,7 +23,7 @@
 			<a data-toggle="modal" href="<@s.url action='envEditAjax' namespace='/system'/>?envId=${environment.id}"
 				rel="tooltip" title="修改环境"> <i class="icon-edit"></i> </a>
 			&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
-			<a href="<@s.url action='envDeleteAjax' namespace='/system'/>?envId=${environment.id}"
+			<a class="deletelink" href="<@s.url action='envDelete' namespace='/system'/>?envId=${environment.id}"
 				rel="tooltip" title="删除环境"> <i class="icon-remove"></i> </a></td>
 		</tr>
 		</#list>

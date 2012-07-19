@@ -96,7 +96,7 @@
 			<param-value>/</param-value>
 		</init-param>
 		<init-param>
-			<param-name>default_encoding</param-name>
+			<param-name>DefaultEncoding</param-name>
 			<param-value>utf-8</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
