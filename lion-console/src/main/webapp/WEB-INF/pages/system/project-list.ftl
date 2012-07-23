@@ -1,6 +1,7 @@
 
 <head>
 	<title>项目设置</title>
+	<script type="text/javascript" src="<@s.url value="/js/biz/system/project-list.js"/>"></script>
 </head>
 <body>
 <input type="hidden" id="teamSelected" value="${teamSelect}" />
@@ -9,29 +10,20 @@
 		
 <#include "/WEB-INF/pages/system/project-span.ftl"> 
 
-<form id="projectQuery" class="form-horizontal" action="projectList.vhtml" method="post">
-<div class="row">
+<form id="projectQuery" class="form-inline lion" action="<@s.url action='projectList' namespace='/system'/>" method="post">
 
-<div class="span3">
 	
-		<div class="control-group">
-	            <label class="control-label" style="width:50px" for="teamSelect">业务组</label>
-	            <div class="controls" style="margin-left:60px">
+	            <label class="control-label" for="teamSelect">业务组</label>
 	              <select id="teamSelect">
 	                <option value=0>所有的</option>
 	                <#list teamList as team>
 	                	<option value=${team.id}>${team.name}</option>
 					</#list>
 	              </select>
-	            </div>
-	    </div>
 	   
 
-</div>
-<div class="span3">
-		<div class="control-group">
-	            <label class="control-label" style="width:50px" for="productSelect">产品线</label>
-	            <div class="controls" style="margin-left:60px">
+
+	            <label class="control-label" for="productSelect">产品线</label>
 	              <select id="productSelect">
 	                <option team=0 value=0>所有的</option>
 	                <#list teamList as team>
@@ -40,13 +32,9 @@
 	                	</#list>
 					</#list>
 	              </select>
-	            </div>
-	    </div>
-</div>
-<div class="span1">
+
 	<button id="query_btn" type="submit" class="btn">查询</button>
-</div>
-</div>
+
 </form>
 <div class="row">
 <div class="span12">
@@ -59,7 +47,7 @@
 	      <th>项目名</th>
 	      <th>创建时间</th>
 	      <th>更新时间</th>
-	      <th >操作<a href="<@s.url action='projectAdd' namespace='/system'/>" rel="tooltip" title="添加项目"><i class="icon-plus pull-right"/>&nbsp&nbsp</a></th>
+	      <th >操作<a href="#" id="add_project_btn" rel="tooltip" title="添加项目"><i class="icon-plus pull-right"/>&nbsp&nbsp</a></th>
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -72,7 +60,8 @@
 	      		<td>${project.createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 				<td style="text-align:center;">
-					<a href="<@s.url action='projectDdit' namespace='/system'/>" rel="tooltip" title="修改项目">
+					<a href="#" id="edit_project_btn" productId="${project.productId}" 
+					projectName="${project.name}" rel="tooltip" title="修改项目">
 	      		    <i class="icon-edit"></i>
 	      		    </a>
 	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
@@ -86,46 +75,115 @@
 </table>
 </div>
 </div>
-<script language="javascript">
+</div>
 
-	function linkage(){
-		$("option[team]").removeClass("hide");
-		if($("#teamSelect").children('option:selected').val() != $("#productSelect").children('option:selected').attr("team")){
-			$("#productSelect option").removeAttr("selected");
-			$("#productSelect option:first").attr("selected","true");
-		}
-		
-		if($("#teamSelect").children('option:selected').val() > 0){
-			
-			$("option[team]").addClass("hide");
-			$("option[team="+$("#teamSelect").children('option:selected').val()+"]").removeClass("hide");
-		}
-	}
-
-	$(document).ready(function(){
-		
-		$("#teamSelect").find("option").removeAttr("selected");
-		var teamS = "option[value='"+$("#teamSelected").attr("value")+"']"
-		$("#teamSelect").find(teamS).attr("selected","true");
-		
-		$("#productSelect").find("option").removeAttr("selected");
-		var productS = "option[value='"+$("#productSelected").attr("value")+"']"
-		$("#productSelect").find(productS).attr("selected","true");
-		
-		linkage();
-		//联动select
-		$("#teamSelect").change(linkage);
-		//提交
-		$("#query_btn").click(function(){
-			var purl = "projectList.vhtml?teamSelect="+$("#teamSelect").children('option:selected').val()+"&productSelect="+$("#productSelect").children('option:selected').val();
-			$("#projectQuery").attr("action",purl);
-			$("#projectQuery").submit();
-		});
-	});
-	
-	
-</script>
-
+<div id="add-project-modal" class="modal hide fade">
+		<div class="modal-header">
+          <a class="close" data-dismiss="modal" >&times;</a>
+          <h3>创建项目</h3>
+        </div>
+        <div class="modal-body">
+        	<form class="form-horizontal">
+        		<fieldset>
+	        		<div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="productSelectAdd">产品线:</label>
+				      <div class="controls lion-controls">
+				        <select id="productSelectAdd">
+					       <#list teamList as team>
+					       	<#list team.products as product>
+					       	<option value=${product.id}>${product.name}</option>
+					       	</#list>
+							</#list>
+					     </select>
+				      </div>
+				    </div>
+	        		<div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="projectName">项目名:</label>
+				      <div class="controls lion-controls">
+				        <input type="text" class="input-middle" id="projectName">
+				      </div>
+				    </div>
+				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for=" id="techLeader">TechLeader:</label>
+				      <div class="controls lion-controls">
+				        <input id="techLeader" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
+				        	<span id="techLeaderWarn" class="help-inline">
+							可输入名字或拼音提示
+	      				 	</span> 
+				        </div>
+				    </div>
+				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="oper">业务运维:</label>
+				      <div class="controls lion-controls">
+				        <input id="oper" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
+						 <span id="operWarn" class="help-inline">
+							可输入名字或拼音提示
+	      				 </span> 
+				      </div>
+				    </div>
+			    </fieldset>
+        	</form>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn" data-dismiss="modal" >关闭</a>
+          <a href="#" id="addProject" class="btn btn-primary">保存</a>
+        </div>
+	</div>
+<div id="edit-project-modal" class="modal hide fade">
+		<div class="modal-header">
+          <a class="close" data-dismiss="modal" >&times;</a>
+          <h3>创建项目</h3>
+        </div>
+        <div class="modal-body">
+        	<form class="form-horizontal">
+        		<fieldset>
+	        		<div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="productSelectAdd">产品线:</label>
+				      <div class="controls lion-controls">
+				        <select id="productSelectEdit">
+					       <#list teamList as team>
+					       	<#list team.products as product>
+					       	<option value=${product.id}>${product.name}</option>
+					       	</#list>
+							</#list>
+					     </select>
+				      </div>
+				    </div>
+	        		<div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="projectName">项目名:</label>
+				      <div class="controls lion-controls">
+				        <input type="text" class="input-middle" id="projectNameEdit">
+				      </div>
+				    </div>
+				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for=" id="techLeader">TechLeader:</label>
+				      <div class="controls lion-controls">
+				        <input id="techLeaderEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
+				        	<span id="techLeaderWarnEdit" class="help-inline">
+							可输入名字或拼音提示
+	      				 	</span> 
+				        </div>
+				    </div>
+				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="oper">业务运维:</label>
+				      <div class="controls lion-controls">
+				        <input id="operEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
+						 <span id="operWarnEdit" class="help-inline">
+							可输入名字或拼音提示
+	      				 </span> 
+				      </div>
+				    </div>
+			    </fieldset>
+        	</form>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn" data-dismiss="modal" >关闭</a>
+          <a href="#" id="editProject" class="btn btn-primary">保存</a>
+        </div>
 	</div>
 </body>
 

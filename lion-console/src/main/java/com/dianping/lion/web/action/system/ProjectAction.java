@@ -15,6 +15,7 @@
  */
 package com.dianping.lion.web.action.system;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,9 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import com.dianping.lion.Constants;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
+import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ProjectService;
+import com.dianping.lion.service.UserService;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 /**
@@ -37,15 +40,24 @@ import com.dianping.lion.web.action.common.AbstractLionAction;
 public class ProjectAction extends AbstractLionAction implements ServletRequestAware{
 	
 	private ProjectService projectService;
+	private UserService userService;
 	
 	private List<Project> projectList;
 	private List<Team> teamList;
+	private List<User> userList;
 	
 	private String active = Constants.PROJECT_NAME;
 	private HttpServletRequest request;
 	
 	private int teamSelect = 0;
 	private int productSelect = 0;
+	
+	private String message = "成功";
+	
+	private int productId;
+	private String projectName;
+	private String techLeader;
+	private String oper;
 
 	public String execute() {
 		Map param = new HashMap();
@@ -54,6 +66,22 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		this.projectList = this.projectService.getProjectsByTeamAndProduct(param);
 		this.teamList = this.projectService.getTeams();
 		this.active = Constants.PROJECT_NAME;
+		this.userList = this.userService.findAll();
+		return SUCCESS;
+	}
+	
+	public String projectAdd(){
+		Project project = new Project();
+		project.setName(this.projectName);
+		project.setProductId(this.productId);
+		int techLeaderId = Integer.parseInt(this.techLeader.split("@")[2]);
+		int operId = Integer.parseInt(this.oper.split("@")[2]);
+		project.setTechLeaderId(techLeaderId);
+		project.setOperId(operId);
+		Date date = new Date();
+		project.setCreateTime(date);
+		project.setModifyTime(date);
+		int dd = this.projectService.addProject(project);
 		return SUCCESS;
 	}
 	
@@ -118,6 +146,62 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	@Override
 	public void setServletRequest(HttpServletRequest request) {
 		this.request = request;
+	}
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
+	public List<User> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(List<User> userList) {
+		this.userList = userList;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public int getProductId() {
+		return productId;
+	}
+
+	public void setProductId(int productId) {
+		this.productId = productId;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public String getTechLeader() {
+		return techLeader;
+	}
+
+	public void setTechLeader(String techLeader) {
+		this.techLeader = techLeader;
+	}
+
+	public String getOper() {
+		return oper;
+	}
+
+	public void setOper(String oper) {
+		this.oper = oper;
 	}
 	
 }

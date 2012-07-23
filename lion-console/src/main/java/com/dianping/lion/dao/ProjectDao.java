@@ -37,4 +37,6 @@ public interface ProjectDao {
 	
 	List<Project> getProjectsByTeamAndProduct(Map param);
 	
+	Integer insertProject(Project project);
+	
 }
