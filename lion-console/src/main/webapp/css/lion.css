@@ -237,3 +237,7 @@ table.lion input[type="radio"], input[type="checkbox"] {
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
 	float : none;
 }
+/*=================自定义CSS==================*/
+.lion_red{
+	color:red;
+}

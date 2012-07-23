@@ -31,13 +31,12 @@
   <div class="control-group">
 	<label class="control-label" for="techLeader">TechLeader</label>
 	<div class="controls">
-     <select id="techLeader">
-       <#list teamList as team>
-       	<#list team.products as product>
-       	<option team=${team.id} value=${product.id}>${product.name}</option>
-       	</#list>
-		</#list>
-     </select>
+     <input type="text" class="span3" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+     data-source="[
+     <#list userList as user>
+     	'${user.name}'
+     </#list>
+     ]">
      </div>
    </div>
    <div class="control-group">
