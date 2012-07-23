@@ -44,7 +44,7 @@
 		<action name="updateEnvSubmitAjax" class="com.dianping.lion.web.action.system.EnvironmentAction" method="editEnvSubmit">
 			<result name="success">/WEB-INF/pages/system/environment-list.ftl</result>
 		</action>
-		<action name="envDeleteAjax" class="com.dianping.lion.web.action.system.EnvironmentAction" method="deleteEnvAjax">
+		<action name="envDelete" class="com.dianping.lion.web.action.system.EnvironmentAction" method="deleteEnvAjax">
 			<result name="success">/WEB-INF/pages/system/environment.ftl</result>
 		</action>
 		
