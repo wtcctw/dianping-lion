@@ -15,6 +15,7 @@
  */
 package com.dianping.lion.web.action.system;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,5 +147,5 @@ public class EnvironmentAction extends AbstractLionAction{
 	public void setSeq(int seq) {
 		this.seq = seq;
 	}
-	
+
 }

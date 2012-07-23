@@ -3,7 +3,6 @@ var Type_Number = 10;
 var Type_Bool = 15;
 var Type_List = 20;
 var Type_Map = 25;
-var Type_Ref = 30;
 
 $(function(){
 	

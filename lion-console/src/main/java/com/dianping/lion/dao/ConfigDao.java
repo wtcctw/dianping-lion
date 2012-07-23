@@ -126,4 +126,19 @@ public interface ConfigDao {
 	 */
 	int create(Config config);
 
+	/**
+	 * 获取指定配置项在指定环境下具有context值的配置实例(有效的[非软删除])
+	 * @param configId
+	 * @param envId
+	 * @param context
+	 */
+	ConfigInstance findInstance(int configId, int envId, String context);
+
+	/**
+	 * 创建配置实例
+	 * @param instance
+	 * @return
+	 */
+	int createInstance(ConfigInstance instance);
+
 }

@@ -1,4 +1,5 @@
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 	<script type="text/javascript" src="<@s.url value="/js/biz/system/environment.js"/>"></script>
 </head>
 <div class="container">

@@ -15,6 +15,14 @@
  */
 package com.dianping.lion.web.action.common;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.interceptor.ServletRequestAware;
+
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -22,7 +30,7 @@ import com.opensymphony.xwork2.ActionSupport;
  *
  */
 @SuppressWarnings("serial")
-public class AbstractLionAction extends ActionSupport {
+public class AbstractLionAction extends ActionSupport implements ServletRequestAware {
 
 	protected String menu;
 	
@@ -31,6 +39,10 @@ public class AbstractLionAction extends ActionSupport {
 	protected String errorMessage;
 	
 	protected String infoMessage;
+
+	protected HttpServletRequest request;
+	
+	protected InputStream inputStream;
 
 	/**
 	 * @return the menu
@@ -86,6 +98,46 @@ public class AbstractLionAction extends ActionSupport {
 	 */
 	public void setInfoMessage(String infoMessage) {
 		this.infoMessage = infoMessage;
+	}
+
+	@Override
+	public void setServletRequest(HttpServletRequest request) {
+		this.request = request;
+	}
+
+	/**
+	 * @return the inputStream
+	 */
+	public InputStream getInputStream() {
+		return inputStream;
+	}
+
+	/**
+	 * @param inputStream the inputStream to set
+	 */
+	public void setInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
+	}
+	
+	protected void createInputStream(String content) {
+		try {
+			this.inputStream = new ByteArrayInputStream(content.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			//never be here
+			throw new RuntimeException("Create content inputstream[response fetch content from] failed.", e);
+		}
+	}
+	
+	protected void createErrorStreamResponse(String errorMsg) {
+		createInputStream(String.format("{code:-1, msg:'%s'}", errorMsg));
+	}
+	
+	protected void createWarnStreamResponse(String warnMsg) {
+		createInputStream(String.format("{code:1, msg:'%s'}", warnMsg));
+	}
+	
+	protected void createSuccessStreamResponse() {
+		createInputStream("{code:0}");
 	}
 	
 }
