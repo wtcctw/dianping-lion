@@ -44,6 +44,6 @@
         	</form>        </div>
         <div class="modal-footer">
           <a class="btn" data-dismiss="modal" >关闭</a>
-          <a id="a-env-save" class="btn btn-primary" onclick="<#if envId == 0>saveEnv()<#else>updateEnv()</#if>">保存更改</a>
+          <a id="a-env-save" class="btn btn-primary" onclick="<#if envId == 0>saveEnv()<#else>updateEnv()</#if>">保存</a>
         </div>
 </div>

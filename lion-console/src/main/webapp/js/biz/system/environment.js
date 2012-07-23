@@ -83,27 +83,29 @@ function updateEnv() {
 	envLabel = document.getElementById('input-env-label').value;
 	envIps = document.getElementById('input-env-ips').value;
 	seq = document.getElementById('input-env-seq').value;
-	var clientdata = {
-			envId : envId,
-			envName : envName,
-			envLabel : envLabel,
-			envIps : envIps,
-			seq : seq
-	};
-	href = "/system/updateEnvSubmitAjax.vhtml";
-	$.ajax( {
-		type : "GET",
-		contentType : "application/json",
-		url : href.prependcontext(),
-		data : clientdata,
-		dataType : 'html',
-		success : function(response) {
-			var temp = response.replace(/&quot;/g, '\"');
-			document.getElementById('table-env-list').innerHTML = temp;
-			modalWindow.modal('hide');
-			bind();
-		}
-	});
+	if (validateConfigForm()) {
+		var clientdata = {
+				envId : envId,
+				envName : envName,
+				envLabel : envLabel,
+				envIps : envIps,
+				seq : seq
+		};
+		href = "/system/updateEnvSubmitAjax.vhtml";
+		$.ajax( {
+			type : "GET",
+			contentType : "application/json",
+			url : href.prependcontext(),
+			data : clientdata,
+			dataType : 'html',
+			success : function(response) {
+				var temp = response.replace(/&quot;/g, '\"');
+				document.getElementById('table-env-list').innerHTML = temp;
+				modalWindow.modal('hide');
+				bind();
+			}
+		});
+	}
 }
 
 function verifyAddress(zookeeperAddress) {
@@ -136,7 +138,7 @@ function validateConfigForm() {
 		}
 	});
 	if(!verifyAddress($("#input-env-ips").val())) {
-		setValidateError($("#input-env-ips"),$("#span-env-ips-error"),"ZooKeeper地址不合法");
+		setValidateError($("#input-env-ips"),$("#span-env-ips-error"),"地址不合法");
 		checkPass = false;
 	}
 	if (!$("#input-env-seq").val().isNumber()) {
