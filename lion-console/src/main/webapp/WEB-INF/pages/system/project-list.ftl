@@ -53,6 +53,7 @@
 	  <tbody>
 	  	<#list projectList as project>
 	  		<tr>
+	  			<input name="projectId" type="hidden" value="${project.id}" />
 	      		<td>${project_index + 1}</td>
 	      		<td>${project.teamName}</td>
 	      		<td>${project.productName}</td>
@@ -61,7 +62,7 @@
 	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 				<td style="text-align:center;">
 					<a href="#" id="edit_project_btn" productId="${project.productId}" 
-					projectName="${project.name}" rel="tooltip" title="修改项目">
+					projectName="${project.name}" rel="tooltip" title="修改项目" onclick="editOpen('${project.name}',${project.productId},'<#list userList as user><#if user.id==project.techLeaderId>${user.name}@${user.loginName}@${user.id}</#if></#list>''<#list userList as user><#if user.id==project.operId>${user.name}@${user.loginName}@${user.id}</#if></#list>')">
 	      		    <i class="icon-edit"></i>
 	      		    </a>
 	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp

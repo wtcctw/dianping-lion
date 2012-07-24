@@ -37,6 +37,8 @@
 	<resultMap id="ProjectResultBasic" class="Project">
 		<result column="id" property="id"/>
 		<result column="name" property="name"/>
+		<result column="techLeaderId" property="techLeaderId"/>
+		<result column="operId" property="operId"/>
 		<result column="productId" property="productId"/>
 		<result column="createTime" property="createTime"/>
 		<result column="modifyTime" property="modifyTime"/>
@@ -71,7 +73,7 @@
     
     <select id="selectProjectsByProduct" resultMap="ProjectResultBasic" parameterClass="int">
     	<![CDATA[
-    	SELECT id, name, productId, createTime, modifyTime, seq
+    	SELECT id, name,techLeaderId,operId, productId, createTime, modifyTime, seq
     	FROM project
     	WHERE productId = #productId#
     	ORDER BY seq
@@ -80,7 +82,7 @@
     
     <select id="getProjects" resultMap="ProjectResult">
 		<![CDATA[
-		SELECT pj.id, pj.name, pj.productId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
+		SELECT pj.id, pj.name, pj.techLeaderId,pj.operId,pj.productId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
 		FROM project pj,product pd,team t
 		where pd.id = pj.productId
 		and pd.teamId = t.id
@@ -90,7 +92,7 @@
     
     <select id="getProjectsByTeamAndProduct" resultMap="ProjectResult" parameterClass="java.util.Map">
 		
-		SELECT pj.id, pj.name, pj.productId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
+		SELECT pj.id, pj.name, pj.productId,pj.techLeaderId,pj.operId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
 		FROM project pj,product pd,team t
 		where pd.id = pj.productId
 		and pd.teamId = t.id
