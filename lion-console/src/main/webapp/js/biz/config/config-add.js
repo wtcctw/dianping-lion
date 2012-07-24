@@ -1,8 +1,9 @@
-var Type_String = 5;
-var Type_Number = 10;
-var Type_Bool = 15;
-var Type_List = 20;
-var Type_Map = 25;
+var Type_String = 10;
+var Type_Number = 20;
+var Type_Bool = 30;
+var Type_List_Num = 40;
+var Type_List_Str = 45;
+var Type_Map = 50;
 
 $(function(){
 	
@@ -20,9 +21,9 @@ $(function(){
 			case Type_String : return generateStringComponent();
 			case Type_Number : return generateNumberComponent();
 			case Type_Bool : return generateBoolComponent();
-			case Type_List : return generateListComponent();
+			case Type_List_Num : return generateListComponent();
+			case Type_List_Str : return generateListComponent();
 			case Type_Map : return generateMapComponent();
-			case Type_Ref : return generateRefComponent();
 		}
 	}
 	
@@ -44,10 +45,6 @@ $(function(){
 	}
 	
 	function generateMapComponent() {
-		return "";
-	}
-	
-	function generateRefComponent() {
 		return "";
 	}
 

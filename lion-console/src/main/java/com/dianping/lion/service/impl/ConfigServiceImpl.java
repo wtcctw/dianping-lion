@@ -27,10 +27,12 @@ import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigStatus;
+import com.dianping.lion.entity.ConfigStatusEnum;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.ConfigService;
+import com.dianping.lion.util.DBUtils;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
@@ -51,12 +53,12 @@ public class ConfigServiceImpl implements ConfigService {
 	public List<ConfigVo> findConfigVos(ConfigCriteria criteria) {
 		int projectId = criteria.getProjectId();
 		int envId = criteria.getEnvId();
-		List<Config> configs = configDao.findConfigsByProject(projectId, false);
+		List<Config> configs = configDao.findConfigsByProject(projectId);
 		List<ConfigVo> configVos = new ArrayList<ConfigVo>(configs.size());
 		if (!configs.isEmpty()) {
 			List<Integer> hasInstanceConfigs = configDao.findHasInstanceConfigs(projectId, envId);
 			List<Integer> hasContextInstConfigs = configDao.findHasContextInstConfigs(projectId, envId);
-			Map<Integer, ConfigInstance> defaultInsts = configDao.findDefaultInstances(projectId, envId, false);
+			Map<Integer, ConfigInstance> defaultInsts = configDao.findDefaultInstances(projectId, envId);
 			Map<Integer, ConfigStatus> configStatus = configDao.findConfigStatus(projectId, envId);
 			for (Config config : configs) {
 				//配置不会太多，使用内存过滤，无分页，如果配置太多影响到性能则考虑数据库过滤和分页
@@ -75,7 +77,7 @@ public class ConfigServiceImpl implements ConfigService {
 	@Override
 	public void moveDown(int projectId, int configId) {
 		Config config = configDao.getConfig(configId);
-		if (config == null || config.isDeleted()) {
+		if (config == null) {
 			throw new EntityNotFoundException("Config[id=" + configId + "] not found.");
 		}
 		projectDao.lockProject(projectId);	//锁定指定projectId，避免同一项目下的config出现相同的seq值
@@ -92,7 +94,7 @@ public class ConfigServiceImpl implements ConfigService {
 	@Override
 	public void moveUp(int projectId, Integer configId) {
 		Config config = configDao.getConfig(configId);
-		if (config == null || config.isDeleted()) {
+		if (config == null) {
 			throw new EntityNotFoundException("Config[id=" + configId + "] not found.");
 		}
 		projectDao.lockProject(projectId);
@@ -132,7 +134,7 @@ public class ConfigServiceImpl implements ConfigService {
 		Config configFound = configDao.findConfigByKey(config.getKey());
 		if (configFound != null) {
 			Project project = projectDao.getProject(configFound.getProjectId());
-			throw new RuntimeBusinessException("该配置项已存在(project=" + (project != null ? project.getName() : "***") + ", desc=" + configFound.getDesc() + ")!");
+			throw new RuntimeBusinessException("该配置项已存在(project: " + (project != null ? project.getName() : "***") + ", desc: " + configFound.getDesc() + ")!");
 		}
 		int currentUserId = SecurityUtils.getCurrentUser().getId();
 		int projectId = config.getProjectId();
@@ -145,15 +147,63 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public int createInstance(ConfigInstance instance) {
-		ConfigInstance instanceFound = configDao.findInstance(instance.getConfigId(), instance.getEnvId(), instance.getContext());
-		if (instanceFound != null) {
-			String errorMsg = instance.getContext() != null ? "该上下文[context]下配置值已存在!": "默认配置值已存在!";
-			throw new RuntimeBusinessException(errorMsg);
-		}
+		changeConfigStatus(instance.getConfigId(), instance.getEnvId(), ConfigStatusEnum.Undeployed);
 		int currentUserId = SecurityUtils.getCurrentUser().getId();
 		instance.setCreateUserId(currentUserId);
 		instance.setModifyUserId(currentUserId);
-		return configDao.createInstance(instance);
+		try {
+			return configDao.createInstance(instance);
+		} catch (RuntimeException e) {
+			if (DBUtils.isDuplicateKeyError(e)) {
+				String errorMsg = StringUtils.isNotBlank(instance.getContext()) ? "该上下文[context]下配置值已存在!": "默认配置值已存在!";
+				throw new RuntimeBusinessException(errorMsg);
+			} else { throw e; }
+		}
+	}
+	
+	@Override
+	public int updateInstance(ConfigInstance instance) {
+		changeConfigStatus(instance.getConfigId(), instance.getEnvId(), ConfigStatusEnum.Undeployed);
+		return configDao.updateInstance(instance);
+	}
+	
+	@Override
+	public void setConfigValue(int configId, int envId, String context, String value) {
+		ConfigInstance found = configDao.findInstance(configId, envId, context);
+		if (found == null) {
+			createInstance(new ConfigInstance(configId, envId, context, value));
+		} else {
+			found.setValue(value);
+			updateInstance(found);
+		}
+	}
+
+	@Override
+	public void changeConfigStatus(int configId, int envId, ConfigStatusEnum status) {
+		int updated = configDao.updateStatusStat(configId, envId, status);
+		if (updated == 0) {
+			configDao.createStatus(new ConfigStatus(configId, envId, status));
+		}
+	}
+
+	@Override
+	public Config findConfigByKey(String key) {
+		return configDao.findConfigByKey(key);
+	}
+
+	@Override
+	public Config getConfig(int configId) {
+		return configDao.getConfig(configId);
+	}
+
+	@Override
+	public ConfigInstance findInstance(int configId, int envId, String context) {
+		return configDao.findInstance(configId, envId, context);
+	}
+
+	@Override
+	public ConfigInstance findDefaultInstance(int configId, int envId) {
+		return findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
 	}
 
 }

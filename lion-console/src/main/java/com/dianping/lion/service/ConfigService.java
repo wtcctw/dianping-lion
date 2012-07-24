@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
+import com.dianping.lion.entity.ConfigStatusEnum;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
 
@@ -71,5 +72,49 @@ public interface ConfigService {
 	 * @param instance
 	 */
 	int createInstance(ConfigInstance instance);
+
+	/**
+	 * @param key
+	 */
+	Config findConfigByKey(String key);
+
+	/**
+	 * @param configId
+	 * @return
+	 */
+	Config getConfig(int configId);
+
+	/**
+	 * @param configId
+	 * @param envId
+	 * @param object
+	 * @return
+	 */
+	ConfigInstance findInstance(int configId, int envId, String context);
+	
+	/**
+	 * 查询配置项默认实例
+	 * @param configId
+	 * @param envId
+	 * @return
+	 */
+	ConfigInstance findDefaultInstance(int configId, int envId);
+
+	int updateInstance(ConfigInstance instance);
+	
+	/**
+	 * 设置指定配置在指定环境和context下的值
+	 * @param configId
+	 * @param envId
+	 * @param context
+	 * @param value
+	 */
+	void setConfigValue(int configId, int envId, String context, String value);
+	
+	/**
+	 * 保存配置项状态，如果存在就更新
+	 * @param status
+	 */
+	void changeConfigStatus(int configId, int envId, ConfigStatusEnum status);
 
 }

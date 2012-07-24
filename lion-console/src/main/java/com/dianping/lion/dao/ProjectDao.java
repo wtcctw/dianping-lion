@@ -33,8 +33,13 @@ public interface ProjectDao {
 	
 	Project getProject(int projectId);
 	
+	/**
+	 * 该接口如果系统运行后发现有问题，则更换方案
+	 * @param projectId
+	 */
 	void lockProject(int projectId);
 	
+	@SuppressWarnings("rawtypes")
 	List<Project> getProjectsByTeamAndProduct(Map param);
 	
 }

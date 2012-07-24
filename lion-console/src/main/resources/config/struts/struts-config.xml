@@ -10,6 +10,10 @@
 			<result name="success">/WEB-INF/pages/config/config-list.ftl</result>
 		</action>
 		
+		<action name="configListAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="ajaxList">
+			<result name="success">/WEB-INF/pages/config/config-list-table.ftl</result>
+		</action>
+		
 		<action name="configMoveUp" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveUp">
 			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
 		</action>
@@ -30,7 +34,15 @@
 			<result name="success">/WEB-INF/pages/config/config-add.ftl</result>
 		</action>
 		
-		<action name="createConfig" class="com.dianping.lion.web.action.config.ConfigEditAction" method="create">
+		<action name="defaultValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="loadDefaultValue">
+			<result name="success" type="stream"/>
+		</action>
+		
+		<action name="saveDefaultValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="saveDefaultValue">
+			<result name="success" type="stream"/>
+		</action>
+		
+		<action name="createConfigAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="create">
 			<result name="success" type="stream"/>
 		</action>
 		

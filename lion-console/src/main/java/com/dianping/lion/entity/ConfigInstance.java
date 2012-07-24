@@ -18,25 +18,42 @@ package com.dianping.lion.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.dianping.lion.util.StringUtils;
+
+
 /**
  * @author danson.liu
  *
  */
 @SuppressWarnings("serial")
 public class ConfigInstance implements Serializable {
+	public static final int MAX_VALUE_DISPLAY_LEN = 48;
+	public static final int MORE_VALUE_DISPLAY_LEN = 210;
+	public static final String NO_CONTEXT = "";
 
 	private int id;
 	private int configId;
 	private Config config;
 	private int envId;
 	private String value;
-	private String context;
+	private String context = NO_CONTEXT;
+	private String contextmd5;
 	private int createUserId;
 	private int modifyUserId;
 	private Date createTime;
 	private Date modifyTime;
-	private boolean deleted;
 	private String remark;
+	
+	public ConfigInstance() {
+	}
+	
+	public ConfigInstance(int configId, int envId, String context, String value) {
+		this.configId = configId;
+		this.envId = envId;
+		this.context = context;
+		this.value = value;
+	}
+
 	/**
 	 * @return the id
 	 */
@@ -79,6 +96,15 @@ public class ConfigInstance implements Serializable {
 	public String getValue() {
 		return value;
 	}
+	public String getAbbrevValue() {
+		return StringUtils.cutString(value, MAX_VALUE_DISPLAY_LEN);
+	}
+	public String getMoreValue() {
+		return StringUtils.cutString(value, MORE_VALUE_DISPLAY_LEN);
+	}
+	public boolean isLongValue() {
+		return StringUtils.cutString(value, MAX_VALUE_DISPLAY_LEN).length() != value.length();
+	}
 	/**
 	 * @param value the value to set
 	 */
@@ -95,7 +121,22 @@ public class ConfigInstance implements Serializable {
 	 * @param context the context to set
 	 */
 	public void setContext(String context) {
+		if (context == null) {
+			throw new IllegalArgumentException("context cannot be null.");
+		}
 		this.context = context;
+	}
+	/**
+	 * @return the contextmd5
+	 */
+	public String getContextmd5() {
+		return contextmd5;
+	}
+	/**
+	 * @param contextmd5 the contextmd5 to set
+	 */
+	public void setContextmd5(String contextmd5) {
+		this.contextmd5 = contextmd5;
 	}
 	/**
 	 * @return the envId
@@ -156,18 +197,6 @@ public class ConfigInstance implements Serializable {
 	 */
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
-	}
-	/**
-	 * @return the deleted
-	 */
-	public boolean isDeleted() {
-		return deleted;
-	}
-	/**
-	 * @param deleted the deleted to set
-	 */
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
 	}
 	/**
 	 * @return the remark

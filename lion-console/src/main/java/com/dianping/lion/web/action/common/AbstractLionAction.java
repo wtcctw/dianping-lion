@@ -119,7 +119,7 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 		this.inputStream = inputStream;
 	}
 	
-	protected void createInputStream(String content) {
+	protected void createStreamResponse(String content) {
 		try {
 			this.inputStream = new ByteArrayInputStream(content.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -129,15 +129,19 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 	}
 	
 	protected void createErrorStreamResponse(String errorMsg) {
-		createInputStream(String.format("{code:-1, msg:'%s'}", errorMsg));
+		createStreamResponse(String.format("{\"code\":-1, \"msg\":\"%s\"}", errorMsg));
 	}
 	
 	protected void createWarnStreamResponse(String warnMsg) {
-		createInputStream(String.format("{code:1, msg:'%s'}", warnMsg));
+		createStreamResponse(String.format("{\"code\":1, \"msg\":\"%s\"}", warnMsg));
+	}
+	
+	protected void createSuccessStreamResponse(String infoMsg) {
+		createStreamResponse(String.format("{\"code\":0, \"msg\":\"%s\"}", infoMsg));
 	}
 	
 	protected void createSuccessStreamResponse() {
-		createInputStream("{code:0}");
+		createSuccessStreamResponse("");
 	}
 	
 }

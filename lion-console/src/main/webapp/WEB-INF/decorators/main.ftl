@@ -17,6 +17,7 @@
 	<script type="text/javascript" src="<@s.url value="/js/jquery.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/jquery-ui-1.8.21.custom.min.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/bootstrap.js"/>"></script>
+	<script type="text/javascript" src="<@s.url value="/js/json2.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/my97/WdatePicker.js"/>"></script>
 	<#include "/WEB-INF/pages/common/common.ftl">
     <style type="text/css">
@@ -42,10 +43,6 @@
 	        <div class="nav-collapse">
 		        <ul class="nav">
 		        	<@lion.SubNav/>
-		        	<!--
-		        	<li><a href="#">配置项</a></li>
-		        	<li><a href="#">人员管理</a></li>
-		        	-->
 		        </ul>
 		        <ul class="nav pull-right">
 		        	<li><a href="#">登录</a></li>
@@ -58,7 +55,7 @@
       </div>
     </div>
 	
-	<div class="container-fluid">
+	<div class="container-fluid" style="min-height:550px;">
 		<div class="row-fluid">
 			<div class="span12"><@decorator.body/></div>
 		</div>

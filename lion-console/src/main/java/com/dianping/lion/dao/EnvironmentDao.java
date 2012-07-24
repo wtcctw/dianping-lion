@@ -34,5 +34,11 @@ public interface EnvironmentDao {
 	void update(Environment env);
 	
 	void delete(int id);
+
+	/**
+	 * @param envId
+	 * @return
+	 */
+	Environment findPrevEnv(int envId);
 	
 }

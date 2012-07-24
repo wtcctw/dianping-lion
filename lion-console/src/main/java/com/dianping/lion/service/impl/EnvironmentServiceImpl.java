@@ -68,4 +68,9 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 		return environmentDao.findEnvByID(id);
 	}
 
+	@Override
+	public Environment findPrevEnv(int envId) {
+		return environmentDao.findPrevEnv(envId);
+	}
+
 }

@@ -1,4 +1,4 @@
-/**************************对String 对象的扩展*********************************/
+/**************************对String对象的扩展*********************************/
 var Res_Code_Success = 0;
 var Res_Code_Error = -1;
 var Res_Code_Warn = 1;
@@ -19,6 +19,10 @@ String.prototype.prependcontext = function() {
 String.prototype.trim = function() {
 	if (this == void 0) {throw new Error("Illegal argument error.");}
 	return this.replace(/(^\s+)|(\s+$)/g, "");
+}
+
+String.prototype.trimIf = function(ifTrim) {
+	return ifTrim == true ? this.trim() : this;
 }
 
 /**
@@ -51,7 +55,22 @@ String.prototype.isNumber = function() {
 }
 
 
-
-
+/**************************对JQuery对象的扩展*********************************/
+$.fn.extend({
+	flashAlert : function(msg, flashInterval) {
+		this.html(msg).parents(".alert-error,.alert-warn,.alert-success").stop().show("fast", function() {
+			$(this).delay($.type(flashInterval) === "undefined" ? 2000: flashInterval).fadeOut("slow");
+		});
+	},
+	showAlert : function(msg) {
+		this.html(msg).parents(".alert-error,.alert-warn,.alert-success").show();
+	},
+	hideAlert : function() {
+		this.html("").parents(".alert-error,.alert-warn,.alert-success").hide();
+	},
+	hideAlerts : function() {
+		this.find(".alert-error,.alert-warn,.alert-success").hide();
+	}
+});
 
 

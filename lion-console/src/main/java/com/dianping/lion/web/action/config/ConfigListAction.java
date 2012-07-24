@@ -44,10 +44,18 @@ public class ConfigListAction extends AbstractConfigAction {
 			envId = !environments.isEmpty() ? environments.get(0).getId() : null;
 		}
 		if (envId != null) {
+			environment = environmentService.findEnvByID(envId);
 			criteria.setProjectId(projectId);
 			criteria.setEnvId(envId);
 			configVos = configService.findConfigVos(criteria);
 		}
+		return SUCCESS;
+	}
+	
+	public String ajaxList() {
+		criteria.setProjectId(projectId);
+		criteria.setEnvId(envId);
+		configVos = configService.findConfigVos(criteria);
 		return SUCCESS;
 	}
 	

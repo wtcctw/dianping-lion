@@ -32,6 +32,13 @@ public interface EnvironmentService {
 
 	Environment findEnvByID(int id);
 	
+	/**
+	 * 获取当前环境的上一个环境
+	 * @param envId
+	 * @return
+	 */
+	Environment findPrevEnv(int envId);
+	
 	int save(Environment env);
 	
 	void update(Environment env);

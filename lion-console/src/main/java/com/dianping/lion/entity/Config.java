@@ -18,6 +18,8 @@ package com.dianping.lion.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.dianping.lion.util.StringUtils;
+
 /**
  * 配置项
  * 
@@ -26,6 +28,8 @@ import java.util.Date;
  */
 @SuppressWarnings("serial")
 public class Config implements Serializable {
+	
+	public static final int MAX_DESC_DISPLAY_LEN = 36;
 
 	private int id;
 	private String key;
@@ -36,7 +40,6 @@ public class Config implements Serializable {
 	private int modifyUserId;
 	private Date createTime;
 	private Date modifyTime;
-	private boolean deleted;
 	private int seq;
 	/**
 	 * @return the id
@@ -67,6 +70,12 @@ public class Config implements Serializable {
 	 */
 	public String getDesc() {
 		return desc;
+	}
+	public String getAbbrevDesc() {
+		return StringUtils.cutString(desc, MAX_DESC_DISPLAY_LEN);
+	}
+	public boolean isLongDesc() {
+		return StringUtils.cutString(desc, MAX_DESC_DISPLAY_LEN).length() != desc.length();
 	}
 	/**
 	 * @param desc the desc to set
@@ -145,18 +154,6 @@ public class Config implements Serializable {
 	 */
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
-	}
-	/**
-	 * @return the deleted
-	 */
-	public boolean isDeleted() {
-		return deleted;
-	}
-	/**
-	 * @param deleted the deleted to set
-	 */
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
 	}
 	/**
 	 * @return the seq

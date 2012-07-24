@@ -19,13 +19,21 @@
 		]]>
     </select>
     
-    <select id="Environment.findByID" resultMap="EnvironmentResult">
+    <select id="findByID" resultMap="EnvironmentResult">
 		<![CDATA[
 		SELECT id, name, label, ips, seq
 		FROM environment
 		where id = #id#
 		ORDER BY seq, id
 		]]>
+    </select>
+    
+    <select id="findPrevEnv" resultMap="EnvironmentResult" parameterClass="int">
+    	SELECT e2.*
+    	FROM environment e1, environment e2
+    	WHERE e1.id = #envId# AND e1.seq > e2.seq
+    	ORDER BY e2.seq desc
+    	LIMIT 1
     </select>
     
     <update id="updateEnv" parameterClass="Environment">

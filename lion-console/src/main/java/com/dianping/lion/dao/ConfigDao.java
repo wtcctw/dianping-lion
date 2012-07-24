@@ -21,6 +21,7 @@ import java.util.Map;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigStatus;
+import com.dianping.lion.entity.ConfigStatusEnum;
 
 /**
  * @author danson.liu
@@ -28,17 +29,17 @@ import com.dianping.lion.entity.ConfigStatus;
  */
 public interface ConfigDao {
 
-	List<Config> findConfigsByProject(int projectId, boolean includeDeleted);
+	List<Config> findConfigsByProject(int projectId);
 
 	/**
-	 * 获取有效的Config(未置为已删除状态的)
+	 * 获取Config
 	 * @param configId
 	 * @return
 	 */
 	Config getConfig(int configId);
 
 	/**
-	 * 获取下一个有效的Config(按seq排序)
+	 * 获取下一个Config(按seq排序)
 	 * @param configId
 	 * @return
 	 */
@@ -52,7 +53,7 @@ public interface ConfigDao {
 	int getMaxSeq(int projectId);
 	
 	/**
-	 * 获取上一个有效的Config(按seq排序)
+	 * 获取上一个Config(按seq排序)
 	 * @param configId
 	 * @return
 	 */
@@ -69,17 +70,17 @@ public interface ConfigDao {
 	 * @param b
 	 * @return
 	 */
-	Map<Integer, ConfigInstance> findDefaultInstances(int projectId, int envId, boolean includeDeleted);
+	Map<Integer, ConfigInstance> findDefaultInstances(int projectId, int envId);
 
 	/**
-	 * 获取存在有效configInstance的有效Config
+	 * 获取存在configInstance的Config
 	 * @param projectId
 	 * @param e
 	 */
 	List<Integer> findHasInstanceConfigs(int projectId, int envId);
 
 	/**
-	 * 获取存在有效context config instance的有效Config
+	 * 获取存在context config instance的Config
 	 * @param projectId
 	 * @param envId
 	 * @return
@@ -94,14 +95,14 @@ public interface ConfigDao {
 	Map<Integer, ConfigStatus> findConfigStatus(int projectId, int envId);
 	
 	/**
-	 * 获取指定key的有效配置项(未软删除)
+	 * 获取指定key的配置项
 	 * @param key
 	 * @return
 	 */
 	Config findConfigByKey(String key);
 
 	/**
-	 * 删除指定配置项在指定环境下的所有配置实例(软删除)，envId=null表示删除所有环境下的
+	 * 删除指定配置项在指定环境下的所有配置实例，envId=null表示删除所有环境下的
 	 * @param configId
 	 * @param envId
 	 */
@@ -115,7 +116,7 @@ public interface ConfigDao {
 	int deleteStatus(int configId, Integer envId);
 	
 	/**
-	 * 删除指定配置项(软删除)
+	 * 删除指定配置项
 	 * @param configId
 	 */
 	int delete(int configId);
@@ -127,18 +128,42 @@ public interface ConfigDao {
 	int create(Config config);
 
 	/**
-	 * 获取指定配置项在指定环境下具有context值的配置实例(有效的[非软删除])
+	 * 获取指定配置项在指定环境下具有指定context值的配置实例
 	 * @param configId
 	 * @param envId
 	 * @param context
 	 */
 	ConfigInstance findInstance(int configId, int envId, String context);
-
+	
 	/**
 	 * 创建配置实例
 	 * @param instance
 	 * @return
 	 */
 	int createInstance(ConfigInstance instance);
+
+	/**
+	 * 创建配置项在特定环境下的状态(存在则更新)
+	 * @param configStatus
+	 */
+	int createStatus(ConfigStatus status);
+	
+	/**
+	 * 更新status所指定的config和env下的配置项状态
+	 * @param status
+	 * @return
+	 */
+	int updateStatus(ConfigStatus status);
+	
+	/**
+	 * 更新指定配置在指定环境下的状态
+	 * @return
+	 */
+	int updateStatusStat(int configId, int envId, ConfigStatusEnum status);
+
+	/**
+	 * @param instance
+	 */
+	int updateInstance(ConfigInstance instance);
 
 }

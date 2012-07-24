@@ -17,6 +17,7 @@ package com.dianping.lion.web.action.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
@@ -36,6 +37,8 @@ public class AbstractConfigAction extends AbstractLionAction {
 	protected int projectId;
 	
 	protected Project project;
+	
+	protected Environment environment;
 	
 	protected String query;
 
@@ -112,6 +115,20 @@ public class AbstractConfigAction extends AbstractLionAction {
 	 */
 	public void setQuery(String query) {
 		this.query = query;
+	}
+
+	/**
+	 * @return the environment
+	 */
+	public Environment getEnvironment() {
+		return environment;
+	}
+
+	/**
+	 * @param environment the environment to set
+	 */
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 	
 }

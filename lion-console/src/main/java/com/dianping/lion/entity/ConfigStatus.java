@@ -31,7 +31,19 @@ public class ConfigStatus implements Serializable {
 	private int configId;
 	private int envId;
 	private int status;
+	private ConfigStatusEnum statusEnum;
 	private Date activeTime;
+	
+	public ConfigStatus() {
+	}
+	
+	public ConfigStatus(int configId, int envId, ConfigStatusEnum status) {
+		this.configId = configId;
+		this.envId = envId;
+		this.status = status.getValue();
+		this.statusEnum = status;
+	}
+
 	/**
 	 * @return the id
 	 */
@@ -75,13 +87,21 @@ public class ConfigStatus implements Serializable {
 		return status;
 	}
 	public ConfigStatusEnum getStatusEnum() {
-		return EnumUtils.fromEnumProperty(ConfigStatusEnum.class, "value", this.status);
+		if (this.statusEnum == null) {
+			synchronized (this) {
+				if (this.statusEnum == null) {
+					this.statusEnum = EnumUtils.fromEnumProperty(ConfigStatusEnum.class, "value", this.status);
+				}
+			}
+		}
+		return this.statusEnum;
 	}
 	/**
 	 * @param status the status to set
 	 */
 	public void setStatus(int status) {
 		this.status = status;
+		this.statusEnum = null;
 	}
 	/**
 	 * @return the activeTime
