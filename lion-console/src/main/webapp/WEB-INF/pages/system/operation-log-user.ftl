@@ -8,25 +8,24 @@
 <table class="table table-bordered">
 <tr>
 	 <td>
-            <label class="control-label" for="select01">项目</label>  
-			<@s.select id="log-project" list=r"projects" listKey="id" listValue="name" theme="simple" headerKey="-1" headerValue="任意项目"/>  
+            <label class="control-label" for="select01">项目</label>
+            <@s.select id="log-project" list=r"projects" listKey="id" listValue="name" theme="simple" headerKey="-1" headerValue="任意项目"/>
+            <input type="hidden" id="log-project" value="<@s.property value="pid"/>"></input>
             <label class="control-label" for="select02">操作类型</label>  
             <div class="controls">  
 			<@s.select id="log-opType" list=r"opTypes" listKey="key" listValue="value" theme="simple"/> 
 	 </td>
 	 <td style="border: 0px">
-            <label class="control-label" for="select03">操作人员</label>  
-<@s.select id="log-user" list=r"users" listKey="id" listValue="name" theme="simple" headerKey="-1" headerValue="任意人员"/>
+            <label class="control-label" for="select03">操作人员</label>
+            <input type="text" id="input-user-log" value="<@s.property value="user"/>" readonly="readonly"/>
             <label class="control-label" for="select04">环境</label>  
 <@s.select id="log-env" list=r"envs" listKey="id" listValue="label" theme="simple" headerKey="-1" headerValue="任意环境"/>
 	 </td>
 	 <td style="border: 0px">
             <label class="control-label" for="select05">开始时间</label>
-			<input type="text" id="input-time-start-log"  
-			onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',lang:'zh-cn',maxDate:'#F{$dp.$D(\'input-time-end-log\')||\'2020-10-01\'}'})"/>
+			<input type="text" id="input-time-start-log"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',lang:'zh-cn'})"/>
             <label class="control-label" for="select06">结束时间</label>
-			<input type="text" id="input-time-end-log"  
-			onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',lang:'zh-cn',minDate:'#F{$dp.$D(\'input-time-start-log\')}',maxDate:'2020-10-01'})"/>
+			<input type="text" id="input-time-end-log"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd  HH:mm',lang:'zh-cn'})"/>
 	 </td>
 	 <td style="border: 0px">
              <label>内容</label>  

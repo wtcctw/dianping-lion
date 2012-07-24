@@ -117,7 +117,13 @@
     <select id="getProject" resultMap="ProjectReverseResult" parameterClass="int">
     	<![CDATA[SELECT * FROM project WHERE id = #projectId#]]>
     </select>
-    
+    <insert id="insertProject" parameterClass="Project">
+    	INSERT INTO project(name, techLeaderId, operId, productId,createTime, modifyTime)
+    	VALUES(#name#, #techLeaderId#, #operId#, #productId#, #createTime#, #modifyTime#)
+    	<selectKey resultClass="int">    
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey> 
+    </insert>
     <statement id="lockProject" parameterClass="int">
     	<![CDATA[SELECT 1 FROM project WHERE id = #projectId# FOR UPDATE]]>
     </statement>

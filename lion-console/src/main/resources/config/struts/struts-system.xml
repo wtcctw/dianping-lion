@@ -9,6 +9,9 @@
 		<action name="projectList" class="com.dianping.lion.web.action.system.ProjectAction">
 			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
 		</action>
+		<action name="projectAdd" class="com.dianping.lion.web.action.system.ProjectAction" method="projectAdd">
+			<result name="success">/WEB-INF/pages/system/project-message.ftl</result>
+		</action>
 		<action name="productList" class="com.dianping.lion.web.action.system.ProjectAction" method="productList">
 			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
 		</action>

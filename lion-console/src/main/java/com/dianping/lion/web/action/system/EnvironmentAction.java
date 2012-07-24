@@ -16,12 +16,8 @@
 package com.dianping.lion.web.action.system;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Environment;
@@ -29,12 +25,10 @@ import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
-public class EnvironmentAction extends AbstractLionAction implements ServletRequestAware{
+public class EnvironmentAction extends AbstractLionAction{
 	
 	@Autowired
 	private EnvironmentService environmentService;
-	
-	private HttpServletRequest request;
 	
 	//表格内容
 	private List<Environment> environmentList;
@@ -154,9 +148,4 @@ public class EnvironmentAction extends AbstractLionAction implements ServletRequ
 		this.seq = seq;
 	}
 
-	@Override
-	public void setServletRequest(HttpServletRequest request) {
-		this.request = request;
-	}
-	
 }

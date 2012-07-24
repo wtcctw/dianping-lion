@@ -42,4 +42,6 @@ public interface ProjectDao {
 	@SuppressWarnings("rawtypes")
 	List<Project> getProjectsByTeamAndProduct(Map param);
 	
+	Integer insertProject(Project project);
+	
 }

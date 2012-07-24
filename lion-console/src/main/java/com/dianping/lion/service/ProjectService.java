@@ -45,6 +45,12 @@ public interface ProjectService {
 	 */
 	List<Project> getProjectsByTeamAndProduct(Map param);
 	
+	/**
+	 * @param projectId
+	 * @return
+	 */
 	Project getProject(int projectId);
+	
+	Integer addProject(Project project);
 	
 }

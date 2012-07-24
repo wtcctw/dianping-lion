@@ -54,4 +54,9 @@ public class ProjectServiceImpl implements ProjectService {
 		return projectDao.getProjectsByTeamAndProduct(param);
 	}
 
+	@Override
+	public Integer addProject(Project project) {
+		return projectDao.insertProject(project);
+	}
+
 }
