@@ -12,12 +12,48 @@
 		<action name="projectAdd" class="com.dianping.lion.web.action.system.ProjectAction" method="projectAdd">
 			<result name="success">/WEB-INF/pages/system/project-message.ftl</result>
 		</action>
-		<action name="productList" class="com.dianping.lion.web.action.system.ProjectAction" method="productList">
-			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
+		
+		<!-- 产品线操作 -->
+		<action name="productList" class="com.dianping.lion.web.action.system.ProductAction" method="productList">
+			<result name="success">/WEB-INF/pages/system/product.ftl</result>
 		</action>
-		<action name="teamList" class="com.dianping.lion.web.action.system.ProjectAction" method="teamList">
-			<result name="success">/WEB-INF/pages/system/project-list.ftl</result>
+		<action name="productAddAjax" class="com.dianping.lion.web.action.system.ProductAction" method="productAdd">
+			<result name="success">/WEB-INF/pages/system/product-detail.ftl</result>
 		</action>
+		<action name="productAddSubmitAjax" class="com.dianping.lion.web.action.system.ProductAction" method="productAddSubmit">
+			<result name="success">/WEB-INF/pages/system/product-list.ftl</result>
+		</action>
+		<action name="productEditAjax" class="com.dianping.lion.web.action.system.ProductAction" method="productEdit">
+			<result name="success">/WEB-INF/pages/system/product-detail.ftl</result>
+		</action>
+		<action name="productEditSubmitAjax" class="com.dianping.lion.web.action.system.ProductAction" method="productEditSubmit">
+			<result name="success">/WEB-INF/pages/system/product-list.ftl</result>
+		</action>
+		<action name="productDelete" class="com.dianping.lion.web.action.system.ProductAction" method="deleteProductAjax">
+			<result name="success">/WEB-INF/pages/system/product.ftl</result>
+		</action>
+		
+		<!-- 部门操作 -->
+		<action name="teamList" class="com.dianping.lion.web.action.system.TeamAction" method="teamList">
+			<result name="success">/WEB-INF/pages/system/team.ftl</result>
+		</action>
+		<action name="teamAddAjax" class="com.dianping.lion.web.action.system.TeamAction" method="teamAdd">
+			<result name="success">/WEB-INF/pages/system/team-detail.ftl</result>
+		</action>
+		<action name="teamAddSubmitAjax" class="com.dianping.lion.web.action.system.TeamAction" method="teamAddSubmit">
+			<result name="success">/WEB-INF/pages/system/team-list.ftl</result>
+		</action>
+		<action name="teamEditAjax" class="com.dianping.lion.web.action.system.TeamAction" method="teamEdit">
+			<result name="success">/WEB-INF/pages/system/team-detail.ftl</result>
+		</action>
+		<action name="teamEditSubmitAjax" class="com.dianping.lion.web.action.system.TeamAction" method="teamEditSubmit">
+			<result name="success">/WEB-INF/pages/system/team-list.ftl</result>
+		</action>
+		<action name="teamDelete" class="com.dianping.lion.web.action.system.TeamAction" method="deleteTeamAjax">
+			<result name="success">/WEB-INF/pages/system/team.ftl</result>
+		</action>
+		
+		<!-- 操作日志 -->
 		<action name="opLog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogs">
 			<result name="success">/WEB-INF/pages/system/operation-log.ftl</result>
 		</action>
