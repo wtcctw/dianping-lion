@@ -126,6 +126,13 @@
             SELECT LAST_INSERT_ID() AS ID
         </selectKey> 
     </insert>
+    <update id="updateProject" parameterClass="Project">
+    	update project set name=#name#, techLeaderId=#techLeaderId#, operId=#operId#, productId=#productId#,createTime=#createTime#, modifyTime=#modifyTime#
+    	where id = #id#
+    </update>
+    <delete id="delProject" parameterClass="int">
+		delete from project where id=#id#
+    </delete>
     <statement id="lockProject" parameterClass="int">
     	<![CDATA[SELECT 1 FROM project WHERE id = #projectId# FOR UPDATE]]>
     </statement>

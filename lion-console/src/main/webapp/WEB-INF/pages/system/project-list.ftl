@@ -62,11 +62,11 @@
 	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 				<td style="text-align:center;">
 					<a href="#" id="edit_project_btn" productId="${project.productId}" 
-					projectName="${project.name}" rel="tooltip" title="修改项目" onclick="editOpen('${project.name}',${project.productId},'<#list userList as user><#if user.id==project.techLeaderId>${user.name}@${user.loginName}@${user.id}</#if></#list>''<#list userList as user><#if user.id==project.operId>${user.name}@${user.loginName}@${user.id}</#if></#list>')">
+					projectName="${project.name}" rel="tooltip" title="修改项目" onclick="editOpen(${project.id},'${project.name}',${project.productId},'<#list userList as user><#if user.id==project.techLeaderId>${user.name}@${user.loginName}@${user.id}</#if></#list>','<#list userList as user><#if user.id==project.operId>${user.name}@${user.loginName}@${user.id}</#if></#list>')">
 	      		    <i class="icon-edit"></i>
 	      		    </a>
 	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-	      		    <a href="<@s.url action='projectDel' namespace='/system'/>" rel="tooltip" title="删除项目">
+	      		    <a class="deletelink" href="<@s.url action='projectDel' namespace='/system'/>?projectId=${project.id}" rel="tooltip" title="删除项目">
 					<i class="icon-remove"></i>
 					</a>
 			     </td>
@@ -140,6 +140,7 @@
         <div class="modal-body">
         	<form class="form-horizontal">
         		<fieldset>
+        		<input type="hidden" id="projectIdEdit" value="" />
 	        		<div class="control-group control-lion-group">
 				      <label class="control-label control-lion-label" for="productSelectAdd">产品线:</label>
 				      <div class="controls lion-controls">

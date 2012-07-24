@@ -53,4 +53,6 @@ public interface ProjectService {
 	
 	Integer addProject(Project project);
 	
+	Integer editProject(Project project);
+	Integer delProject(int projectId);
 }
