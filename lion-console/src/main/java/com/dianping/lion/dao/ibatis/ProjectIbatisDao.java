@@ -63,4 +63,14 @@ public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectD
 		return (Integer)getSqlMapClientTemplate().insert("Project.insertProject", project);
 	}
 
+	@Override
+	public Integer updateProject(Project project) {
+		return (Integer)getSqlMapClientTemplate().update("Project.updateProject", project);
+	}
+
+	@Override
+	public Integer delProject(int projectId) {
+		return (Integer)getSqlMapClientTemplate().delete("Project.delProject",projectId);
+	}
+
 }

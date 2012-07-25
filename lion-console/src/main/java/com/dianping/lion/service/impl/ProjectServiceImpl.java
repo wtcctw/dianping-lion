@@ -59,4 +59,14 @@ public class ProjectServiceImpl implements ProjectService {
 		return projectDao.insertProject(project);
 	}
 
+	@Override
+	public Integer editProject(Project project) {
+		return projectDao.updateProject(project);
+	}
+
+	@Override
+	public Integer delProject(int projectId) {
+		return projectDao.delProject(projectId);
+	}
+
 }

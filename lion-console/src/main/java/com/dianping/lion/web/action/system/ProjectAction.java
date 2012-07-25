@@ -54,6 +54,7 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	
 	private String message = "成功";
 	
+	private int projectId;
 	private int productId;
 	private String projectName;
 	private String techLeader;
@@ -82,6 +83,27 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		project.setCreateTime(date);
 		project.setModifyTime(date);
 		int dd = this.projectService.addProject(project);
+		return SUCCESS;
+	}
+	
+	public String projectEdit(){
+		Project project = new Project();
+		project.setId(this.projectId);
+		project.setName(this.projectName);
+		project.setProductId(this.productId);
+		int techLeaderId = Integer.parseInt(this.techLeader.split("@")[2]);
+		int operId = Integer.parseInt(this.oper.split("@")[2]);
+		project.setTechLeaderId(techLeaderId);
+		project.setOperId(operId);
+		Date date = new Date();
+		project.setCreateTime(date);
+		project.setModifyTime(date);
+		int dd = this.projectService.editProject(project);
+		return SUCCESS;
+	}
+	
+	public String projectDel(){
+		this.projectService.delProject(this.projectId);
 		return SUCCESS;
 	}
 	
@@ -202,6 +224,14 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 
 	public void setOper(String oper) {
 		this.oper = oper;
+	}
+
+	public int getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
 	}
 	
 }
