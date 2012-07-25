@@ -157,13 +157,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		this.teamSelect = teamSelect;
 	}
 
-	public int getProductSelect() {
-		return productSelect;
-	}
-
-	public void setProductSelect(int productSelect) {
-		this.productSelect = productSelect;
-	}
 
 	@Override
 	public void setServletRequest(HttpServletRequest request) {
@@ -233,5 +226,13 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	public void setProjectId(int projectId) {
 		this.projectId = projectId;
 	}
-	
+
+	public int getProductSelect() {
+		return productSelect;
+	}
+
+	public void setProductSelect(int productSelect) {
+		this.productSelect = productSelect;
+	}
+
 }
