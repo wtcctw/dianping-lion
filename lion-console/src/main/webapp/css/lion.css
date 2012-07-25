@@ -154,7 +154,7 @@ form.lion > label:first-child {
 }
 
 form.lion > *+label, form.lion > *+button {
-	margin-left: 25px;
+	margin-left: 20px;
 }
 
 table.lion {

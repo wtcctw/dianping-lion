@@ -46,6 +46,9 @@ public class ConfigEditAction extends AbstractConfigAction {
 	
 	private List<Integer> envIds;
 	
+	private boolean ifDeploy;
+	private boolean ifPush;
+	
 	public String create() {
 		int configType = config.getType();
 		boolean isStringType = configType == ConfigTypeEnum.String.getValue();
@@ -223,6 +226,20 @@ public class ConfigEditAction extends AbstractConfigAction {
 	 */
 	public void setConfigId(int configId) {
 		this.configId = configId;
+	}
+
+	/**
+	 * @param ifDeploy the ifDeploy to set
+	 */
+	public void setIfDeploy(boolean ifDeploy) {
+		this.ifDeploy = ifDeploy;
+	}
+
+	/**
+	 * @param ifPush the ifPush to set
+	 */
+	public void setIfPush(boolean ifPush) {
+		this.ifPush = ifPush;
 	}
 	
 }

@@ -24,7 +24,7 @@
 			</div>
 		</div>
 		<#assign queryStr_="menu=" + menu + "&pid=" + pid + "&envId=" + envId />
-		<#assign criteriaStr_="criteria.key=" + criteria.key + "&criteria.status=" + criteria.status />
+		<#assign criteriaStr_="criteria.key=" + criteria.key + "&criteria.value=" + criteria.value + "&criteria.status=" + criteria.status />
 		<div class="row">
 			<div class="span12">
 				<ul class="nav nav-tabs">
@@ -43,7 +43,9 @@
 			<@s.form cssClass="form-inline lion" action="/config/configList.vhtml" method="get">
 				<@s.hidden name="menu"/><@s.hidden name="pid"/><@s.hidden name="envId"/>
 				<label class="control-label" for="key">KEY：</label>
-				<@s.textfield id="key" name="criteria.key" cssClass="input-medium"/>
+				<@s.textfield id="key" name="criteria.key" cssClass="input-medium" maxlength="50"/>
+				<label class="control-label" for="key">VALUE：</label>
+				<@s.textfield id="value" name="criteria.value" cssClass="input-medium" maxlength="50"/>
 				<label class="control-label" for="status">Status：</label>
 				<@s.select id="status" name="criteria.status" list="%{@com.dianping.lion.entity.ConfigStatusEnum@values()}" listKey="value"
 					listValue="label" headerValue="所有的" headerKey="-1" value="criteria.status" cssClass="input-medium"/>
@@ -55,6 +57,8 @@
 			<div class="span12" style="padding:1px;">
 				<strong>按钮提示：</strong>
 				<i class="icon-edit icon-intro" data-original-title="编辑配置值" data-content="编辑指定配置项在当前环境下的设定值."></i>
+				<i class="icon-share-alt icon-intro" style="margin-left: 10px;" data-original-title="部署配置项" data-content="将指定配置项在当前环境下的设定值推送到该环境下的配置服务器上."></i>
+				<i class="icon-arrow-right icon-intro" style="margin-left: 10px;" data-original-title="推送配置项" data-content="将指定配置项在当前环境下的设定值推送到该环境下的配置服务器上，并通知到业务应用，立即生效，应用无需重启."></i>
 				<i class="icon-trash icon-intro" style="margin-left: 10px;" data-original-title="清除配置值" data-content="清除指定配置项在当前环境下的设定值."></i>
 				<i class="icon-remove icon-intro" style="margin-left: 10px;" data-original-title="删除配置项" data-content="完全删除该配置项，所有环境下不再存在该配置项值."></i>
 				<i class="icon-arrow-up icon-intro" style="margin-left: 10px;" data-original-title="上移" data-content="上移配置项的位置，将相关的配置项编排在一起."></i>

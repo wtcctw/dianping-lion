@@ -16,6 +16,8 @@
 package com.dianping.lion.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +50,8 @@ public class ConfigServiceImpl implements ConfigService {
 	
 	@Autowired
 	private ProjectDao projectDao;
+	
+//	private Comparator<ConfigVo> configListComparator = new ConfigVoComparator();
 
 	@Override
 	public List<ConfigVo> findConfigVos(ConfigCriteria criteria) {
@@ -63,14 +67,18 @@ public class ConfigServiceImpl implements ConfigService {
 			for (Config config : configs) {
 				//配置不会太多，使用内存过滤，无分页，如果配置太多影响到性能则考虑数据库过滤和分页
 				String key = StringUtils.trim(criteria.getKey());
+				String value = StringUtils.trim(criteria.getValue());
 				ConfigStatus status = configStatus.get(config.getId());
-				if ((StringUtils.isEmpty(key) || config.getKey().contains(key)) && (criteria.getStatus() == -1 
-						|| (status != null && status.getStatus() == criteria.getStatus()))) {
+				ConfigInstance defaultInst = defaultInsts.get(config.getId());
+				if ((StringUtils.isEmpty(key) || config.getKey().contains(key)) 
+						&& (criteria.getStatus() == -1 || (status != null && status.getStatus() == criteria.getStatus()))
+						&& StringUtils.isEmpty(value) || (defaultInst != null && defaultInst.getValue().contains(value))) {
 					configVos.add(new ConfigVo(config, status, hasInstanceConfigs.contains(config.getId()), 
-							hasContextInstConfigs.contains(config.getId()), defaultInsts.get(config.getId())));
+							hasContextInstConfigs.contains(config.getId()), defaultInst));
 				}
 			}
 		}
+//		Collections.sort(configVos, configListComparator);
 		return configVos;
 	}
 
@@ -206,4 +214,18 @@ public class ConfigServiceImpl implements ConfigService {
 		return findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
 	}
 
+}
+
+class ConfigVoComparator implements Comparator<ConfigVo> {
+
+	@Override
+	public int compare(ConfigVo o1, ConfigVo o2) {
+		int defaultInstance1 = o1.getDefaultInstance() != null ? 1 : 0;
+		int defaultInstance2 = o2.getDefaultInstance() != null ? 1 : 0;
+		if (defaultInstance1 != defaultInstance2) {
+			return defaultInstance1 - defaultInstance2;
+		}
+		return o1.getConfig().getSeq() - o2.getConfig().getSeq();
+	}
+	
 }

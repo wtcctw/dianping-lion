@@ -3,12 +3,12 @@
 <table class="table table-bordered table-striped table-condensed">
 	<thead>
     <tr>
-      <th width="40">序号</th>
-      <th width="310">KEY</th>
+      <th width="30">序号</th>
+      <th width="300">KEY</th>
       <th width="250">DESC</th>
       <th>VALUE</th>
-      <th width="60">Status</th>
-      <th width="120">
+      <th width="50">Status</th>
+      <th width="150">
       	操作
       	<a id="add-config-btn" href="#" rel="tooltip" data-original-title="添加配置项" class="pull-right">
       		<i class="icon-plus"></i>
@@ -52,7 +52,22 @@
   			<@s.else><font color="#D14836">未设置</font></@s.else>
   		</td>
   		<td>
+  			<!--
+  			<div class="btn-group" style="width:80px;float:left;">
+	          <a class="btn btn-mini" href="#"><i class="icon-edit"></i> Edit</a>
+	          <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+	          <ul class="dropdown-menu">
+	            <li><a href="#"><i class="icon-pencil"></i> Edit</a></li>
+	            <li><a href="#"><i class="icon-trash"></i> Delete</a></li>
+	            <li><a href="#"><i class="icon-ban-circle"></i> Ban</a></li>
+	            <li class="divider"></li>
+	            <li><a href="#"><i class="i"></i> Make admin</a></li>
+	          </ul>
+	        </div>
+	        -->
   			<a href="#" class="edit-config-btn"><i class="icon-edit"></i></a>
+  			<i class="icon-share-alt"></i>
+  			<i class="icon-arrow-right"></i>
   			<@s.if test="%{#configVo.hasInstance}">
   			<a href="<@s.url action="clearInstance" namespace="/config"/>?${queryStr}&${criteriaStr}&configId=${config.id}" class="clearLink"><i class="icon-trash"></i></a>
   			</@s.if>

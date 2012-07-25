@@ -28,7 +28,6 @@
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
 			      		<input type="checkbox" name="edit-config-env" id="edit-config-env-${envStatus.index}" value="${id}"
-			      		<@s.if test="%{#envStatus.last}"> disabled="disabled"</@s.if>
 			      		><label for="edit-config-env-${envStatus.index}" class="help-inline"
 			      		<@s.if test="%{#envStatus.last}"> rel="tooltip" data-original-title="${label}环境需要单独创建"</@s.if>>${label}</label>
 			      		&nbsp;&nbsp;
@@ -41,12 +40,18 @@
 			        <textarea rows="7" style="width:350px;" id="edit-config-value"></textarea>
 			      </div>
 			    </div>
+			    <div class="control-group control-lion-group">
+			    	<label class="control-label control-lion-label">&nbsp;</label>
+			    	<div class="controls lion-controls">
+			    		<input type="checkbox" value="true" id="edit-if-deploy"><label class="help-inline" for="edit-if-deploy">推送到配置服务器</label>&nbsp;&nbsp;
+			    		<input type="checkbox" value="true" id="edit-if-push" disabled="disabled"><label class="help-inline" for="edit-if-push">并推送到应用(应用无需重启即生效)</label>
+			    	</div>
+			    </div>
 		    </fieldset>
     	</form>
     </div>
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">关闭</a>
       <input id="edit-save-btn" type="button" class="btn btn-primary" value=" 保存 ">
-      <input id="edit-save-deploy-btn" type="button" class="btn btn-primary" value=" 保存并部署 ">
     </div>
 </div>

@@ -8,7 +8,7 @@
 <table class="table table-bordered">
 <tr>
 	 <td>
-            <label class="control-label" for="select01">项目</label>
+            <label class="control-label" for="select01">项目2</label>
             <input type="text" id="input-project-log" value="<@s.property value="projectName"/>" readonly="readonly"/>
             <input type="hidden" id="log-project" value="<@s.property value="pid"/>"></input>
             <label class="control-label" for="select02">操作类型</label>  

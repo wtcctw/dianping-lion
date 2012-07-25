@@ -10,12 +10,44 @@ var modal_config_created = false;
 var modal_config_edited = false;
 var $config_list_editor;
 var $config_map_editor;
+var $clearAlert;
+var $deleteAlert;
 
 $(function(){
 	$(".icon-intro").popover();
 	bindConfigTableEvents();
 	$config_list_editor = $("#list-editor").listeditor();
 	$config_map_editor = $("#map-editor").mapeditor();
+	
+	$clearAlert = $("<div>确认清除该配置项值? [<font color='green'>不可恢复</font>]</div>")
+		.dialog({
+			autoOpen : false,
+			resizable : false,
+			modal : true,
+			title : "提示框",
+			height : 140,
+			buttons : {
+				"是" : function() {
+					$(location).attr("href", $(this).data("location"));
+				},
+				"否" : function() {$(this).dialog("close");}
+			}
+		});
+		
+	$deleteAlert = $("<div>确认删除该配置项? [<font color='green'>不可恢复</font>]</div>")
+		.dialog({
+			autoOpen : false,
+			resizable : false,
+			modal : true,
+			title : "提示框",
+			height : 140,
+			buttons : {
+				"是" : function() {
+					$(location).attr("href", $(this).data("location"));
+				},
+				"否" : function() {$(this).dialog("close");}
+			}
+		});
 	
 	$("#add-config-modal").on("hidden", function() {
 		resetConfigForm();
@@ -62,6 +94,24 @@ $(function(){
 	$("#edit-config-modal").on("hidden", function() {
 		if (modal_config_edited) {
 			reloadConfigListTable();
+		}
+	});
+	
+	$("#if-deploy").click(function() {
+		if ($(this).is(":checked")) {
+			$("#if-push").attr("disabled", false);
+		} else {
+			$("#if-push").attr("disabled", true);
+			$("#if-push").attr("checked", false);
+		}
+	});
+	
+	$("#edit-if-deploy").click(function() {
+		if ($(this).is(":checked")) {
+			$("#edit-if-push").attr("disabled", false);
+		} else {
+			$("#edit-if-push").attr("disabled", true);
+			$("#edit-if-push").attr("checked", false);
 		}
 	});
 	
@@ -113,20 +163,19 @@ $(function(){
 				success: function(result) {
 					if (result.code == Res_Code_Success) {
 						modal_config_created = true;
-						resetConfigForm();
+						resetConfigForm(["config-env", "if-deploy"]);
 						$("#add-config-modal .form-info").flashAlert("创建成功，请继续添加.", 4000);
 					} else if (result.code == Res_Code_Error) {
 						resetConfigAlerts();
 						$("#add-config-modal .form-error").showAlert(result.msg);
 					} else if (result.code == Res_Code_Warn) {
 						modal_config_created = true;
-						resetConfigForm();
+						resetConfigForm(["config-env", "if-deploy"]);
 						$("#add-config-modal .form-warn").showAlert(result.msg);
 					}
 				}
 			});
 		}
-		return false;
 	});
 	
 	function reloadConfigListTable() {
@@ -182,12 +231,12 @@ $(function(){
 	}
 	
 	function generateListComponent(inputId, numberlist) {
-		return "<textarea id='" + inputId + "' rows='7' style='width:350px;' readonly='readonly'></textarea>"
+		return "<textarea id='" + inputId + "' rows='7' style='width:350px;' readonly='readonly' onclick='openListEditor(\"" + inputId + "\", " + numberlist + ", event);'></textarea>"
 			+ "<a href='#' onclick='openListEditor(\"" + inputId + "\", " + numberlist + ", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>";
 	}
 	
 	function generateMapComponent(inputId) {
-		return "<textarea id='" + inputId + "' rows='7' style='width:350px;' readonly='readonly'></textarea>"
+		return "<textarea id='" + inputId + "' rows='7' style='width:350px;' readonly='readonly' onclick='openMapEditor(\"" + inputId + "\", event);'></textarea>"
 			+ "<a href='#' onclick='openMapEditor(\"" + inputId + "\", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>";
 	}
 	
@@ -229,8 +278,8 @@ $(function(){
 		$element.next(".message").hide();
 	}
 	
-	function resetConfigForm() {
-		resetConfigFormInput();
+	function resetConfigForm(excepts) {
+		resetConfigFormInput(excepts);
 		resetConfigFormValidation();
 		resetConfigAlerts();
 	}
@@ -241,19 +290,26 @@ $(function(){
 		resetConfigFormValidation();
 		$("#edit-select-all-env,[name='edit-config-env']").attr("checked", false);
 		$("#edit-save-btn,#edit-save-deploy-btn").attr("disabled", false);
+		$("#edit-if-deploy").attr("checked", false).triggerHandler("click");
 	}
 	
 	function resetConfigAlerts() {
 		$("#add-config-modal").hideAlerts();
 	}
 	
-	function resetConfigFormInput() {
+	function resetConfigFormInput(excepts) {
+		var excepts_ = typeof excepts != "undefined" ? excepts : [];
 		$("#config-type-selector").val($("#config-type-selector option:first").val()).change();
 		$("#config-key").val($("#projectName").val() + ".");
 		$("#config-desc,#config-value").val("");
 		$("#trim-checkbox").attr("checked", true);
-		$(":checkbox[name='config-env']:enabled").attr("checked", false);
-		$("#select-all-env").attr("checked", false);
+		if (!excepts_.contains("config-env")) {
+			$(":checkbox[name='config-env']:enabled").attr("checked", false);
+			$("#select-all-env").attr("checked", false);
+		}
+		if (!excepts_.contains("if-deploy")) {
+			$("#if-deploy").attr("checked", false).triggerHandler("click");
+		}
 	}
 	
 	function resetConfigFormValidation() {
@@ -275,36 +331,6 @@ $(function(){
 	
 	function bindConfigTableEvents() {
 		$("[rel=tooltip]").tooltip({delay : {show : 800}});
-		
-		var $clearAlert = $("<div>确认清除该配置项值? [<font color='green'>不可恢复</font>]</div>")
-				.dialog({
-					autoOpen : false,
-					resizable : false,
-					modal : true,
-					title : "提示框",
-					height : 140,
-					buttons : {
-						"是" : function() {
-							$(location).attr("href", $(this).data("location"));
-						},
-						"否" : function() {$(this).dialog("close");}
-					}
-				});
-				
-		var $deleteAlert = $("<div>确认删除该配置项? [<font color='green'>不可恢复</font>]</div>")
-				.dialog({
-					autoOpen : false,
-					resizable : false,
-					modal : true,
-					title : "提示框",
-					height : 140,
-					buttons : {
-						"是" : function() {
-							$(location).attr("href", $(this).data("location"));
-						},
-						"否" : function() {$(this).dialog("close");}
-					}
-				});
 		
 		$(".clearLink").click(function() {
 			$clearAlert.dialog("open");
