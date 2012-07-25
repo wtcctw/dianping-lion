@@ -35,8 +35,9 @@
 		<action name="productEditSubmitAjax" class="com.dianping.lion.web.action.system.ProductAction" method="productEditSubmit">
 			<result name="success">/WEB-INF/pages/system/product-list.ftl</result>
 		</action>
-		<action name="productDelete" class="com.dianping.lion.web.action.system.ProductAction" method="deleteProductAjax">
-			<result name="success">/WEB-INF/pages/system/product.ftl</result>
+		<action name="productDeleteAjax" class="com.dianping.lion.web.action.system.ProductAction" method="deleteProductAjax">
+			<result name="success">/WEB-INF/pages/system/product-list.ftl</result>
+			<result name="error">/WEB-INF/pages/system/error.ftl</result>
 		</action>
 		
 		<!-- 部门操作 -->

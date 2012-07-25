@@ -72,5 +72,12 @@ public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectD
 	public Integer delProject(int projectId) {
 		return (Integer)getSqlMapClientTemplate().delete("Project.delProject",projectId);
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Project> getProjectsByProduct(int productId) {		
+		List<Project> productProjects = getSqlMapClientTemplate().queryForList("Project.selectProjectsByProduct", productId);
+		return productProjects;
+	}
 
 }

@@ -24,6 +24,7 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.entity.Product;
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ProductService;
@@ -103,10 +104,10 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String deleteProductAjax() {
-		List<Product>  teamProducts =productService.findProductByTeamID(id);
-		Team team = teamService.findTeamByID(id);
-		if(teamProducts.size() > 0) {
-			errorMessage = team.getName()+errorMessage;
+		List<Project>  productProjects =projectService.getProjectsByProduct(id);
+		if(productProjects.size() > 0) {
+			Product product = productService.findProductByID(id);
+			errorMessage = product.getName()+errorMessage;
 			return ERROR;
 		} else {
 			productService.delete(id);
