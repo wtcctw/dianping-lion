@@ -27,6 +27,7 @@ import com.dianping.lion.entity.Product;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ProductService;
+import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.TeamService;
 import com.dianping.lion.service.UserService;
 import com.dianping.lion.web.action.common.AbstractLionAction;
@@ -37,6 +38,7 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	private ProductService productService;
 	private UserService userService;
 	private TeamService teamService;
+	private ProjectService projectService;
 	
 	private List<Product> productList;
 	private List<Team> teamList;
@@ -52,6 +54,7 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	private String teamName;
 	private int productLeaderId;
 	private String productLeaderName;
+	private String errorMessage = "产品已关联项目，不能删除";
 	
 	public String productAdd(){
 		teamList = teamService.findAll();
@@ -100,9 +103,16 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String deleteProductAjax() {
-		productService.delete(id);
-		reInitiate();
-		return SUCCESS;
+		List<Product>  teamProducts =productService.findProductByTeamID(id);
+		Team team = teamService.findTeamByID(id);
+		if(teamProducts.size() > 0) {
+			errorMessage = team.getName()+errorMessage;
+			return ERROR;
+		} else {
+			productService.delete(id);
+			reInitiate();
+			return SUCCESS;
+		}
 	}
 	
 	public String productList(){
@@ -164,6 +174,22 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 
 	public void setTeamService(TeamService teamService) {
 		this.teamService = teamService;
+	}
+	
+	public ProjectService getProjectService() {
+		return projectService;
+	}
+
+	public void setProjectService(ProjectService projectService) {
+		this.projectService = projectService;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 
 	public List<Team> getTeamList() {

@@ -9,6 +9,8 @@ public interface ProductDao {
 	
 	Product findProductByID(int id);
 	
+	List<Product> findProductByTeamID(int teamId);
+	
 	int save(Product product);
 	
 	void update(Product product);

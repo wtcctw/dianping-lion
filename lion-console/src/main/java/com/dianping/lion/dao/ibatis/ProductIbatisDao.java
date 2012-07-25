@@ -26,6 +26,11 @@ public class ProductIbatisDao extends SqlMapClientDaoSupport implements ProductD
 	}
 
 	@Override
+	public List<Product> findProductByTeamID(int teamId) {
+		return getSqlMapClientTemplate().queryForList("Product.findProductByTeamID",teamId);
+	}
+
+	@Override
 	public int save(Product product) {
 		getSqlMapClientTemplate().insert("Product.insertProduct", product);
 		return product.getId();

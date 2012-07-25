@@ -50,6 +50,25 @@
 			AND p.id=#id#
 		]]>
     </select>
+    <select id="findProductByTeamID" resultMap="ProductResult">
+		<![CDATA[
+			SELECT
+			  p.id,
+			  p.name,
+			  teamId,
+			  t.name AS teamName,
+			  productLeaderId,
+			  u.name AS productLeaderName,
+			  p.createTime,
+			  p.modifyTime
+			FROM product AS p,
+			  user u,
+			  team t
+			WHERE p.teamId = t.id 
+			AND p.productLeaderId = u.id
+			AND p.teamId=#teamId#
+		]]>
+    </select>
     
     <update id="updateProduct" parameterClass="Product">
     	update product

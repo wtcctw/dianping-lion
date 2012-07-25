@@ -55,8 +55,9 @@
 		<action name="teamEditSubmitAjax" class="com.dianping.lion.web.action.system.TeamAction" method="teamEditSubmit">
 			<result name="success">/WEB-INF/pages/system/team-list.ftl</result>
 		</action>
-		<action name="teamDelete" class="com.dianping.lion.web.action.system.TeamAction" method="deleteTeamAjax">
-			<result name="success">/WEB-INF/pages/system/team.ftl</result>
+		<action name="teamDeleteAjax" class="com.dianping.lion.web.action.system.TeamAction" method="deleteTeamAjax">
+			<result name="success">/WEB-INF/pages/system/team-list.ftl</result>
+			<result name="error">/WEB-INF/pages/system/error.ftl</result>
 		</action>
 		
 		<!-- 操作日志 -->

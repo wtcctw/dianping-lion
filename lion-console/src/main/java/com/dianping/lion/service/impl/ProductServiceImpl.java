@@ -43,6 +43,11 @@ public class ProductServiceImpl implements ProductService {
 	public Product findProductByID(int id) {
 		return productDao.findProductByID(id);
 	}
+	
+	@Override
+	public List<Product> findProductByTeamID(int teamId) {
+		return productDao.findProductByTeamID(teamId);
+	}
 
 	@Override
 	public int save(Product product) {

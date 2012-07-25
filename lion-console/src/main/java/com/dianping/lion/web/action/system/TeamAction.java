@@ -6,18 +6,23 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.entity.Product;
-import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
+import com.dianping.lion.service.ProductService;
 import com.dianping.lion.service.TeamService;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
 public class TeamAction extends AbstractLionAction implements ServletRequestAware{
 	
+	@Autowired
 	private TeamService teamService;
+	
+	@Autowired
+	private ProductService productService;
 	
 	private List<Team> teamList;
 	
@@ -25,6 +30,7 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 	private int id;
 	private Team team;
 	private String name;
+	private String errorMessage = "部门已关联产品，不能删除";
 	
 	public String teamList(){
 		reInitiate();
@@ -62,9 +68,16 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 	}
 	
 	public String deleteTeamAjax() {
-		teamService.delete(id);
-		reInitiate();
-		return SUCCESS;
+		List<Product>  teamProducts =productService.findProductByTeamID(id);
+		Team team = teamService.findTeamByID(id);
+		if(teamProducts.size() > 0) {
+			errorMessage = team.getName()+errorMessage;
+			return ERROR;
+		} else {
+			teamService.delete(id);
+			reInitiate();
+			return SUCCESS;
+		}
 	}
 	
 	private void reInitiate() {
@@ -123,6 +136,22 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public ProductService getProductService() {
+		return productService;
+	}
+
+	public void setProductService(ProductService productService) {
+		this.productService = productService;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 	
 }
