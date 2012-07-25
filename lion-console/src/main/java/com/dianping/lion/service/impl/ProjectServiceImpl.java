@@ -69,4 +69,9 @@ public class ProjectServiceImpl implements ProjectService {
 		return projectDao.delProject(projectId);
 	}
 
+	@Override
+	public List<Project> getProjectsByProduct(int productId) {
+		return projectDao.getProjectsByProduct(productId);
+	}
+
 }

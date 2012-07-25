@@ -34,7 +34,34 @@ function bind() {
 		height : 140,
 		buttons : {
 			"是" : function() {
-				$(location).attr("href", $(this).data("location"));
+//				$(location).attr("href", $(this).data("location"));
+				$(this).dialog("close");
+				$.ajax( {
+					type : "GET",
+					contentType : "application/json;",
+					url : $(this).data("location").prependcontext(),
+					dataType : 'html',
+					success : function(response) {
+						var temp = response.replace(/&quot;/g, '\"');
+						if(temp.indexOf('table-team-list') != -1) {
+							document.getElementById('table-team-list').innerHTML = temp;
+							bind();
+						} else {
+							var $deleteAlert2 = $("<div> [<font color='red'>"+response+"</font>]</div>")
+							.dialog({
+									autoOpen : false,
+									resizable : false,
+									modal : true,
+									title : "提示框",
+									height : 140,
+									buttons : {
+									"确定" : function() {$(this).dialog("close");}
+								}
+							});
+							$deleteAlert2.dialog("open");
+						}
+					}
+				});
 			},
 			"否" : function() {$(this).dialog("close");}
 		}

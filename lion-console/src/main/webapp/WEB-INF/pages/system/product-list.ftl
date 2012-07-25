@@ -24,7 +24,7 @@
 			<a data-toggle="modal" href="<@s.url action='productEditAjax' namespace='/system'/>?id=${product.id}"
 				rel="tooltip" title="修改产品"> <i class="icon-edit"></i> </a>
 			&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
-			<a class="deletelink" href="<@s.url action='productDelete' namespace='/system'/>?id=${product.id}"
+			<a class="deletelink" href="<@s.url action='productDeleteAjax' namespace='/system'/>?id=${product.id}"
 				rel="tooltip" title="删除产品"> <i class="icon-remove"></i> </a>
 			     </td>
 	      	</tr>

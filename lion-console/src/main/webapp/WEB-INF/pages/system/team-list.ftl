@@ -20,7 +20,7 @@
 			<a data-toggle="modal" href="<@s.url action='teamEditAjax' namespace='/system'/>?id=${team.id}"
 				rel="tooltip" title="修改部门"> <i class="icon-edit"></i> </a>
 			&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
-			<a class="deletelink" href="<@s.url action='teamDelete' namespace='/system'/>?id=${team.id}"
+			<a class="deletelink" href="<@s.url action='teamDeleteAjax' namespace='/system'/>?id=${team.id}"
 				rel="tooltip" title="删除部门"> <i class="icon-remove"></i> </a>
 					</a>
 			     </td>

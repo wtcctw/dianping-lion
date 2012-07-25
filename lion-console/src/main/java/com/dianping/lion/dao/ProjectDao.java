@@ -45,4 +45,6 @@ public interface ProjectDao {
 	Integer insertProject(Project project);
 	Integer updateProject(Project project);
 	Integer delProject(int projectId);
+	
+	List<Project> getProjectsByProduct(int productId);
 }

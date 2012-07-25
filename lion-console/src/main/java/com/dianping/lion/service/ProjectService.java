@@ -55,4 +55,6 @@ public interface ProjectService {
 	
 	Integer editProject(Project project);
 	Integer delProject(int projectId);
+	
+	List<Project> getProjectsByProduct(int productId);
 }
