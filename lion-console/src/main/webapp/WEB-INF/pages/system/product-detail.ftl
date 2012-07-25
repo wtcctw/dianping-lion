@@ -22,9 +22,14 @@
 	        		<div class="control-group control-lion-group">
 				      <label class="control-label control-lion-label">负责人</label>
 				      <div class="controls lion-controls">
-				        <@s.select id="input-product-productLeaderName" list=r"userList" listKey="id" listValue="name" value="${selectedUserValue}"/>
-				         <!-- theme="simple" <@s.if test="%{id != 0}">headerKey="${product.productLeaderId}" headerValue="${product.productLeaderName}"</@s.if> -->
-				        <span class="help-inline hide message" id="span-product-productLeaderName-error"></span>
+				      <input id="input-product-productLeaderName" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
+				        	<span id="span-product-productLeaderName-error" class="help-inline">
+									可输入名字或拼音提示
+	      				 	</span> 
+				        <!-- <@s.select id="input-product-productLeaderName" list=r"userList" listKey="id" listValue="name" value="${selectedUserValue}"/>
+				          theme="simple" <@s.if test="%{id != 0}">headerKey="${product.productLeaderId}" headerValue="${product.productLeaderName}"</@s.if> 
+				        <span class="help-inline hide message" id="span-product-productLeaderName-error"></span>-->
 				      </div>
 				    </div>
 	        		<div class="control-group control-lion-group">
