@@ -126,7 +126,7 @@ $(function(){
 					}
 				} else if (result.code == Res_Code_Error) {
 					$("#edit-config-modal .form-error").showAlert(result.msg);
-					$("#edit-save-btn,#edit-save-deploy-btn").attr("disabled", true);
+					$("#edit-save-btn,#edit-more-btn").attr("disabled", true);
 				}
 			}
 		});
@@ -184,6 +184,10 @@ $(function(){
 				});
 			}
 		}
+	});
+	
+	$("#edit-more-btn").click(function() {
+		$(location).attr("href", ("/config/editMore.vhtml?" + $("#queryStr").val() + "&" + $("#criteriaStr").val()).prependcontext());
 	});
 	
 	$("#save-btn").click(function() {
@@ -332,7 +336,7 @@ $(function(){
 		$("#edit-trim-checkbox").attr("checked", true);
 		resetConfigFormValidation();
 		$("#edit-select-all-env,[name='edit-config-env']").attr("checked", false);
-		$("#edit-save-btn,#edit-save-deploy-btn").attr("disabled", false);
+		$("#edit-save-btn,#edit-more-btn").attr("disabled", false);
 		$("#edit-if-deploy").attr("checked", false).triggerHandler("click");
 	}
 	

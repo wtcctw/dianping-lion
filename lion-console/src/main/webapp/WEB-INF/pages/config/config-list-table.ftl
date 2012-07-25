@@ -1,5 +1,3 @@
-<#assign queryStr="menu=" + menu + "&pid=" + pid + "&envId=" + envId />
-<#assign criteriaStr="criteria.key=" + criteria.key + "&criteria.status=" + criteria.status />
 <table class="table table-bordered table-striped table-condensed">
 	<thead>
     <tr>
@@ -52,13 +50,13 @@
   			<@s.else><font color="#D14836">未设置</font></@s.else>
   		</td>
   		<td class="config-btn-group">
-  			<a href="#" class="edit-config-btn"><i class="icon-edit"></i></a>
-  			<i class="icon-share-alt"></i>
-  			<i class="icon-arrow-right"></i>
-  			<a href="#" class="clear-config-btn optional hide"><i class="icon-trash"></i></a>
-  			<a href="#" class="remove-config-btn optional hide"><i class="icon-remove"></i></a>
-  			<a href="#" class="moveup-config-btn optional hide"><i class="icon-arrow-up"></i></a>
-  			<a href="#" class="movedown-config-btn optional hide"><i class="icon-arrow-down"></i></a>
+  			<a href="#" class="edit-config-btn"><i class="icon-edit" rel="tooltip" data-original-title="编辑配置值"></i></a>
+  			<i class="icon-share-alt" rel="tooltip" data-original-title="部署配置项"></i>
+  			<i class="icon-arrow-right optional hide" rel="tooltip" data-original-title="推送配置项"></i>
+  			<a href="#" class="clear-config-btn optional hide"><i class="icon-trash" rel="tooltip" data-original-title="清除配置值"></i></a>
+  			<a href="#" class="remove-config-btn"><i class="icon-remove" rel="tooltip" data-original-title="删除配置项"></i></a>
+  			<a href="#" class="moveup-config-btn optional hide"><i class="icon-arrow-up" rel="tooltip" data-original-title="上移"></i></a>
+  			<a href="#" class="movedown-config-btn optional hide"><i class="icon-arrow-down" rel="tooltip" data-original-title="下移"></i></a>
   		</td>
   	</tr>
   	</@s.iterator>

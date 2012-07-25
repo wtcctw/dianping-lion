@@ -59,11 +59,6 @@ public class ConfigListAction extends AbstractConfigAction {
 		return SUCCESS;
 	}
 	
-	public String add() {
-		this.project = projectService.getProject(projectId);
-		return SUCCESS;
-	}
-	
 	public String clearInstance() {
 		try {
 			configService.clearInstance(configId, envId);
@@ -99,6 +94,11 @@ public class ConfigListAction extends AbstractConfigAction {
 		} catch (EntityNotFoundException e) {
 		}
 		createSuccessStreamResponse();
+		return SUCCESS;
+	}
+	
+	public String editMore() {
+		this.project = projectService.getProject(projectId);
 		return SUCCESS;
 	}
 

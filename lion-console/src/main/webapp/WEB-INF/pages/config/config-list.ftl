@@ -22,8 +22,8 @@
 				</ul>
 			</div>
 		</div>
-		<#assign queryStr_="menu=" + menu + "&pid=" + pid + "&envId=" + envId />
-		<#assign criteriaStr_="criteria.key=" + criteria.key + "&criteria.value=" + criteria.value + "&criteria.status=" + criteria.status />
+		<#assign queryStr="menu=" + menu + "&pid=" + pid + "&envId=" + envId />
+		<#assign criteriaStr="criteria.key=" + criteria.key + "&criteria.value=" + criteria.value + "&criteria.status=" + criteria.status />
 		<div class="row">
 			<div class="span12">
 				<ul class="nav nav-tabs">
@@ -35,6 +35,8 @@
 				</ul>
 			</div>
 		</div>
+		<@s.hidden id="queryStr" value="${queryStr}"/>
+		<@s.hidden id="criteriaStr" value="${criteriaStr}"/>
 		<@s.hidden name="projectId" id="projectId" value="${pid}"/>
 		<@s.hidden name="projectName" id="projectName" value="${project.name}"/>
 		<div class="row">

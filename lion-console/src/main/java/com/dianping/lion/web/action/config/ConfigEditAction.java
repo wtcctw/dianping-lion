@@ -83,11 +83,6 @@ public class ConfigEditAction extends AbstractConfigAction {
 		return SUCCESS;
 	}
 	
-	public String createAndDeploy() {
-		
-		return null;
-	}
-	
 	public String saveDefaultValue() {
 		Config configFound = configService.getConfig(configId);
 		if (configFound == null) {

@@ -30,10 +30,6 @@
 			<result name="success" type="stream"/>
 		</action>
 		
-		<action name="add" class="com.dianping.lion.web.action.config.ConfigListAction" method="add">
-			<result name="success">/WEB-INF/pages/config/config-add.ftl</result>
-		</action>
-		
 		<action name="defaultValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="loadDefaultValue">
 			<result name="success" type="stream"/>
 		</action>
@@ -46,9 +42,8 @@
 			<result name="success" type="stream"/>
 		</action>
 		
-		<action name="createAndDeployConfig" class="com.dianping.lion.web.action.config.ConfigEditAction" method="createAndDeploy">
-			<!-- TODO: remove me -->
-			<result name="success">/WEB-INF/pages/config/config-add.ftl</result>
+		<action name="editMore" class="com.dianping.lion.web.action.config.ConfigListAction" method="editMore">
+			<result name="success">/WEB-INF/pages/config/config-edit-more.ftl</result>
 		</action>
 		
 	</package>

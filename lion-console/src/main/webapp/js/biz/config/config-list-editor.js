@@ -51,7 +51,8 @@
 	
 	$.listeditor = {
 		buildNewItem : function(value) {
-			return "<div class='list-item control-group' style='margin-bottom:0px;'><input type='text' class='list-item-input' style='margin-left: 10px;width: 415px;height:14px;' value='" + value + "'>&nbsp;&nbsp;"
+			return "<div class='list-item control-group' style='margin-bottom:0px;'>" 
+				+ "<input type='text' class='list-item-input' style='margin-left: 10px;width: 415px;height:14px;' value='" + value + "'>&nbsp;&nbsp;"
 				+ "<a href='#' onclick='$.listeditor.moveUpItem(this, event);'><i class='icon-arrow-up'></i></a>&nbsp;" 
 				+ "<a href='#' onclick='$.listeditor.moveDownItem(this, event);'><i class='icon-arrow-down'></i></a>&nbsp;" 
 				+ "<a href='#' onclick='$.listeditor.addItem(this, event);'><i class='icon-plus'></i></a>&nbsp;" 
