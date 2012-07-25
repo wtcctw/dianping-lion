@@ -5,7 +5,7 @@
 		<div class="row">
 			<div class="span12">
 <#--搜索栏-->
-<table class="table table-bordered">
+<table class="table table-bordered nohover">
 <tr>
 	 <td>
             <label class="control-label" for="select01">项目</label>  

@@ -18,8 +18,7 @@
 				  <li>
 				    ${project.name}<span class="divider">></span>
 				  </li>
-				  <li>配置列表<span class="divider">></span></li>
-				  <li class="active">${environment.label}</li>
+				  <li class="active">配置列表</li>
 				</ul>
 			</div>
 		</div>
@@ -41,7 +40,7 @@
 		<div class="row">
 			<div class="span12">
 			<@s.form cssClass="form-inline lion" action="/config/configList.vhtml" method="get">
-				<@s.hidden name="menu"/><@s.hidden name="pid"/><@s.hidden name="envId"/>
+				<@s.hidden name="menu"/><@s.hidden name="pid"/><@s.hidden name="envId" id="envId"/>
 				<label class="control-label" for="key">KEY：</label>
 				<@s.textfield id="key" name="criteria.key" cssClass="input-medium" maxlength="50"/>
 				<label class="control-label" for="key">VALUE：</label>
@@ -63,6 +62,7 @@
 				<i class="icon-remove icon-intro" style="margin-left: 10px;" data-original-title="删除配置项" data-content="完全删除该配置项，所有环境下不再存在该配置项值."></i>
 				<i class="icon-arrow-up icon-intro" style="margin-left: 10px;" data-original-title="上移" data-content="上移配置项的位置，将相关的配置项编排在一起."></i>
 				<i class="icon-arrow-down icon-intro" style="margin-left: 10px;" data-original-title="下移" data-content="下移配置项的位置，将相关的配置项编排在一起."></i>
+				<label class="pull-right" style="color:orange;"><b>${environment.label}</b></label>
 			</div>
 		</div>			
 		<#include "/WEB-INF/pages/common/message.ftl">

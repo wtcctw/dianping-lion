@@ -65,14 +65,22 @@ public class ConfigListAction extends AbstractConfigAction {
 	}
 	
 	public String clearInstance() {
-		configService.clearInstance(configId, envId);
-		createQueryParam2();
+		try {
+			configService.clearInstance(configId, envId);
+			createSuccessStreamResponse();
+		} catch (RuntimeException e) {
+			createErrorStreamResponse("清除失败[" + e.getMessage() + "].");
+		}
 		return SUCCESS;
 	}
 	
 	public String delete() {
-		configService.delete(configId);
-		createQueryParam2();
+		try {
+			configService.delete(configId);
+			createSuccessStreamResponse();
+		} catch (RuntimeException e) {
+			createErrorStreamResponse("删除失败[" + e.getMessage() + "].");
+		}
 		return SUCCESS;
 	}
 	
@@ -81,7 +89,7 @@ public class ConfigListAction extends AbstractConfigAction {
 			configService.moveUp(projectId, configId);
 		} catch (EntityNotFoundException e) {
 		}
-		createQueryParam1();
+		createSuccessStreamResponse();
 		return SUCCESS;
 	}
 	
@@ -90,7 +98,7 @@ public class ConfigListAction extends AbstractConfigAction {
 			configService.moveDown(projectId, configId);
 		} catch (EntityNotFoundException e) {
 		}
-		createQueryParam1();
+		createSuccessStreamResponse();
 		return SUCCESS;
 	}
 

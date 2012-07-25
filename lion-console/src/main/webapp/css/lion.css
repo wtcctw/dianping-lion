@@ -194,14 +194,17 @@ table.lion td *+input[type="radio"], table.lion td *+input[type="checkbox"],
 	margin-left : 20px;
 }
 
-
-
 table.lion td {
 	vertical-align: middle;
 }
 
 table.lion input[type="radio"], input[type="checkbox"] {
 	margin : 0 0;
+}
+
+.nohover tbody tr:hover td,
+.nohover tbody tr:hover th {
+  background-color: white !important;
 }
 
 .form-horizontal .control-lion-group {

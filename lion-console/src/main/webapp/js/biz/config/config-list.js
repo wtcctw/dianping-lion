@@ -8,10 +8,12 @@ var Type_Map = 50;
 /**是否在新打开的模态窗口中创建过新的config*/
 var modal_config_created = false;
 var modal_config_edited = false;
+var display_all_btn = false;
 var $config_list_editor;
 var $config_map_editor;
 var $clearAlert;
 var $deleteAlert;
+var $commonAlert;
 
 $(function(){
 	$(".icon-intro").popover();
@@ -28,7 +30,21 @@ $(function(){
 			height : 140,
 			buttons : {
 				"是" : function() {
-					$(location).attr("href", $(this).data("location"));
+					$(this).dialog("close");
+					$.ajax("/config/clearInstanceAjax.vhtml".prependcontext(), {
+						data: $.param({
+							"configId" : $(this).data("configId"),
+							"envId" : $("#envId").val()
+						}, true),
+						dataType: "json",
+						success: function(result) {
+							if (result.code == Res_Code_Success) {
+								reloadConfigListTable();
+							} else if (result.code == Res_Code_Error) {
+								$commonAlert.html(result.msg).dialog("open");
+							}
+						}
+					});
 				},
 				"否" : function() {$(this).dialog("close");}
 			}
@@ -43,9 +59,34 @@ $(function(){
 			height : 140,
 			buttons : {
 				"是" : function() {
-					$(location).attr("href", $(this).data("location"));
+					$(this).dialog("close");
+					$.ajax("/config/deleteAjax.vhtml".prependcontext(), {
+						data: $.param({
+							"configId" : $(this).data("configId")
+						}, true),
+						dataType: "json",
+						success: function(result) {
+							if (result.code == Res_Code_Success) {
+								reloadConfigListTable();
+							} else if (result.code == Res_Code_Error) {
+								$commonAlert.html(result.msg).dialog("open");
+							}
+						}
+					});
 				},
 				"否" : function() {$(this).dialog("close");}
+			}
+		});
+		
+	$commonAlert = $("<div class='alert-body'></div>")
+		.dialog({
+			autoOpen : false, 
+			resizable : false,
+			modal : true,
+			title : "信息框",
+			height : 140,
+			buttons : {
+				"确定" : function() {$(this).dialog("close");}
 			}
 		});
 	
@@ -183,9 +224,11 @@ $(function(){
 			"pid" : $("[name='pid']").val(),
 			"envId" : $("[name='envId']").val(),
 			"criteria.key" : $("#key").val(),
+			"criteria.value" : $("#value").val(),
 			"criteria.status" : $("#status").val()
 		}, true), function() {
 			bindConfigTableEvents();
+			$("#display-all-btn").attr("checked", display_all_btn).triggerHandler("click");
 		});
 	}
 	
@@ -332,15 +375,56 @@ $(function(){
 	function bindConfigTableEvents() {
 		$("[rel=tooltip]").tooltip({delay : {show : 800}});
 		
-		$(".clearLink").click(function() {
+		$("#display-all-btn").click(function() {
+			display_all_btn = $(this).is(":checked");
+			if (display_all_btn) {
+				$(".config-btn-group .optional").removeClass("hide");
+			} else {
+				$(".config-btn-group .optional").addClass("hide");
+			}
+		});
+		
+		$(".clear-config-btn").click(function() {
 			$clearAlert.dialog("open");
-			$clearAlert.data("location", $(this).attr("href"));
+			$clearAlert.data("configId", getConfigId($(this)));
 			return false;
 		});
 		
-		$(".deleteLink").click(function() {
+		$(".remove-config-btn").click(function() {
 			$deleteAlert.dialog("open");
-			$deleteAlert.data("location", $(this).attr("href"));
+			$deleteAlert.data("configId", getConfigId($(this)));
+			return false;
+		});
+		
+		$(".moveup-config-btn").click(function() {
+			$.ajax("/config/moveUpConfigAjax.vhtml".prependcontext(), {
+				data : $.param({
+					"projectId" : $("#projectId").val(),
+					"configId" : getConfigId($(this))
+				}, true),
+				dataType : "json",
+				success : function(result) {
+					if (result.code == Res_Code_Success) {
+						reloadConfigListTable();
+					}
+				}
+			});
+			return false;
+		});
+		
+		$(".movedown-config-btn").click(function() {
+			$.ajax("/config/moveDownConfigAjax.vhtml".prependcontext(), {
+				data : $.param({
+					"projectId" : $("#projectId").val(),
+					"configId" : getConfigId($(this))
+				}, true),
+				dataType : "json",
+				success : function(result) {
+					if (result.code == Res_Code_Success) {
+						reloadConfigListTable();
+					}
+				}
+			});
 			return false;
 		});
 		
@@ -351,6 +435,7 @@ $(function(){
 			});
 			return false;
 		});
+		
 		$(".edit-config-btn").click(function() {
 			resetEditConfigForm();
 			$("#edit-config-modal [name='config-id']").val(getConfigId($(this)));

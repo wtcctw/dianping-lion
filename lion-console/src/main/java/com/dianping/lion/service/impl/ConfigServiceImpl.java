@@ -16,7 +16,6 @@
 package com.dianping.lion.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -71,8 +70,9 @@ public class ConfigServiceImpl implements ConfigService {
 				ConfigStatus status = configStatus.get(config.getId());
 				ConfigInstance defaultInst = defaultInsts.get(config.getId());
 				if ((StringUtils.isEmpty(key) || config.getKey().contains(key)) 
-						&& (criteria.getStatus() == -1 || (status != null && status.getStatus() == criteria.getStatus()))
-						&& StringUtils.isEmpty(value) || (defaultInst != null && defaultInst.getValue().contains(value))) {
+						&& (criteria.getStatus() == -1 || (status != null && status.getStatus() == criteria.getStatus())
+								|| (criteria.getStatus() == ConfigStatusEnum.Noset.getValue() && defaultInst == null))
+						&& (StringUtils.isEmpty(value) || (defaultInst != null && defaultInst.getValue().contains(value)))) {
 					configVos.add(new ConfigVo(config, status, hasInstanceConfigs.contains(config.getId()), 
 							hasContextInstConfigs.contains(config.getId()), defaultInst));
 				}
@@ -155,7 +155,7 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public int createInstance(ConfigInstance instance) {
-		changeConfigStatus(instance.getConfigId(), instance.getEnvId(), ConfigStatusEnum.Undeployed);
+		changeConfigStatus(instance.getConfigId(), instance.getEnvId(), ConfigStatusEnum.Ineffective);
 		int currentUserId = SecurityUtils.getCurrentUser().getId();
 		instance.setCreateUserId(currentUserId);
 		instance.setModifyUserId(currentUserId);
@@ -171,7 +171,7 @@ public class ConfigServiceImpl implements ConfigService {
 	
 	@Override
 	public int updateInstance(ConfigInstance instance) {
-		changeConfigStatus(instance.getConfigId(), instance.getEnvId(), ConfigStatusEnum.Undeployed);
+		changeConfigStatus(instance.getConfigId(), instance.getEnvId(), ConfigStatusEnum.Ineffective);
 		return configDao.updateInstance(instance);
 	}
 	
