@@ -16,6 +16,9 @@ function bind() {
 			success : function(result) {
 				var temp = result.replace(/&quot;/g, '\"');
 				modalWindow = $(temp);
+				modalWindow.on("hidden", function() {
+					$(this).remove();
+				});
 				modalWindow.modal({
 					backdrop : "static"
 				});

@@ -16,6 +16,9 @@ function bind() {
 			success : function(result) {
 				var temp = result.replace(/&quot;/g, '\"');
 				modalWindow = $(temp);
+				modalWindow.on("hidden", function() {
+					$(this).remove();
+				});
 				modalWindow.modal({
 					backdrop : "static"
 				});
@@ -61,6 +64,8 @@ function saveTeam() {
 					var temp = response.replace(/&quot;/g, '\"');
 					document.getElementById('table-team-list').innerHTML = temp;
 					modalWindow.modal('hide');
+					/*var mc = document.getElementById("modalcontent");
+					mc.parentNode.removeChild(mc);*/
 					bind();
 				}
 			});

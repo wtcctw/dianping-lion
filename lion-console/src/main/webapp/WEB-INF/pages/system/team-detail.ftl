@@ -1,4 +1,4 @@
-<div class="modal hide fade" id="myModal">
+<div id="modalcontent" class="modal hide fade" id="myModal">
 <div class="modal-header">
 <button type="button" class="close" data-dismiss="modal">×</button>
 <h3><#if id == 0>添加<#else>修改</#if>部门</h3>
