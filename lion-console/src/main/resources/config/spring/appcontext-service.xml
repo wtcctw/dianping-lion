@@ -17,5 +17,7 @@
 	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
 	
 	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl"/>
+	<bean id="productService" class="com.dianping.lion.service.impl.ProductServiceImpl"/>
+	<bean id="teamService" class="com.dianping.lion.service.impl.TeamServiceImpl"/>
 	
 </beans>

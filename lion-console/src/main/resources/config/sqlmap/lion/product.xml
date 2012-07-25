@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Product">
+	<typeAlias alias="Product" type="com.dianping.lion.entity.Product" />
+
+	<resultMap id="ProductResult" class="Product">
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="teamId" property="teamId"/>
+		<result column="teamName" property="teamName"/>
+		<result column="productLeaderId" property="productLeaderId"/>
+		<result column="productLeaderName" property="productLeaderName"/>
+		<result column="createTime" property="createTime"/>
+		<result column="modifyTime" property="modifyTime"/>
+	</resultMap>
+	
+	<select id="findAll" resultMap="ProductResult">
+		<![CDATA[
+			SELECT
+			  p.id,
+			  p.name,
+			  teamId,
+			  t.name AS teamName,
+			  productLeaderId,
+			  u.name AS productLeaderName,
+			  p.createTime,
+			  p.modifyTime
+			FROM product AS p,
+			  user u,
+			  team t
+			WHERE p.teamId = t.id AND p.productLeaderId = u.id
+		]]>
+    </select>
+    <select id="findByID" resultMap="ProductResult">
+		<![CDATA[
+			SELECT
+			  p.id,
+			  p.name,
+			  teamId,
+			  t.name AS teamName,
+			  productLeaderId,
+			  u.name AS productLeaderName,
+			  p.createTime,
+			  p.modifyTime
+			FROM product AS p,
+			  user u,
+			  team t
+			WHERE p.teamId = t.id 
+			AND p.productLeaderId = u.id
+			AND p.id=#id#
+		]]>
+    </select>
+    
+    <update id="updateProduct" parameterClass="Product">
+    	update product
+		set name=#name#,
+			teamId=#teamId#,
+			productLeaderId=#productLeaderId#,
+			createTime=#createTime#,
+			modifyTime=#modifyTime#,
+			seq=#seq#
+		where id=#id#
+    </update>
+    
+    <delete id="deleteProduct" parameterClass="int">
+		delete from product where id=#id#
+    </delete>
+    
+    <insert id="insertProduct" parameterClass="Product">
+    	<![CDATA[
+    	insert into product(name,teamId,productLeaderId,createTime,modifyTime,seq) 
+    	values(#name#,#teamId#,#productLeaderId#,#createTime#,#modifyTime#,#seq#);
+		]]>
+    	<selectKey resultClass="int" keyProperty="id">
+             <![CDATA[   select last_insert_id() as id  ]]>
+        </selectKey>
+    </insert>
+</sqlMap>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Team">
+	<typeAlias alias="Team" type="com.dianping.lion.entity.Team" />
+
+	<resultMap id="TeamResult" class="Team">
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="createTime" property="createTime"/>
+		<result column="modifyTime" property="modifyTime"/>
+	</resultMap>
+	
+	<select id="findAll" resultMap="TeamResult">
+		<![CDATA[
+			SELECT
+			  id,
+			  name,
+			  createTime,
+			  modifyTime
+			FROM team
+		]]>
+    </select>
+    <select id="findByID" resultMap="TeamResult">
+		<![CDATA[
+			SELECT
+			  id,
+			  name,
+			  createTime,
+			  modifyTime
+			FROM team
+			WHERE id=#id#
+		]]>
+    </select>
+    
+    <update id="updateTeam" parameterClass="Team">
+    	update team
+		set name=#name#
+		where id=#id#
+    </update>
+    
+    <delete id="deleteTeam" parameterClass="int">
+		delete from team where id=#id#
+    </delete>
+    
+    <insert id="insertTeam" parameterClass="Team">
+    	<![CDATA[
+    	insert into team(name,createTime,modifyTime,seq) 
+    	values(#name#,#createTime#,#modifyTime#,#seq#);
+		]]>
+    	<selectKey resultClass="int" keyProperty="id">
+             <![CDATA[   select last_insert_id() as id  ]]>
+        </selectKey>
+    </insert>
+    
+</sqlMap>

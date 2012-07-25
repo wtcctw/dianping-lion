@@ -12,5 +12,9 @@
 	</bean>
 	<bean id="Lion.EnvironmentAction" class="com.dianping.lion.web.action.system.OperationLogAction">
 	</bean>
+	<bean id="Lion.ProductAction" class="com.dianping.lion.web.action.system.ProductAction">
+	</bean>
+	<bean id="Lion.TeamAction" class="com.dianping.lion.web.action.system.TeamAction">
+	</bean>
 	
 </beans>

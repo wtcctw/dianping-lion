@@ -35,6 +35,12 @@ public class Product implements Serializable {
 	
 	private Team team;
 	
+	private String teamName;
+	
+	private int productLeaderId;
+	
+	private String productLeaderName;
+	
 	private Date createTime;
 	
 	private Date modifyTime;
@@ -155,4 +161,28 @@ public class Product implements Serializable {
 		this.team = team;
 	}
 
+	public String getTeamName() {
+		return teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+
+	public int getProductLeaderId() {
+		return productLeaderId;
+	}
+
+	public void setProductLeaderId(int productLeaderId) {
+		this.productLeaderId = productLeaderId;
+	}
+
+	public String getProductLeaderName() {
+		return productLeaderName;
+	}
+
+	public void setProductLeaderName(String productLeaderName) {
+		this.productLeaderName = productLeaderName;
+	}
+	
 }

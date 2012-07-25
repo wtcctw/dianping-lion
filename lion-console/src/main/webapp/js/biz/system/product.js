@@ -46,22 +46,20 @@ function bind() {
 	});
 }
 
-function saveEnv() {
-    	var envName, envLabel, ips, seq;
-    	envName = document.getElementById('input-env-name').value;
-    	envLabel = document.getElementById('input-env-label').value;
-    	envIps = document.getElementById('input-env-ips').value;
-    	seq = document.getElementById('input-env-seq').value;
+function saveProduct() {
+    	var name, productLeaderId, teamId;
+    	name = document.getElementById('input-product-name').value;
+    	productLeaderId = document.getElementById('input-product-productLeaderName').value;
+    	teamId = document.getElementById('input-product-teamName').value;
     	if (validateConfigForm()) {
 	    	var clientdata = {
-	    			envName : envName,
 	//    			envLabel : encodeURI(encodeURI(envLabel)),
-	    			envLabel : envLabel,
-	    			envIps : envIps,
-	    			seq : seq
+	    			name : name,
+	    			productLeaderId : productLeaderId,
+	    			teamId : teamId
 	    	};
 	//    	clientdata = encodeURIComponent(encodeURIComponent(clientdata));
-	    	href = "/system/addEnvSubmitAjax.vhtml";
+	    	href = "/system/productAddSubmitAjax.vhtml";
 			$.ajax( {
 				type : "GET",
 				contentType : "application/json;",
@@ -71,7 +69,7 @@ function saveEnv() {
 				dataType : 'html',
 				success : function(response) {
 					var temp = response.replace(/&quot;/g, '\"');
-					document.getElementById('table-env-list').innerHTML = temp;
+					document.getElementById('table-product-list').innerHTML = temp;
 					modalWindow.modal('hide');
 					bind();
 				}
@@ -79,22 +77,20 @@ function saveEnv() {
     	}
 }
 
-function updateEnv() {
-	var envId, envName, envLabel, ips, seq;
-	envId = document.getElementById('input-env-id').value;
-	envName = document.getElementById('input-env-name').value;
-	envLabel = document.getElementById('input-env-label').value;
-	envIps = document.getElementById('input-env-ips').value;
-	seq = document.getElementById('input-env-seq').value;
+function updateProduct() {
+	var id, name, productLeaderId, teamId;
+	id = document.getElementById('input-product-id').value;
+	name = document.getElementById('input-product-name').value;
+	productLeaderId = document.getElementById('input-product-productLeaderName').value;
+	teamId = document.getElementById('input-product-teamName').value;
 	if (validateConfigForm()) {
 		var clientdata = {
-				envId : envId,
-				envName : envName,
-				envLabel : envLabel,
-				envIps : envIps,
-				seq : seq
+				id : id,
+				name : name,
+				productLeaderId : productLeaderId,
+				teamId : teamId
 		};
-		href = "/system/updateEnvSubmitAjax.vhtml";
+		href = "/system/productEditSubmitAjax.vhtml";
 		$.ajax( {
 			type : "GET",
 			contentType : "application/json",
@@ -103,7 +99,7 @@ function updateEnv() {
 			dataType : 'html',
 			success : function(response) {
 				var temp = response.replace(/&quot;/g, '\"');
-				document.getElementById('table-env-list').innerHTML = temp;
+				document.getElementById('table-product-list').innerHTML = temp;
 				modalWindow.modal('hide');
 				bind();
 			}
@@ -111,43 +107,15 @@ function updateEnv() {
 	}
 }
 
-function verifyAddress(zookeeperAddress) {
-	var re=/^\w+(\.\w+)+(:\d+)?(,\w+(\.\w+)+(:\d+)?)*$/g; //匹配IP地址的正则表达式
-	if(re.test(zookeeperAddress)) {
-		return true;
-	}
-	return false;
-}
-
 function validateConfigForm() {
 	var checkPass = true;
 	resetConfigFormValidation();
-	$("#input-env-name").each(function() {
+	$("#input-product-name").each(function() {
 		if ($(this).val().isBlank()) {
-			setValidateError($(this),$("#span-env-name-error"),"必填");
+			setValidateError($(this),$("#span-product-name-error"),"必填");
 			checkPass = false;
 		}
 	});
-	$("#input-env-label").each(function() {
-		if ($(this).val().isBlank()) {
-			setValidateError($(this),$("#span-env-label-error"),"必填");
-			checkPass = false;
-		}
-	});
-	$("#input-env-ips").each(function() {
-		if ($(this).val().isBlank()) {
-			setValidateError($(this),$("#span-env-ips-error"),"必填");
-			checkPass = false;
-		}
-	});
-	if(!verifyAddress($("#input-env-ips").val())) {
-		setValidateError($("#input-env-ips"),$("#span-env-ips-error"),"地址不合法");
-		checkPass = false;
-	}
-	if (!$("#input-env-seq").val().isNumber()) {
-		setValidateError($("#input-env-seq"),$("#span-env-seq-error"),"环境顺序必需为数字");
-		checkPass = false;
-	}
 	return checkPass;
 }
 
