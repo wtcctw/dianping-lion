@@ -3,13 +3,13 @@
 <table class="table table-bordered table-striped table-condensed">
 	<thead>
     <tr>
-      <th width="40">序号</th>
-      <th width="310">KEY</th>
+      <th width="30">序号</th>
+      <th width="300">KEY</th>
       <th width="250">DESC</th>
       <th>VALUE</th>
-      <th width="60">Status</th>
-      <th width="120">
-      	操作
+      <th width="50">Status</th>
+      <th style="max-width:150px;">
+      	操作 &nbsp;&nbsp;<input type="checkbox" id="display-all-btn" rel="tooltip" data-original-title="显示全部操作">
       	<a id="add-config-btn" href="#" rel="tooltip" data-original-title="添加配置项" class="pull-right">
       		<i class="icon-plus"></i>
       	</a>
@@ -51,17 +51,14 @@
   			</@s.if>
   			<@s.else><font color="#D14836">未设置</font></@s.else>
   		</td>
-  		<td>
+  		<td class="config-btn-group">
   			<a href="#" class="edit-config-btn"><i class="icon-edit"></i></a>
-  			<@s.if test="%{#configVo.hasInstance}">
-  			<a href="<@s.url action="clearInstance" namespace="/config"/>?${queryStr}&${criteriaStr}&configId=${config.id}" class="clearLink"><i class="icon-trash"></i></a>
-  			</@s.if>
-  			<@s.else>
-  			<i rel="tooltip" class="icon-trash icon-white" data-original-title="不存在配置值"></i>
-  			</@s.else>
-  			<a href="<@s.url action="delete" namespace="/config"/>?${queryStr}&configId=${config.id}" class="deleteLink"><i class="icon-remove"></i></a>
-  			<a href="<@s.url action="configMoveUp" namespace="/config"/>?${queryStr}&configId=${config.id}"><i class="icon-arrow-up"></i></a>
-  			<a href="<@s.url action="configMoveDown" namespace="/config"/>?${queryStr}&configId=${config.id}"><i class="icon-arrow-down"></i></a>
+  			<i class="icon-share-alt"></i>
+  			<i class="icon-arrow-right"></i>
+  			<a href="#" class="clear-config-btn optional hide"><i class="icon-trash"></i></a>
+  			<a href="#" class="remove-config-btn optional hide"><i class="icon-remove"></i></a>
+  			<a href="#" class="moveup-config-btn optional hide"><i class="icon-arrow-up"></i></a>
+  			<a href="#" class="movedown-config-btn optional hide"><i class="icon-arrow-down"></i></a>
   		</td>
   	</tr>
   	</@s.iterator>

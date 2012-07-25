@@ -11,7 +11,7 @@
 			<input type="checkbox" class="trim_check" id="list_trim_check" checked="checked">
 			<label for="list_trim_check" style="display:inline;">trim input</label>
 		</div>
-		<a href="#" class="btn btn-primary ok-btn">确认</a>
 		<a href="#" class="btn" data-dismiss="modal">关闭</a>
+		<a href="#" class="btn btn-primary ok-btn">确认</a>
 	</div>
 </div>

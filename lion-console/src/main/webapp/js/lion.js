@@ -1,8 +1,9 @@
-/**************************对String对象的扩展*********************************/
+/**************************全局Ajax返回码*********************************/
 var Res_Code_Success = 0;
 var Res_Code_Error = -1;
 var Res_Code_Warn = 1;
 
+/**************************对String对象的扩展*********************************/
 /**
  * 在字符串前拼接contextpath 
  */
@@ -52,6 +53,16 @@ String.prototype.startsWith = function(str) {
 String.prototype.isNumber = function() {
 	if (this == void 0) {throw new Error("Illegal argument error.");}
 	return this != null && /^-?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(this);
+}
+
+/**************************对Array对象的扩展*********************************/
+Array.prototype.contains = function(obj) {
+	for (var i = 0; i < this.length; i++) {
+		if (this[i] === obj) {
+			return true;
+		}
+	}
+	return false;
 }
 
 

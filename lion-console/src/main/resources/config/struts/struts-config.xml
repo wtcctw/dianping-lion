@@ -14,20 +14,20 @@
 			<result name="success">/WEB-INF/pages/config/config-list-table.ftl</result>
 		</action>
 		
-		<action name="configMoveUp" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveUp">
-			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
+		<action name="moveUpConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveUp">
+			<result name="success" type="stream"/>
 		</action>
 		
-		<action name="configMoveDown" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveDown">
-			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
+		<action name="moveDownConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveDown">
+			<result name="success" type="stream"/>
 		</action>
 		
-		<action name="clearInstance" class="com.dianping.lion.web.action.config.ConfigListAction" method="clearInstance">
-			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
+		<action name="clearInstanceAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="clearInstance">
+			<result name="success" type="stream"/>
 		</action>
 		
-		<action name="delete" class="com.dianping.lion.web.action.config.ConfigListAction" method="delete">
-			<result name="success" type="redirect">/config/configList.vhtml?${query}</result>
+		<action name="deleteAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="delete">
+			<result name="success" type="stream"/>
 		</action>
 		
 		<action name="add" class="com.dianping.lion.web.action.config.ConfigListAction" method="add">
