@@ -187,7 +187,8 @@ $(function(){
 	});
 	
 	$("#edit-more-btn").click(function() {
-		$(location).attr("href", ("/config/editMore.vhtml?" + $("#queryStr").val() + "&" + $("#criteriaStr").val()).prependcontext());
+		$(location).attr("href", ("/config/editMore.vhtml?" + $("#queryStr").val() + "&" + $("#criteriaStr").val()).prependcontext() 
+			+ "&configId=" + $("#edit-config-modal [name='config-id']").val());
 	});
 	
 	$("#save-btn").click(function() {
@@ -505,11 +506,11 @@ function openListEditor(inputId, numberlist, event) {
 				//回填
 				var list_result = "";
 				if ($editor.find(".list-item-input").length > 0) {
-					list_result += "[";
-					$editor.find(".list-item-input").each(function(index) {
-						list_result += (index == 0 ? "": ", ") + "\"" + $(this).val().trimIf(trimInput) + "\"";
+					var array = new Array();
+					$editor.find(".list-item-input").each(function() {
+						array.push($(this).val().trimIf(trimInput));
 					});
-					list_result += "]";
+					list_result = JSON.stringify(array);
 				}
 				$("#" + inputId).val(list_result);
 				$editor.modal("hide");

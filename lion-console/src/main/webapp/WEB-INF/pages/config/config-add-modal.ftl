@@ -43,8 +43,7 @@
 			      		<input type="checkbox" name="config-env" id="config-env-${envStatus.index}" value="${id}"
 			      		<@s.if test="%{#envStatus.index == 0}"> checked="checked"</@s.if>
 			      		<@s.if test="%{#envStatus.first}"> disabled="disabled"</@s.if>
-			      		><label for="config-env-${envStatus.index}" class="help-inline"
-			      		<@s.if test="%{#envStatus.last}"> rel="tooltip" data-original-title="${label}环境需要单独创建"</@s.if>>${label}</label>
+			      		><label for="config-env-${envStatus.index}" class="help-inline">${label}</label>
 			      		&nbsp;&nbsp;
 			      	</@s.iterator>
 			      </div>

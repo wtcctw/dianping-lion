@@ -18,6 +18,7 @@ package com.dianping.lion.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.dianping.lion.util.EnumUtils;
 import com.dianping.lion.util.StringUtils;
 
 /**
@@ -35,6 +36,7 @@ public class Config implements Serializable {
 	private String key;
 	private String desc;
 	private int type;
+	private ConfigTypeEnum typeEnum;
 	private int projectId;
 	private int createUserId;
 	private int modifyUserId;
@@ -89,11 +91,22 @@ public class Config implements Serializable {
 	public int getType() {
 		return type;
 	}
+	public ConfigTypeEnum getTypeEnum() {
+		if (this.typeEnum == null) {
+			synchronized (this) {
+				if (this.typeEnum == null) {
+					this.typeEnum = EnumUtils.fromEnumProperty(ConfigTypeEnum.class, "value", this.type);
+				}
+			}
+		}
+		return this.typeEnum;
+	}
 	/**
 	 * @param type the type to set
 	 */
 	public void setType(int type) {
 		this.type = type;
+		this.typeEnum = null;
 	}
 	/**
 	 * @return the projectId

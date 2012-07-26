@@ -54,8 +54,8 @@
 	$.mapeditor = {
 		buildNewItem : function(key, value) {
 			return "<div class='map-item control-group' style='margin-bottom:0px;'>"
-				+ "<input type='text' class='map-key-input' style='margin-left: 10px;width:200px;height:14px;' value='" + key + "'>&nbsp;=&nbsp;"
-				+ "<input type='text' class='map-value-input' style='width:320px;height:14px;' value='" + value + "'>&nbsp;&nbsp;"
+				+ "<input type='text' class='map-key-input' style='margin-left: 10px;width:200px;height:14px;' value='" + key.escapeQuotes() + "'>&nbsp;=&nbsp;"
+				+ "<input type='text' class='map-value-input' style='width:320px;height:14px;' value='" + value.escapeQuotes() + "'>&nbsp;&nbsp;"
 				+ "<a href='#' onclick='$.mapeditor.moveUpItem(this, event);'><i class='icon-arrow-up'></i></a>&nbsp;" 
 				+ "<a href='#' onclick='$.mapeditor.moveDownItem(this, event);'><i class='icon-arrow-down'></i></a>&nbsp;" 
 				+ "<a href='#' onclick='$.mapeditor.addItem(this, event);'><i class='icon-plus'></i></a>&nbsp;" 
