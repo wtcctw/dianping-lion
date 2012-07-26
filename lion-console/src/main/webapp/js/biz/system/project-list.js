@@ -1,15 +1,29 @@
+var produceSelectArray = new Array();
 function linkage(){
-		$("option[team]").removeClass("hide");
+	var pse = $("#productSelect option");
+	
+	pse.each(function(){
+		$(this).remove();
+	});
+	var teamS = $("#teamSelect").children('option:selected').val();
+	for(var psai in produceSelectArray){
+		if(produceSelectArray.hasOwnProperty(psai)){
+			var psa = produceSelectArray[psai];
+			if(teamS == 0 || psa[1] == 0 || psa[0] == teamS){
+				$("<option team='"+psa[0]+"' value='"+psa[1]+"'>"+psa[2]+"</option>").appendTo($("#productSelect"));
+			}
+		}
+		
+	}
+	$("#productSelect").find("option").removeAttr("selected");
+	var productS = "option[value='"+$("#productSelected").attr("value")+"']"
+	$("#productSelect").find(productS).attr("selected","true");
+	
 		if($("#teamSelect").children('option:selected').val() != $("#productSelect").children('option:selected').attr("team")){
 			$("#productSelect option").removeAttr("selected");
 			$("#productSelect option:first").attr("selected","true");
 		}
 		
-		if($("#teamSelect").children('option:selected').val() > 0){
-			
-			$("option[team]").addClass("hide");
-			$("option[team="+$("#teamSelect").children('option:selected').val()+"]").removeClass("hide");
-		}
 	}
 
 function contain(value,itemsStr){
@@ -42,6 +56,15 @@ function editOpen(projectId,projectName,productId,techLeader,oper){
 }
 
 $(document).ready(function(){
+	var v = 0;
+	$("#productSelect option").each(function(){
+		
+		var opattr = new Array();
+		opattr[0]=$(this).attr("team");
+		opattr[1]=$(this).attr("value");
+		opattr[2]=$(this).html();
+		produceSelectArray[v++] = opattr;
+	});
 	
 	$("#teamSelect").find("option").removeAttr("selected");
 	var teamS = "option[value='"+$("#teamSelected").attr("value")+"']"
@@ -60,6 +83,7 @@ $(document).ready(function(){
 		purl = purl.prependcontext();
 		$("#projectQuery").attr("action",purl);
 		$("#projectQuery").submit();
+		return false;
 	});
 	$("#add_project_btn").click(function(){
 		$("#techLeaderWarn").removeClass("lion_red");
@@ -69,6 +93,7 @@ $(document).ready(function(){
 		$("#add-project-modal").modal({
 			backdrop : "static"
 		});
+		return false;
 	});
 	
 	$("#addProject").click(function(){
@@ -114,6 +139,7 @@ $(document).ready(function(){
 				location.reload();
 			}
 		});
+		return false;
 	});
 $("#editProject").click(function(){
 		
@@ -162,6 +188,7 @@ $("#editProject").click(function(){
 			location.reload();
 		}
 	});
+	return false;
 	
 	});
 
