@@ -11,7 +11,7 @@ function bind() {
 		$.ajax( {
 			type : "GET",
 			contentType : "application/json",
-			url : href.prependcontext(),
+			url : href,
 			dataType : 'html',
 			success : function(result) {
 				var temp = result.replace(/&quot;/g, '\"');
@@ -38,7 +38,7 @@ function bind() {
 		$.ajax( {
 			type : "GET",
 			contentType : "application/json;",
-			url : $(this).data("location").prependcontext(),
+			url : $(this).data("location"),
 			dataType : 'html',
 			success : function(response) {
 				var temp = response.replace(/&quot;/g, '\"');
@@ -73,15 +73,23 @@ function bind() {
 }
 
 function saveProduct() {
-    	var name, productLeaderId, teamId;
+    	var name, productLeader, teamId;
     	name = document.getElementById('input-product-name').value;
-    	productLeaderId = document.getElementById('input-product-productLeaderName').value;
+    	productLeader = document.getElementById('input-product-productLeaderName').value;
+		if(!contain(productLeader,$("#input-product-productLeaderName").attr("data-source"))){
+			$("#span-product-productLeaderName-error").addClass("lion_red");
+			$("#span-product-productLeaderName-error").html("负责人必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
+			return;
+		}else{
+			$("#span-product-productLeaderName-error").removeClass("lion_red");
+			$("#span-product-productLeaderName-error").html("可输入名字或拼音提示");
+		}
     	teamId = document.getElementById('input-product-teamName').value;
     	if (validateConfigForm()) {
 	    	var clientdata = {
 	//    			envLabel : encodeURI(encodeURI(envLabel)),
 	    			name : name,
-	    			productLeaderId : productLeaderId,
+	    			productLeader : productLeader,
 	    			teamId : teamId
 	    	};
 	//    	clientdata = encodeURIComponent(encodeURIComponent(clientdata));
@@ -104,16 +112,24 @@ function saveProduct() {
 }
 
 function updateProduct() {
-	var id, name, productLeaderId, teamId;
+	var id, name, productLeader, teamId;
 	id = document.getElementById('input-product-id').value;
 	name = document.getElementById('input-product-name').value;
-	productLeaderId = document.getElementById('input-product-productLeaderName').value;
+	productLeader = document.getElementById('input-product-productLeaderName').value;
+	if(!contain(productLeader,$("#input-product-productLeaderName").attr("data-source"))){
+		$("#span-product-productLeaderName-error").addClass("lion_red");
+		$("#span-product-productLeaderName-error").html("负责人必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
+		return;
+	}else{
+		$("#span-product-productLeaderName-error").removeClass("lion_red");
+		$("#span-product-productLeaderName-error").html("可输入名字或拼音提示");
+	}
 	teamId = document.getElementById('input-product-teamName').value;
 	if (validateConfigForm()) {
 		var clientdata = {
 				id : id,
 				name : name,
-				productLeaderId : productLeaderId,
+				productLeader : productLeader,
 				teamId : teamId
 		};
 		href = "/system/productEditSubmitAjax.vhtml";
@@ -153,5 +169,15 @@ function setValidateError($element,$error,message) {
 function resetConfigFormValidation() {
 	$(".control-group").removeClass("error");
 	$(".message").hide();
-	
+}
+
+function contain(value,itemsStr){
+	var itemsStr_ = itemsStr.substr(2,itemsStr.length-4);
+	var items = itemsStr_.split("\",\"");
+	for(var i=0;i<items.length;i++){
+		if(value == items[i]){
+			return true;
+		}
+	}
+	return false;
 }

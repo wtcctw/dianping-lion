@@ -19,4 +19,13 @@
 		]]>
     </select>
     
+    <select id="findById" resultMap="UserResult">
+		<![CDATA[
+		SELECT id, loginName, name, email, createTime
+		FROM user
+		WHERE id=#id#
+		ORDER BY id
+		]]>
+    </select>
+    
 </sqlMap>

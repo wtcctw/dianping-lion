@@ -33,5 +33,9 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
 	public List<User> findAll() {
 		return getSqlMapClientTemplate().queryForList("User.findAll");
 	}
+	
+	public User findById(int id) {
+		return (User)getSqlMapClientTemplate().queryForObject("User.findById", id);
+	}
 
 }

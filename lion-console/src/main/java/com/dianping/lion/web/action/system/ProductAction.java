@@ -53,6 +53,7 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	private String name;
 	private int teamId;
 	private String teamName;
+	private String productLeader; 
 	private int productLeaderId;
 	private String productLeaderName;
 	private String errorMessage = "产品已关联项目，不能删除";
@@ -72,6 +73,7 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	public String productAddSubmit(){
 		Product product = new Product();
 		product.setName(name);
+		productLeaderId = Integer.valueOf(productLeader.split("@")[2]);
 		product.setProductLeaderId(productLeaderId);
 		product.setTeamId(teamId);
 		product.setCreateTime(new Date(System.currentTimeMillis()));
@@ -86,7 +88,8 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 		userList = userService.findAll();
 		product = productService.findProductByID(id);
 		selectedTeamValue = String.valueOf(product.getTeamId());
-		selectedUserValue = String.valueOf(product.getProductLeaderId());
+		User user = userService.findById(product.getProductLeaderId());
+		selectedUserValue = user.getName()+"@"+user.getLoginName()+"@"+user.getId();
 		return SUCCESS;
 	}
 	
@@ -94,6 +97,7 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 		Product product = new Product();
 		product.setId(id);
 		product.setName(name);
+		productLeaderId = Integer.valueOf(productLeader.split("@")[2]);
 		product.setProductLeaderId(productLeaderId);
 		product.setTeamId(teamId);
 		product.setCreateTime(new Date(System.currentTimeMillis()));
@@ -281,4 +285,12 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 		this.selectedUserValue = selectedUserValue;
 	}
 
+	public String getProductLeader() {
+		return productLeader;
+	}
+
+	public void setProductLeader(String productLeader) {
+		this.productLeader = productLeader;
+	}
+	
 }
