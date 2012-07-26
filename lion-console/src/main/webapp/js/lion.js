@@ -15,6 +15,22 @@ String.prototype.prependcontext = function() {
 }
 
 /**
+ * 替换字符串中指定的字符串
+ */
+String.prototype.replaceAll = function(reallyDo, replaceWith, ignoreCase) {  
+	if (!RegExp.prototype.isPrototypeOf(reallyDo)) {  
+		return this.replace(new RegExp(reallyDo, (ignoreCase ? "gi": "g")), replaceWith);  
+	} else {  
+		return this.replace(reallyDo, replaceWith);  
+	}  
+}
+
+String.prototype.escapeQuotes = function() {
+	if (this == void 0) {throw new Error("Illegal argument error.");}
+	return this.replaceAll("\"", "&#34;").replaceAll("'", "&#39;");
+}
+
+/**
 * 去除两端空格
 */
 String.prototype.trim = function() {

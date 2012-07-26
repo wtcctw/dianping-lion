@@ -17,6 +17,7 @@ package com.dianping.lion.web.action.config;
 
 import java.util.List;
 
+import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.vo.ConfigCriteria;
@@ -36,6 +37,8 @@ public class ConfigListAction extends AbstractConfigAction {
 	private List<Environment> environments;
 	
 	private List<ConfigVo> configVos;
+	
+	private Config config;
 
 	public String list() {
 		this.environments = environmentService.findAll();
@@ -99,6 +102,9 @@ public class ConfigListAction extends AbstractConfigAction {
 	
 	public String editMore() {
 		this.project = projectService.getProject(projectId);
+		this.environments = environmentService.findAll();
+		this.environment = environmentService.findEnvByID(envId);
+		this.config = configService.getConfig(configId);
 		return SUCCESS;
 	}
 
@@ -142,6 +148,20 @@ public class ConfigListAction extends AbstractConfigAction {
 	 */
 	public void setCriteria(ConfigCriteria criteria) {
 		this.criteria = criteria;
+	}
+
+	/**
+	 * @return the config
+	 */
+	public Config getConfig() {
+		return config;
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(Config config) {
+		this.config = config;
 	}
 	
 }

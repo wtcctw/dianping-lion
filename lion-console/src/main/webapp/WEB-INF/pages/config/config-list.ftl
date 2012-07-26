@@ -18,7 +18,8 @@
 				  <li>
 				    ${project.name}<span class="divider">></span>
 				  </li>
-				  <li class="active">配置列表</li>
+				  <li>配置列表<span class="divider">></span></li>
+				  <li class="active">${environment.label}</li>
 				</ul>
 			</div>
 		</div>

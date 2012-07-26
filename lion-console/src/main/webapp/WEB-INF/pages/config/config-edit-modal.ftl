@@ -28,8 +28,7 @@
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
 			      		<input type="checkbox" name="edit-config-env" id="edit-config-env-${envStatus.index}" value="${id}"
-			      		><label for="edit-config-env-${envStatus.index}" class="help-inline"
-			      		<@s.if test="%{#envStatus.last}"> rel="tooltip" data-original-title="${label}环境需要单独创建"</@s.if>>${label}</label>
+			      		><label for="edit-config-env-${envStatus.index}" class="help-inline">${label}</label>
 			      		&nbsp;&nbsp;
 			      	</@s.iterator>
 			      </div>
@@ -53,6 +52,6 @@
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">关闭</a>
       <input id="edit-save-btn" type="button" class="btn btn-primary" value=" 保存 ">
-      <input id="edit-more-btn" type="button" class="btn btn-info" value=" 编辑复杂配置 ">
+      <input id="edit-more-btn" type="button" class="btn btn-info" value=" 编辑上下文相关配置 ">
     </div>
 </div>
