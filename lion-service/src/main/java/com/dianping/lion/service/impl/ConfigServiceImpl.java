@@ -16,7 +16,7 @@
 package com.dianping.lion.service.impl;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +50,6 @@ public class ConfigServiceImpl implements ConfigService {
 	@Autowired
 	private ProjectDao projectDao;
 	
-//	private Comparator<ConfigVo> configListComparator = new ConfigVoComparator();
-
 	@Override
 	public List<ConfigVo> findConfigVos(ConfigCriteria criteria) {
 		int projectId = criteria.getProjectId();
@@ -78,7 +76,6 @@ public class ConfigServiceImpl implements ConfigService {
 				}
 			}
 		}
-//		Collections.sort(configVos, configListComparator);
 		return configVos;
 	}
 
@@ -214,18 +211,13 @@ public class ConfigServiceImpl implements ConfigService {
 		return findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
 	}
 
-}
-
-class ConfigVoComparator implements Comparator<ConfigVo> {
-
 	@Override
-	public int compare(ConfigVo o1, ConfigVo o2) {
-		int defaultInstance1 = o1.getDefaultInstance() != null ? 1 : 0;
-		int defaultInstance2 = o2.getDefaultInstance() != null ? 1 : 0;
-		if (defaultInstance1 != defaultInstance2) {
-			return defaultInstance1 - defaultInstance2;
+	public List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv) {
+		Config config = getConfig(configId);
+		if (config == null) {
+			return Collections.emptyList();
 		}
-		return o1.getConfig().getSeq() - o2.getConfig().getSeq();
+		return configDao.findInstancesByConfig(config.getId(), maxPerEnv);
 	}
-	
+
 }

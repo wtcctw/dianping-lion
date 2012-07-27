@@ -9,4 +9,5 @@
 	<groupId>com.dianping.lion</groupId>
 	<artifactId>lion-client</artifactId>
 	<version>0.3.0</version>
+	<name>lion-client</name>
 </project>

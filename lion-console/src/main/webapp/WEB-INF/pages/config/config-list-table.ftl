@@ -6,7 +6,7 @@
       <th width="250">DESC</th>
       <th>VALUE</th>
       <th width="50">Status</th>
-      <th style="max-width:150px;">
+      <th width="150">
       	操作 &nbsp;&nbsp;<input type="checkbox" id="display-all-btn" rel="tooltip" data-original-title="显示全部操作">
       	<a id="add-config-btn" href="#" rel="tooltip" data-original-title="添加配置项" class="pull-right">
       		<i class="icon-plus"></i>

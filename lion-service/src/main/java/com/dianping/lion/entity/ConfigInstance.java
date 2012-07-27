@@ -43,6 +43,7 @@ public class ConfigInstance implements Serializable {
 	private Date createTime;
 	private Date modifyTime;
 	private String remark;
+	private int seq;
 	
 	public ConfigInstance() {
 	}
@@ -209,6 +210,20 @@ public class ConfigInstance implements Serializable {
 	 */
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	/**
+	 * @return the seq
+	 */
+	public int getSeq() {
+		return seq;
+	}
+
+	/**
+	 * @param seq the seq to set
+	 */
+	public void setSeq(int seq) {
+		this.seq = seq;
 	}
 	
 }

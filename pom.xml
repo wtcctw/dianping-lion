@@ -10,13 +10,14 @@
 	<artifactId>lion-all</artifactId>
 	<version>2.0.0</version>
 	<packaging>pom</packaging>
-	<name>dianping lion v${project.version}</name>
+	<name>lion-all</name>
 	<organization>
 		<name>dianping</name>
 		<url>http://www.dianping.com</url>
 	</organization>
 	<modules>
 		<module>lion-client</module>
+		<module>lion-service</module>
 		<module>lion-console</module>
 		<module>lion-api</module>
 	</modules>

@@ -166,4 +166,10 @@ public interface ConfigDao {
 	 */
 	int updateInstance(ConfigInstance instance);
 
+	/**
+	 * @param id
+	 * @return
+	 */
+	List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv);
+
 }

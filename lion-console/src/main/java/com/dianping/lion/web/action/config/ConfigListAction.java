@@ -105,6 +105,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		this.environments = environmentService.findAll();
 		this.environment = environmentService.findEnvByID(envId);
 		this.config = configService.getConfig(configId);
+		configService.findInstancesByConfig(configId, 10);
 		return SUCCESS;
 	}
 

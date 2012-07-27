@@ -16,7 +16,7 @@
 				  <li>
 				    ${project.name}<span class="divider">></span>
 				  </li>
-				  <li>配置列表<span class="divider">></span></li>
+				  <li>上下文相关配置<span class="divider">></span></li>
 				  <li class="active">${environment.label}</li>
 				</ul>
 			</div>
@@ -62,7 +62,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td class="lion-label" rowspan="3">上下文</td>
+					<td class="lion-label" rowspan="3">上下文：</td>
 					<td class="lion-label">IP：</td>
 					<td>
 						<textarea id="add-ip" rows="3" style="width:800px;"></textarea>
@@ -78,6 +78,11 @@
 				<tr>
 					<td class="lion-label">自定义：</td>
 					<td><textarea id="add-customized" rows="3" style="width:800px;"></textarea></td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<input id="add-btn" type="button" class="btn btn-primary pull-right" value=" 保存 ">
+					</td>
 				</tr>
 			</tbody>
 		</table>

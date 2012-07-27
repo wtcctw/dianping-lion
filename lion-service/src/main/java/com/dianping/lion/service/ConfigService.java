@@ -72,6 +72,14 @@ public interface ConfigService {
 	 * @param instance
 	 */
 	int createInstance(ConfigInstance instance);
+	
+	/**
+	 * 获取指定key配置的所有环境下的配置值, 若指定maxPerEnv则每个环境下至多获取maxPerEnv条(按照seq倒序)
+	 * @param configKey
+	 * @param maxPerEnv
+	 * @return
+	 */
+	List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv);
 
 	/**
 	 * @param key

@@ -5,3 +5,4 @@
 5. 要求各系统带上必要的menu=xxx参数，提供导航条使用
 6. 所有ajax的请求，后台发生错误需要有日志
 7. 处理textarea, input中显示单，双引号的问题，需要转换为&#39;和&#34;(done)
+8. json->object转换，可以使用json obj方式，也可以使用ognl的方式
