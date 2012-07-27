@@ -11,7 +11,7 @@ function bind() {
 		$.ajax( {
 			type : "GET",
 			contentType : "application/json",
-			url : href.prependcontext(),
+			url : href,
 			dataType : 'html',
 			success : function(result) {
 				var temp = result.replace(/&quot;/g, '\"');
@@ -39,7 +39,7 @@ function bind() {
 				$.ajax( {
 					type : "GET",
 					contentType : "application/json;",
-					url : $(this).data("location").prependcontext(),
+					url : $(this).data("location"),
 					dataType : 'html',
 					success : function(response) {
 						var temp = response.replace(/&quot;/g, '\"');

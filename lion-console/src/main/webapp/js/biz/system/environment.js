@@ -11,7 +11,7 @@ function bind() {
 		$.ajax( {
 			type : "GET",
 			contentType : "application/json",
-			url : href.prependcontext(),
+			url : href,
 			dataType : 'html',
 			success : function(result) {
 				var temp = result.replace(/&quot;/g, '\"');

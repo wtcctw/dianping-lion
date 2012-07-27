@@ -27,4 +27,6 @@ public interface UserService {
 
 	List<User> findAll();
 	
+	User findById(int id);
+	
 }
