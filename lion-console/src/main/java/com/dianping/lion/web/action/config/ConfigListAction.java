@@ -15,11 +15,18 @@
  */
 package com.dianping.lion.web.action.config;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Config;
+import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.exception.EntityNotFoundException;
+import com.dianping.lion.exception.RuntimeBusinessException;
+import com.dianping.lion.service.ConfigDeleteResult;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
 
@@ -39,6 +46,8 @@ public class ConfigListAction extends AbstractConfigAction {
 	private List<ConfigVo> configVos;
 	
 	private Config config;
+	
+	private Map<Integer, List<ConfigInstance>> instanceMap;
 
 	public String list() {
 		this.environments = environmentService.findAll();
@@ -48,6 +57,9 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		if (envId != null) {
 			environment = environmentService.findEnvByID(envId);
+			if (environment == null) {
+				throw new RuntimeBusinessException("该环境已不存在!");
+			}
 			criteria.setProjectId(projectId);
 			criteria.setEnvId(envId);
 			configVos = configService.findConfigVos(criteria);
@@ -74,10 +86,19 @@ public class ConfigListAction extends AbstractConfigAction {
 	
 	public String delete() {
 		try {
-			configService.delete(configId);
-			createSuccessStreamResponse();
+			ConfigDeleteResult deleteResult = configService.delete(configId);
+			if (deleteResult.isSucceed()) {
+				createSuccessStreamResponse();
+			} else {
+				List<Environment> failedEnvs = deleteResult.getFailedEnvs();
+				String failedEnvStr = "";
+				for (int i = 0; i < failedEnvs.size(); i++) {
+					failedEnvStr += (i > 0 ? "," : "") + failedEnvs.get(i).getLabel();
+				}
+				createErrorStreamResponse("[" + failedEnvStr + "]配置清除失败，其他环境成功.");
+			}
 		} catch (RuntimeException e) {
-			createErrorStreamResponse("删除失败[" + e.getMessage() + "].");
+			createErrorStreamResponse("删除失败.");
 		}
 		return SUCCESS;
 	}
@@ -100,12 +121,44 @@ public class ConfigListAction extends AbstractConfigAction {
 		return SUCCESS;
 	}
 	
+	public String deploy() {
+		try {
+			configService.registerToMedium(configId, envId);
+			createSuccessStreamResponse();
+		} catch (RuntimeBusinessException e) {
+			createErrorStreamResponse(e.getMessage());
+		} catch (Exception e) {
+			createErrorStreamResponse();
+		}
+		return SUCCESS;
+	}
+	
+	public String push() {
+		try {
+			configService.registerAndPushToMedium(configId, envId);
+			createSuccessStreamResponse();
+		} catch (RuntimeBusinessException e) {
+			createErrorStreamResponse(e.getMessage());
+		} catch (Exception e) {
+			createErrorStreamResponse();
+		}
+		return SUCCESS;
+	}
+	
 	public String editMore() {
 		this.project = projectService.getProject(projectId);
 		this.environments = environmentService.findAll();
 		this.environment = environmentService.findEnvByID(envId);
 		this.config = configService.getConfig(configId);
-		configService.findInstancesByConfig(configId, 10);
+		List<ConfigInstance> instances = configService.findInstancesByConfig(configId, ServiceConstants.MAX_AVAIL_CONFIG_INST);
+		this.instanceMap = new HashMap<Integer, List<ConfigInstance>>();
+		for (ConfigInstance instance : instances) {
+			int envId = instance.getEnvId();
+			if (!instanceMap.containsKey(envId)) {
+				instanceMap.put(envId, new ArrayList<ConfigInstance>());
+			}
+			instanceMap.get(envId).add(instance);
+		}
 		return SUCCESS;
 	}
 
@@ -163,6 +216,20 @@ public class ConfigListAction extends AbstractConfigAction {
 	 */
 	public void setConfig(Config config) {
 		this.config = config;
+	}
+
+	/**
+	 * @return the instanceMap
+	 */
+	public Map<Integer, List<ConfigInstance>> getInstanceMap() {
+		return instanceMap;
+	}
+
+	/**
+	 * @param instanceMap the instanceMap to set
+	 */
+	public void setInstanceMap(Map<Integer, List<ConfigInstance>> instanceMap) {
+		this.instanceMap = instanceMap;
 	}
 	
 }

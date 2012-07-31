@@ -6,3 +6,8 @@
 6. 所有ajax的请求，后台发生错误需要有日志
 7. 处理textarea, input中显示单，双引号的问题，需要转换为&#39;和&#34;(done)
 8. json->object转换，可以使用json obj方式，也可以使用ognl的方式
+9. 将出错堆栈信息保存到DB或其他地方，通过页面查看
+10.后台操作失败如何展示，如config-list页面的部署或推送ajax请求，是大的modal框展示所有错误信息，还是存储数据库，然后展示链接?
+11.删除一条context-config-instance时，是否实时推送到zk?
+12.将ServiceConstants.MAX_AVAIL_CONFIG_INST做成数据库中系统配置项，可以临时调整其大小，应对特殊情况
+13.老版本中对于avatar-biz中配置的特殊处理，在新版本中如何处理

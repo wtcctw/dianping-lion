@@ -29,6 +29,7 @@
 		<result column="modifyUserId" property="modifyUserId"/>
 		<result column="createTime" property="createTime"/>
 		<result column="modifyTime" property="modifyTime"/>
+		<result column="desc" property="desc"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
 	
@@ -52,10 +53,9 @@
     </select>
     
     <select id="findMaxInstsBySeq" resultMap="ConfigInstanceResult" parameterClass="map">
-    	<![CDATA[
     	SELECT a.*
     	FROM config_instance a
-    	WHERE a.configId = #configId# AND (
+    	WHERE a.configId = #configId#<isNotNull property="envId"> AND a.envId = #envId#</isNotNull><![CDATA[ AND (
     			SELECT COUNT(*) FROM config_instance b WHERE a.configId = b.configId AND a.envId = b.envId AND a.seq < b.seq
     		) < #max#
     	ORDER BY a.seq DESC
@@ -109,6 +109,10 @@
     	SELECT MAX(seq) FROM config WHERE projectId = #projectId#
     </select>
     
+    <select id="getMaxInstSeq" resultClass="int" parameterClass="map">
+    	SELECT MAX(seq) FROM config_instance WHERE configId = #configId# AND envId = #envId#
+    </select>
+    
     <select id="getPrevConfig" resultMap="ConfigResult" parameterClass="int">
     	<![CDATA[
     	SELECT c2.*
@@ -138,8 +142,8 @@
     </delete>
     
     <insert id="insertInstance" parameterClass="ConfigInstance">
-    	INSERT INTO config_instance(configId, envId, value, context, contextmd5, createUserId, modifyUserId, createTime, modifyTime, remark)
-    	VALUES(#configId#, #envId#, #value#, #context#, #contextmd5#, #createUserId#, #modifyUserId#, NOW(), NOW(), #remark#)
+    	INSERT INTO config_instance(configId, envId, value, context, contextmd5, createUserId, modifyUserId, createTime, modifyTime, `desc`, seq)
+    	VALUES(#configId#, #envId#, #value#, #context#, #contextmd5#, #createUserId#, #modifyUserId#, NOW(), NOW(), #desc#, #seq#)
     	<selectKey resultClass="int">    
             SELECT LAST_INSERT_ID() AS ID
         </selectKey> 
@@ -163,7 +167,7 @@
     
     <update id="updateInstance" parameterClass="ConfigInstance">
     	UPDATE config_instance
-    	SET value = #value#, context = #context#, contextmd5 = #contextmd5#, modifyUserId = #modifyUserId#, modifyTime = #modifyTime#, remark = #remark#
+    	SET value = #value#, context = #context#, contextmd5 = #contextmd5#, modifyUserId = #modifyUserId#, modifyTime = #modifyTime#, `desc` = #desc#, seq = #seq#
     	WHERE id = #id#
     </update>
     

@@ -37,6 +37,8 @@
 		</tx:attributes>
 	</tx:advice>
 	
+	<tx:annotation-driven transaction-manager="Lion.TransactionManager"/>
+	
 	<aop:config>
 		<aop:pointcut id="ServiceOperations" expression="execution(* com.dianping.lion.service.*Service.*(..))"/>
 		<aop:advisor advice-ref="Lion.TransactionAdvice" pointcut-ref="ServiceOperations"/>

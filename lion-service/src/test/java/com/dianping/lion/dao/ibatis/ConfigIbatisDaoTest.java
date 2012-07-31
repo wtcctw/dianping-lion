@@ -18,11 +18,17 @@ package com.dianping.lion.dao.ibatis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.entity.Config;
+import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigTypeEnum;
 import com.dianping.lion.support.AbstractDaoTestSupport;
 
@@ -52,6 +58,24 @@ public class ConfigIbatisDaoTest extends AbstractDaoTestSupport {
 		config.setProjectId(1);
 		int configId = configDao.create(config);
 		assertTrue(configId > 0);
+	}
+	
+	@Test
+	public void testReadConfigValue() throws JSONException {
+		List<ConfigInstance> instances = configDao.findInstancesByConfig(1, 1, 30);
+		JSONArray array = new JSONArray();
+		for (ConfigInstance instance : instances) {
+			JSONObject json = new JSONObject();
+			json.put("value", instance.getValue());
+			json.put("context", instance.getContext());
+			array.put(json);
+		}
+		String nodeValue = array.toString();
+		JSONArray array2 = new JSONArray(nodeValue);
+		JSONObject jsonObj = (JSONObject) array2.get(1);
+		String configValue = (String) jsonObj.get("value");
+		JSONObject configJson = new JSONObject("{\"main-db.passwd\":[]}");
+		System.out.println(configJson.get("main-db.passwd"));
 	}
 	
 }

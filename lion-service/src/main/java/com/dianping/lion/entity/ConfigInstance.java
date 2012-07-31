@@ -42,7 +42,7 @@ public class ConfigInstance implements Serializable {
 	private int modifyUserId;
 	private Date createTime;
 	private Date modifyTime;
-	private String remark;
+	private String desc;
 	private int seq;
 	
 	public ConfigInstance() {
@@ -100,17 +100,29 @@ public class ConfigInstance implements Serializable {
 	public String getAbbrevValue() {
 		return StringUtils.cutString(value, MAX_VALUE_DISPLAY_LEN);
 	}
+	public String getAbbrevValue(int length) {
+		return StringUtils.cutString(value, length);
+	}
 	public String getMoreValue() {
 		return StringUtils.cutString(value, MORE_VALUE_DISPLAY_LEN);
 	}
 	public boolean isLongValue() {
 		return StringUtils.cutString(value, MAX_VALUE_DISPLAY_LEN).length() != value.length();
 	}
+	public String getAbbrevDesc(int length) {
+		return StringUtils.cutString(desc, length);
+	}
+	public boolean isLongDesc(int length) {
+		return getAbbrevDesc(length).length() != desc.length();
+	}
 	/**
 	 * @param value the value to set
 	 */
 	public void setValue(String value) {
 		this.value = value;
+	}
+	public boolean isDefault() {
+		return NO_CONTEXT.equals(context);
 	}
 	/**
 	 * @return the context
@@ -200,16 +212,16 @@ public class ConfigInstance implements Serializable {
 		this.modifyTime = modifyTime;
 	}
 	/**
-	 * @return the remark
+	 * @return the desc
 	 */
-	public String getRemark() {
-		return remark;
+	public String getDesc() {
+		return desc;
 	}
 	/**
-	 * @param remark the remark to set
+	 * @param desc the desc to set
 	 */
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 
 	/**

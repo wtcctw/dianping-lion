@@ -30,7 +30,7 @@
 				<ul class="nav nav-tabs">
 					<@s.iterator value="environments" var="env">
 					<li<@s.if test="%{#env.id == envId}"> class="active"</@s.if>>
-						<a href="<@s.url action="configList" namespace="/config"/>?menu=${menu}&pid=${pid}&envId=${id}&${criteriaStr_}">${label}</a>
+						<a href="<@s.url action="configList" namespace="/config"/>?menu=${menu}&pid=${pid}&envId=${id}&${criteriaStr}">${label}</a>
 					</li>
 					</@s.iterator>
 				</ul>
@@ -75,6 +75,7 @@
 			</div>
 		</div>
 	</div>
+	<br/>
 	<#include "/WEB-INF/pages/config/config-add-modal.ftl">
 	<#include "/WEB-INF/pages/config/config-edit-modal.ftl">
 	<#include "/WEB-INF/pages/config/config-list-editor.ftl">

@@ -19,10 +19,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.EnvironmentDao;
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.medium.ConfigRegisterServiceRepository;
 import com.dianping.lion.service.EnvironmentService;
 
 /**
@@ -33,6 +35,9 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	
 	@Autowired
 	private EnvironmentDao environmentDao;
+	
+	@Autowired
+	private ConfigRegisterServiceRepository mediumServiceRepository;
 
 	@Override
 	public List<Environment> findAll() {
@@ -51,6 +56,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 	public void delete(int id) {
 		environmentDao.delete(id);
+		mediumServiceRepository.removeRegisterService(id);
 	}
 
 	@Override
@@ -60,7 +66,11 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 	@Override
 	public void update(Environment env) {
+		Environment oldEnv = findEnvByID(env.getId());
 		environmentDao.update(env);
+		if (!StringUtils.equals(oldEnv.getIps(), env.getIps())) {
+			mediumServiceRepository.removeRegisterService(env.getId());
+		}
 	}
 	
 	@Override
@@ -71,6 +81,10 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	@Override
 	public Environment findPrevEnv(int envId) {
 		return environmentDao.findPrevEnv(envId);
+	}
+
+	public void setMediumServiceRepository(ConfigRegisterServiceRepository mediumServiceRepository) {
+		this.mediumServiceRepository = mediumServiceRepository;
 	}
 
 }

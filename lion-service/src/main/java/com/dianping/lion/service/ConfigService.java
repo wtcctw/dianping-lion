@@ -59,7 +59,7 @@ public interface ConfigService {
 	 * 删除指定配置项
 	 * @param configId
 	 */
-	void delete(int configId);
+	ConfigDeleteResult delete(int configId);
 
 	/**
 	 * 创建配置项
@@ -91,6 +91,14 @@ public interface ConfigService {
 	 * @return
 	 */
 	Config getConfig(int configId);
+	
+	/**
+	 * 指定配置项在指定环境下的注册值(包含所有context-based config value的json结构)
+	 * @param configId
+	 * @param envId
+	 * @return
+	 */
+	String getConfigContextValue(int configId, int envId);
 
 	/**
 	 * @param configId
@@ -124,5 +132,9 @@ public interface ConfigService {
 	 * @param status
 	 */
 	void changeConfigStatus(int configId, int envId, ConfigStatusEnum status);
+
+	void registerToMedium(int configId, int envId);
+
+	void registerAndPushToMedium(int configId, int envId);
 
 }

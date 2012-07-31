@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dianping.lion.Constants;
+import com.dianping.lion.ConsoleConstants;
 import com.dianping.lion.entity.Product;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.service.ProductService;
@@ -26,7 +26,7 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 	
 	private List<Team> teamList;
 	
-	private String active = Constants.TEAM_NAME;
+	private String active = ConsoleConstants.TEAM_NAME;
 	private int id;
 	private Team team;
 	private String name;
@@ -81,7 +81,7 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 	}
 	
 	private void reInitiate() {
-		this.active = Constants.TEAM_NAME;
+		this.active = ConsoleConstants.TEAM_NAME;
 		teamList = teamService.findAll();
 	}
 

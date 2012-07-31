@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
 
-import com.dianping.lion.Constants;
+import com.dianping.lion.ConsoleConstants;
 import com.dianping.lion.entity.Product;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
@@ -45,7 +45,7 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	private List<Team> teamList;
 	private List<User> userList;
 	
-	private String active = Constants.PRODUCT_NAME;
+	private String active = ConsoleConstants.PRODUCT_NAME;
 	
 	private Product product;
 	private String selectedTeamValue, selectedUserValue;
@@ -121,18 +121,18 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String productList(){
-		this.active = Constants.PRODUCT_NAME;
+		this.active = ConsoleConstants.PRODUCT_NAME;
 		productList = productService.findAll();
 		return SUCCESS;
 	}
 	
 	public String teamList(){
-		this.active = Constants.TEAM_NAME;
+		this.active = ConsoleConstants.TEAM_NAME;
 		return SUCCESS;
 	}
 	
 	private void reInitiate() {
-		active = Constants.PRODUCT_NAME;
+		active = ConsoleConstants.PRODUCT_NAME;
 		productList = productService.findAll();
 	}
 

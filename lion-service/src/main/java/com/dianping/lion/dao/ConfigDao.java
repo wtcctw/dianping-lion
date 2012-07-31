@@ -51,6 +51,13 @@ public interface ConfigDao {
 	 * @return
 	 */
 	int getMaxSeq(int projectId);
+
+	/**
+	 * @param configId
+	 * @param envId
+	 * @return
+	 */
+	int getMaxInstSeq(int configId, int envId);
 	
 	/**
 	 * 获取上一个Config(按seq排序)
@@ -167,9 +174,19 @@ public interface ConfigDao {
 	int updateInstance(ConfigInstance instance);
 
 	/**
+	 * 获取指定配置在各环境下至多maxPerEnv个配置实例
 	 * @param id
 	 * @return
 	 */
 	List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv);
-
+	
+	/**
+	 * 获取指定配置在指定环境下至多maxPerEnv个配置实例
+	 * @param configId
+	 * @param envId
+	 * @param maxPerEnv
+	 * @return
+	 */
+	List<ConfigInstance> findInstancesByConfig(int configId, int envId, Integer maxPerEnv);
+	
 }

@@ -39,7 +39,8 @@ String.prototype.trim = function() {
 }
 
 String.prototype.trimIf = function(ifTrim) {
-	return ifTrim == true ? this.trim() : this;
+	if (this == void 0) {throw new Error("Illegal argument error.");}
+	return ifTrim == true ? this.trim() : this.toString();
 }
 
 /**
@@ -69,6 +70,20 @@ String.prototype.startsWith = function(str) {
 String.prototype.isNumber = function() {
 	if (this == void 0) {throw new Error("Illegal argument error.");}
 	return this != null && /^-?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(this);
+}
+
+String.prototype.left = function(maxSize) {
+	if (this == void 0) {throw new Error("Illegal argument error.");}
+	return this.slice(0, maxSize - this.slice(0, maxSize).replace(/[\x00-\xff]/g,"").length);
+}
+
+String.prototype.abbreviate = function(maxSize) {
+	if (this == void 0) {throw new Error("Illegal argument error.");}
+	return this.chineseLength() > maxSize ? this.left(maxSize) + "..." : this.toString();
+}
+
+String.prototype.chineseLength = function() {
+	return this.replace(/[^\x00-\xff]/g,"**").length;
 }
 
 /**************************对Array对象的扩展*********************************/

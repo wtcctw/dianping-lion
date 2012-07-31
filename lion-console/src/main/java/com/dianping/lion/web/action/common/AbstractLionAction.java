@@ -22,6 +22,8 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -31,6 +33,8 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 @SuppressWarnings("serial")
 public class AbstractLionAction extends ActionSupport implements ServletRequestAware {
+	
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected String menu;
 	
@@ -130,6 +134,10 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 	
 	protected void createErrorStreamResponse(String errorMsg) {
 		createStreamResponse(String.format("{\"code\":-1, \"msg\":\"%s\"}", errorMsg));
+	}
+	
+	protected void createErrorStreamResponse() {
+		createErrorStreamResponse("");
 	}
 	
 	protected void createWarnStreamResponse(String warnMsg) {

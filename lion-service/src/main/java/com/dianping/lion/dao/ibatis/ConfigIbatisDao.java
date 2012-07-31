@@ -132,6 +132,13 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 	}
 
 	@Override
+	public int getMaxInstSeq(int configId, int envId) {
+		Object maxSeq = getSqlMapClientTemplate().queryForObject("Config.getMaxInstSeq", Maps.entry("configId", configId)
+				.entry("envId", envId).get());
+		return maxSeq != null ? (Integer) maxSeq : 0;
+	}
+
+	@Override
 	public Config findConfigByKey(String key) {
 		return (Config) getSqlMapClientTemplate().queryForObject("Config.findConfigByKey", key);
 	}
@@ -179,6 +186,15 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 			return getSqlMapClientTemplate().queryForList("Config.findInstance", Maps.entry("configId", configId).get());
 		}
 		return getSqlMapClientTemplate().queryForList("Config.findMaxInstsBySeq", Maps.entry("configId", configId).entry("max", maxPerEnv).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConfigInstance> findInstancesByConfig(int configId, int envId, Integer maxPerEnv) {
+		if (maxPerEnv == null) {
+			return getSqlMapClientTemplate().queryForList("Config.findInstance", Maps.entry("configId", configId).entry("envId", envId).get());
+		}
+		return getSqlMapClientTemplate().queryForList("Config.findMaxInstsBySeq", Maps.entry("configId", configId).entry("envId", envId).entry("max", maxPerEnv).get());
 	}
 
 }

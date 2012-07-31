@@ -26,7 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.dianping.lion.Constants;
+import com.dianping.lion.ConsoleConstants;
 
 /**
  * 一级导航菜单
@@ -47,9 +47,9 @@ public class MenuManager {
 	}
 	
 	public static NavMenus getNavMenus() {
-		if (navMenus == null || Constants.isDevMode()) {
+		if (navMenus == null || ConsoleConstants.isDevMode()) {
 			synchronized (MenuManager.class) {
-				if (navMenus == null || Constants.isDevMode()) {
+				if (navMenus == null || ConsoleConstants.isDevMode()) {
 					loadNavMenus();
 				}
 			}

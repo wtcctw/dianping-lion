@@ -71,14 +71,20 @@ public class ConfigEditAction extends AbstractConfigAction {
 			instance.setValue(value);
 			try {
 				configService.createInstance(instance);
-			} catch (Exception e) {
+				if (ifPush) {
+					configService.registerAndPushToMedium(configId, envId);
+				} else if (ifDeploy) {
+					configService.registerToMedium(configId, envId);
+				}
+			} catch (RuntimeException e) {
+				logger.error("保存/推送配置失败.", e);
 				failedEnvs.add(envMap.get(envId).getLabel());
 			}
 		}
 		if (failedEnvs.isEmpty()) {
 			createSuccessStreamResponse();
 		} else {
-			createWarnStreamResponse("保存[" + StringUtils.join(failedEnvs, ',') + "]环境上的配置项值到DB失败.");
+			createWarnStreamResponse("保存/推送[" + StringUtils.join(failedEnvs, ',') + "]环境上的配置项值失败,请通过列表检查.");
 		}
 		return SUCCESS;
 	}
@@ -98,14 +104,20 @@ public class ConfigEditAction extends AbstractConfigAction {
 			instance.setValue(value);
 			try {
 				configService.setConfigValue(configId, envId, ConfigInstance.NO_CONTEXT, value);
+				if (ifPush) {
+					configService.registerAndPushToMedium(configId, envId);
+				} else if (ifDeploy) {
+					configService.registerToMedium(configId, envId);
+				}
 			} catch (Exception e) {
+				logger.error("保存/推送配置失败.", e);
 				failedEnvs.add(envMap.get(envId).getLabel());
 			}
 		}
 		if (failedEnvs.isEmpty()) {
 			createSuccessStreamResponse();
 		} else {
-			createWarnStreamResponse("保存[" + StringUtils.join(failedEnvs, ',') + "]环境上的配置项值到DB失败.");
+			createWarnStreamResponse("保存/推送[" + StringUtils.join(failedEnvs, ',') + "]环境上的配置项值失败,请通过列表检查.");
 		}
 		return SUCCESS;
 	}

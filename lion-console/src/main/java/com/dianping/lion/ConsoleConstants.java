@@ -2,7 +2,7 @@ package com.dianping.lion;
 
 import org.apache.struts2.dispatcher.Dispatcher;
 
-public class Constants {
+public class ConsoleConstants {
 	
 	public static final String PROJECT_NAME = "project";
 	public static final String PRODUCT_NAME = "product";

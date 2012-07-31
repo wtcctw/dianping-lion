@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
 
-import com.dianping.lion.Constants;
+import com.dianping.lion.ConsoleConstants;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.entity.User;
@@ -46,7 +46,7 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	private List<Team> teamList;
 	private List<User> userList;
 	
-	private String active = Constants.PROJECT_NAME;
+	private String active = ConsoleConstants.PROJECT_NAME;
 	private HttpServletRequest request;
 	
 	private int teamSelect = 0;
@@ -66,7 +66,7 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		param.put("productId", this.productSelect);
 		this.projectList = this.projectService.getProjectsByTeamAndProduct(param);
 		this.teamList = this.projectService.getTeams();
-		this.active = Constants.PROJECT_NAME;
+		this.active = ConsoleConstants.PROJECT_NAME;
 		this.userList = this.userService.findAll();
 		return SUCCESS;
 	}
@@ -108,12 +108,12 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String productList(){
-		this.active = Constants.PRODUCT_NAME;
+		this.active = ConsoleConstants.PRODUCT_NAME;
 		return SUCCESS;
 	}
 	
 	public String teamList(){
-		this.active = Constants.TEAM_NAME;
+		this.active = ConsoleConstants.TEAM_NAME;
 		return SUCCESS;
 	}
 

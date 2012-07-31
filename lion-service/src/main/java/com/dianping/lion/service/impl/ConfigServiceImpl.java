@@ -17,22 +17,39 @@ package com.dianping.lion.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigStatus;
 import com.dianping.lion.entity.ConfigStatusEnum;
+import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.exception.RuntimeBusinessException;
+import com.dianping.lion.medium.ConfigRegisterService;
+import com.dianping.lion.medium.ConfigRegisterServiceRepository;
+import com.dianping.lion.service.ConfigDeleteResult;
 import com.dianping.lion.service.ConfigService;
+import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.util.DBUtils;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.ConfigCriteria;
@@ -44,12 +61,27 @@ import com.dianping.lion.vo.ConfigVo;
  */
 public class ConfigServiceImpl implements ConfigService {
 	
+	private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
+	
 	@Autowired
 	private ConfigDao configDao;
 	
 	@Autowired
 	private ProjectDao projectDao;
 	
+	@Autowired
+	private EnvironmentService environmentService;
+	
+	@Autowired
+	private ConfigRegisterServiceRepository registerServiceRepository;
+	
+	private TransactionTemplate transactionTemplate;
+	
+	public ConfigServiceImpl(PlatformTransactionManager transactionManager) {
+		this.transactionTemplate = new TransactionTemplate(transactionManager);
+		this.transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+	}
+
 	@Override
 	public List<ConfigVo> findConfigVos(ConfigCriteria criteria) {
 		int projectId = criteria.getProjectId();
@@ -115,23 +147,49 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public void clearInstance(int configId, int envId) {
+		Config config = configDao.getConfig(configId);
+		if (config == null) {
+			throw new EntityNotFoundException("Config[id=" + configId + "] not found.");
+		}
+		deleteInstance(config, envId);
+	}
+	
+	private void deleteInstance(Config config, int envId) {
+		int configId = config.getId();
 		int deleted = configDao.deleteInstance(configId, envId);
 		configDao.deleteStatus(configId, envId);
 		if (deleted > 0) {
-			//TODO 从相应环境的zookeeper中移除该config值
-			
+			ConfigRegisterService registerService = getRegisterService(envId);
+			registerService.unregister(config.getKey());
 		}
 	}
 
 	@Override
-	public void delete(int configId) {
-		int deleted = configDao.delete(configId);
-		configDao.deleteInstance(configId, null);
-		configDao.deleteStatus(configId, null);
-		if (deleted > 0) {
-			//TODO 从各个环境的zookeeper中移除该config值
-			
+	public ConfigDeleteResult delete(int configId) {
+		final ConfigDeleteResult result = new ConfigDeleteResult();
+		final Config config = configDao.getConfig(configId);
+		if (config != null) {
+			List<Environment> environments = environmentService.findAll();
+			for (final Environment environment : environments) {
+				this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						try {
+							deleteInstance(config, environment.getId());
+						} catch (Exception e) {
+							logger.error("Unregister config[" + config.getKey() + "] from environment[" 
+									+ environment.getLabel() + "] failed.", e);
+							result.addFailedEnv(environment);
+							status.setRollbackOnly();
+						}
+					}
+				});
+			}
+			if (result.isSucceed()) {
+				configDao.delete(configId);
+			}
 		}
+		return result;
 	}
 
 	@Override
@@ -156,13 +214,21 @@ public class ConfigServiceImpl implements ConfigService {
 		int currentUserId = SecurityUtils.getCurrentUser().getId();
 		instance.setCreateUserId(currentUserId);
 		instance.setModifyUserId(currentUserId);
-		try {
-			return configDao.createInstance(instance);
-		} catch (RuntimeException e) {
-			if (DBUtils.isDuplicateKeyError(e)) {
-				String errorMsg = StringUtils.isNotBlank(instance.getContext()) ? "该上下文[context]下配置值已存在!": "默认配置值已存在!";
-				throw new RuntimeBusinessException(errorMsg);
-			} else { throw e; }
+		int retryTimes = 0;
+		while (true) {
+			try {
+				instance.setSeq(configDao.getMaxInstSeq(instance.getConfigId(), instance.getEnvId()) + 1);
+				return configDao.createInstance(instance);
+			} catch (RuntimeException e) {
+				if (DBUtils.isDuplicateKeyError(e)) {
+					if (retryTimes++ >= 1) {
+						String errorMsg = StringUtils.isNotBlank(instance.getContext()) ? "该上下文[context]下配置值已存在!": "默认配置值已存在!";
+						throw new RuntimeBusinessException(errorMsg);
+					}
+				} else {
+					throw e;
+				}
+			}
 		}
 	}
 	
@@ -218,6 +284,109 @@ public class ConfigServiceImpl implements ConfigService {
 			return Collections.emptyList();
 		}
 		return configDao.findInstancesByConfig(config.getId(), maxPerEnv);
+	}
+
+	@Override
+	public void registerToMedium(int configId, int envId) {
+		Config config = getConfig(configId);
+		if (config == null) {
+			throw new EntityNotFoundException("Config not found, maybe deleted.");
+		}
+		ConfigInstance defaultInst = findDefaultInstance(configId, envId);
+		if (defaultInst == null) {
+			throw new RuntimeBusinessException("该环境下配置项不存在!");
+		}
+		try {
+			changeConfigStatus(configId, envId, ConfigStatusEnum.Effective);
+			ConfigRegisterService registerService = getRegisterService(envId);
+			registerService.registerDefaultValue(config.getKey(), defaultInst.getValue());
+			registerService.registerContextValue(config.getKey(), getConfigContextValue(configId, envId));
+		} catch (RuntimeException e) {
+			logger.error("Register config[" + config.getKey() + "] failed.", e);
+			throw e;
+		}
+	}
+
+	@Override
+	public void registerAndPushToMedium(int configId, int envId) {
+		Config config = getConfig(configId);
+		if (config == null) {
+			throw new EntityNotFoundException("Config not found, maybe deleted.");
+		}
+		ConfigInstance defaultInst = findDefaultInstance(configId, envId);
+		if (defaultInst == null) {
+			throw new RuntimeBusinessException("该环境下配置项不存在!");
+		}
+		try {
+			changeConfigStatus(configId, envId, ConfigStatusEnum.Effective);
+			ConfigRegisterService registerService = getRegisterService(envId);
+			registerService.registerAndPushDefaultValue(config.getKey(), defaultInst.getValue());
+			registerService.registerContextValue(config.getKey(), getConfigContextValue(configId, envId));
+		} catch (RuntimeException e) {
+			logger.error("Register and push config[" + config.getKey() + "] failed.", e);
+			throw e;
+		}
+	}
+
+	@Override
+	public String getConfigContextValue(int configId, int envId) {
+		try {
+			List<ConfigInstance> topInsts = configDao.findInstancesByConfig(configId, envId, ServiceConstants.MAX_AVAIL_CONFIG_INST);
+			if (!topInsts.isEmpty()) {
+				Iterator<ConfigInstance> iterator = topInsts.iterator();
+				while (iterator.hasNext()) {
+					ConfigInstance inst = iterator.next();
+					if (inst.isDefault()) {
+						iterator.remove();
+						break;
+					}
+				}
+			}
+			JSONArray valueArray = new JSONArray();
+			for (ConfigInstance topInst : topInsts) {
+				JSONObject valueObj = new JSONObject();
+				valueObj.put("value", topInst.getValue());
+				valueObj.put("context", topInst.getContext());
+				valueArray.put(valueObj);
+			}
+			return valueArray.toString();
+		} catch (JSONException e) {
+			Config config = getConfig(configId);
+			throw new RuntimeBusinessException("Cannot create config[key=" + config.getKey() + "]'s register value, " 
+					+ "plz check its instances' value.", e);
+		}
+	}
+
+	public ConfigRegisterService getRegisterService(int envId) {
+		return registerServiceRepository.getRegisterService(envId);
+	}
+
+	/**
+	 * @param configDao the configDao to set
+	 */
+	public void setConfigDao(ConfigDao configDao) {
+		this.configDao = configDao;
+	}
+
+	/**
+	 * @param projectDao the projectDao to set
+	 */
+	public void setProjectDao(ProjectDao projectDao) {
+		this.projectDao = projectDao;
+	}
+
+	/**
+	 * @param registerServiceRepository the mediumServiceRepository to set
+	 */
+	public void setRegisterServiceRepository(ConfigRegisterServiceRepository registerServiceRepository) {
+		this.registerServiceRepository = registerServiceRepository;
+	}
+
+	/**
+	 * @param environmentService the environmentService to set
+	 */
+	public void setEnvironmentService(EnvironmentService environmentService) {
+		this.environmentService = environmentService;
 	}
 
 }
