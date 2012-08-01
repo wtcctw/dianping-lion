@@ -1,0 +1,4 @@
+1. spring cron job
+2. http client fetches json data(mock)
+3. parse JSON data
+4. store DB

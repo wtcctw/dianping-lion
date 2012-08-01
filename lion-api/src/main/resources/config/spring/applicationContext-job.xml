@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans default-lazy-init="false" default-autowire="byName">
+	
+	<bean id="DataSourceFetchJob" class="com.dianping.lion.api.db.Scheduler">
+		
+	</bean>
+	
+	<bean id="dataSourceFetchJobTask"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="DataSourceFetchJob" />
+		</property>
+		<property name="targetMethod">
+			<value>work</value>
+		</property>
+	</bean>
+	
+	<bean id="dataSourceFetchCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="dataSourceFetchJobTask" />
+		<!-- 每天早上6点钟发送nginx报表 -->
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+	
+	<bean id="startQuertz" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="dataSourceFetchCronTrigger" /> 
+			</list>
+		</property>
+	</bean>
+</beans>

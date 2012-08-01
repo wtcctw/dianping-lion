@@ -15,11 +15,6 @@
 	<name>lion-console</name>
 	<dependencies>
 		<dependency>
-			<groupId>com.dianping.lion</groupId>
-			<artifactId>lion-service</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 		</dependency>
@@ -82,6 +77,11 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dianping.lion</groupId>
+			<artifactId>lion-service</artifactId>
+			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
 	<build>
