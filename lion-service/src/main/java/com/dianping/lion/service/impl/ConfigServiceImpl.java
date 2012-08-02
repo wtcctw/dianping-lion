@@ -389,4 +389,9 @@ public class ConfigServiceImpl implements ConfigService {
 		this.environmentService = environmentService;
 	}
 
+	@Override
+	public Config getConfigByName(String configName) {
+		return configDao.getConfigByName(configName);
+	}
+
 }

@@ -39,6 +39,8 @@ public interface EnvironmentService {
 	 */
 	Environment findPrevEnv(int envId);
 	
+	Environment findEnvByName(String name);
+	
 	int save(Environment env);
 	
 	void update(Environment env);

@@ -15,17 +15,28 @@
  */
 package com.dianping.lion.api.db;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import junit.framework.Assert;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.dianping.lion.entity.Config;
+import com.dianping.lion.entity.ConfigInstance;
+import com.dianping.lion.entity.Environment;
+import com.dianping.lion.service.ConfigService;
+import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.service.impl.ConfigServiceImpl;
+import com.dianping.lion.service.impl.EnvironmentServiceImpl;
 
 /**
  * JsonParserTest
@@ -49,15 +60,41 @@ public class JsonParserTest {
 	
 	@Test
 	public void testGetDBAlias() throws Exception {
-		JSONObject jsonObj = new JSONObject(content);
-		System.out.println(jsonObj.getString("timestamp"));
-		String[] names = jsonObj.getNames(jsonObj);
-		System.out.println(jsonObj.getJSONObject("group-db").getJSONObject("alpha").getString("readds"));
+		JsonParser jp = new JsonParser();
+		Map<String,Boolean> configs = jp.getDBAlias(content);
+		assertEquals(3, configs.size());
+//		Assert.assertEquals(configs.contains("timestamp"), false);
 	}
 	
 	@Test
-	public void testGetConfigInstances() {
-		
+	public void testGetConfigInstances() throws Exception {
+		JsonParser jp = new JsonParser() {
+			public EnvironmentService getEnvService() {
+				final Map<String, Integer> envMap = new HashMap<String, Integer>();
+				envMap.put("dev", 1);
+				envMap.put("alpha", 2);
+				envMap.put("beta", 3);
+				envMap.put("product", 4);
+				return new EnvironmentServiceImpl() {
+					public Environment findEnvByName(String envName) {
+						Environment env = new Environment();
+						env.setId(envMap.get(envName));
+						return env;
+					}
+				};
+			}
+			public ConfigService getConfigService() {
+				return new ConfigServiceImpl(null) {
+					public Config getConfigByName(String name){
+						Config config = new Config();
+						config.setId(3);
+						return config;
+					}
+				};
+			}
+		};
+		List<ConfigInstance> cis = jp.getConfigInstances(content);
+		assertEquals(3, cis.size());
 	}
 	
 }

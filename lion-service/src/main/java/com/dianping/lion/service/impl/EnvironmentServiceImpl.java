@@ -87,4 +87,9 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 		this.mediumServiceRepository = mediumServiceRepository;
 	}
 
+	@Override
+	public Environment findEnvByName(String name) {
+		return environmentDao.findEnvByName(name);
+	}
+
 }

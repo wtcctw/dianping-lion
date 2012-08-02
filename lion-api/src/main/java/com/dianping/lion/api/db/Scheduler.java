@@ -29,8 +29,33 @@ public class Scheduler {
 	@Autowired
 	private DataSourceFetcher dataSourceFetcher;
 	
-	public void work() {
-		String dsContent = dataSourceFetcher.fetchDS();
+	@Autowired
+	private Storager storager;
+	
+	public void work() throws Exception {
+		String dsContent = dataSourceFetcher.testDS();
+		try {
+			storager.store(dsContent);
+		} catch (Exception e) {
+			logger.debug("Failed to store the config.",e);
+		}
 		logger.debug("running");
 	}
+
+	public DataSourceFetcher getDataSourceFetcher() {
+		return dataSourceFetcher;
+	}
+
+	public void setDataSourceFetcher(DataSourceFetcher dataSourceFetcher) {
+		this.dataSourceFetcher = dataSourceFetcher;
+	}
+
+	public Storager getStorager() {
+		return storager;
+	}
+
+	public void setStorager(Storager storager) {
+		this.storager = storager;
+	}
+	
 }

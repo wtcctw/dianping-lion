@@ -15,13 +15,21 @@
  */
 package com.dianping.lion.api.db;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
+import com.dianping.lion.entity.Environment;
+import com.dianping.lion.service.ConfigService;
+import com.dianping.lion.service.EnvironmentService;
 
 /**
  * JsonParser
@@ -29,16 +37,84 @@ import com.dianping.lion.entity.ConfigInstance;
  *
  */
 public class JsonParser {
-	public String[] getDBAlias(String dbContent) throws Exception {
-		String[] dbAliases = null;
+	private static String TIMESTAMP = "timestamp";
+	private static String REMOVED = "removed";
+	
+	private EnvironmentService envService;
+	private ConfigService configService;
+	
+	public Map<String, Boolean> getDBAlias(String dbContent) throws Exception {
+		Map<String, Boolean> dbAliases = null;
 		JSONObject jsonObj = new JSONObject(dbContent);
-		String[] names = jsonObj.getNames(jsonObj);
-//		dbAliases = Arrays.copyOfRange(original, from, to)
+		String[] names = JSONObject.getNames(jsonObj);
+		dbAliases = new HashMap<String,Boolean>();
+		a: for(int i = 0; i < names.length; i++) {
+			if(TIMESTAMP.equals(names[i])) {
+				continue;
+			} else {
+				JSONObject envDSContent = jsonObj.getJSONObject(names[i]);
+				String[] envs = JSONObject.getNames(envDSContent);
+				for (int j = 0; j < envs.length; j++) {
+					if(REMOVED.equals(envs[j])) {
+						dbAliases.put(names[i], true);
+						continue a;
+					}
+				}
+				dbAliases.put(names[i], false);
+			}
+		}
 		return dbAliases;
 	}
 	
-	public ConfigInstance[] getConfigInstances(String dbContent, Config[] configs) {
-		ConfigInstance[] ci = null;
-		return ci;
+	public List<ConfigInstance> getConfigInstances(String dbContent) throws Exception {
+		List<ConfigInstance> cis = new ArrayList<ConfigInstance>();
+		JSONObject jsonObj = new JSONObject(dbContent);
+		String[] names = JSONObject.getNames(jsonObj);
+		List<String> dbAliases = new ArrayList<String>();
+		for(int i = 0; i < names.length; i++) {
+			if(!TIMESTAMP.equals(names[i])) {
+				dbAliases.add(names[i]);
+			}
+		}
+		for(int i = 0; i < dbAliases.size(); i++) {
+			JSONObject envDSContent = jsonObj.getJSONObject(dbAliases.get(i));
+			String[] envs = JSONObject.getNames(envDSContent);
+			for (int j = 0; j < envs.length; j++) {
+				if(REMOVED.equals(envs[j])) {
+//					cis.add(ci);
+					continue;
+				}
+				ConfigInstance ci = new ConfigInstance();
+				Config config = getConfigService().getConfigByName(dbAliases.get(i));
+				ci.setConfigId(config.getId());
+				Environment env = getEnvService().findEnvByName(envs[j]);
+				ci.setEnvId(env.getId());
+				ci.setCreateUserId(0);
+				ci.setModifyUserId(0);
+				ci.setModifyTime(new Date(System.currentTimeMillis()));
+				ci.setCreateTime(new Date(System.currentTimeMillis()));
+				ci.setValue(envDSContent.getString(envs[j]));
+				ci.setSeq(1);
+				cis.add(ci);
+			}
+		}
+		return cis;
 	}
+
+	public EnvironmentService getEnvService() {
+		return envService;
+	}
+
+	public void setEnvService(EnvironmentService envService) {
+		this.envService = envService;
+	}
+
+	public ConfigService getConfigService() {
+		return configService;
+	}
+
+	public void setConfigService(ConfigService configService) {
+		this.configService = configService;
+	}
+	
 }

@@ -59,5 +59,10 @@ public class EnvironmentIbatisDao extends SqlMapClientDaoSupport implements Envi
 	public Environment findPrevEnv(int envId) {
 		return (Environment) getSqlMapClientTemplate().queryForObject("Environment.findPrevEnv", envId);
 	}
+	
+	@Override
+	public Environment findEnvByName(String name) {
+		return (Environment) getSqlMapClientTemplate().queryForObject("Environment.findEnvByName", name);
+	}
 
 }

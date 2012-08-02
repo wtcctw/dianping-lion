@@ -196,5 +196,9 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		}
 		return getSqlMapClientTemplate().queryForList("Config.findMaxInstsBySeq", Maps.entry("configId", configId).entry("envId", envId).entry("max", maxPerEnv).get());
 	}
+	@Override
+	public Config getConfigByName(String configName) {
+		return (Config) getSqlMapClientTemplate().queryForObject("Config.getConfigByName", configName);
+	}
 
 }
