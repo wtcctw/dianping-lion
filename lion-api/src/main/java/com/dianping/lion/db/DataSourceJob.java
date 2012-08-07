@@ -13,34 +13,29 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.api.db;
+package com.dianping.lion.db;
+
+import java.util.Calendar;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dianping.lion.entity.JobExecTime;
+import com.dianping.lion.job.SyncJob;
 
 /**
  * Scheduler
  * @author youngphy.yang
  *
  */
-public class Scheduler {
-	private static Logger logger = Logger.getLogger(Scheduler.class);
+public class DataSourceJob extends SyncJob{
+	private static Logger logger = Logger.getLogger(DataSourceJob.class);
 	
 	@Autowired
 	private DataSourceFetcher dataSourceFetcher;
 	
 	@Autowired
 	private Storager storager;
-	
-	public void work() throws Exception {
-		String dsContent = dataSourceFetcher.testDS();
-		try {
-			storager.store(dsContent);
-		} catch (Exception e) {
-			logger.debug("Failed to store the config.",e);
-		}
-		logger.debug("running");
-	}
 
 	public DataSourceFetcher getDataSourceFetcher() {
 		return dataSourceFetcher;
@@ -56,6 +51,20 @@ public class Scheduler {
 
 	public void setStorager(Storager storager) {
 		this.storager = storager;
+	}
+	
+	@Override
+	public void doBusiness() throws Exception {
+		JobExecTime jobExecTime = jobExecTimeDao.getJobExecTime(jobName);
+		Calendar can = Calendar.getInstance();
+		can.setTime(jobExecTime.getLastFetchTime());
+		String dsContent = dataSourceFetcher.fetchDS(can.getTimeInMillis() / 1000);
+		try {
+			storager.store(dsContent);
+		} catch (Exception e) {
+			logger.debug("Failed to store the config.",e);
+		}
+		logger.debug("running");
 	}
 	
 }

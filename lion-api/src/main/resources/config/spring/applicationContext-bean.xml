@@ -7,7 +7,7 @@
 	
 	<bean id="dataSourceFetcher" class="com.dianping.lion.api.db.DataSourceFetcher" init-method="init">
 		<property name="host" value="dev.dbims.com"></property>
-		<property name="port" value="8360"></property>
+		<property name="port" value="80"></property>
 		<property name="protocal" value="http"></property>
 		<property name="path" value="/lion/lion/lionapi?timestamp="></property>
 	</bean>

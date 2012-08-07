@@ -33,10 +33,10 @@
 			<tx:method name="get*" read-only="true" propagation="REQUIRED" />
 			<tx:method name="find*" read-only="true" propagation="REQUIRED" />
 			<tx:method name="load*" read-only="true" propagation="REQUIRED" />
-			<tx:method name="*" />
+			<tx:method name="exec*" propagation="REQUIRED" />
 		</tx:attributes>
 	</tx:advice>
-	
+
 	<tx:annotation-driven transaction-manager="Lion.TransactionManager"/>
 	
 	<aop:config>

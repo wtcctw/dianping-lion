@@ -13,7 +13,7 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.api.db;
+package com.dianping.lion.db;
 
 import java.util.Date;
 import java.util.List;
@@ -26,6 +26,7 @@ import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.util.JsonParser;
 
 /**
  * Storager

@@ -37,6 +37,7 @@ import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.impl.ConfigServiceImpl;
 import com.dianping.lion.service.impl.EnvironmentServiceImpl;
+import com.dianping.lion.util.JsonParser;
 
 /**
  * JsonParserTest

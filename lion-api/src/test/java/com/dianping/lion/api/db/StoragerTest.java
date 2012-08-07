@@ -23,7 +23,9 @@ import java.net.URL;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.dianping.lion.db.Storager;
 import com.dianping.lion.support.AbstractDaoTestSupport;
+import com.dianping.lion.util.JsonParser;
 
 /**
  * StoragerTest

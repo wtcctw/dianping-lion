@@ -13,16 +13,14 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.api.db;
+package com.dianping.lion.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.dianping.lion.entity.Config;
@@ -87,7 +85,7 @@ public class JsonParser {
 				ConfigInstance ci = new ConfigInstance();
 				Config config = getConfigService().getConfigByName(dbAliases.get(i));
 				ci.setConfigId(config.getId());
-				Environment env = getEnvService().findEnvByName(envs[j]);
+				Environment env = getEnvService().findEnvByName(envs[j].toLowerCase());
 				ci.setEnvId(env.getId());
 				ci.setCreateUserId(0);
 				ci.setModifyUserId(0);
