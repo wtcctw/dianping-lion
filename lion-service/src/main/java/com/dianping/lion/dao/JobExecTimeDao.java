@@ -22,7 +22,8 @@ import com.dianping.lion.entity.JobExecTime;
 public interface JobExecTimeDao {
 	void startTransaction()throws SQLException;
 	JobExecTime getJobExecTime(String name);
-	void updateJobExecTime(JobExecTime jobExecTime);
+	void updateLastJobExecTime(JobExecTime jobExecTime);
+	void updateLastFetchTime(JobExecTime jobExecTime);
 	void commitTransaction()throws SQLException;
 	void endTransaction() throws SQLException;
 }

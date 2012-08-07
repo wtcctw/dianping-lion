@@ -41,8 +41,13 @@ public class JobExecTimeIbatisDao extends SqlMapClientDaoSupport implements
 	}
 
 	@Override
-	public void updateJobExecTime(JobExecTime jobExecTime) {
-		getSqlMapClientTemplate().update("JobExecTime.updateTime", jobExecTime);
+	public void updateLastJobExecTime(JobExecTime jobExecTime) {
+		getSqlMapClientTemplate().update("JobExecTime.updateLastJobExecTime", jobExecTime);
+	}
+
+	@Override
+	public void updateLastFetchTime(JobExecTime jobExecTime) {
+		getSqlMapClientTemplate().update("JobExecTime.updateLastFetchTime", jobExecTime);
 	}
 
 	@Override
@@ -56,5 +61,4 @@ public class JobExecTimeIbatisDao extends SqlMapClientDaoSupport implements
 		getSqlMapClientTemplate().getSqlMapClient().endTransaction();
 //		session.endTransaction();
 	}
-
 }

@@ -47,11 +47,11 @@ public abstract class SyncJob {
 			public void execute() throws Exception {
 				JobExecTime jobExecTime = jobExecTimeDao.getJobExecTime(jobName);
 				Calendar can = Calendar.getInstance();
-				can.setTime(jobExecTime.getLastFetchTime());
+				can.setTime(jobExecTime.getLastJobExecTime());
 				if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {
 					doBusiness();
-					jobExecTime.setLastFetchTime(new Date(System.currentTimeMillis()));
-					jobExecTimeDao.updateJobExecTime(jobExecTime);
+					jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
+					jobExecTimeDao.updateLastJobExecTime(jobExecTime);
 				}
 			}});
 	}

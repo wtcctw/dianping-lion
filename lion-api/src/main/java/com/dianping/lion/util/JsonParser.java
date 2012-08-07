@@ -21,8 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
+import com.dianping.lion.db.DataSourceJob;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
@@ -35,8 +37,9 @@ import com.dianping.lion.service.EnvironmentService;
  *
  */
 public class JsonParser {
+	private static Logger logger = Logger.getLogger(JsonParser.class);
 	private static String TIMESTAMP = "timestamp";
-	private static String REMOVED = "removed";
+	private static String REMOVED = "remove";
 	
 	private EnvironmentService envService;
 	private ConfigService configService;
@@ -64,8 +67,8 @@ public class JsonParser {
 		return dbAliases;
 	}
 	
-	public List<ConfigInstance> getConfigInstances(String dbContent) throws Exception {
-		List<ConfigInstance> cis = new ArrayList<ConfigInstance>();
+	public Map<ConfigInstance, Boolean> getConfigInstances(String dbContent) throws Exception {
+		Map<ConfigInstance, Boolean> cis = new HashMap<ConfigInstance, Boolean>();
 		JSONObject jsonObj = new JSONObject(dbContent);
 		String[] names = JSONObject.getNames(jsonObj);
 		List<String> dbAliases = new ArrayList<String>();
@@ -93,10 +96,26 @@ public class JsonParser {
 				ci.setCreateTime(new Date(System.currentTimeMillis()));
 				ci.setValue(envDSContent.getString(envs[j]));
 				ci.setSeq(1);
-				cis.add(ci);
+				String removed = null;
+				try {
+					removed = envDSContent.getJSONObject(envs[j]).getString(REMOVED);	
+				} catch(Exception e) {
+					logger.debug("remove node not found.",e);
+				}
+				if(removed == null) {
+					cis.put(ci, false);
+				} else {
+					cis.put(ci, true);
+				}
 			}
 		}
 		return cis;
+	}
+	
+	public String getLastFetchTime(String dsContent) throws Exception {
+		JSONObject jsonObj = new JSONObject(dsContent);
+		String lastFetchTime = jsonObj.getString(TIMESTAMP);
+		return lastFetchTime;
 	}
 
 	public EnvironmentService getEnvService() {

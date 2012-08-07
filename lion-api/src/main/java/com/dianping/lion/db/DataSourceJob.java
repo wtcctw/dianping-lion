@@ -16,12 +16,14 @@
 package com.dianping.lion.db;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.JobExecTime;
 import com.dianping.lion.job.SyncJob;
+import com.dianping.lion.util.JsonParser;
 
 /**
  * Scheduler
@@ -33,6 +35,9 @@ public class DataSourceJob extends SyncJob{
 	
 	@Autowired
 	private DataSourceFetcher dataSourceFetcher;
+	
+	@Autowired
+	private JsonParser jsonParser;
 	
 	@Autowired
 	private Storager storager;
@@ -61,6 +66,8 @@ public class DataSourceJob extends SyncJob{
 		String dsContent = dataSourceFetcher.fetchDS(can.getTimeInMillis() / 1000);
 		try {
 			storager.store(dsContent);
+			jobExecTime.setLastFetchTime(new Date(Long.parseLong(jsonParser.getLastFetchTime(dsContent)) * 1000));
+			jobExecTimeDao.updateLastFetchTime(jobExecTime);
 		} catch (Exception e) {
 			logger.debug("Failed to store the config.",e);
 		}

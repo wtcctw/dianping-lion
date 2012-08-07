@@ -94,7 +94,7 @@ public class JsonParserTest {
 				};
 			}
 		};
-		List<ConfigInstance> cis = jp.getConfigInstances(content);
+		Map<ConfigInstance, Boolean> cis = jp.getConfigInstances(content);
 		assertEquals(3, cis.size());
 	}
 	
