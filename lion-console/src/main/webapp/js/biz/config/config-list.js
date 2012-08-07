@@ -200,21 +200,21 @@ $(function(){
 		}
 	});
 	
-	$("#if-deploy").click(function() {
-		if ($(this).is(":checked")) {
-			$("#if-push").attr("disabled", false);
+	$("#operation-type").change(function() {
+		$("#if-push").attr("checked", false);
+		if ($(this).val() == "deploy") {
+			$("#if-push-container").show();
 		} else {
-			$("#if-push").attr("disabled", true);
-			$("#if-push").attr("checked", false);
+			$("#if-push-container").hide();
 		}
 	});
 	
-	$("#edit-if-deploy").click(function() {
-		if ($(this).is(":checked")) {
-			$("#edit-if-push").attr("disabled", false);
+	$("#edit-operation-type").change(function() {
+		$("#edit-if-push").attr("checked", false);
+		if ($(this).val() == "deploy") {
+			$("#edit-if-push-container").show();
 		} else {
-			$("#edit-if-push").attr("disabled", true);
-			$("#edit-if-push").attr("checked", false);
+			$("#edit-if-push-container").hide();
 		}
 	});
 	
@@ -228,7 +228,7 @@ $(function(){
 						"configId" : $("#edit-config-modal [name='config-id']").val(),
 						"envIds" : envs,
 						"trim" : $("#edit-trim-checkbox").is(":checked"),
-						"ifDeploy" : $("#edit-if-deploy").is(":checked"),
+						"operation" : $("#edit-operation-type").val(),
 						"ifPush" : $("#edit-if-push").is(":checked"),
 						"value" : $("#edit-config-value").length > 0 ? $("#edit-config-value").val() : $(":radio[name='edit-config-value']:checked").val()
 					}, true),
@@ -237,7 +237,7 @@ $(function(){
 						$("#edit-config-modal").hideAlerts();
 						if (result.code == Res_Code_Success) {
 							modal_config_edited = true;
-							$("#edit-config-modal .form-info").showAlert("设置配置项值成功.");
+							$("#edit-config-modal .form-info").flashAlert("设置配置项值成功.", 1500);
 						} else if (result.code == Res_Code_Error) {
 							$("#edit-config-modal .form-error").showAlert(result.msg);
 						} else if (result.code == Res_Code_Warn) {
@@ -267,7 +267,7 @@ $(function(){
 					"config.projectId" : $("#projectId").val(),
 					"trim" : $("#trim-checkbox").is(":checked"),
 					"envIds" : envs,
-					"ifDeploy" : $("#if-deploy").is(":checked"),
+					"operation" : $("#operation-type").val(),
 					"ifPush" : $("#if-push").is(":checked"),
 					"value" : $("#config-value").length > 0 ? $("#config-value").val() : $(":radio[name='config-value']:checked").val()
 				}, true),
@@ -275,14 +275,14 @@ $(function(){
 				success: function(result) {
 					if (result.code == Res_Code_Success) {
 						modal_config_created = true;
-						resetConfigForm(["config-env", "if-deploy"]);
+						resetConfigForm(["config-env", "operation-type"]);
 						$("#add-config-modal .form-info").flashAlert("创建成功，请继续添加.", 4000);
 					} else if (result.code == Res_Code_Error) {
 						resetConfigAlerts();
 						$("#add-config-modal .form-error").showAlert(result.msg);
 					} else if (result.code == Res_Code_Warn) {
 						modal_config_created = true;
-						resetConfigForm(["config-env", "if-deploy"]);
+						resetConfigForm(["config-env", "operation-type"]);
 						$("#add-config-modal .form-warn").showAlert(result.msg);
 					}
 				}
@@ -404,7 +404,7 @@ $(function(){
 		resetConfigFormValidation();
 		$("#edit-select-all-env,[name='edit-config-env']").attr("checked", false);
 		$("#edit-save-btn,#edit-more-btn").attr("disabled", false);
-		$("#edit-if-deploy").attr("checked", false).triggerHandler("click");
+		$("#edit-operation-type").val("deploy").triggerHandler("change");
 	}
 	
 	function resetConfigAlerts() {
@@ -421,8 +421,8 @@ $(function(){
 			$(":checkbox[name='config-env']:enabled").attr("checked", false);
 			$("#select-all-env").attr("checked", false);
 		}
-		if (!excepts_.contains("if-deploy")) {
-			$("#if-deploy").attr("checked", false).triggerHandler("click");
+		if (!excepts_.contains("operation-type")) {
+			$("#operation-type").val("deploy").triggerHandler("change");
 		}
 	}
 	

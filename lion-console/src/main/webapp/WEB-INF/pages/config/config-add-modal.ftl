@@ -57,8 +57,14 @@
 			    <div class="control-group control-lion-group">
 			    	<label class="control-label control-lion-label">&nbsp;</label>
 			    	<div class="controls lion-controls">
-			    		<input type="checkbox" value="true" id="if-deploy"><label class="help-inline" for="if-deploy">推送到配置服务器</label>&nbsp;&nbsp;
-			    		<input type="checkbox" value="true" id="if-push" disabled="disabled"><label class="help-inline" for="if-push">并推送到应用(应用无需重启即生效)</label>
+			    		<select id="operation-type" style="width:175px;">
+			    			<option value="save">仅保存</option>
+			    			<option value="forpub">保存并下次发布时生效</option>
+			    			<option value="deploy" selected="selected">保存并推送到配置服务器</option>
+			    		</select>
+			    		<span id="if-push-container">
+			    			<input type="checkbox" id="if-push"><label class="help-inline" for="if-push">并推送到应用(应用无需重启即生效)</label>
+			    		</span>
 			    	</div>
 			    </div>
 		    </fieldset>

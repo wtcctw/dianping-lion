@@ -8,6 +8,10 @@ public class ConsoleConstants {
 	public static final String PRODUCT_NAME = "product";
 	public static final String TEAM_NAME = "team";
 	
+	public static final String CONFIG_OP_SAVE = "save";
+	public static final String CONFIG_OP_FORPUB = "forpub";
+	public static final String CONFIG_OP_DEPLOY = "deploy";
+	
 	
 	public static Boolean IS_DEV_MODE;
 	public static boolean isDevMode() {

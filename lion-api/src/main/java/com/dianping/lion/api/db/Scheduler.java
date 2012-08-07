@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class Scheduler {
 	private static Logger logger = Logger.getLogger(Scheduler.class);
 	
-	@Autowired
+//	@Autowired
 	private DataSourceFetcher dataSourceFetcher;
 	
 	public void work() {

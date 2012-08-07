@@ -123,7 +123,7 @@ public class ConfigListAction extends AbstractConfigAction {
 	
 	public String deploy() {
 		try {
-			configService.registerToMedium(configId, envId);
+			configService.manualRegister(configId, envId);
 			createSuccessStreamResponse();
 		} catch (RuntimeBusinessException e) {
 			createErrorStreamResponse(e.getMessage());
@@ -135,7 +135,7 @@ public class ConfigListAction extends AbstractConfigAction {
 	
 	public String push() {
 		try {
-			configService.registerAndPushToMedium(configId, envId);
+			configService.manualRegisterAndPush(configId, envId);
 			createSuccessStreamResponse();
 		} catch (RuntimeBusinessException e) {
 			createErrorStreamResponse(e.getMessage());

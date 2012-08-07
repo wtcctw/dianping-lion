@@ -97,6 +97,16 @@
     	SELECT * FROM config WHERE `key` = #key#
     </select>
     
+    <select id="findConfigByKeys" resultMap="ConfigResult" parameterClass="list">
+    	SELECT * FROM config WHERE `key` IN <iterate open="(" close=")" conjunction=",">#[]#</iterate>
+    </select>
+    
+    <select id="findForeffectiveConfig" resultMap="ConfigResult" parameterClass="map">
+    	SELECT c.* 
+    	FROM config c INNER JOIN config_status s ON c.id = s.configId
+    	WHERE c.projectId = #projectId# AND s.envId = #envId# AND s.`status` = #foreffctive#
+    </select>
+    
     <select id="getNextConfig" resultMap="ConfigResult" parameterClass="int">
     	SELECT c2.*
     	FROM config c1 INNER JOIN config c2 ON c1.projectId = c2.projectId

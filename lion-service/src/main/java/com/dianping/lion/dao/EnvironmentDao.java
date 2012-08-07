@@ -40,5 +40,11 @@ public interface EnvironmentDao {
 	 * @return
 	 */
 	Environment findPrevEnv(int envId);
+
+	/**
+	 * @param name
+	 * @return
+	 */
+	Environment findEnvByName(String name);
 	
 }

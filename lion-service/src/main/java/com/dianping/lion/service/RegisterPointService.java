@@ -1,7 +1,7 @@
 /**
- * Project: com.dianping.lion.lion-console-0.0.1
+ * Project: com.dianping.lion.lion-service-0.0.1
  * 
- * File Created at 2012-7-12
+ * File Created at 2012-8-4
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -18,32 +18,23 @@ package com.dianping.lion.service;
 import java.util.List;
 import java.util.Map;
 
-import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.Config;
 
 /**
+ * TODO Comment of RegisterPointService
  * @author danson.liu
  *
  */
-public interface EnvironmentService {
+public interface RegisterPointService {
 
-	List<Environment> findAll();
-	
-	Map<Integer, Environment> findEnvMap();
-
-	Environment findEnvByID(int id);
-	Environment findEnvByName(String name);
-	
 	/**
-	 * 获取当前环境的上一个环境
+	 * @param projectId
 	 * @param envId
-	 * @return
+	 * @param auto 
+	 * @param configs	<Config, isDelete>配置和是否是删除的Map信息
 	 */
-	Environment findPrevEnv(int envId);
+	int create(int projectId, int envId, boolean manual, Map<Config, Boolean> configs);
 	
-	int save(Environment env);
-	
-	void update(Environment env);
-	
-	void delete(int id);
-	
+	int create(int projectId, int envId, boolean manual, List<Config> configs);
+
 }

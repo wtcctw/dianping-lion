@@ -25,6 +25,8 @@ public enum ConfigTypeEnum {
 	//这里添加配置类型时需要在config-*.js中相应添加Type_*常量
 	String(10, "string"), Number(20, "number"), Boolean(30, "boolean"), List_Str(40, "list<string>"), List_Num(45, "list<number>"), Map(50, "map/pojo");
 	
+	//TODO add "db", "ref" type
+	
 	private int value;
 	
 	private String label;

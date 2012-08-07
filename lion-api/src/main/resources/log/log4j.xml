@@ -9,14 +9,6 @@
 		</layout>
 	</appender>
 
-	<appender name="avatarAppender" class="org.apache.log4j.DailyRollingFileAppender">
-		<!-- <param name="Threshold" value="INFO" /> -->
-		<param name="File" value="/data/applogs/lion-console/logs/avatar.log" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[lion-console]%d %-5p [%c %L] %m%n" />
-		</layout>
-	</appender>
-
 	<appender name="appAppender" class="org.apache.log4j.DailyRollingFileAppender">
 		<!-- <param name="Threshold" value="INFO" /> -->
 		<param name="File" value="/data/applogs/lion-console/logs/app.log" />
@@ -46,10 +38,6 @@
 			<param name="ConversionPattern" value="[lion-console]%d %-5p [%c %L] %m%n" />
 		</layout>
 	</appender>
-	
-	<logger name="com.dianping.avatar" additivity="false">
-		<appender-ref ref="avatarAppender" />
-	</logger>
 
 	<logger name="com.ibatis" additivity="false">
 		<level value="WARN" />

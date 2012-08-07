@@ -23,11 +23,25 @@ import com.dianping.lion.entity.User;
  */
 public class SecurityUtils {
 	
+	private static ThreadLocal<User> currentUser = new InheritableThreadLocal<User>();
+	
 	public static User getCurrentUser() {
-		//TODO remove mock, implement me!
-		User user = new User();
+		User user = currentUser.get();
+		if (user != null) {
+			return user;
+		}
+		user = new User();
 		user.setId(0);
 		return user;
+	}
+	
+	public static void setCurrentUser(User user) {
+		clearCurrentUser();
+		currentUser.set(user);
+	}
+	
+	public static void clearCurrentUser() {
+		currentUser.remove();
 	}
 
 }

@@ -22,8 +22,10 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
+import com.dianping.lion.ConsoleConstants;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
+import com.dianping.lion.entity.ConfigStatusEnum;
 import com.dianping.lion.entity.ConfigTypeEnum;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
@@ -46,7 +48,7 @@ public class ConfigEditAction extends AbstractConfigAction {
 	
 	private List<Integer> envIds;
 	
-	private boolean ifDeploy;
+	private String operation;
 	private boolean ifPush;
 	
 	public String create() {
@@ -71,10 +73,14 @@ public class ConfigEditAction extends AbstractConfigAction {
 			instance.setValue(value);
 			try {
 				configService.createInstance(instance);
-				if (ifPush) {
-					configService.registerAndPushToMedium(configId, envId);
-				} else if (ifDeploy) {
-					configService.registerToMedium(configId, envId);
+				if (ConsoleConstants.CONFIG_OP_FORPUB.equals(operation)) {
+					configService.changeConfigStatus(configId, envId, ConfigStatusEnum.Foreffective);
+				} else if (ConsoleConstants.CONFIG_OP_DEPLOY.equals(operation)) {
+					if (ifPush) {
+						configService.manualRegisterAndPush(configId, envId);
+					} else {
+						configService.manualRegister(configId, envId);
+					}
 				}
 			} catch (RuntimeException e) {
 				logger.error("保存/推送配置失败.", e);
@@ -104,10 +110,14 @@ public class ConfigEditAction extends AbstractConfigAction {
 			instance.setValue(value);
 			try {
 				configService.setConfigValue(configId, envId, ConfigInstance.NO_CONTEXT, value);
-				if (ifPush) {
-					configService.registerAndPushToMedium(configId, envId);
-				} else if (ifDeploy) {
-					configService.registerToMedium(configId, envId);
+				if (ConsoleConstants.CONFIG_OP_FORPUB.equals(operation)) {
+					configService.changeConfigStatus(configId, envId, ConfigStatusEnum.Foreffective);
+				} else if (ConsoleConstants.CONFIG_OP_DEPLOY.equals(operation)) {
+					if (ifPush) {
+						configService.manualRegisterAndPush(configId, envId);
+					} else {
+						configService.manualRegister(configId, envId);
+					}
 				}
 			} catch (Exception e) {
 				logger.error("保存/推送配置失败.", e);
@@ -236,17 +246,17 @@ public class ConfigEditAction extends AbstractConfigAction {
 	}
 
 	/**
-	 * @param ifDeploy the ifDeploy to set
-	 */
-	public void setIfDeploy(boolean ifDeploy) {
-		this.ifDeploy = ifDeploy;
-	}
-
-	/**
 	 * @param ifPush the ifPush to set
 	 */
 	public void setIfPush(boolean ifPush) {
 		this.ifPush = ifPush;
+	}
+
+	/**
+	 * @param operationType the operationType to set
+	 */
+	public void setOperation(String operationType) {
+		this.operation = operationType;
 	}
 	
 }

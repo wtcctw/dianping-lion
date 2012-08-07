@@ -32,17 +32,17 @@ public class Config implements Serializable {
 	
 	public static final int MAX_DESC_DISPLAY_LEN = 36;
 
-	private int id;
-	private String key;
-	private String desc;
-	private int type;
-	private ConfigTypeEnum typeEnum;
-	private int projectId;
-	private int createUserId;
-	private int modifyUserId;
-	private Date createTime;
-	private Date modifyTime;
-	private int seq;
+	protected int id;
+	protected String key;
+	protected String desc;
+	protected int type;
+	protected ConfigTypeEnum typeEnum;
+	protected int projectId;
+	protected int createUserId;
+	protected int modifyUserId;
+	protected Date createTime;
+	protected Date modifyTime;
+	protected int seq;
 	/**
 	 * @return the id
 	 */
@@ -107,6 +107,10 @@ public class Config implements Serializable {
 	public void setType(int type) {
 		this.type = type;
 		this.typeEnum = null;
+	}
+	public void setTypeEnum(ConfigTypeEnum typeEnum) {
+		this.type = typeEnum.getValue();
+		this.typeEnum = typeEnum;
 	}
 	/**
 	 * @return the projectId

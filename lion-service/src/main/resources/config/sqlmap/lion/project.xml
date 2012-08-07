@@ -4,6 +4,7 @@
 	<typeAlias alias="Team" type="com.dianping.lion.entity.Team" />
 	<typeAlias alias="Product" type="com.dianping.lion.entity.Product" />
 	<typeAlias alias="Project" type="com.dianping.lion.entity.Project" />
+	<typeAlias alias="ProjectStatus" type="com.dianping.lion.entity.ProjectStatus" />
 
 	<resultMap id="TeamResultBasic" class="Team">
 		<result column="id" property="id"/>
@@ -119,6 +120,9 @@
     <select id="getProject" resultMap="ProjectReverseResult" parameterClass="int">
     	<![CDATA[SELECT * FROM project WHERE id = #projectId#]]>
     </select>
+    <select id="findProjectByName" resultMap="ProjectReverseResult" parameterClass="string">
+    	<![CDATA[SELECT * FROM project WHERE name = #name#]]>
+    </select>
     <insert id="insertProject" parameterClass="Project">
     	INSERT INTO project(name, techLeaderId, operId, productId,createTime, modifyTime)
     	VALUES(#name#, #techLeaderId#, #operId#, #productId#, #createTime#, #modifyTime#)
@@ -136,5 +140,21 @@
     <statement id="lockProject" parameterClass="int">
     	<![CDATA[SELECT 1 FROM project WHERE id = #projectId# FOR UPDATE]]>
     </statement>
+    
+    <insert id="insertProjectStatus" parameterClass="ProjectStatus">
+    	INSERT INTO project_status(projectId, envId, configeffected)
+    	VALUES(#projectId#, #envId#, #configEffected#)
+    	<selectKey resultClass="int">    
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey> 
+    </insert>
+    
+    <update id="updateEffectStat" parameterClass="map">
+    	UPDATE project_status SET configeffected = #effected# WHERE projectId = #projectId# AND envId = #envId#
+    </update>
+    
+    <select id="getEffectStatus" parameterClass="map">
+    	SELECT configeffected FROM project_status WHERE projectId = #projectId# AND envId = #envId#
+    </select>
     
 </sqlMap>

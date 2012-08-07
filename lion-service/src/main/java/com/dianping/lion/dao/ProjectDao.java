@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.ProjectStatus;
 import com.dianping.lion.entity.Team;
 
 /**
@@ -32,6 +33,7 @@ public interface ProjectDao {
 	List<Project> getProjects();
 	
 	Project getProject(int projectId);
+	Project findProject(String name);
 	
 	/**
 	 * 该接口如果系统运行后发现有问题，则更换方案
@@ -47,4 +49,25 @@ public interface ProjectDao {
 	Integer delProject(int projectId);
 	
 	List<Project> getProjectsByProduct(int productId);
+
+	/**
+	 * @param projectId
+	 * @param envId
+	 * @param effected
+	 * @return
+	 */
+	int updateEffectStat(int projectId, int envId, boolean effected);
+
+	/**
+	 * @param projectStatus
+	 */
+	int createEffectStat(ProjectStatus projectStatus);
+
+	/**
+	 * @param projectId
+	 * @param envId
+	 * @return
+	 */
+	boolean getEffectStatus(int projectId, int envId);
+
 }

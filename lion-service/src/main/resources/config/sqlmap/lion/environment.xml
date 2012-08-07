@@ -28,6 +28,12 @@
 		]]>
     </select>
     
+    <select id="findByName" resultMap="EnvironmentResult" parameterClass="string">
+		<![CDATA[
+		SELECT id, name, label, ips, seq FROM environment where name = #name#
+		]]>
+    </select>
+    
     <select id="findPrevEnv" resultMap="EnvironmentResult" parameterClass="int">
     	SELECT e2.*
     	FROM environment e1, environment e2

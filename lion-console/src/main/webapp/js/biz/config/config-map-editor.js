@@ -34,9 +34,13 @@
 			value : function(map) {
 				var editorHtml = "";
 				if (!map.isBlank()) {
-					var json = $.parseJSON(map);
-					for (var prop in json) {
-						editorHtml += $.mapeditor.buildNewItem(prop, json[prop]);
+					try {
+						var json = $.parseJSON(map);
+						for (var prop in json) {
+							editorHtml += $.mapeditor.buildNewItem(prop, json[prop]);
+						}
+					} catch (err) {
+						editorHtml = "<div class='form-alert alert-warn'>非法的数据格式，该编辑器只支持简单的key/value数据!</div>";
 					}
 				} else {
 					editorHtml = "<a class='new-item-btn' href='#' onclick='$.mapeditor.addItem(this, event);'><i class='icon-plus'></i></a>";

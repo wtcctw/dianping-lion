@@ -109,6 +109,12 @@ public interface ConfigDao {
 	Config findConfigByKey(String key);
 
 	/**
+	 * @param keys
+	 * @return
+	 */
+	List<Config> findConfigByKeys(List<String> keys);
+	
+	/**
 	 * 删除指定配置项在指定环境下的所有配置实例，envId=null表示删除所有环境下的
 	 * @param configId
 	 * @param envId
@@ -181,12 +187,19 @@ public interface ConfigDao {
 	List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv);
 	
 	/**
-	 * 获取指定配置在指定环境下至多maxPerEnv个配置实例
+	 * 获取指定配置在指定环境下至多maxPerEnv个配置实例(必定包含default config instance)
 	 * @param configId
 	 * @param envId
 	 * @param maxPerEnv
 	 * @return
 	 */
 	List<ConfigInstance> findInstancesByConfig(int configId, int envId, Integer maxPerEnv);
+
+	/**
+	 * @param projectId
+	 * @param envId 
+	 * @return
+	 */
+	List<Config> findForeffectiveConfig(int projectId, int envId);
 	
 }

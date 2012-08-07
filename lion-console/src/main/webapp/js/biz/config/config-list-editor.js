@@ -32,9 +32,13 @@
 			value : function (list) {
 				var editorHtml = "";
 				if (!list.isBlank()) {
-					var json = $.parseJSON(list);
-					for (var i = 0; i < json.length; i++) {
-						editorHtml += $.listeditor.buildNewItem(json[i]);
+					try {
+						var json = $.parseJSON(list);
+						for (var i = 0; i < json.length; i++) {
+							editorHtml += $.listeditor.buildNewItem(json[i]);
+						}
+					} catch (err) {
+						editorHtml = "<div class='form-alert alert-warn'>非法的数据格式，该编辑器只支持简单的list数据!</div>";
 					}
 				} else {
 					editorHtml = "<a class='new-item-btn' href='#' onclick='$.listeditor.addItem(this, event);'><i class='icon-plus'></i></a>";

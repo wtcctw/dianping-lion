@@ -15,6 +15,7 @@
  */
 package com.dianping.lion.dao.ibatis;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +144,15 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return (Config) getSqlMapClientTemplate().queryForObject("Config.findConfigByKey", key);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Config> findConfigByKeys(List<String> keys) {
+		if (keys == null || keys.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return getSqlMapClientTemplate().queryForList("Config.findConfigByKeys", keys);
+	}
+
 	@Override
 	public ConfigInstance findInstance(int configId, int envId, String context) {
 		return (ConfigInstance) getSqlMapClientTemplate().queryForObject("Config.findInstance", Maps.entry("configId", configId)
@@ -194,7 +204,26 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		if (maxPerEnv == null) {
 			return getSqlMapClientTemplate().queryForList("Config.findInstance", Maps.entry("configId", configId).entry("envId", envId).get());
 		}
-		return getSqlMapClientTemplate().queryForList("Config.findMaxInstsBySeq", Maps.entry("configId", configId).entry("envId", envId).entry("max", maxPerEnv).get());
+		List<ConfigInstance> instances = getSqlMapClientTemplate().queryForList("Config.findMaxInstsBySeq", Maps.entry("configId", configId).entry("envId", envId).entry("max", maxPerEnv).get());
+		boolean hasDefaultInst = false;
+		for (int i = instances.size() - 1; i >= 0; i--) {
+			ConfigInstance instance = instances.get(i);
+			if (ConfigInstance.NO_CONTEXT.equals(instance.getContext())) {
+				hasDefaultInst = true;
+				break;
+			}
+		}
+		if (!hasDefaultInst) {
+			instances.add(findInstance(configId, envId, ConfigInstance.NO_CONTEXT));
+		}
+		return instances;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Config> findForeffectiveConfig(int projectId, int envId) {
+		return getSqlMapClientTemplate().queryForList("Config.findForeffectiveConfig", Maps.entry("projectId", projectId)
+				.entry("envId", envId).entry("foreffctive", ConfigStatusEnum.Foreffective.getValue()).get());
 	}
 
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigStatusEnum;
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
 
@@ -35,6 +36,8 @@ public interface ConfigService {
 	 * @return
 	 */
 	List<ConfigVo> findConfigVos(ConfigCriteria criteria);
+	
+	List<Config> findForeffectiveConfig(int projectId, int envId);
 
 	/**
 	 * @param projectId
@@ -85,6 +88,8 @@ public interface ConfigService {
 	 * @param key
 	 */
 	Config findConfigByKey(String key);
+	
+	List<Config> findConfigByKeys(List<String> keys);
 
 	/**
 	 * @param configId
@@ -133,8 +138,15 @@ public interface ConfigService {
 	 */
 	void changeConfigStatus(int configId, int envId, ConfigStatusEnum status);
 
-	void registerToMedium(int configId, int envId);
+	void manualRegister(int configId, int envId);
 
-	void registerAndPushToMedium(int configId, int envId);
+	void manualRegisterAndPush(int configId, int envId);
+
+	/**
+	 * @param project 
+	 * @param configsToRegister
+	 * @param id
+	 */
+	void autoRegister(Project project, int envId, List<Config> configs);
 
 }

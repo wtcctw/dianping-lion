@@ -8,12 +8,13 @@
 		<result column="loginName" property="loginName"/>
 		<result column="name" property="name"/>
 		<result column="email" property="email"/>
+		<result column="system" property="system"/>
 		<result column="createTime" property="createTime"/>
 	</resultMap>
 	
 	<select id="findAll" resultMap="UserResult">
 		<![CDATA[
-		SELECT id, loginName, name, email, createTime
+		SELECT id, loginName, name, email, createTime, system
 		FROM user
 		ORDER BY id
 		]]>
@@ -21,7 +22,7 @@
     
     <select id="findById" resultMap="UserResult">
 		<![CDATA[
-		SELECT id, loginName, name, email, createTime
+		SELECT id, loginName, name, email, createTime, system
 		FROM user
 		WHERE id=#id#
 		ORDER BY id

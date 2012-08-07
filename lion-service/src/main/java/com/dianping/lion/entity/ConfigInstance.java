@@ -31,19 +31,19 @@ public class ConfigInstance implements Serializable {
 	public static final int MORE_VALUE_DISPLAY_LEN = 210;
 	public static final String NO_CONTEXT = "";
 
-	private int id;
-	private int configId;
-	private Config config;
-	private int envId;
-	private String value;
-	private String context = NO_CONTEXT;
-	private String contextmd5;
-	private int createUserId;
-	private int modifyUserId;
-	private Date createTime;
-	private Date modifyTime;
-	private String desc;
-	private int seq;
+	protected int id;
+	protected int configId;
+	protected Config config;
+	protected int envId;
+	protected String desc;
+	protected String value;
+	protected String context = NO_CONTEXT;
+	protected String contextmd5;
+	protected int createUserId;
+	protected int modifyUserId;
+	protected Date createTime;
+	protected Date modifyTime;
+	protected int seq;
 	
 	public ConfigInstance() {
 	}

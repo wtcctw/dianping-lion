@@ -43,6 +43,7 @@ public interface ProjectService {
 	 * 获取符合条件的项目信息；
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	List<Project> getProjectsByTeamAndProduct(Map param);
 	
 	/**
@@ -51,10 +52,16 @@ public interface ProjectService {
 	 */
 	Project getProject(int projectId);
 	
+	Project findProject(String name);
+	
 	Integer addProject(Project project);
 	
 	Integer editProject(Project project);
 	Integer delProject(int projectId);
+	
+	void changeEffectStatus(int projectId, int envId, boolean effected);
+	
+	boolean getEffectStatus(int projectId, int envId);
 	
 	List<Project> getProjectsByProduct(int productId);
 }

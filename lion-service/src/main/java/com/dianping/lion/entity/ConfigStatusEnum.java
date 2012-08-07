@@ -22,7 +22,7 @@ package com.dianping.lion.entity;
  */
 public enum ConfigStatusEnum {
 	
-	Noset(1, "未设置"), Ineffective(5, "未生效"), Effective(10, "已生效");
+	Noset(1, "未设置"), Ineffective(5, "未生效"), Foreffective(8, "下次发布时生效"), Effective(10, "已生效");
 	
 	private int value;
 	

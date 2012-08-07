@@ -20,6 +20,10 @@
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
 	
+	<bean id="registerPointDao" class="com.dianping.lion.dao.ibatis.RegisterPointIbatisDao">
+		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+	</bean>
+	
 	<bean id="operationLogDao" class="com.dianping.lion.dao.ibatis.OperationLogIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>

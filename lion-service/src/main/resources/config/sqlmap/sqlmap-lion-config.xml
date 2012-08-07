@@ -12,6 +12,7 @@
 	<sqlMap resource="config/sqlmap/lion/oplog.xml"/>
 	<sqlMap resource="config/sqlmap/lion/user.xml"/>
 	<sqlMap resource="config/sqlmap/lion/config.xml"/>
+	<sqlMap resource="config/sqlmap/lion/registerpoint.xml"/>
 	<sqlMap resource="config/sqlmap/lion/product.xml"/>
     <sqlMap resource="config/sqlmap/lion/team.xml"/>
     

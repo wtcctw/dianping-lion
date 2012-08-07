@@ -50,6 +50,8 @@ import com.dianping.lion.medium.ConfigRegisterServiceRepository;
 import com.dianping.lion.service.ConfigDeleteResult;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.service.ProjectService;
+import com.dianping.lion.service.RegisterPointService;
 import com.dianping.lion.util.DBUtils;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.ConfigCriteria;
@@ -70,7 +72,13 @@ public class ConfigServiceImpl implements ConfigService {
 	private ProjectDao projectDao;
 	
 	@Autowired
+	private ProjectService projectService;
+	
+	@Autowired
 	private EnvironmentService environmentService;
+	
+	@Autowired
+	private RegisterPointService registerPointService;
 	
 	@Autowired
 	private ConfigRegisterServiceRepository registerServiceRepository;
@@ -100,7 +108,8 @@ public class ConfigServiceImpl implements ConfigService {
 				ConfigStatus status = configStatus.get(config.getId());
 				ConfigInstance defaultInst = defaultInsts.get(config.getId());
 				if ((StringUtils.isEmpty(key) || config.getKey().contains(key)) 
-						&& (criteria.getStatus() == -1 || (status != null && status.getStatus() == criteria.getStatus())
+						&& (criteria.getStatus() == -1 || (status != null && (status.getStatus() == criteria.getStatus()
+								|| (criteria.getStatus() == ConfigStatusEnum.Ineffective.getValue() && status.getStatusEnum() == ConfigStatusEnum.Foreffective)))
 								|| (criteria.getStatus() == ConfigStatusEnum.Noset.getValue() && defaultInst == null))
 						&& (StringUtils.isEmpty(value) || (defaultInst != null && defaultInst.getValue().contains(value)))) {
 					configVos.add(new ConfigVo(config, status, hasInstanceConfigs.contains(config.getId()), 
@@ -109,6 +118,11 @@ public class ConfigServiceImpl implements ConfigService {
 			}
 		}
 		return configVos;
+	}
+
+	@Override
+	public List<Config> findForeffectiveConfig(int projectId, int envId) {
+		return configDao.findForeffectiveConfig(projectId, envId);
 	}
 
 	@Override
@@ -263,6 +277,11 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
+	public List<Config> findConfigByKeys(List<String> keys) {
+		return configDao.findConfigByKeys(keys);
+	}
+
+	@Override
 	public Config getConfig(int configId) {
 		return configDao.getConfig(configId);
 	}
@@ -287,11 +306,22 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
-	public void registerToMedium(int configId, int envId) {
+	public void manualRegister(int configId, int envId) {
+		//TODO 创建checkpoint
 		Config config = getConfig(configId);
 		if (config == null) {
 			throw new EntityNotFoundException("Config not found, maybe deleted.");
 		}
+		register(config, envId);
+	}
+
+	/**
+	 * @param config
+	 * @param envId
+	 * @param configId
+	 */
+	private void register(Config config, int envId) {
+		int configId = config.getId();
 		ConfigInstance defaultInst = findDefaultInstance(configId, envId);
 		if (defaultInst == null) {
 			throw new RuntimeBusinessException("该环境下配置项不存在!");
@@ -308,7 +338,32 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
-	public void registerAndPushToMedium(int configId, int envId) {
+	public void autoRegister(Project project, final int envId, List<Config> configs) {
+		registerPointService.create(project.getId(), envId, false, configs);
+		projectService.changeEffectStatus(project.getId(), envId, true);
+		final List<String> failedConfigList = new ArrayList<String>(configs.size());
+		for (final Config config : configs) {
+			this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					try {
+						register(config, envId);
+					} catch (Exception e) {
+						failedConfigList.add(config.getKey());
+						status.setRollbackOnly();
+					}
+				}
+			});
+		}
+		if (!failedConfigList.isEmpty()) {
+			throw new RuntimeBusinessException("config[" + StringUtils.join(failedConfigList, ",") 
+					+ "] publish failed, plz check and try it again.");
+		}
+	}
+
+	@Override
+	public void manualRegisterAndPush(int configId, int envId) {
+		// TODO 创建checkpoint
 		Config config = getConfig(configId);
 		if (config == null) {
 			throw new EntityNotFoundException("Config not found, maybe deleted.");
@@ -376,6 +431,13 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	/**
+	 * @param projectService the projectService to set
+	 */
+	public void setProjectService(ProjectService projectService) {
+		this.projectService = projectService;
+	}
+
+	/**
 	 * @param registerServiceRepository the mediumServiceRepository to set
 	 */
 	public void setRegisterServiceRepository(ConfigRegisterServiceRepository registerServiceRepository) {
@@ -387,6 +449,13 @@ public class ConfigServiceImpl implements ConfigService {
 	 */
 	public void setEnvironmentService(EnvironmentService environmentService) {
 		this.environmentService = environmentService;
+	}
+
+	/**
+	 * @param registerPointService the registerPointService to set
+	 */
+	public void setRegisterPointService(RegisterPointService registerPointService) {
+		this.registerPointService = registerPointService;
 	}
 
 }

@@ -2,10 +2,10 @@
 	<thead>
     <tr>
       <th width="30">序号</th>
-      <th width="290">KEY</th>
-      <th width="250">DESC</th>
+      <th width="280">KEY</th>
+      <th width="230">DESC</th>
       <th>VALUE</th>
-      <th width="50">Status</th>
+      <th width="95">Status</th>
       <th width="140">
       	操作 &nbsp;&nbsp;<input type="checkbox" id="display-all-btn" rel="tooltip" data-original-title="显示全部操作">
       	<a id="add-config-btn" href="#" rel="tooltip" data-original-title="添加配置项" class="pull-right">
@@ -34,12 +34,12 @@
   		</td>
   		<td><span<@s.if test="%{#configVo.config.isLongDesc()}"> rel="tooltip" data-original-title="${config.desc?html}"</@s.if>>${config.abbrevDesc?html}</span></td>
   		<td>
-  			<span style="margin-right: 20px;" <@s.if test="%{#configVo.defaultInstance != null && #configVo.defaultInstance.isLongValue()}">
+  			<span style="margin-right: 10px;" <@s.if test="%{#configVo.defaultInstance != null && #configVo.defaultInstance.isLongValue()}">
   				rel="tooltip" data-original-title="${defaultInstance.moreValue?html}"</@s.if>>
   				<@s.property value="defaultInstance.abbrevValue"/>
   			</span>
   			<@s.if test="%{#configVo.hasInstance && #configVo.hasContextInst}">
-  			( <i class="icon-indent-left" rel="tooltip" data-original-title="存在基于上下文的配置项值"></i> )
+  			(<i class="icon-indent-left" rel="tooltip" data-original-title="存在基于上下文的配置项值"></i>)
   			</@s.if>
   		</td>
   		<td>

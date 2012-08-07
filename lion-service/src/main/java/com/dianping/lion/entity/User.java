@@ -28,6 +28,7 @@ public class User {
 	private String name;
 	private String email;
 	private Date createTime;
+	private boolean system;		//是否系统用户
 	
 	public int getId() {
 		return id;
@@ -58,5 +59,17 @@ public class User {
 	}
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
+	}
+	/**
+	 * @return the system
+	 */
+	public boolean isSystem() {
+		return system;
+	}
+	/**
+	 * @param system the system to set
+	 */
+	public void setSystem(boolean system) {
+		this.system = system;
 	}
 }
