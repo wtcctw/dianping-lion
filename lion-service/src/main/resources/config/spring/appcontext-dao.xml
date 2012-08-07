@@ -15,6 +15,9 @@
 	<bean id="projectDao" class="com.dianping.lion.dao.ibatis.ProjectIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
+		<bean id="jobExecTimeDao" class="com.dianping.lion.dao.ibatis.JobExecTimeIbatisDao">
+		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+	</bean>
 	
 	<bean id="configDao" class="com.dianping.lion.dao.ibatis.ConfigIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>

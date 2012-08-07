@@ -1,7 +1,7 @@
 /**
- * Project: com.dianping.lion.lion-api-0.0.1-new
+ * Project: lion-service
  * 
- * File Created at 2012-7-31
+ * File Created at 2012-8-7
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -13,20 +13,15 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.api.db;
-
-import org.springframework.beans.factory.annotation.Autowired;
+package com.dianping.lion.service.spi;
 
 /**
- * Storager
+ * Callback
  * @author youngphy.yang
  *
  */
-public class Storager {
-	@Autowired
-	private JsonParser jsonParser = null;
+public interface Callback {
 	
-	public void store(String dbContent) {
-		
-	}
+	public void execute() throws Exception;
+
 }

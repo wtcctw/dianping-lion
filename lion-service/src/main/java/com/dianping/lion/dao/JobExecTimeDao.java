@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
  * 
- * File Created at 2012-7-12
+ * File Created at 2012-7-9
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -15,32 +15,14 @@
  */
 package com.dianping.lion.dao;
 
-import java.util.List;
+import java.sql.SQLException;
 
-import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.JobExecTime;
 
-/**
- * @author danson.liu
- *
- */
-public interface EnvironmentDao {
-
-	List<Environment> findAll();
-	
-	Environment findEnvByID(int id);
-	
-	Environment findEnvByName(String name);
-	
-	int save(Environment env);
-	
-	void update(Environment env);
-	
-	void delete(int id);
-
-	/**
-	 * @param envId
-	 * @return
-	 */
-	Environment findPrevEnv(int envId);
-	
+public interface JobExecTimeDao {
+	void startTransaction()throws SQLException;
+	JobExecTime getJobExecTime(String name);
+	void updateJobExecTime(JobExecTime jobExecTime);
+	void commitTransaction()throws SQLException;
+	void endTransaction() throws SQLException;
 }

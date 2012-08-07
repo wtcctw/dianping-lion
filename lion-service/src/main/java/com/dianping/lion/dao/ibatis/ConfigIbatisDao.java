@@ -225,5 +225,9 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return getSqlMapClientTemplate().queryForList("Config.findForeffectiveConfig", Maps.entry("projectId", projectId)
 				.entry("envId", envId).entry("foreffctive", ConfigStatusEnum.Foreffective.getValue()).get());
 	}
+	@Override
+	public Config getConfigByName(String configName) {
+		return (Config) getSqlMapClientTemplate().queryForObject("Config.getConfigByName", configName);
+	}
 
 }

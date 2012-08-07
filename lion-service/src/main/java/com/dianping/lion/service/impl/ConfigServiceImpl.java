@@ -457,5 +457,10 @@ public class ConfigServiceImpl implements ConfigService {
 	public void setRegisterPointService(RegisterPointService registerPointService) {
 		this.registerPointService = registerPointService;
 	}
+	
+	@Override
+	public Config getConfigByName(String configName) {
+		return configDao.getConfigByName(configName);
+	}
 
 }

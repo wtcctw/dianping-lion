@@ -31,7 +31,6 @@ public interface EnvironmentService {
 	Map<Integer, Environment> findEnvMap();
 
 	Environment findEnvByID(int id);
-	Environment findEnvByName(String name);
 	
 	/**
 	 * 获取当前环境的上一个环境
@@ -39,6 +38,8 @@ public interface EnvironmentService {
 	 * @return
 	 */
 	Environment findPrevEnv(int envId);
+	
+	Environment findEnvByName(String name);
 	
 	int save(Environment env);
 	

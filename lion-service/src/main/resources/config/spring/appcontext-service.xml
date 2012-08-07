@@ -12,6 +12,8 @@
 	
 	<bean id="projectService" class="com.dianping.lion.service.impl.ProjectServiceImpl"/>
 	
+	<bean id="jobExecTimeService" class="com.dianping.lion.service.impl.JobExecTimeServiceImpl"/>
+	
 	<bean id="configService" class="com.dianping.lion.service.impl.ConfigServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
 		<property name="registerServiceRepository" ref="registerServiceRepository"/>

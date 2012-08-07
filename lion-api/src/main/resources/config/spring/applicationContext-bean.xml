@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans default-lazy-init="false" default-autowire="byName">
+	
+	<bean id="storager" class="com.dianping.lion.api.db.Storager" init-method="init">
+	</bean>
+	
+	<bean id="dataSourceFetcher" class="com.dianping.lion.api.db.DataSourceFetcher" init-method="init">
+		<property name="host" value="dev.dbims.com"></property>
+		<property name="port" value="80"></property>
+		<property name="protocal" value="http"></property>
+		<property name="path" value="/lion/lion/lionapi?timestamp="></property>
+	</bean>
+	
+	<bean id="jsonParser" class="com.dianping.lion.api.db.JsonParser">
+	</bean>
+</beans>
