@@ -51,6 +51,6 @@ public class StoragerTest extends AbstractDaoTestSupport{
 	public void testCheckAndSaveDBConfig() throws Exception {
 		Storager storager = new Storager();
 		storager.setJsonParser(new JsonParser());
-		storager.checkAndSaveDBConfig(content);
+//		storager.checkAndSaveDBConfig(content);
 	}
 }

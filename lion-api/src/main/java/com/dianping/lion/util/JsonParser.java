@@ -83,7 +83,7 @@ public class JsonParser {
 					continue;
 				}
 				ConfigInstance ci = new ConfigInstance();
-				Config config = getConfigService().getConfigByName(dbAliases.get(i));
+				Config config = getConfigService().findConfigByKey(dbAliases.get(i));
 				ci.setConfigId(config.getId());
 				Environment env = getEnvService().findEnvByName(envs[j].toLowerCase());
 				ci.setEnvId(env.getId());

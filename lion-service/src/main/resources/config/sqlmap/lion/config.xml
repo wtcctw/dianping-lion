@@ -93,10 +93,6 @@
     	SELECT * FROM config WHERE id = #configId#
     </select>
     
-    <select id="getConfigByName" resultMap="ConfigResult" parameterClass="string">
-    	SELECT * FROM config WHERE config.key = #configName#
-    </select>
-    
     <select id="findConfigByKey" resultMap="ConfigResult" parameterClass="string">
     	SELECT * FROM config WHERE `key` = #key#
     </select>

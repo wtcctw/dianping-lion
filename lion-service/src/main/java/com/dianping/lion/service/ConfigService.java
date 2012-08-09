@@ -97,7 +97,7 @@ public interface ConfigService {
 	 */
 	Config getConfig(int configId);
 	
-	Config getConfigByName(String configName);
+	String getConfigFromRegisterServer(int envId, String key);
 	
 	/**
 	 * 指定配置项在指定环境下的注册值(包含所有context-based config value的json结构)

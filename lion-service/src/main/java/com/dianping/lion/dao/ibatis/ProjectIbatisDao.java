@@ -22,9 +22,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Project;
-import com.dianping.lion.entity.ProjectStatus;
 import com.dianping.lion.entity.Team;
-import com.dianping.lion.util.Maps;
 
 /**
  * @author danson.liu
@@ -85,24 +83,6 @@ public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectD
 	public List<Project> getProjectsByProduct(int productId) {		
 		List<Project> productProjects = getSqlMapClientTemplate().queryForList("Project.selectProjectsByProduct", productId);
 		return productProjects;
-	}
-
-	@Override
-	public int updateEffectStat(int projectId, int envId, boolean effected) {
-		return getSqlMapClientTemplate().update("Project.updateEffectStat", Maps.entry("projectId", projectId)
-				.entry("envId", envId).entry("effected", effected).get());
-	}
-
-	@Override
-	public int createEffectStat(ProjectStatus projectStatus) {
-		return (Integer) getSqlMapClientTemplate().insert("Project.insertProjectStatus", projectStatus);
-	}
-
-	@Override
-	public boolean getEffectStatus(int projectId, int envId) {
-		Boolean effected = (Boolean) getSqlMapClientTemplate().queryForObject("Project.getEffectStatus", Maps.entry("projectId", projectId)
-				.entry("envId", envId).get());
-		return effected != null ? effected : false;
 	}
 
 }

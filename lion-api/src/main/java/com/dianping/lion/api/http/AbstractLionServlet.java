@@ -47,11 +47,20 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = -9154351276219364129L;
 	
-	public static final String 		PARAM_IDENTITY 	= "identity";
-	public static final String 		PARAM_PASSWD 	= "passwd";
-	public static final String 		PARAM_PROJECT 	= "project";	//项目名
-	public static final String 		PARAM_ENV 		= "env";		//环境名
-	public static final String 		PARAM_KEY 		= "key";		//配置名，不包含项目名前缀
+	public static final String 		PARAM_IDENTITY 	= "id";		//调用者身份id
+	public static final String 		PARAM_PASSWD 	= "ps";		//调用者密码
+	public static final String 		PARAM_PROJECT 	= "p";		//项目名
+	public static final String 		PARAM_ENV 		= "e";		//环境名
+	public static final String 		PARAM_KEY 		= "k";		//配置名，不包含项目名前缀
+	public static final String 		PARAM_FEATURE 	= "f";		//项目feature名称
+	public static final String 		PARAM_VALUE 	= "v";		//配置项值
+	public static final String 		PARAM_TASKID 	= "t";		//项目任务id
+	public static final String 		PARAM_EFFECT 	= "ef";		//配置是否立即生效
+	public static final String 		PARAM_PUSH 		= "p";		//配置变更是否实时推送到app
+	public static final String 		PARAM_CORRECT 	= "c";		//设置registerpoint是否正确
+	
+	public static final String 		SUCCESS_CODE 	= "0";		//正确返回码
+	public static final String 		ERROR_CODE 		= "1|";		//错误返回码
 	
 	protected ApplicationContext 	applicationContext;
 	protected ProjectService 		projectService;
@@ -84,6 +93,14 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		return paramVal;
 	}
 	
+	protected String[] getRequiredParameters(HttpServletRequest servletRequest, String param) {
+		String[] paramVals = servletRequest.getParameterValues(param);
+		if (paramVals == null || paramVals.length == 0) {
+			throw new RuntimeBusinessException("Parameter[" + param + "] is required.");
+		}
+		return paramVals;
+	}
+	
 	protected User getRequiredIdentity(HttpServletRequest servletRequest) {
 		String identity = getRequiredParameter(servletRequest, PARAM_IDENTITY);
 		int userId = 0;
@@ -100,6 +117,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		return user;
 	}
 	
+	@SuppressWarnings("unused")
 	protected void checkUserPassword(HttpServletRequest servletRequest) {
 		String passwd = getRequiredParameter(servletRequest, PARAM_PASSWD);
 		//TODO do check
@@ -114,7 +132,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 			doService(req, resp);
 		} catch (Exception e) {
 			logger.warn("Error happend in [" + getClass().getSimpleName() + "], detail: ", e);
-			writer.print(e.getMessage());
+			writer.print(ERROR_CODE + e.getMessage());
 		} finally {
 			SecurityUtils.clearCurrentUser();
 			writer.flush();

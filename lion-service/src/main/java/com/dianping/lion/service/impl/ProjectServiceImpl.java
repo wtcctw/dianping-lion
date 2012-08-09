@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Project;
-import com.dianping.lion.entity.ProjectStatus;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.service.ProjectService;
 
@@ -83,19 +82,6 @@ public class ProjectServiceImpl implements ProjectService {
 			throw new IllegalArgumentException("Project name cannot be blank.");
 		}
 		return projectDao.findProject(name);
-	}
-
-	@Override
-	public void changeEffectStatus(int projectId, int envId, boolean effected) {
-		int updated = projectDao.updateEffectStat(projectId, envId, effected);
-		if (updated == 0) {
-			projectDao.createEffectStat(new ProjectStatus(projectId, envId, effected));
-		}
-	}
-
-	@Override
-	public boolean getEffectStatus(int projectId, int envId) {
-		return projectDao.getEffectStatus(projectId, envId);
 	}
 
 }

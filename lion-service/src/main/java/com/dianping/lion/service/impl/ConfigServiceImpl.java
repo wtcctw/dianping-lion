@@ -53,6 +53,7 @@ import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.RegisterPointService;
 import com.dianping.lion.util.DBUtils;
+import com.dianping.lion.util.Maps;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
@@ -169,10 +170,11 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 	
 	private void deleteInstance(Config config, int envId) {
+		registerPointService.create(config.getProjectId(), envId, true, Maps.entry(config, Boolean.TRUE).<Config, Boolean>get());
 		int configId = config.getId();
 		int deleted = configDao.deleteInstance(configId, envId);
-		configDao.deleteStatus(configId, envId);
 		if (deleted > 0) {
+			configDao.deleteStatus(configId, envId);
 			ConfigRegisterService registerService = getRegisterService(envId);
 			registerService.unregister(config.getKey());
 		}
@@ -287,6 +289,11 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
+	public String getConfigFromRegisterServer(int envId, String key) {
+		return getRegisterService(envId).get(key);
+	}
+
+	@Override
 	public ConfigInstance findInstance(int configId, int envId, String context) {
 		return configDao.findInstance(configId, envId, context);
 	}
@@ -340,7 +347,6 @@ public class ConfigServiceImpl implements ConfigService {
 	@Override
 	public void autoRegister(Project project, final int envId, List<Config> configs) {
 		registerPointService.create(project.getId(), envId, false, configs);
-		projectService.changeEffectStatus(project.getId(), envId, true);
 		final List<String> failedConfigList = new ArrayList<String>(configs.size());
 		for (final Config config : configs) {
 			this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -458,9 +464,4 @@ public class ConfigServiceImpl implements ConfigService {
 		this.registerPointService = registerPointService;
 	}
 	
-	@Override
-	public Config getConfigByName(String configName) {
-		return configDao.getConfigByName(configName);
-	}
-
 }

@@ -59,9 +59,5 @@ public interface ProjectService {
 	Integer editProject(Project project);
 	Integer delProject(int projectId);
 	
-	void changeEffectStatus(int projectId, int envId, boolean effected);
-	
-	boolean getEffectStatus(int projectId, int envId);
-	
 	List<Project> getProjectsByProduct(int productId);
 }

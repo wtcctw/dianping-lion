@@ -38,8 +38,6 @@ public interface ConfigDao {
 	 */
 	Config getConfig(int configId);
 	
-	Config getConfigByName(String configName);
-
 	/**
 	 * 获取下一个Config(按seq排序)
 	 * @param configId

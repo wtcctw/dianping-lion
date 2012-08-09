@@ -36,35 +36,42 @@ public class SetConfigServlet extends AbstractLionServlet {
 
 	private static final long serialVersionUID 	= 1420817678507296960L;
 	
-	private static final String PARAM_VALUE 	= "value";		//配置值
-	
 	@Override
 	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		String projectName = getRequiredParameter(req, PARAM_PROJECT);
+		String[] features = getRequiredParameters(req, PARAM_FEATURE);
 		String env = getRequiredParameter(req, PARAM_ENV);
 		String key = getRequiredParameter(req, PARAM_KEY);
 		String value = getRequiredParameter(req, PARAM_VALUE);
+		String effect = getRequiredParameter(req, PARAM_EFFECT);	//是否立即生效
 		String configKey = key.startsWith(projectName) ? key : projectName + "." + key;
 		PrintWriter writer = resp.getWriter();
 		Project project = projectService.findProject(projectName);
 		if (project == null) {
 			throw new RuntimeBusinessException("project[" + projectName + "] not found.");
 		}
-		Config config = configService.findConfigByKey(configKey);
+		Environment environment = environmentService.findEnvByName(env);
+		if (environment == null) {
+			throw new RuntimeBusinessException("environment[" + env + "] not found.");
+		}
+		if ("1".equals(effect)) {
+			setAndEffectConfig(project, environment, configKey, value);
+		}
+		writer.print(SUCCESS_CODE);
+	}
+
+	private void setAndEffectConfig(Project project, Environment environment, String key, String value) {
+		Config config = configService.findConfigByKey(key);
 		int configId = 0;
 		if (config == null) {
 			config = new Config();
-			config.setKey(configKey);
+			config.setKey(key);
 			config.setDesc("");
 			config.setTypeEnum(ConfigTypeEnum.String);
 			config.setProjectId(project.getId());
 			configId = configService.create(config);
 		} else {
 			configId = config.getId();
-		}
-		Environment environment = environmentService.findEnvByName(env);
-		if (environment == null) {
-			throw new RuntimeBusinessException("environment[" + env + "] not found.");
 		}
 		//可能以后会支持context config的设置
 		ConfigInstance configInst = configService.findInstance(configId, environment.getId(), ConfigInstance.NO_CONTEXT);
@@ -75,8 +82,7 @@ public class SetConfigServlet extends AbstractLionServlet {
 			configInst.setValue(value);
 			configService.updateInstance(configInst);
 		}
-		projectService.changeEffectStatus(project.getId(), environment.getId(), false);
-		writer.print("ok");
+		configService.
 	}
 
 }

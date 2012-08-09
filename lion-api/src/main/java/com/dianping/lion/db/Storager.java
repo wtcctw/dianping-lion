@@ -57,7 +57,7 @@ public class Storager {
 			if(entry.getValue()) {
 				//remove the config!!
 			} else {
-				Config config = configService.getConfigByName(entry.getKey());
+				Config config = configService.findConfigByKey(entry.getKey());
 				//not exist, then insert
 				if(config == null) {
 					config = new Config();

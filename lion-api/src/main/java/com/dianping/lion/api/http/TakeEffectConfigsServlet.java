@@ -60,11 +60,6 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
 			throw new RuntimeBusinessException("environment[" + env + "] not found.");
 		}
 		
-		boolean effected = projectService.getEffectStatus(project.getId(), environment.getId());
-		if (effected) {
-			throw new RuntimeBusinessException("The project's configs are already taken effect.");
-		}
-		
 		boolean checkExistsPass = true;
 		List<Config> configsToRegister = new ArrayList<Config>();
 		List<String> configsNotFound = new ArrayList<String>();
