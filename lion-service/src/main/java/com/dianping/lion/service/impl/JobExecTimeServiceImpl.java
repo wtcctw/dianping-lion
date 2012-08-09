@@ -43,11 +43,6 @@ public class JobExecTimeServiceImpl implements JobExecTimeService {
 	}
 
 	@Override
-	public void updateJobExecTime(JobExecTime jobExecTime) {
-		jobExecTimeDao.updateJobExecTime(jobExecTime);
-	}
-
-	@Override
 	public void commitTransaction() {
 		try {
 			jobExecTimeDao.commitTransaction();
@@ -70,6 +65,16 @@ public class JobExecTimeServiceImpl implements JobExecTimeService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void updateLastFetchTime(JobExecTime jobExecTime) {
+		jobExecTimeDao.updateLastFetchTime(jobExecTime);
+	}
+
+	@Override
+	public void updateLastJobExecTime(JobExecTime jobExecTime) {
+		jobExecTimeDao.updateLastJobExecTime(jobExecTime);
 	}
 
 }

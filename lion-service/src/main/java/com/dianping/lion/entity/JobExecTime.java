@@ -25,6 +25,7 @@ import java.util.Date;
 public class JobExecTime {
 	private int id;
 	private Date lastFetchTime;
+	private Date lastJobExecTime;
 	
 	public int getId() {
 		return id;
@@ -37,6 +38,12 @@ public class JobExecTime {
 	}
 	public void setLastFetchTime(Date lastFetchTime) {
 		this.lastFetchTime = lastFetchTime;
+	}
+	public Date getLastJobExecTime() {
+		return lastJobExecTime;
+	}
+	public void setLastJobExecTime(Date lastJobExecTime) {
+		this.lastJobExecTime = lastJobExecTime;
 	}
 	
 }

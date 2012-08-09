@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.service.ConfigService;
@@ -48,7 +49,9 @@ public class Storager {
 	
 	public void store(String dsContent) throws Exception {
 		checkAndSaveDBConfig(dsContent);
-		checkAndSaveDBConfigInstance(dsContent);
+		checkAndUpdateDBConfigInstance(dsContent);
+		//no instance correlated, consider to remove the config
+		checkAndUpdateDBConfigAgain(dsContent);
 	}
 	
 	protected void checkAndSaveDBConfig(String dsContent) throws Exception {
@@ -66,26 +69,49 @@ public class Storager {
 					config.setModifyTime(new Date(System.currentTimeMillis()));
 					config.setKey(entry.getKey());
 					config.setType(10);
-					config.setProjectId(10000);
-					config.setSeq(10000);
+					config.setProjectId(ServiceConstants.PROJECT_PUBLIC_ID);
+					//TODO review the number
+					config.setSeq(ServiceConstants.MAX_AVAIL_CONFIG_INST);
 					configService.create(config);
 				}
 			}
 		}
 	}
 	
-	protected void checkAndSaveDBConfigInstance(String dsContent) throws Exception {
-		List<ConfigInstance> cis = jsonParser.getConfigInstances(dsContent);
-		for (int i = 0; i < cis.size(); i++) {
-			ConfigInstance ci = cis.get(i);
-			ConfigInstance result = configService.findInstance(ci.getConfigId(), ci.getEnvId(), ConfigInstance.NO_CONTEXT);
-			if(result ==  null) {
-				configService.createInstance(ci);
+	protected void checkAndUpdateDBConfigInstance(String dsContent) throws Exception {
+		Map<ConfigInstance, Boolean> cis = jsonParser.getConfigInstances(dsContent);
+		for (Entry<ConfigInstance, Boolean> entry : cis.entrySet()) {
+			ConfigInstance ci = entry.getKey();
+			if(entry.getValue()) {
+				//delete the instance
+				configService.clearInstance(ci.getConfigId(), ci.getEnvId());
 			} else {
-				ci.setConfigId(result.getConfigId());
-				configService.updateInstance(ci);
+				ConfigInstance result = configService.findInstance(ci.getConfigId(), ci.getEnvId(), ConfigInstance.NO_CONTEXT);
+				if(result ==  null) {
+					configService.createInstance(ci);
+				} else {
+					ci.setConfigId(result.getConfigId());
+					configService.updateInstance(ci);
+				}
 			}
 		}
+	}
+	
+	protected void checkAndUpdateDBConfigAgain(String dsContent) throws Exception {
+		Map<String,Boolean> dbAlias = jsonParser.getDBAlias(dsContent);
+		for(Entry<String,Boolean> entry : dbAlias.entrySet()) {
+			Config config = configService.getConfigByName(entry.getKey());
+			if(config !=  null) {
+				int configId = config.getId();
+				List<ConfigInstance> configs = configService.findInstancesByConfig(configId, null);
+				if(configs == null || configs.size() == 0) {
+					//no instance related, considering to the remove the config
+					configService.delete(configId);
+					continue;
+				}
+			}
+		}
+		
 	}
 
 	public JsonParser getJsonParser() {

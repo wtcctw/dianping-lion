@@ -27,7 +27,8 @@ public interface JobExecTimeService {
 	void startTransaction();
 	void execTransaction(Callback callback);
 	JobExecTime getJobExecTime(String name);
-	void updateJobExecTime(JobExecTime jobExecTime);
+	void updateLastJobExecTime(JobExecTime jobExecTime);
+	void updateLastFetchTime(JobExecTime jobExecTime);
 	void commitTransaction();
 	void endTransaction();
 }
