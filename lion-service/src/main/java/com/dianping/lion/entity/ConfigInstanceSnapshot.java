@@ -24,10 +24,13 @@ public class ConfigInstanceSnapshot extends ConfigInstance {
 
 	private static final long serialVersionUID = -1604430605925991824L;
 	
+	private int snapshotSetId;
+	
 	/**
 	 * @param instance
 	 */
 	public ConfigInstanceSnapshot(ConfigInstance instance) {
+		this.configId = instance.getConfigId();
 		this.envId = instance.envId;
 		this.desc = instance.desc;
 		this.value = instance.value;
@@ -38,6 +41,20 @@ public class ConfigInstanceSnapshot extends ConfigInstance {
 		this.createTime = instance.createTime;
 		this.modifyTime = instance.modifyTime;
 		this.seq = instance.seq;
+	}
+
+	/**
+	 * @return the snapshotSetId
+	 */
+	public int getSnapshotSetId() {
+		return snapshotSetId;
+	}
+
+	/**
+	 * @param snapshotSetId the snapshotSetId to set
+	 */
+	public void setSnapshotSetId(int snapshotSetId) {
+		this.snapshotSetId = snapshotSetId;
 	}
 
 }

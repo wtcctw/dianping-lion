@@ -15,12 +15,13 @@
  */
 package com.dianping.lion.service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
-import com.dianping.lion.entity.ConfigStatusEnum;
-import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.ConfigSetType;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
 
@@ -37,8 +38,6 @@ public interface ConfigService {
 	 */
 	List<ConfigVo> findConfigVos(ConfigCriteria criteria);
 	
-	List<Config> findForeffectiveConfig(int projectId, int envId);
-
 	/**
 	 * @param projectId
 	 * @param configId
@@ -56,7 +55,13 @@ public interface ConfigService {
 	 * @param configId
 	 * @param envId
 	 */
-	void clearInstance(int configId, int envId);
+	void deleteInstance(int configId, int envId);
+
+	/**
+	 * @param config
+	 * @param envId
+	 */
+	void deleteInstance(Config config, int envId);
 
 	/**
 	 * 删除指定配置项
@@ -90,6 +95,8 @@ public interface ConfigService {
 	Config findConfigByKey(String key);
 	
 	List<Config> findConfigByKeys(List<String> keys);
+	
+	List<Config> findConfigs(int projectId);
 
 	/**
 	 * @param configId
@@ -122,6 +129,8 @@ public interface ConfigService {
 	 * @return
 	 */
 	ConfigInstance findDefaultInstance(int configId, int envId);
+	
+	List<ConfigInstance> findInstances(int projectId, int envId);
 
 	int updateInstance(ConfigInstance instance);
 	
@@ -133,22 +142,20 @@ public interface ConfigService {
 	 * @param value
 	 */
 	void setConfigValue(int configId, int envId, String context, String value);
-	
-	/**
-	 * 保存配置项状态，如果存在就更新
-	 * @param status
-	 */
-	void changeConfigStatus(int configId, int envId, ConfigStatusEnum status);
-
-	void manualRegister(int configId, int envId);
-
-	void manualRegisterAndPush(int configId, int envId);
 
 	/**
-	 * @param project 
-	 * @param configsToRegister
 	 * @param id
+	 * @param id2
+	 * @param configKey
+	 * @param noContext
+	 * @param value
 	 */
-	void autoRegister(Project project, int envId, List<Config> configs);
+	void setConfigValue(int projectId, int envId, String key, String desc, String context, String value, ConfigSetType setType);
+
+	/**
+	 * @param projectId
+	 * @param envId
+	 */
+	Map<Integer, Date> findModifyTime(int projectId, int envId);
 
 }

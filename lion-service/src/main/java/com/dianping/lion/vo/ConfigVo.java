@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
-import com.dianping.lion.entity.ConfigStatus;
 
 /**
  * 针对某一特定环境的配置信息
@@ -31,8 +30,6 @@ public class ConfigVo implements Serializable {
 	
 	private Config config;
 	
-	private ConfigStatus status;
-	
 	private boolean hasInstance;	//有设置配置实例
 	
 	private boolean hasContextInst;	//有context based配置实例
@@ -43,9 +40,8 @@ public class ConfigVo implements Serializable {
 	 * @param config
 	 * @param instance
 	 */
-	public ConfigVo(Config config, ConfigStatus status, boolean hasInstance, boolean hasContextInst, ConfigInstance instance) {
+	public ConfigVo(Config config, boolean hasInstance, boolean hasContextInst, ConfigInstance instance) {
 		this.config = config;
-		this.status = status;
 		this.hasInstance = hasInstance;
 		this.hasContextInst = hasContextInst;
 		this.defaultInstance = instance;
@@ -70,20 +66,6 @@ public class ConfigVo implements Serializable {
 	 */
 	public ConfigInstance getDefaultInstance() {
 		return defaultInstance;
-	}
-
-	/**
-	 * @return the status
-	 */
-	public ConfigStatus getStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(ConfigStatus status) {
-		this.status = status;
 	}
 
 	/**

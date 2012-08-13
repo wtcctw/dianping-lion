@@ -54,6 +54,7 @@
 			        <textarea rows="7" style="width:350px;" id="config-value"></textarea>
 			      </div>
 			    </div>
+			    <!--
 			    <div class="control-group control-lion-group">
 			    	<label class="control-label control-lion-label">&nbsp;</label>
 			    	<div class="controls lion-controls">
@@ -67,6 +68,7 @@
 			    		</span>
 			    	</div>
 			    </div>
+			    -->
 		    </fieldset>
     	</form>
     </div>

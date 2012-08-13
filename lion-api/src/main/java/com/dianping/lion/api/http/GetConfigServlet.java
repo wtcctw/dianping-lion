@@ -44,18 +44,17 @@ public class GetConfigServlet extends AbstractLionServlet {
 	@Override
 	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		PrintWriter writer = resp.getWriter();
-		String projectName = getRequiredParameter(req, PARAM_PROJECT);
-		String key = getRequiredParameter(req, PARAM_KEY);
-		String configKey = key.startsWith(projectName) ? key : projectName + "." + key;
-		String env = getRequiredParameter(req, PARAM_ENV);
+		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
+		String key = getNotBlankParameter(req, PARAM_KEY);
+		String configKey = checkConfigKey(projectName, key);
+		String env = getNotBlankParameter(req, PARAM_ENV);
+		
 		Config config = configService.findConfigByKey(configKey);
 		if (config == null) {
 			throw new RuntimeBusinessException("config[" + configKey + "] not found.");
 		}
-		Environment environment = environmentService.findEnvByName(env);
-		if (environment == null) {
-			throw new RuntimeBusinessException("environment[" + env + "] not found.");
-		}
+		Environment environment = getRequiredEnv(env);
+		
 		JSONObject resultJson = new JSONObject();
 		ConfigInstance configInst = configService.findInstance(config.getId(), environment.getId(), ConfigInstance.NO_CONTEXT);
 		if (configInst != null) {

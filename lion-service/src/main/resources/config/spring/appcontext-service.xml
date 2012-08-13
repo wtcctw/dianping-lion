@@ -19,11 +19,16 @@
 		<property name="registerServiceRepository" ref="registerServiceRepository"/>
 	</bean>
 	
-	<bean id="registerPointService" class="com.dianping.lion.service.impl.RegisterPointServiceImpl"/>
+	<bean id="configReleaseService" class="com.dianping.lion.service.impl.ConfigReleaseServiceImpl">
+		<constructor-arg ref="Lion.TransactionManager"/>
+	</bean>
 	
 	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
+	
 	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl"/>
+	
 	<bean id="productService" class="com.dianping.lion.service.impl.ProductServiceImpl"/>
+	
 	<bean id="teamService" class="com.dianping.lion.service.impl.TeamServiceImpl"/>
 	
 	<bean id="registerServiceRepository" class="com.dianping.lion.medium.ConfigRegisterServiceRepository">

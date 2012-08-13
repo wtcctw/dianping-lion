@@ -83,6 +83,8 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 		try {
 			ensureParentPathExists();
 			ensurePathExists(parentPath + "/" + key);
+			//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
+			//并且对于lion-client的客户端感知也很重要，key node变更后，如果判断timestamp的逻辑发生在更新之前就有问题，所以也需要先更新timestamp
 			set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
 			set(parentPath + "/" + key + "/" + contextNode, value);
 		} catch (Exception e) {
@@ -104,8 +106,10 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	public void registerAndPushDefaultValue(String key, String defaultVal) {
 		try {
 			ensureParentPathExists();
-			set(parentPath + "/" + key, defaultVal);
+			ensurePathExists(parentPath + "/" + key);
+			//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
 			set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
+			set(parentPath + "/" + key, defaultVal);
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Push config[" + key + "]'s default value to zookeeper failed.", e);
 		}

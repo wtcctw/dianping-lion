@@ -13,8 +13,6 @@ var $config_list_editor;
 var $config_map_editor;
 var $clearAlert;
 var $deleteAlert;
-var $deployAlert;
-var $pushAlert;
 var $commonAlert;
 
 $(function(){
@@ -92,66 +90,6 @@ $(function(){
 			}
 		});
 		
-	$deployAlert = $("<div class='alert-body'>确认推送该配置到配置服务器?<br/>[<span class='key'></span>]</div>")
-		.dialog({
-			autoOpen : false, 
-			resizable : false,
-			modal : true,
-			title : "信息框",
-			height : 140,
-			buttons : {
-				"确认" : function() {
-					$(this).dialog("close");
-					$.ajax("/config/deployConfigAjax.vhtml".prependcontext(), {
-						data: $.param({
-							"configId" : $(this).data("configId"),
-							"envId" : $("#envId").val()
-						}, true),
-						dataType: "json",
-						success: function(result) {
-							if (result.code == Res_Code_Success) {
-								reloadConfigListTable();
-								$commonAlert.html("部署成功.").dialog("open");
-							} else if (result.code == Res_Code_Error) {
-								$commonAlert.html("部署失败" + (result.msg.isBlank() ? "": ":" + result.msg) + "!").dialog("open");
-							}
-						}
-					});
-				},
-				"取消" : function() {$(this).dialog("close");}
-			}
-		});
-		
-	$pushAlert = $("<div class='alert-body'>确认推送该配置到配置服务器并通知应用?<br/>[<span class='key'></span>]</div>")
-		.dialog({
-			autoOpen : false, 
-			resizable : false,
-			modal : true,
-			title : "信息框",
-			height : 140,
-			buttons : {
-				"确认" : function() {
-					$(this).dialog("close");
-					$.ajax("/config/pushConfigAjax.vhtml".prependcontext(), {
-						data: $.param({
-							"configId" : $(this).data("configId"),
-							"envId" : $("#envId").val()
-						}, true),
-						dataType: "json",
-						success: function(result) {
-							if (result.code == Res_Code_Success) {
-								reloadConfigListTable();
-								$commonAlert.html("推送成功.").dialog("open");
-							} else if (result.code == Res_Code_Error) {
-								$commonAlert.html("推送失败" + (result.msg.isBlank() ? "": ":" + result.msg) + "!").dialog("open");
-							}
-						}
-					});
-				},
-				"取消" : function() {$(this).dialog("close");}
-			}
-		});
-	
 	$("#add-config-modal").on("hidden", function() {
 		resetConfigForm();
 		if (modal_config_created) {
@@ -200,24 +138,6 @@ $(function(){
 		}
 	});
 	
-	$("#operation-type").change(function() {
-		$("#if-push").attr("checked", false);
-		if ($(this).val() == "deploy") {
-			$("#if-push-container").show();
-		} else {
-			$("#if-push-container").hide();
-		}
-	});
-	
-	$("#edit-operation-type").change(function() {
-		$("#edit-if-push").attr("checked", false);
-		if ($(this).val() == "deploy") {
-			$("#edit-if-push-container").show();
-		} else {
-			$("#edit-if-push-container").hide();
-		}
-	});
-	
 	$("#edit-save-btn").click(function() {
 		if (validateEditConfigForm()) {
 			var envs = new Array();
@@ -228,8 +148,6 @@ $(function(){
 						"configId" : $("#edit-config-modal [name='config-id']").val(),
 						"envIds" : envs,
 						"trim" : $("#edit-trim-checkbox").is(":checked"),
-						"operation" : $("#edit-operation-type").val(),
-						"ifPush" : $("#edit-if-push").is(":checked"),
 						"value" : $("#edit-config-value").length > 0 ? $("#edit-config-value").val() : $(":radio[name='edit-config-value']:checked").val()
 					}, true),
 					dataType: "json",
@@ -267,22 +185,20 @@ $(function(){
 					"config.projectId" : $("#projectId").val(),
 					"trim" : $("#trim-checkbox").is(":checked"),
 					"envIds" : envs,
-					"operation" : $("#operation-type").val(),
-					"ifPush" : $("#if-push").is(":checked"),
 					"value" : $("#config-value").length > 0 ? $("#config-value").val() : $(":radio[name='config-value']:checked").val()
 				}, true),
 				dataType: "json",
 				success: function(result) {
 					if (result.code == Res_Code_Success) {
 						modal_config_created = true;
-						resetConfigForm(["config-env", "operation-type"]);
+						resetConfigForm(["config-env"]);
 						$("#add-config-modal .form-info").flashAlert("创建成功，请继续添加.", 4000);
 					} else if (result.code == Res_Code_Error) {
 						resetConfigAlerts();
 						$("#add-config-modal .form-error").showAlert(result.msg);
 					} else if (result.code == Res_Code_Warn) {
 						modal_config_created = true;
-						resetConfigForm(["config-env", "operation-type"]);
+						resetConfigForm(["config-env"]);
 						$("#add-config-modal .form-warn").showAlert(result.msg);
 					}
 				}
@@ -404,7 +320,6 @@ $(function(){
 		resetConfigFormValidation();
 		$("#edit-select-all-env,[name='edit-config-env']").attr("checked", false);
 		$("#edit-save-btn,#edit-more-btn").attr("disabled", false);
-		$("#edit-operation-type").val("deploy").triggerHandler("change");
 	}
 	
 	function resetConfigAlerts() {
@@ -420,9 +335,6 @@ $(function(){
 		if (!excepts_.contains("config-env")) {
 			$(":checkbox[name='config-env']:enabled").attr("checked", false);
 			$("#select-all-env").attr("checked", false);
-		}
-		if (!excepts_.contains("operation-type")) {
-			$("#operation-type").val("deploy").triggerHandler("change");
 		}
 	}
 	
@@ -464,20 +376,6 @@ $(function(){
 		$(".remove-config-btn").click(function() {
 			$deleteAlert.dialog("open");
 			$deleteAlert.data("configId", getConfigId($(this)));
-			return false;
-		});
-		
-		$(".deploy-config-btn").click(function() {
-			$deployAlert.find(".key").html(getConfigKey($(this)).abbreviate(35));
-			$deployAlert.data("configId", getConfigId($(this)));
-			$deployAlert.dialog("open");
-			return false;
-		});
-		
-		$(".push-config-btn").click(function() {
-			$pushAlert.find(".key").html(getConfigKey($(this)).abbreviate(35));
-			$pushAlert.data("configId", getConfigId($(this)));
-			$pushAlert.dialog("open");
 			return false;
 		});
 		

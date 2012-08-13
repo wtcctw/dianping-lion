@@ -20,12 +20,11 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
-import com.dianping.lion.entity.ConfigTypeEnum;
+import com.dianping.lion.entity.ConfigSetTask;
+import com.dianping.lion.entity.ConfigSetType;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
-import com.dianping.lion.exception.RuntimeBusinessException;
 
 /**
  * 根据项目名和环境，设置配置项的http接口
@@ -36,53 +35,36 @@ public class SetConfigServlet extends AbstractLionServlet {
 
 	private static final long serialVersionUID 	= 1420817678507296960L;
 	
+	private static final String EFFECT_SOON 	= "1";
+	
 	@Override
 	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		String projectName = getRequiredParameter(req, PARAM_PROJECT);
-		String[] features = getRequiredParameters(req, PARAM_FEATURE);
-		String env = getRequiredParameter(req, PARAM_ENV);
-		String key = getRequiredParameter(req, PARAM_KEY);
+		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
+		String env = getNotBlankParameter(req, PARAM_ENV);
+		String key = getNotBlankParameter(req, PARAM_KEY);
 		String value = getRequiredParameter(req, PARAM_VALUE);
-		String effect = getRequiredParameter(req, PARAM_EFFECT);	//是否立即生效
-		String configKey = key.startsWith(projectName) ? key : projectName + "." + key;
-		PrintWriter writer = resp.getWriter();
-		Project project = projectService.findProject(projectName);
-		if (project == null) {
-			throw new RuntimeBusinessException("project[" + projectName + "] not found.");
-		}
-		Environment environment = environmentService.findEnvByName(env);
-		if (environment == null) {
-			throw new RuntimeBusinessException("environment[" + env + "] not found.");
-		}
-		if ("1".equals(effect)) {
-			setAndEffectConfig(project, environment, configKey, value);
-		}
-		writer.print(SUCCESS_CODE);
-	}
-
-	private void setAndEffectConfig(Project project, Environment environment, String key, String value) {
-		Config config = configService.findConfigByKey(key);
-		int configId = 0;
-		if (config == null) {
-			config = new Config();
-			config.setKey(key);
-			config.setDesc("");
-			config.setTypeEnum(ConfigTypeEnum.String);
-			config.setProjectId(project.getId());
-			configId = configService.create(config);
+		String effect = getNotBlankParameter(req, PARAM_EFFECT);	//是否立即生效
+		String configKey = checkConfigKey(projectName, key);
+		
+		Project project = getRequiredProject(projectName);
+		Environment environment = getRequiredEnv(env);
+		
+		if (EFFECT_SOON.equals(effect)) {
+			configService.setConfigValue(project.getId(), environment.getId(), configKey, "", ConfigInstance.NO_CONTEXT, value, 
+					ConfigSetType.RegisterAndPush);
 		} else {
-			configId = config.getId();
+			String feature = getNotBlankParameter(req, PARAM_FEATURE);
+			ConfigSetTask configSetTask = new ConfigSetTask();
+			configSetTask.setProjectId(project.getId());
+			configSetTask.setEnvId(environment.getId());
+			configSetTask.setFeature(feature);
+			configSetTask.setKey(configKey);
+			configSetTask.setValue(value);
+			configSetTask.setContext(ConfigInstance.NO_CONTEXT);
+			configSetTask.setDelete(false);
+			configReleaseService.createSetTask(configSetTask);
 		}
-		//可能以后会支持context config的设置
-		ConfigInstance configInst = configService.findInstance(configId, environment.getId(), ConfigInstance.NO_CONTEXT);
-		if (configInst == null) {
-			configInst = new ConfigInstance(configId, environment.getId(), ConfigInstance.NO_CONTEXT, value);
-			configService.createInstance(configInst);
-		} else {
-			configInst.setValue(value);
-			configService.updateInstance(configInst);
-		}
-		configService.
+		resp.getWriter().print(SUCCESS_CODE);
 	}
 
 }

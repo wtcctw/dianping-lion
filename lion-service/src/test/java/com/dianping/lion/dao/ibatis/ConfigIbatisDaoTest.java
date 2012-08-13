@@ -62,7 +62,7 @@ public class ConfigIbatisDaoTest extends AbstractDaoTestSupport {
 	
 	@Test
 	public void testReadConfigValue() throws JSONException {
-		List<ConfigInstance> instances = configDao.findInstancesByConfig(1, 1, 30);
+		List<ConfigInstance> instances = configDao.findInstanceByConfig(1, 1, 30);
 		JSONArray array = new JSONArray();
 		for (ConfigInstance instance : instances) {
 			JSONObject json = new JSONObject();

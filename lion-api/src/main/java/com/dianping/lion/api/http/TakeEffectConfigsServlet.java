@@ -15,23 +15,11 @@
  */
 package com.dianping.lion.api.http;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.dianping.lion.entity.Config;
-import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
-import com.dianping.lion.exception.RuntimeBusinessException;
 
 
 /**
@@ -43,74 +31,40 @@ import com.dianping.lion.exception.RuntimeBusinessException;
  */
 public class TakeEffectConfigsServlet extends AbstractLionServlet {
 
-	private static final long serialVersionUID = 4596830426101363885L;
+	private static final long serialVersionUID 	= 4596830426101363885L;
+	
+	private static final String PUSH_TO_APP 	= "1";
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		String projectName = getRequiredParameter(req, PARAM_PROJECT);
+		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
+		String task = getNotBlankParameter(req, PARAM_TASK);
+		String env = getNotBlankParameter(req, PARAM_ENV);
 		String[] keys = req.getParameterValues(PARAM_KEY);
-		String env = getRequiredParameter(req, PARAM_ENV);
-		Project project = projectService.findProject(projectName);
-		if (project == null) {
-			throw new RuntimeBusinessException("project[" + projectName + "] not found.");
-		}
-		Environment environment = environmentService.findEnvByName(env);
-		if (environment == null) {
-			throw new RuntimeBusinessException("environment[" + env + "] not found.");
+		String push2App = req.getParameter(PARAM_PUSH);
+		push2App = push2App != null ? push2App : "0";
+		
+		if (keys != null && keys.length > 0) {
+			Project project = getRequiredProject(projectName);
+			Environment environment = getRequiredEnv(env);
+			
+			int snapshotId = configReleaseService.createSnapshotSet(project.getId(), environment.getId(), task);
+			
+			String[] features = getRequiredParameters(req, PARAM_FEATURE);
+			checkConfigKeys(projectName, keys);
+			configReleaseService.executeSetTask(project.getId(), environment.getId(), features, keys, PUSH_TO_APP.equals(push2App));
+			
+			resp.getWriter().write(SUCCESS_CODE + "|" + snapshotId);
+		} else {
+			resp.getWriter().write(SUCCESS_CODE);
 		}
 		
-		boolean checkExistsPass = true;
-		List<Config> configsToRegister = new ArrayList<Config>();
-		List<String> configsNotFound = new ArrayList<String>();
-		List<String> keyList = keys != null ? Arrays.asList(keys) : Collections.EMPTY_LIST;
-		Map<String, Config> configs = getNeedRegisteredConfigs(keyList);
-		if (keys != null && keys.length > 0) {
-			for (String key : keys) {
-				Config config = configs.get(key);
-				if (config == null) {
-					checkExistsPass = false;
-					configsNotFound.add(key);
-				} else {
-					ConfigInstance configInst = configService.findDefaultInstance(config.getId(), environment.getId());
-					if (configInst == null) {
-						checkExistsPass = false;
-						configsNotFound.add(key);
-					} else {
-						configsToRegister.add(config);
-					}
-				}
-			}
-		}
-		if (!checkExistsPass) {
-			throw new RuntimeBusinessException("config[" + StringUtils.join(configsNotFound, ",") + "] not found or not set.");
-		}
-		List<Config> ineffectConfigs = configService.findForeffectiveConfig(project.getId(), environment.getId());
-		for (Config ineffectConfig : ineffectConfigs) {
-			if (!keyList.contains(ineffectConfig.getKey())) {
-				configsToRegister.add(ineffectConfig);
-			}
-		}
-		if (!configsToRegister.isEmpty()) {
-			configService.autoRegister(project, environment.getId(), configsToRegister);
-		}
-		resp.getWriter().write("ok");
 	}
-
-	/**
-	 * @param keys
-	 * @return
-	 */
-	private Map<String, Config> getNeedRegisteredConfigs(List<String> keys) {
-		if (keys == null || keys.isEmpty()) {
-			return Collections.emptyMap();
+	
+	private void checkConfigKeys(String projectName, String[] keys) {
+		for (int i = 0; i < keys.length; i++) {
+			keys[i] = checkConfigKey(projectName, keys[i]);
 		}
-		Map<String, Config> configMap = new HashMap<String, Config>();
-		List<Config> configList = configService.findConfigByKeys(keys);
-		for (Config config : configList) {
-			configMap.put(config.getKey(), config);
-		}
-		return configMap;
 	}
 
 }

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ConfigRelease">
+	<typeAlias alias="ConfigSetTask" type="com.dianping.lion.entity.ConfigSetTask" />
+	<typeAlias alias="ConfigSnapshotSet" type="com.dianping.lion.entity.ConfigSnapshotSet" />
+	<typeAlias alias="ConfigSnapshot" type="com.dianping.lion.entity.ConfigSnapshot" />
+	<typeAlias alias="ConfigInstanceSnapshot" type="com.dianping.lion.entity.ConfigInstanceSnapshot" />
+
+	<resultMap id="ConfigSetTaskResult" class="ConfigSetTask">
+		<result column="id" property="id"/>
+		<result column="projectId" property="projectId"/>
+		<result column="envId" property="envId"/>
+		<result column="feature" property="feature"/>
+		<result column="key" property="key"/>
+		<result column="value" property="value"/>
+		<result column="context" property="context"/>
+		<result column="createTime" property="createTime"/>
+		<result column="delete" property="delete"/>
+	</resultMap>
+	
+	<resultMap id="ConfigSnapshotSetResult" class="ConfigSnapshotSet">
+		<result column="id" property="id"/>
+		<result column="projectId" property="projectId"/>
+		<result column="envId" property="envId"/>
+		<result column="task" property="task"/>
+		<result column="createTime" property="createTime"/>
+		<result column="createUserId" property="createUserId"/>
+	</resultMap>
+	
+	<resultMap id="ConfigSnapshotResult" class="com.dianping.lion.entity.ConfigSnapshot">
+		
+	</resultMap>
+	
+	<insert id="insertSetTask" parameterClass="ConfigSetTask">
+		INSERT INTO config_set_task(projectId, envId, feature, `key`, value, context, createTime, `delete`)
+		VALUES(#projectId#, #envId#, #feature#, #key#, #value#, #context#, NOW(), #delete#)
+		<selectKey resultClass="int">    
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey> 
+	</insert>
+	
+	<select id="getSetTask" parameterClass="map">
+		SELECT t1.*
+		FROM config_set_task t1
+		WHERE t1.projectId = #projectId# AND t1.envId = #envId# 
+			AND t1.feature IN <iterate property="features" open="(" close=")" conjunction=",">#features[]#</iterate>
+			AND t1.key IN <iterate property="keys" open="(" close=")" conjunction=",">#keys[]#</iterate>
+			<![CDATA[AND (
+				SELECT COUNT(*) FROM config_set_task t2 WHERE t1.projectId = t2.projectId AND t1.envId = t2.envId AND t1.key = t2.key 
+					AND t1.id < t2.id
+			) < 1
+			]]>
+	</select>
+	
+	<insert id="insertSnapshotSet" parameterClass="ConfigSnapshotSet">
+		INSERT INTO config_snapshot_set(projectId, envId, task, createTime, createUserId)
+		VALUES(#projectId#, #envId#, #task#, NOW(), #createUserId#)
+		<selectKey resultClass="int">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey> 
+	</insert>
+	
+	<select id="findFirstSnapshotSet" resultMap="ConfigSnapshotSetResult">
+		SELECT * FROM config_snapshot_set WHERE projectId = #projectId# AND envId = #envId# AND task = #task# ORDER BY id LIMIT 1
+	</select>
+	
+	<insert id="insertConfigSnapshots" parameterClass="list">
+		INSERT INTO config_snapshot(snapshotSetId, configId, `key`, `desc`, `type`, projectId, createUserId, createTime, modifyUserId, modifyTime, seq, valueModifyTime)
+		VALUES
+		<iterate conjunction=",">
+			(#[].snapshotSetId#, #[].configId#, #[].key#, #[].desc#, #[].type#, #[].projectId#, #[].createUserId#, #[].createTime#, #[].modifyUserId#, #[].modifyTime#, 
+				#[].seq#, #[].valueModifyTime#)
+		</iterate>
+	</insert>
+	
+	<insert id="insertConfigInstSnapshots" parameterClass="list">
+		INSERT INTO config_instance_snapshot(snapshotSetId, configId, envId, `desc`, value, context, contextmd5, createUserId, modifyUserId, createTime, modifyTime, seq)
+		VALUES
+		<iterate conjunction=",">
+			(#[].snapshotSetId#, #[].configId#, #[].envId#, #[].desc#, #[].value#, #[].context#, #[].contextmd5#, #[].createUserId#, #[].modifyUserId#, #[].createTime#, 
+				#[].modifyTime#, #[].seq#)
+		</iterate>
+	</insert>
+	
+</sqlMap>

@@ -18,6 +18,11 @@ package com.dianping.lion.api.http;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dianping.lion.entity.ConfigSnapshotSet;
+import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.Project;
+import com.dianping.lion.exception.RuntimeBusinessException;
+
 
 /**
  * TODO Comment of RollbackConfigsServlet
@@ -31,7 +36,21 @@ public class RollbackConfigsServlet extends AbstractLionServlet {
 	@Override
 	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		// TODO Auto-generated method stub
+		//TODO 如果根据task没有找到SnapshotSet则直接返回(该task没有配置变更的情况)
+		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
+		String env = getNotBlankParameter(req, PARAM_ENV);
+		String task = getNotBlankParameter(req, PARAM_TASK);
 		
+		Project project = getRequiredProject(projectName);
+		Environment environment = getRequiredEnv(env);
+		
+		ConfigSnapshotSet snapshotSet = configReleaseService.findFirstSnapshotSet(project.getId(), environment.getId(), task);
+		
+		boolean hasRollbacked = false;
+		if (snapshotSet != null) {
+			configReleaseService.rollbackSnapshotSet(snapshotSet);
+		}
+		resp.getWriter().print(SUCCESS_CODE + "|" + (hasRollbacked ? "1" : "0"));
 	}
 
 }

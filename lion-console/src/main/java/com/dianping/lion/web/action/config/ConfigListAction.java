@@ -76,7 +76,7 @@ public class ConfigListAction extends AbstractConfigAction {
 	
 	public String clearInstance() {
 		try {
-			configService.clearInstance(configId, envId);
+			configService.deleteInstance(configId, envId);
 			createSuccessStreamResponse();
 		} catch (RuntimeException e) {
 			createErrorStreamResponse("清除失败[" + e.getMessage() + "].");
@@ -118,30 +118,6 @@ public class ConfigListAction extends AbstractConfigAction {
 		} catch (EntityNotFoundException e) {
 		}
 		createSuccessStreamResponse();
-		return SUCCESS;
-	}
-	
-	public String deploy() {
-		try {
-			configService.manualRegister(configId, envId);
-			createSuccessStreamResponse();
-		} catch (RuntimeBusinessException e) {
-			createErrorStreamResponse(e.getMessage());
-		} catch (Exception e) {
-			createErrorStreamResponse();
-		}
-		return SUCCESS;
-	}
-	
-	public String push() {
-		try {
-			configService.manualRegisterAndPush(configId, envId);
-			createSuccessStreamResponse();
-		} catch (RuntimeBusinessException e) {
-			createErrorStreamResponse(e.getMessage());
-		} catch (Exception e) {
-			createErrorStreamResponse();
-		}
 		return SUCCESS;
 	}
 	

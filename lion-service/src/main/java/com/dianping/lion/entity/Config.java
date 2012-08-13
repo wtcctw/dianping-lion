@@ -43,6 +43,7 @@ public class Config implements Serializable {
 	protected Date createTime;
 	protected Date modifyTime;
 	protected int seq;
+	
 	/**
 	 * @return the id
 	 */

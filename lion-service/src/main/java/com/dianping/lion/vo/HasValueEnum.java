@@ -1,7 +1,7 @@
 /**
- * Project: com.dianping.lion.lion-console-0.0.1
+ * Project: com.dianping.lion.lion-service-0.0.1
  * 
- * File Created at 2012-7-15
+ * File Created at 2012-8-9
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -13,22 +13,26 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.entity;
+package com.dianping.lion.vo;
 
 /**
- * 配置状态的枚举类
+ * TODO Comment of HasValueEnum
  * @author danson.liu
  *
  */
-public enum ConfigStatusEnum {
+public enum HasValueEnum {
 	
-	Noset(1, "未设置"), Ineffective(5, "未生效"), Foreffective(8, "下次发布时生效"), Effective(10, "已生效");
+	All(-1, "所有的"), No(0, "未设置"), Yes(1, "已设置");
 	
 	private int value;
 	
 	private String label;
 
-	private ConfigStatusEnum(int value, String label) {
+	/**
+	 * @param value
+	 * @param label
+	 */
+	private HasValueEnum(int value, String label) {
 		this.value = value;
 		this.label = label;
 	}
@@ -41,10 +45,24 @@ public enum ConfigStatusEnum {
 	}
 
 	/**
+	 * @param value the value to set
+	 */
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	/**
 	 * @return the label
 	 */
 	public String getLabel() {
 		return label;
+	}
+
+	/**
+	 * @param label the label to set
+	 */
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 }

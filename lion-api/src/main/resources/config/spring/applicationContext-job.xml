@@ -19,8 +19,7 @@
 	
 	<bean id="dataSourceFetchCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="dataSourceFetchJobTask" />
-		<!-- 每天早上6点钟发送nginx报表 -->
-		<property name="cronExpression" value="0 0/1 * * * ?" />
+		<property name="cronExpression" value="0 0 0/1 * * ?" />
 	</bean>
 	
 	<bean id="startQuertz" lazy-init="false" autowire="no"
