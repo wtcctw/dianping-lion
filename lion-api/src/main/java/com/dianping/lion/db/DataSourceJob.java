@@ -21,9 +21,13 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.JobExecTime;
+import com.dianping.lion.entity.User;
 import com.dianping.lion.job.SyncJob;
+import com.dianping.lion.service.UserService;
 import com.dianping.lion.util.JsonParser;
+import com.dianping.lion.util.SecurityUtils;
 
 /**
  * Scheduler
@@ -35,6 +39,9 @@ public class DataSourceJob extends SyncJob{
 	
 	@Autowired
 	private DataSourceFetcher dataSourceFetcher;
+	
+	@Autowired
+	private UserService userService;
 	
 	@Autowired
 	private JsonParser jsonParser;
@@ -65,7 +72,13 @@ public class DataSourceJob extends SyncJob{
 		can.setTime(jobExecTime.getLastFetchTime());
 		String dsContent = dataSourceFetcher.fetchDS(can.getTimeInMillis() / 1000);
 		try {
-			storager.store(dsContent);
+			try {
+				User user = userService.findById(ServiceConstants.USER_SA_ID);
+				SecurityUtils.setCurrentUser(user);
+				storager.store(dsContent);
+			} finally {
+				SecurityUtils.clearCurrentUser();
+			}
 			jobExecTime.setLastFetchTime(new Date(Long.parseLong(jsonParser.getLastFetchTime(dsContent)) * 1000));
 			jobExecTimeDao.updateLastFetchTime(jobExecTime);
 		} catch (Exception e) {

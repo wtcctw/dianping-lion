@@ -15,7 +15,6 @@
  */
 package com.dianping.lion.db;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
+import com.dianping.lion.entity.ConfigTypeEnum;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.util.JsonParser;
@@ -65,13 +65,9 @@ public class Storager {
 				if(config == null) {
 					config = new Config();
 					config.setDesc("");
-					config.setCreateTime(new Date(System.currentTimeMillis()));
-					config.setModifyTime(new Date(System.currentTimeMillis()));
 					config.setKey(entry.getKey());
-					config.setType(10);
-					config.setProjectId(ServiceConstants.PROJECT_PUBLIC_ID);
-					//TODO review the number
-					config.setSeq(ServiceConstants.MAX_AVAIL_CONFIG_INST);
+					config.setType(ConfigTypeEnum.String.getValue());
+					config.setProjectId(ServiceConstants.PROJECT_DB_ID);
 					configService.create(config);
 				}
 			}

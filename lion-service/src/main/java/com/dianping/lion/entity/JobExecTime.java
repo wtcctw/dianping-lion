@@ -26,6 +26,7 @@ public class JobExecTime {
 	private int id;
 	private Date lastFetchTime;
 	private Date lastJobExecTime;
+	private boolean swither;
 	
 	public int getId() {
 		return id;
@@ -44,6 +45,12 @@ public class JobExecTime {
 	}
 	public void setLastJobExecTime(Date lastJobExecTime) {
 		this.lastJobExecTime = lastJobExecTime;
+	}
+	public boolean isSwither() {
+		return swither;
+	}
+	public void setSwither(boolean swither) {
+		this.swither = swither;
 	}
 	
 }

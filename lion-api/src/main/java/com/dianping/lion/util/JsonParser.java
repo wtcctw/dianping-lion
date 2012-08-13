@@ -90,12 +90,12 @@ public class JsonParser {
 				ci.setConfigId(config.getId());
 				Environment env = getEnvService().findEnvByName(envs[j].toLowerCase());
 				ci.setEnvId(env.getId());
-				ci.setCreateUserId(0);
+/*				ci.setCreateUserId(0);
 				ci.setModifyUserId(0);
 				ci.setModifyTime(new Date(System.currentTimeMillis()));
-				ci.setCreateTime(new Date(System.currentTimeMillis()));
+				ci.setCreateTime(new Date(System.currentTimeMillis()));*/
 				ci.setValue(envDSContent.getString(envs[j]));
-				ci.setSeq(1);
+//				ci.setSeq(1);
 				String removed = null;
 				try {
 					removed = envDSContent.getJSONObject(envs[j]).getString(REMOVED);	
