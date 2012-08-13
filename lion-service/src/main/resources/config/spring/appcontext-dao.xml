@@ -15,7 +15,8 @@
 	<bean id="projectDao" class="com.dianping.lion.dao.ibatis.ProjectIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-		<bean id="jobExecTimeDao" class="com.dianping.lion.dao.ibatis.JobExecTimeIbatisDao">
+	
+	<bean id="jobExecTimeDao" class="com.dianping.lion.dao.ibatis.JobExecTimeIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
 	
@@ -23,7 +24,7 @@
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
 	
-	<bean id="registerPointDao" class="com.dianping.lion.dao.ibatis.RegisterPointIbatisDao">
+	<bean id="configReleaseDao" class="com.dianping.lion.dao.ibatis.ConfigReleaseIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
 	
@@ -38,6 +39,7 @@
 	<bean id="productDao" class="com.dianping.lion.dao.ibatis.ProductIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
+	
 	<bean id="teamDao" class="com.dianping.lion.dao.ibatis.TeamIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>

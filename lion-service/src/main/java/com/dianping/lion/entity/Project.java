@@ -50,8 +50,6 @@ public class Project implements Serializable {
 	
 	private Date modifyTime;
 	
-//	private boolean 
-	
 	private int seq;
 
 	/**

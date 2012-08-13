@@ -25,6 +25,7 @@ public class ProductIbatisDao extends SqlMapClientDaoSupport implements ProductD
 		return (Product)getSqlMapClientTemplate().queryForObject("Product.findByID", id);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Product> findProductByTeamID(int teamId) {
 		return getSqlMapClientTemplate().queryForList("Product.findProductByTeamID",teamId);

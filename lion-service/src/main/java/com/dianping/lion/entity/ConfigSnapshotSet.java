@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-service-0.0.1
  * 
- * File Created at 2012-8-3
+ * File Created at 2012-8-10
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -19,12 +19,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ * 项目配置发布前记录的该项目所有配置的快照
  * @author danson.liu
  *
  */
-public class RegisterPoint implements Serializable {
+public class ConfigSnapshotSet implements Serializable {
 
-	private static final long serialVersionUID = -7327989454910065746L;
+	private static final long serialVersionUID = -1835147789469270114L;
 	
 	private int id;
 	
@@ -32,26 +33,19 @@ public class RegisterPoint implements Serializable {
 	
 	private int envId;
 	
-	private Date executeTime;
+	private String task;
 	
-	private int executorId;
+	private Date createTime;
 	
-	/**
-	 * 是否有效(当该point被rollback掉则无效)
-	 */
-	private boolean valid = true;
-	
-	/**
-	 * 是否是人工执行注册，否则是api接口触发(auto)
-	 */
-	private boolean manual;
-	
-	public RegisterPoint(int projectId, int envId) {
+	private int createUserId;
+
+	public ConfigSnapshotSet(int projectId, int envId, String task) {
 		this.projectId = projectId;
 		this.envId = envId;
+		this.task = task;
 	}
-	
-	public RegisterPoint() {
+
+	public ConfigSnapshotSet() {
 	}
 
 	/**
@@ -97,59 +91,45 @@ public class RegisterPoint implements Serializable {
 	}
 
 	/**
-	 * @return the executeTime
+	 * @return the task
 	 */
-	public Date getExecuteTime() {
-		return executeTime;
+	public String getTask() {
+		return task;
 	}
 
 	/**
-	 * @param executeTime the executeTime to set
+	 * @param task the task to set
 	 */
-	public void setExecuteTime(Date executeTime) {
-		this.executeTime = executeTime;
+	public void setTask(String task) {
+		this.task = task;
 	}
 
 	/**
-	 * @return the executorId
+	 * @return the createTime
 	 */
-	public int getExecutorId() {
-		return executorId;
+	public Date getCreateTime() {
+		return createTime;
 	}
 
 	/**
-	 * @param executorId the executorId to set
+	 * @param createTime the createTime to set
 	 */
-	public void setExecutorId(int executorId) {
-		this.executorId = executorId;
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 
 	/**
-	 * @return the valid
+	 * @return the createUserId
 	 */
-	public boolean isValid() {
-		return valid;
+	public int getCreateUserId() {
+		return createUserId;
 	}
 
 	/**
-	 * @param valid the valid to set
+	 * @param createUserId the createUserId to set
 	 */
-	public void setValid(boolean valid) {
-		this.valid = valid;
-	}
-
-	/**
-	 * @return the manual
-	 */
-	public boolean isManual() {
-		return manual;
-	}
-
-	/**
-	 * @param manual the manual to set
-	 */
-	public void setManual(boolean manual) {
-		this.manual = manual;
+	public void setCreateUserId(int createUserId) {
+		this.createUserId = createUserId;
 	}
 
 }

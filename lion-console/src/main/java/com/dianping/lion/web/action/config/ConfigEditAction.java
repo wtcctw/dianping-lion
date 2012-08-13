@@ -22,10 +22,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
-import com.dianping.lion.ConsoleConstants;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
-import com.dianping.lion.entity.ConfigStatusEnum;
 import com.dianping.lion.entity.ConfigTypeEnum;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
@@ -47,9 +45,6 @@ public class ConfigEditAction extends AbstractConfigAction {
 	private String value;
 	
 	private List<Integer> envIds;
-	
-	private String operation;
-	private boolean ifPush;
 	
 	public String create() {
 		int configType = config.getType();
@@ -73,24 +68,16 @@ public class ConfigEditAction extends AbstractConfigAction {
 			instance.setValue(value);
 			try {
 				configService.createInstance(instance);
-				if (ConsoleConstants.CONFIG_OP_FORPUB.equals(operation)) {
-					configService.changeConfigStatus(configId, envId, ConfigStatusEnum.Foreffective);
-				} else if (ConsoleConstants.CONFIG_OP_DEPLOY.equals(operation)) {
-					if (ifPush) {
-						configService.manualRegisterAndPush(configId, envId);
-					} else {
-						configService.manualRegister(configId, envId);
-					}
-				}
 			} catch (RuntimeException e) {
-				logger.error("保存/推送配置失败.", e);
-				failedEnvs.add(envMap.get(envId).getLabel());
+				String env = envMap.get(envId).getLabel();
+				logger.error("创建配置[key=" + config.getKey() + ", env=" + env + "]失败.", e);
+				failedEnvs.add(env);
 			}
 		}
 		if (failedEnvs.isEmpty()) {
 			createSuccessStreamResponse();
 		} else {
-			createWarnStreamResponse("保存/推送[" + StringUtils.join(failedEnvs, ',') + "]环境上的配置项值失败,请通过列表检查.");
+			createWarnStreamResponse("保存[" + StringUtils.join(failedEnvs, ',') + "]环境下的配置项值失败.");
 		}
 		return SUCCESS;
 	}
@@ -104,30 +91,18 @@ public class ConfigEditAction extends AbstractConfigAction {
 		List<String> failedEnvs = new ArrayList<String>();
 		Map<Integer, Environment> envMap = environmentService.findEnvMap();
 		for (Integer envId : envIds) {
-			ConfigInstance instance = new ConfigInstance();
-			instance.setConfigId(configId);
-			instance.setEnvId(envId);
-			instance.setValue(value);
 			try {
 				configService.setConfigValue(configId, envId, ConfigInstance.NO_CONTEXT, value);
-				if (ConsoleConstants.CONFIG_OP_FORPUB.equals(operation)) {
-					configService.changeConfigStatus(configId, envId, ConfigStatusEnum.Foreffective);
-				} else if (ConsoleConstants.CONFIG_OP_DEPLOY.equals(operation)) {
-					if (ifPush) {
-						configService.manualRegisterAndPush(configId, envId);
-					} else {
-						configService.manualRegister(configId, envId);
-					}
-				}
 			} catch (Exception e) {
-				logger.error("保存/推送配置失败.", e);
-				failedEnvs.add(envMap.get(envId).getLabel());
+				String env = envMap.get(envId).getLabel();
+				logger.error("保存配置[key=" + configFound.getKey() + ", env=" + env + "]失败.", e);
+				failedEnvs.add(env);
 			}
 		}
 		if (failedEnvs.isEmpty()) {
 			createSuccessStreamResponse();
 		} else {
-			createWarnStreamResponse("保存/推送[" + StringUtils.join(failedEnvs, ',') + "]环境上的配置项值失败,请通过列表检查.");
+			createWarnStreamResponse("保存[" + StringUtils.join(failedEnvs, ',') + "]环境下的配置项值失败.");
 		}
 		return SUCCESS;
 	}
@@ -243,20 +218,6 @@ public class ConfigEditAction extends AbstractConfigAction {
 	 */
 	public void setConfigId(int configId) {
 		this.configId = configId;
-	}
-
-	/**
-	 * @param ifPush the ifPush to set
-	 */
-	public void setIfPush(boolean ifPush) {
-		this.ifPush = ifPush;
-	}
-
-	/**
-	 * @param operationType the operationType to set
-	 */
-	public void setOperation(String operationType) {
-		this.operation = operationType;
 	}
 	
 }

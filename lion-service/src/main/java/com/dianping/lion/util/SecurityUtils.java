@@ -35,6 +35,10 @@ public class SecurityUtils {
 		return user;
 	}
 	
+	public static int getCurrentUserId() {
+		return getCurrentUser().getId();
+	}
+	
 	public static void setCurrentUser(User user) {
 		clearCurrentUser();
 		currentUser.set(user);

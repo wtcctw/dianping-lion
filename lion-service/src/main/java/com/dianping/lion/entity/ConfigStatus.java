@@ -1,7 +1,7 @@
 /**
- * Project: com.dianping.lion.lion-console-0.0.1
+ * Project: com.dianping.lion.lion-service-0.0.1
  * 
- * File Created at 2012-7-15
+ * File Created at 2012-8-10
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -18,30 +18,35 @@ package com.dianping.lion.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.dianping.lion.util.EnumUtils;
-
 /**
+ * TODO Comment of ConfigStatus
  * @author danson.liu
  *
  */
-@SuppressWarnings("serial")
 public class ConfigStatus implements Serializable {
-
+	
+	private static final long serialVersionUID = 5381899901569472487L;
+	
 	private int id;
+	
 	private int configId;
+	
 	private int envId;
-	private int status;
-	private ConfigStatusEnum statusEnum;
-	private Date activeTime;
 	
-	public ConfigStatus() {
-	}
+	private Date createTime;
 	
-	public ConfigStatus(int configId, int envId, ConfigStatusEnum status) {
+	private int createUserId;
+	
+	private Date modifyTime;
+	
+	private int modifyUserId;
+
+	public ConfigStatus(int configId, int envId) {
 		this.configId = configId;
 		this.envId = envId;
-		this.status = status.getValue();
-		this.statusEnum = status;
+	}
+
+	public ConfigStatus() {
 	}
 
 	/**
@@ -50,70 +55,96 @@ public class ConfigStatus implements Serializable {
 	public int getId() {
 		return id;
 	}
+
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	/**
 	 * @return the configId
 	 */
 	public int getConfigId() {
 		return configId;
 	}
+
 	/**
 	 * @param configId the configId to set
 	 */
 	public void setConfigId(int configId) {
 		this.configId = configId;
 	}
+
 	/**
 	 * @return the envId
 	 */
 	public int getEnvId() {
 		return envId;
 	}
+
 	/**
 	 * @param envId the envId to set
 	 */
 	public void setEnvId(int envId) {
 		this.envId = envId;
 	}
+
 	/**
-	 * @return the status
+	 * @return the createTime
 	 */
-	public int getStatus() {
-		return status;
+	public Date getCreateTime() {
+		return createTime;
 	}
-	public ConfigStatusEnum getStatusEnum() {
-		if (this.statusEnum == null) {
-			synchronized (this) {
-				if (this.statusEnum == null) {
-					this.statusEnum = EnumUtils.fromEnumProperty(ConfigStatusEnum.class, "value", this.status);
-				}
-			}
-		}
-		return this.statusEnum;
-	}
+
 	/**
-	 * @param status the status to set
+	 * @param createTime the createTime to set
 	 */
-	public void setStatus(int status) {
-		this.status = status;
-		this.statusEnum = null;
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
+
 	/**
-	 * @return the activeTime
+	 * @return the createUserId
 	 */
-	public Date getActiveTime() {
-		return activeTime;
+	public int getCreateUserId() {
+		return createUserId;
 	}
+
 	/**
-	 * @param activeTime the activeTime to set
+	 * @param createUserId the createUserId to set
 	 */
-	public void setActiveTime(Date activeTime) {
-		this.activeTime = activeTime;
+	public void setCreateUserId(int createUserId) {
+		this.createUserId = createUserId;
 	}
-	
+
+	/**
+	 * @return the modifyTime
+	 */
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+
+	/**
+	 * @param modifyTime the modifyTime to set
+	 */
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
+	}
+
+	/**
+	 * @return the modifyUserId
+	 */
+	public int getModifyUserId() {
+		return modifyUserId;
+	}
+
+	/**
+	 * @param modifyUserId the modifyUserId to set
+	 */
+	public void setModifyUserId(int modifyUserId) {
+		this.modifyUserId = modifyUserId;
+	}
+
 }

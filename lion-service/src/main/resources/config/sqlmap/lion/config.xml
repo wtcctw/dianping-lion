@@ -33,6 +33,16 @@
 		<result column="seq" property="seq"/>
 	</resultMap>
 	
+	<resultMap id="ConfigStatusResult" class="ConfigStatus">
+		<result column="id" property="id"/>
+		<result column="configId" property="configId"/>
+		<result column="envId" property="envId"/>
+		<result column="createTime" property="createTime"/>
+		<result column="createUserId" property="createUserId"/>
+		<result column="modifyTime" property="modifyTime"/>
+		<result column="modifyUserId" property="modifyUserId"/>
+	</resultMap>
+	
 	<select id="findConfigsByProject" resultMap="ConfigResult" parameterClass="int">
 		SELECT * FROM config WHERE projectId = #projectId# ORDER BY seq, id
     </select>
@@ -83,18 +93,8 @@
     	]]>
     </select>
     
-    <select id="findConfigStatuses" resultClass="ConfigStatus" parameterClass="map">
-    	SELECT s.* 
-    	FROM config c inner join config_status s on c.id = s.configId
-    	WHERE c.projectId = #projectId# AND s.envId = #envId#
-    </select>
-    
     <select id="getConfig" resultMap="ConfigResult" parameterClass="int">
     	SELECT * FROM config WHERE id = #configId#
-    </select>
-    
-    <select id="getConfigByName" resultMap="ConfigResult" parameterClass="string">
-    	SELECT * FROM config WHERE config.key = #configName#
     </select>
     
     <select id="findConfigByKey" resultMap="ConfigResult" parameterClass="string">
@@ -103,12 +103,6 @@
     
     <select id="findConfigByKeys" resultMap="ConfigResult" parameterClass="list">
     	SELECT * FROM config WHERE `key` IN <iterate open="(" close=")" conjunction=",">#[]#</iterate>
-    </select>
-    
-    <select id="findForeffectiveConfig" resultMap="ConfigResult" parameterClass="map">
-    	SELECT c.* 
-    	FROM config c INNER JOIN config_status s ON c.id = s.configId
-    	WHERE c.projectId = #projectId# AND s.envId = #envId# AND s.`status` = #foreffctive#
     </select>
     
     <select id="getNextConfig" resultMap="ConfigResult" parameterClass="int">
@@ -163,25 +157,9 @@
         </selectKey> 
     </insert>
     
-    <insert id="insertStatus" parameterClass="ConfigStatus">
-    	INSERT INTO config_status(configId, envId, `status`, activeTime)
-    	VALUES(#configId#, #envId#, #status#, #activeTime#)
-    	<selectKey resultClass="int">    
-            SELECT LAST_INSERT_ID() AS ID
-        </selectKey> 
-    </insert>
-    
-    <update id="updateStatusStat" parameterClass="map">
-    	UPDATE config_status SET `status` = #status# WHERE configId = #configId# AND envId = #envId# 
-    </update>
-    
-    <update id="updateStatus" parameterClass="ConfigStatus">
-    	UPDATE config_status SET `status` = #status#, activeTime = #activeTime# WHERE configId = #configId# AND envId = #envId#
-    </update>
-    
     <update id="updateInstance" parameterClass="ConfigInstance">
     	UPDATE config_instance
-    	SET value = #value#, context = #context#, contextmd5 = #contextmd5#, modifyUserId = #modifyUserId#, modifyTime = #modifyTime#, `desc` = #desc#, seq = #seq#
+    	SET value = #value#, context = #context#, contextmd5 = #contextmd5#, modifyUserId = #modifyUserId#, modifyTime = NOW(), `desc` = #desc#, seq = #seq#
     	WHERE id = #id#
     </update>
     
@@ -189,9 +167,32 @@
     	DELETE FROM config_instance WHERE configId = #configId# <isNotNull property="envId"> AND envId = #envId#</isNotNull>
     </delete>
     
+    <update id="updateModifyStatus" parameterClass="map">
+    	UPDATE config_status SET modifyUserId = #modifyUserId#, modifyTime = NOW() WHERE configId = #configId# AND envId = #envId#
+    </update>
+    
+    <insert id="insertStatus" parameterClass="ConfigStatus">
+    	INSERT INTO config_status(configId, envId, createUserId, createTime, modifyUserId, modifyTime)
+    	VALUES(#configId#, #envId#, #createUserId#, NOW(), #modifyUserId#, NOW())
+    	<selectKey resultClass="int">    
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey> 
+    </insert>
+    
     <delete id="deleteStatus" parameterClass="map">
-	    DELETE FROM config_status
-	    WHERE configId = #configId# <isNotNull property="envId"> AND envId = #envId#</isNotNull>
+    	DELETE FROM config_status WHERE configId = #configId# AND envId = #envId#
     </delete>
+    
+    <select id="findStatus" parameterClass="map" resultMap="ConfigStatusResult">
+    	SELECT s.*
+    	FROM config c INNER JOIN config_status s ON c.id = s.configId
+    	WHERE c.projectId = #projectId# AND s.envId = #envId#
+    </select>
+    
+    <select id="findModifyTime" parameterClass="map" resultMap="ConfigStatusResult">
+    	SELECT s.configId, s.modifyTime
+    	FROM config c INNER JOIN config_status s ON c.id = s.configId
+    	WHERE c.projectId = #projectId# AND s.envId = #envId#
+    </select>
     
 </sqlMap>

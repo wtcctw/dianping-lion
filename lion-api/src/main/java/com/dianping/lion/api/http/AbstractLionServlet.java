@@ -23,14 +23,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.exception.RuntimeBusinessException;
+import com.dianping.lion.service.ConfigRelaseService;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.ProjectService;
@@ -47,16 +51,26 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = -9154351276219364129L;
 	
-	public static final String 		PARAM_IDENTITY 	= "identity";
-	public static final String 		PARAM_PASSWD 	= "passwd";
-	public static final String 		PARAM_PROJECT 	= "project";	//项目名
-	public static final String 		PARAM_ENV 		= "env";		//环境名
-	public static final String 		PARAM_KEY 		= "key";		//配置名，不包含项目名前缀
+	public static final String 		PARAM_IDENTITY 	= "id";		//调用者身份id
+	public static final String 		PARAM_PASSWD 	= "ps";		//调用者密码
+	public static final String 		PARAM_PROJECT 	= "p";		//项目名
+	public static final String 		PARAM_ENV 		= "e";		//环境名
+	public static final String 		PARAM_KEY 		= "k";		//配置名，不包含项目名前缀
+	public static final String 		PARAM_FEATURE 	= "f";		//项目feature名称
+	public static final String 		PARAM_VALUE 	= "v";		//配置项值
+	public static final String 		PARAM_TASK 		= "t";		//项目任务id
+	public static final String 		PARAM_EFFECT 	= "ef";		//配置是否立即生效
+	public static final String 		PARAM_PUSH 		= "p";		//配置变更是否实时推送到app
+	public static final String 		PARAM_CORRECT 	= "c";		//设置registerpoint是否正确
+	
+	public static final String 		SUCCESS_CODE 	= "0";		//正确返回码
+	public static final String 		ERROR_CODE 		= "1|";		//错误返回码
 	
 	protected ApplicationContext 	applicationContext;
 	protected ProjectService 		projectService;
 	protected EnvironmentService 	environmentService;
 	protected ConfigService 		configService;
+	protected ConfigRelaseService	configReleaseService;
 	
 	@Override
 	public void init() throws ServletException {
@@ -64,6 +78,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		projectService = getBean(ProjectService.class);
 		environmentService = getBean(EnvironmentService.class);
 		configService = getBean(ConfigService.class);
+		configReleaseService = getBean(ConfigRelaseService.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -84,6 +99,22 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		return paramVal;
 	}
 	
+	protected String getNotBlankParameter(HttpServletRequest servletRequest, String param) {
+		String paramVal = getRequiredParameter(servletRequest, param);
+		if (StringUtils.isBlank(paramVal)) {
+			throw new RuntimeBusinessException("Parameter[" + param + "] cannot be blank.");
+		}
+		return paramVal;
+	}
+	
+	protected String[] getRequiredParameters(HttpServletRequest servletRequest, String param) {
+		String[] paramVals = servletRequest.getParameterValues(param);
+		if (paramVals == null || paramVals.length == 0) {
+			throw new RuntimeBusinessException("Parameter[" + param + "] is required.");
+		}
+		return paramVals;
+	}
+	
 	protected User getRequiredIdentity(HttpServletRequest servletRequest) {
 		String identity = getRequiredParameter(servletRequest, PARAM_IDENTITY);
 		int userId = 0;
@@ -100,9 +131,30 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		return user;
 	}
 	
+	@SuppressWarnings("unused")
 	protected void checkUserPassword(HttpServletRequest servletRequest) {
 		String passwd = getRequiredParameter(servletRequest, PARAM_PASSWD);
 		//TODO do check
+	}
+	
+	protected Project getRequiredProject(String projectName) {
+		Project project = projectService.findProject(projectName);
+		if (project == null) {
+			throw new RuntimeBusinessException("project[" + projectName + "] not found.");
+		}
+		return project;
+	}
+	
+	protected Environment getRequiredEnv(String env) {
+		Environment environment = environmentService.findEnvByName(env);
+		if (environment == null) {
+			throw new RuntimeBusinessException("environment[" + env + "] not found.");
+		}
+		return environment;
+	}
+	
+	protected String checkConfigKey(String projectName, String key) {
+		return key.startsWith(projectName + ".") ? key : projectName + "." + key;
 	}
 	
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -114,7 +166,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 			doService(req, resp);
 		} catch (Exception e) {
 			logger.warn("Error happend in [" + getClass().getSimpleName() + "], detail: ", e);
-			writer.print(e.getMessage());
+			writer.print(ERROR_CODE + e.getMessage());
 		} finally {
 			SecurityUtils.clearCurrentUser();
 			writer.flush();

@@ -60,7 +60,7 @@ public class Storager {
 			if(entry.getValue()) {
 				//remove the config!!
 			} else {
-				Config config = configService.getConfigByName(entry.getKey());
+				Config config = configService.findConfigByKey(entry.getKey());
 				//not exist, then insert
 				if(config == null) {
 					config = new Config();
@@ -80,7 +80,7 @@ public class Storager {
 			ConfigInstance ci = entry.getKey();
 			if(entry.getValue()) {
 				//delete the instance
-				configService.clearInstance(ci.getConfigId(), ci.getEnvId());
+				configService.deleteInstance(ci.getConfigId(), ci.getEnvId());
 			} else {
 				ConfigInstance result = configService.findInstance(ci.getConfigId(), ci.getEnvId(), ConfigInstance.NO_CONTEXT);
 				if(result ==  null) {
@@ -96,7 +96,7 @@ public class Storager {
 	protected void checkAndUpdateDBConfigAgain(String dsContent) throws Exception {
 		Map<String,Boolean> dbAlias = jsonParser.getDBAlias(dsContent);
 		for(Entry<String,Boolean> entry : dbAlias.entrySet()) {
-			Config config = configService.getConfigByName(entry.getKey());
+			Config config = configService.findConfigByKey(entry.getKey());
 			if(config !=  null) {
 				int configId = config.getId();
 				List<ConfigInstance> configs = configService.findInstancesByConfig(configId, null);

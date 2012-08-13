@@ -22,18 +22,10 @@
 	
 	<tx:advice id="Lion.TransactionAdvice" transaction-manager="Lion.TransactionManager">
 		<tx:attributes>
-			<tx:method name="save*" propagation="REQUIRED" />
-			<tx:method name="create*" propagation="REQUIRED" />
-			<tx:method name="add*" propagation="REQUIRED" />
-			<tx:method name="delete*" propagation="REQUIRED" />
-			<tx:method name="remove*" propagation="REQUIRED" />
-			<tx:method name="clear*" propagation="REQUIRED" />
-			<tx:method name="update*" propagation="REQUIRED" />
-			<tx:method name="modify*" propagation="REQUIRED" />
 			<tx:method name="get*" read-only="true" propagation="REQUIRED" />
 			<tx:method name="find*" read-only="true" propagation="REQUIRED" />
 			<tx:method name="load*" read-only="true" propagation="REQUIRED" />
-			<tx:method name="exec*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="REQUIRED" />
 		</tx:attributes>
 	</tx:advice>
 

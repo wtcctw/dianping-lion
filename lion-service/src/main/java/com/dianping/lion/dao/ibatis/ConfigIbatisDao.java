@@ -27,8 +27,8 @@ import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigStatus;
-import com.dianping.lion.entity.ConfigStatusEnum;
 import com.dianping.lion.util.Maps;
+import com.dianping.lion.util.SecurityUtils;
 
 /**
  * @author danson.liu
@@ -37,12 +37,12 @@ import com.dianping.lion.util.Maps;
 public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao {
 	
 	@SuppressWarnings("unchecked")
-	public List<Config> findConfigsByProject(int projectId) {
+	public List<Config> findConfigByProject(int projectId) {
 		return getSqlMapClientTemplate().queryForList("Config.findConfigsByProject", projectId);
 	}
 	
-	@SuppressWarnings({ "unchecked", "unused" })
-	private List<ConfigInstance> findInstancesByProjectAndEnv(int projectId, int envId) {
+	@SuppressWarnings({ "unchecked"})
+	public List<ConfigInstance> findInstanceByProjectAndEnv(int projectId, int envId) {
 		return getSqlMapClientTemplate().queryForList("Config.findInstancesByProjectAndEnv", 
 				Maps.entry("projectId", projectId).entry("envId", envId).get());
 	}
@@ -68,7 +68,7 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<Integer, ConfigInstance> findDefaultInstances(int projectId, int envId) {
+	public Map<Integer, ConfigInstance> findDefaultInstance(int projectId, int envId) {
 		List<ConfigInstance> instances = getSqlMapClientTemplate().queryForList("Config.findDefaultInstances", 
 				Maps.entry("projectId", projectId).entry("envId", envId).get());
 		Map<Integer, ConfigInstance> instanceMap = new HashMap<Integer, ConfigInstance>(instances.size());
@@ -91,28 +91,10 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return getSqlMapClientTemplate().queryForList("Config.findHasContextInstConfigs", 
 				Maps.entry("projectId", projectId).entry("envId", envId).get());
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Map<Integer, ConfigStatus> findConfigStatus(int projectId, int envId) {
-		List<ConfigStatus> statusList = getSqlMapClientTemplate().queryForList("Config.findConfigStatuses", 
-				Maps.entry("projectId", projectId).entry("envId", envId).get());
-		Map<Integer, ConfigStatus> statusMap = new HashMap<Integer, ConfigStatus>(statusList.size());
-		for (ConfigStatus status : statusList) {
-			statusMap.put(status.getConfigId(), status);
-		}
-		return statusMap;
-	}
 	
 	@Override
 	public int deleteInstance(int configId, Integer envId) {
 		return getSqlMapClientTemplate().delete("Config.deleteInstance", Maps.entry("configId", configId)
-				.entry("envId", envId).get());
-	}
-	
-	@Override
-	public int deleteStatus(int configId, Integer envId) {
-		return getSqlMapClientTemplate().delete("Config.deleteStatus", Maps.entry("configId", configId)
 				.entry("envId", envId).get());
 	}
 	
@@ -166,22 +148,6 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 	}
 
 	@Override
-	public int createStatus(ConfigStatus status) {
-		return (Integer) getSqlMapClientTemplate().insert("Config.insertStatus", status);
-	}
-
-	@Override
-	public int updateStatus(ConfigStatus status) {
-		return getSqlMapClientTemplate().update("Config.updateStatus", status);
-	}
-
-	@Override
-	public int updateStatusStat(int configId, int envId, ConfigStatusEnum status) {
-		return getSqlMapClientTemplate().update("Config.updateStatusStat", Maps.entry("configId", configId)
-				.entry("envId", envId).entry("status", status.getValue()).get());
-	}
-
-	@Override
 	public int updateInstance(ConfigInstance instance) {
 		if (instance.getContextmd5() == null) {
 			instance.setContextmd5(DigestUtils.md5Hex(instance.getContext()));
@@ -191,7 +157,7 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv) {
+	public List<ConfigInstance> findInstanceByConfig(int configId, Integer maxPerEnv) {
 		if (maxPerEnv == null) {
 			return getSqlMapClientTemplate().queryForList("Config.findInstance", Maps.entry("configId", configId).get());
 		}
@@ -200,7 +166,7 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<ConfigInstance> findInstancesByConfig(int configId, int envId, Integer maxPerEnv) {
+	public List<ConfigInstance> findInstanceByConfig(int configId, int envId, Integer maxPerEnv) {
 		if (maxPerEnv == null) {
 			return getSqlMapClientTemplate().queryForList("Config.findInstance", Maps.entry("configId", configId).entry("envId", envId).get());
 		}
@@ -219,15 +185,30 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return instances;
 	}
 
+	@Override
+	public int updateModifyStatus(int configId, int envId) {
+		return getSqlMapClientTemplate().update("Config.updateModifyStatus", Maps.entry("configId", configId).entry("envId", envId)
+				.entry("modifyUserId", SecurityUtils.getCurrentUserId()).get());
+	}
+	
+	public int createStatus(ConfigStatus status) {
+		return (Integer) getSqlMapClientTemplate().insert("Config.insertStatus", status);
+	}
+	
+	public int deleteStatus(int configId, int envId) {
+		return getSqlMapClientTemplate().delete("Config.deleteStatus", Maps.entry("configId", configId).entry("envId", envId).get());
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Config> findForeffectiveConfig(int projectId, int envId) {
-		return getSqlMapClientTemplate().queryForList("Config.findForeffectiveConfig", Maps.entry("projectId", projectId)
-				.entry("envId", envId).entry("foreffctive", ConfigStatusEnum.Foreffective.getValue()).get());
+	public List<ConfigStatus> findStatus(int projectId, int envId) {
+		return getSqlMapClientTemplate().queryForList("Config.findStatus", Maps.entry("projectId", projectId).entry("envId", envId).get());
 	}
+
+	@SuppressWarnings("unchecked")
 	@Override
-	public Config getConfigByName(String configName) {
-		return (Config) getSqlMapClientTemplate().queryForObject("Config.getConfigByName", configName);
+	public List<ConfigStatus> findModifyTime(int projectId, int envId) {
+		return getSqlMapClientTemplate().queryForList("Config.findModifyTime", Maps.entry("projectId", projectId).entry("envId", envId).get());
 	}
 
 }

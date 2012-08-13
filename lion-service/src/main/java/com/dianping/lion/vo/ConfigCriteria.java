@@ -21,6 +21,10 @@ package com.dianping.lion.vo;
  */
 public class ConfigCriteria {
 	
+	public static final int HAS_VALUE_ALL = -1;
+	public static final int HAS_VALUE_YES = 1;
+	public static final int HAS_VALUE_NO = 0;
+	
 	private int projectId;
 	
 	private int envId;
@@ -28,8 +32,8 @@ public class ConfigCriteria {
 	private String key;
 	
 	private String value;
-	
-	private int status = -1;
+
+	private int hasValue = HasValueEnum.All.getValue();
 
 	/**
 	 * @return the projectId
@@ -88,17 +92,17 @@ public class ConfigCriteria {
 	}
 
 	/**
-	 * @return the status
+	 * @return the hasValue
 	 */
-	public int getStatus() {
-		return status;
+	public int getHasValue() {
+		return hasValue;
 	}
 
 	/**
-	 * @param status the status to set
+	 * @param hasValue the hasValue to set
 	 */
-	public void setStatus(int status) {
-		this.status = status;
+	public void setHasValue(int hasValue) {
+		this.hasValue = hasValue;
 	}
-	
+
 }

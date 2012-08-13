@@ -15,6 +15,8 @@
  */
 package com.dianping.lion.entity;
 
+import java.util.Date;
+
 
 /**
  * TODO Comment of ConfigSnapshot
@@ -25,14 +27,18 @@ public class ConfigSnapshot extends Config {
 
 	private static final long serialVersionUID = -8836861178321278697L;
 	
-	private int registPointId;
+	private int snapshotSetId;
 	
-	private boolean delete;
+	private int configId;
+	
+	//该Config快照时的相应环境值的最后修改时间
+	private Date valueModifyTime;
 
 	/**
 	 * @param config
 	 */
 	public ConfigSnapshot(Config config) {
+		this.configId = config.getId();
 		this.key = config.getKey();
 		this.desc = config.getDesc();
 		this.type = config.getType();
@@ -51,31 +57,45 @@ public class ConfigSnapshot extends Config {
 	}
 
 	/**
-	 * @return the registPointId
+	 * @return the snapshotSetId
 	 */
-	public int getRegistPointId() {
-		return registPointId;
+	public int getSnapshotSetId() {
+		return snapshotSetId;
 	}
 
 	/**
-	 * @param registPointId the registPointId to set
+	 * @param snapshotSetId the snapshotSetId to set
 	 */
-	public void setRegistPointId(int registPointId) {
-		this.registPointId = registPointId;
+	public void setSnapshotSetId(int snapshotSetId) {
+		this.snapshotSetId = snapshotSetId;
 	}
 
 	/**
-	 * @return the delete
+	 * @return the valueModifyTime
 	 */
-	public boolean isDelete() {
-		return delete;
+	public Date getValueModifyTime() {
+		return valueModifyTime;
 	}
 
 	/**
-	 * @param delete the delete to set
+	 * @param valueModifyTime the valueModifyTime to set
 	 */
-	public void setDelete(boolean delete) {
-		this.delete = delete;
+	public void setValueModifyTime(Date valueModifyTime) {
+		this.valueModifyTime = valueModifyTime;
+	}
+
+	/**
+	 * @return the configId
+	 */
+	public int getConfigId() {
+		return configId;
+	}
+
+	/**
+	 * @param configId the configId to set
+	 */
+	public void setConfigId(int configId) {
+		this.configId = configId;
 	}
 
 }
