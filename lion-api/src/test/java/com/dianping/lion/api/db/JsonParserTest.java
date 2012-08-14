@@ -86,7 +86,7 @@ public class JsonParserTest {
 			}
 			public ConfigService getConfigService() {
 				return new ConfigServiceImpl(null) {
-					public Config getConfigByName(String name){
+					public Config findConfigByKey(String name){
 						Config config = new Config();
 						config.setId(3);
 						return config;
@@ -95,7 +95,7 @@ public class JsonParserTest {
 			}
 		};
 		Map<ConfigInstance, Boolean> cis = jp.getConfigInstances(content);
-		assertEquals(3, cis.size());
+		assertEquals(4, cis.size());
 	}
 	
 }

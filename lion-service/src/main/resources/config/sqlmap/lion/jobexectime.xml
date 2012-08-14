@@ -9,11 +9,12 @@
 		<result column="lastFetchTime" property="lastFetchTime"/>
 		<result column="lastJobExecTime" property="lastJobExecTime"/>
 		<result column="swither" property="swither"/>
+		<result column="failMail" property="failMail"/>
 	</resultMap>
 	
     <select id="findTime" resultMap="JobExecTimeResult" parameterClass="string">
 		<![CDATA[
-			SELECT id, lastFetchTime, lastJobExecTime, swither from job_exec_time where jobName=#name# for update;
+			SELECT id, lastFetchTime, lastJobExecTime, swither, failMail from job_exec_time where jobName=#name# for update;
 		]]>
     </select>
     <update id="updateLastJobExecTime" parameterClass="JobExecTime">

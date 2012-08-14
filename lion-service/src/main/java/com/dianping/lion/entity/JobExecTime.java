@@ -27,6 +27,7 @@ public class JobExecTime {
 	private Date lastFetchTime;
 	private Date lastJobExecTime;
 	private boolean swither;
+	private String failMail;
 	
 	public int getId() {
 		return id;
@@ -51,6 +52,12 @@ public class JobExecTime {
 	}
 	public void setSwither(boolean swither) {
 		this.swither = swither;
+	}
+	public String getFailMail() {
+		return failMail;
+	}
+	public void setFailMail(String failMail) {
+		this.failMail = failMail;
 	}
 	
 }

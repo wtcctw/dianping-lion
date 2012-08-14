@@ -96,16 +96,12 @@ public class JsonParser {
 				ci.setCreateTime(new Date(System.currentTimeMillis()));*/
 				ci.setValue(envDSContent.getString(envs[j]));
 //				ci.setSeq(1);
-				String removed = null;
-				try {
-					removed = envDSContent.getJSONObject(envs[j]).getString(REMOVED);	
-				} catch(Exception e) {
-					logger.debug("remove node not found.",e);
-				}
-				if(removed == null) {
-					cis.put(ci, false);
-				} else {
+				boolean isRemovedContains = false;
+				isRemovedContains = envDSContent.getJSONObject(envs[j]).has(REMOVED);	
+				if(isRemovedContains) {
 					cis.put(ci, true);
+				} else {
+					cis.put(ci, false);
 				}
 			}
 		}

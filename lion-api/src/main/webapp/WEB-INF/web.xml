@@ -55,7 +55,10 @@
 		<servlet-name>GetConfigServlet</servlet-name>
 		<servlet-class>com.dianping.lion.api.http.GetConfigServlet</servlet-class>
 	</servlet>
-	
+	<servlet>
+		<servlet-name>StartJobServlet</servlet-name>
+		<servlet-class>com.dianping.lion.api.http.StartJobServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>SetConfigServlet</servlet-name>
 		<url-pattern>/setconfig</url-pattern>
@@ -72,7 +75,10 @@
 		<servlet-name>RollbackConfigsServlet</servlet-name>
 		<url-pattern>/rollback</url-pattern>
 	</servlet-mapping>
-	
+	<servlet-mapping>
+		<servlet-name>StartJobServlet</servlet-name>
+		<url-pattern>/startjob</url-pattern>
+	</servlet-mapping>
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
