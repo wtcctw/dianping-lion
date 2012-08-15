@@ -16,7 +16,6 @@
 package com.dianping.lion.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import com.dianping.lion.db.DataSourceJob;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
