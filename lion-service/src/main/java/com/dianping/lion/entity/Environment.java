@@ -16,6 +16,7 @@
 package com.dianping.lion.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 部署环境
@@ -29,7 +30,12 @@ public class Environment implements Serializable {
 	private String name;
 	private String label;
 	private String ips;
+	private int createUserId;
+	private Date createTime;
+	private int modifyUserId;
+	private Date modifyTime;
 	private int seq;
+	
 	/**
 	 * @return the id
 	 */
@@ -89,6 +95,54 @@ public class Environment implements Serializable {
 	 */
 	public void setLabel(String label) {
 		this.label = label;
+	}
+	/**
+	 * @return the createUserId
+	 */
+	public int getCreateUserId() {
+		return createUserId;
+	}
+	/**
+	 * @param createUserId the createUserId to set
+	 */
+	public void setCreateUserId(int createUserId) {
+		this.createUserId = createUserId;
+	}
+	/**
+	 * @return the createTime
+	 */
+	public Date getCreateTime() {
+		return createTime;
+	}
+	/**
+	 * @param createTime the createTime to set
+	 */
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	/**
+	 * @return the modifyUserId
+	 */
+	public int getModifyUserId() {
+		return modifyUserId;
+	}
+	/**
+	 * @param modifyUserId the modifyUserId to set
+	 */
+	public void setModifyUserId(int modifyUserId) {
+		this.modifyUserId = modifyUserId;
+	}
+	/**
+	 * @return the modifyTime
+	 */
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+	/**
+	 * @param modifyTime the modifyTime to set
+	 */
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 	
 }

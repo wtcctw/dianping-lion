@@ -40,7 +40,7 @@ public class EnvironmentIbatisDao extends SqlMapClientDaoSupport implements Envi
 	}
 
 	@Override
-	public int save(Environment env) {
+	public int create(Environment env) {
 		getSqlMapClientTemplate().insert("Environment.insertEnv", env);
 		return env.getId();
 	}

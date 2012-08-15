@@ -44,6 +44,12 @@ public class ConfigInstanceSnapshot extends ConfigInstance {
 	}
 
 	/**
+	 * 
+	 */
+	public ConfigInstanceSnapshot() {
+	}
+
+	/**
 	 * @return the snapshotSetId
 	 */
 	public int getSnapshotSetId() {

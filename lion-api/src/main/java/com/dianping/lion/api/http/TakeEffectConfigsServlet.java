@@ -38,8 +38,8 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
 	@Override
 	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
-		String task = getNotBlankParameter(req, PARAM_TASK);
 		String env = getNotBlankParameter(req, PARAM_ENV);
+		String task = getNotBlankParameter(req, PARAM_TASK);
 		String[] keys = req.getParameterValues(PARAM_KEY);
 		String push2App = req.getParameter(PARAM_PUSH);
 		push2App = push2App != null ? push2App : "0";

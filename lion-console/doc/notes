@@ -19,3 +19,7 @@
 19.注意发布接口必须调用，即使本次没有config走redmine，因为可能存在lion上配置的config，设置为发布生效
 20.registerpoint和snapshot表里面的数据需要定期清除，避免太多影响查询性能
 21.User中标注了是否是系统用户(如redmine, sa, dba)，在人工操作lion-console界面时给于提醒(比如由系统用户设置的config最好不要去手动修改或推送，应由系统来操作)
+22.lion-client中的cache存在问题，如果以非法的key访问ConfigCache时都会缓存一个StringValue(null)值，这样非法的key太多之后会导致Map无限放大，采用LRU策略剔除
+   StringValue(null)的值
+23.lion-console与lion-api分开部署，如果在变更环境配置时通知到两边应用(变更zk的地址)
+24.lion-client中的watcher需要判斷event是否有path，有的event沒有path，造成NullPointerException異常
