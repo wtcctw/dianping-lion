@@ -16,7 +16,6 @@
 package com.dianping.lion.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import com.dianping.lion.db.DataSourceJob;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
@@ -90,22 +88,18 @@ public class JsonParser {
 				ci.setConfigId(config.getId());
 				Environment env = getEnvService().findEnvByName(envs[j].toLowerCase());
 				ci.setEnvId(env.getId());
-				ci.setCreateUserId(0);
+/*				ci.setCreateUserId(0);
 				ci.setModifyUserId(0);
 				ci.setModifyTime(new Date(System.currentTimeMillis()));
-				ci.setCreateTime(new Date(System.currentTimeMillis()));
+				ci.setCreateTime(new Date(System.currentTimeMillis()));*/
 				ci.setValue(envDSContent.getString(envs[j]));
-				ci.setSeq(1);
-				String removed = null;
-				try {
-					removed = envDSContent.getJSONObject(envs[j]).getString(REMOVED);	
-				} catch(Exception e) {
-					logger.debug("remove node not found.",e);
-				}
-				if(removed == null) {
-					cis.put(ci, false);
-				} else {
+//				ci.setSeq(1);
+				boolean isRemovedContains = false;
+				isRemovedContains = envDSContent.getJSONObject(envs[j]).has(REMOVED);	
+				if(isRemovedContains) {
 					cis.put(ci, true);
+				} else {
+					cis.put(ci, false);
 				}
 			}
 		}

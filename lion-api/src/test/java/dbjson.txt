@@ -35,6 +35,7 @@
 	            },
 	 		"dev" :
 	 		{
+	 			xxx : bbb
 	 		}
 	},
 	"shop-db":
@@ -53,6 +54,9 @@
 		},
 	"promo-db":
 		{
-			"removed" : 1
+			"dev" :
+	 			{
+					"remove" : 1
+				}
 		}
 }

@@ -46,12 +46,14 @@ public abstract class SyncJob {
 			@Override
 			public void execute() throws Exception {
 				JobExecTime jobExecTime = jobExecTimeDao.getJobExecTime(jobName);
-				Calendar can = Calendar.getInstance();
-				can.setTime(jobExecTime.getLastJobExecTime());
-				if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {
-					doBusiness();
-					jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
-					jobExecTimeDao.updateLastJobExecTime(jobExecTime);
+				if(jobExecTime.isSwither()) {
+					Calendar can = Calendar.getInstance();
+					can.setTime(jobExecTime.getLastJobExecTime());
+					if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {
+						doBusiness();
+						jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
+						jobExecTimeDao.updateLastJobExecTime(jobExecTime);
+					}
 				}
 			}});
 	}

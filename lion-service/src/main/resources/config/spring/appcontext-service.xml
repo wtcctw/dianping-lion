@@ -39,4 +39,11 @@
 	
 	<bean id="registerServiceFactory" class="com.dianping.lion.register.zookeeper.ConfigZookeeperServiceFactory"/>
 	
+	<bean id="httpMailService" class="com.dianping.lion.service.impl.HttpMailServiceImpl" init-method="init">
+		<property name="host" value="10.1.1.51"></property>
+		<property name="port" value="80"></property>
+		<property name="protocal" value="http"></property>
+		<property name="path" value="/jsonmail.v?jsonm="></property>
+	</bean>
+	
 </beans>
