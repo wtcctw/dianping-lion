@@ -26,8 +26,9 @@ public class JobExecTime {
 	private int id;
 	private Date lastFetchTime;
 	private Date lastJobExecTime;
-	private boolean swither;
+	private boolean switcher;
 	private String failMail;
+	private String jobName;
 	
 	public int getId() {
 		return id;
@@ -47,17 +48,23 @@ public class JobExecTime {
 	public void setLastJobExecTime(Date lastJobExecTime) {
 		this.lastJobExecTime = lastJobExecTime;
 	}
-	public boolean isSwither() {
-		return swither;
+	public boolean isSwitcher() {
+		return switcher;
 	}
-	public void setSwither(boolean swither) {
-		this.swither = swither;
+	public void setSwitcher(boolean switcher) {
+		this.switcher = switcher;
 	}
 	public String getFailMail() {
 		return failMail;
 	}
 	public void setFailMail(String failMail) {
 		this.failMail = failMail;
+	}
+	public String getJobName() {
+		return jobName;
+	}
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
 	}
 	
 }

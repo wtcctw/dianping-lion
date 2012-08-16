@@ -15,6 +15,8 @@
  */
 package com.dianping.lion.service;
 
+import java.util.List;
+
 import com.dianping.lion.entity.JobExecTime;
 import com.dianping.lion.service.spi.Callback;
 
@@ -26,9 +28,14 @@ import com.dianping.lion.service.spi.Callback;
 public interface JobExecTimeService {
 	void startTransaction();
 	void execTransaction(Callback callback);
+	List<JobExecTime> findAll();
 	JobExecTime getJobExecTime(String name);
+	JobExecTime getJobById(int jobId);
 	void updateLastJobExecTime(JobExecTime jobExecTime);
 	void updateLastFetchTime(JobExecTime jobExecTime);
+	void addJob(JobExecTime jobExecTime);
+	void updateJob(JobExecTime jobExecTime);
+	void deleteJob(int id);
 	void commitTransaction();
 	void endTransaction();
 }

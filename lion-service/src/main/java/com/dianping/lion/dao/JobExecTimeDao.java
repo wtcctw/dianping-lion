@@ -16,13 +16,19 @@
 package com.dianping.lion.dao;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.dianping.lion.entity.JobExecTime;
 
 public interface JobExecTimeDao {
 	void startTransaction()throws SQLException;
+	List<JobExecTime> findAll();
 	JobExecTime getJobExecTime(String name);
+	JobExecTime getJobById(int jobId);
 	void updateLastJobExecTime(JobExecTime jobExecTime);
+	void addJob(JobExecTime jobExecTime);
+	void updateJob(JobExecTime jobExecTime);
+	void deleteJob(int id);
 	void updateLastFetchTime(JobExecTime jobExecTime);
 	void commitTransaction()throws SQLException;
 	void endTransaction() throws SQLException;

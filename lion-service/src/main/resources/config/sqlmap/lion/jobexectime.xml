@@ -8,13 +8,25 @@
 		<result column="id" property="id"/>
 		<result column="lastFetchTime" property="lastFetchTime"/>
 		<result column="lastJobExecTime" property="lastJobExecTime"/>
-		<result column="swither" property="swither"/>
+		<result column="switcher" property="switcher"/>
 		<result column="failMail" property="failMail"/>
+		<result column="jobName" property="jobName"/>
 	</resultMap>
+	
+	<select id="findAll" resultMap="JobExecTimeResult">
+		<![CDATA[
+			SELECT id, lastFetchTime, lastJobExecTime, switcher, failMail, jobName from job_exec_time;
+		]]>
+    </select>
 	
     <select id="findTime" resultMap="JobExecTimeResult" parameterClass="string">
 		<![CDATA[
-			SELECT id, lastFetchTime, lastJobExecTime, swither, failMail from job_exec_time where jobName=#name# for update;
+			SELECT id, lastFetchTime, lastJobExecTime, switcher, failMail, jobName from job_exec_time where jobName=#name# for update;
+		]]>
+    </select>
+    <select id="findJobByID" resultMap="JobExecTimeResult" parameterClass="int">
+		<![CDATA[
+			SELECT id, lastFetchTime, lastJobExecTime, switcher, failMail, jobName from job_exec_time where id=#jobId#;
 		]]>
     </select>
     <update id="updateLastJobExecTime" parameterClass="JobExecTime">
@@ -27,4 +39,23 @@
 		set lastFetchTime=#lastFetchTime#
 		where id=#id#
     </update>
+    <update id="updateJob" parameterClass="jobExecTime">
+    	update job_exec_time
+		set switcher=#switcher#,
+			failMail=#failMail#
+		where id=#id#
+    </update>
+    
+    <delete id="deleteJob" parameterClass="int">
+		delete from job_exec_time where id=#id#
+    </delete>
+    
+    <insert id="insertJob" parameterClass="jobExecTime">
+    	<![CDATA[
+    	insert into job_exec_time(jobName,switcher,failMail) values(#jobName#,#switcher#,#failMail#);
+		]]>
+    	<selectKey resultClass="int" keyProperty="id">
+             <![CDATA[   select last_insert_id() as id  ]]>
+        </selectKey>
+    </insert>
 </sqlMap>
