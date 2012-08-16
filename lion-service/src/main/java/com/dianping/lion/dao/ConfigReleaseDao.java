@@ -63,4 +63,16 @@ public interface ConfigReleaseDao {
 	 */
 	ConfigSnapshotSet findFirstSnapshotSet(int projectId, int envId, String task);
 
+	/**
+	 * @param id
+	 * @return
+	 */
+	List<ConfigSnapshot> findConfigSnapshots(int snapshotSetId);
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	List<ConfigInstanceSnapshot> findConfigInstSnapshots(int snapshotSetId);
+
 }

@@ -16,10 +16,15 @@
 package com.dianping.lion.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +34,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.dao.ConfigReleaseDao;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
@@ -37,9 +43,12 @@ import com.dianping.lion.entity.ConfigSetTask;
 import com.dianping.lion.entity.ConfigSetType;
 import com.dianping.lion.entity.ConfigSnapshot;
 import com.dianping.lion.entity.ConfigSnapshotSet;
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.ConfigRelaseService;
+import com.dianping.lion.service.ConfigRollbackResult;
 import com.dianping.lion.service.ConfigService;
+import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.util.SecurityUtils;
 
 /**
@@ -55,7 +64,13 @@ public class ConfigReleaseServiceImpl implements ConfigRelaseService {
 	private ConfigService configService;
 	
 	@Autowired
+	private ProjectService projectService;
+	
+	@Autowired
 	private ConfigReleaseDao configReleaseDao;
+	
+	@Autowired
+	private ConfigDao configDao;
 	
 	private TransactionTemplate transactionTemplate;
 	
@@ -131,10 +146,154 @@ public class ConfigReleaseServiceImpl implements ConfigRelaseService {
 		return configReleaseDao.findFirstSnapshotSet(projectId, envId, task);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void rollbackSnapshotSet(ConfigSnapshotSet snapshotSet) {
-		// TODO Auto-generated method stub
-		
+	public ConfigRollbackResult rollbackSnapshotSet(ConfigSnapshotSet snapshotSet) {
+		ConfigRollbackResult rollbackResult = new ConfigRollbackResult();
+		final int projectId = snapshotSet.getProjectId();
+		final int envId = snapshotSet.getEnvId();
+		try {
+			List<ConfigSnapshot> configSnapshots = configReleaseDao.findConfigSnapshots(snapshotSet.getId());
+			List<ConfigInstanceSnapshot> configInstSnapshots = configReleaseDao.findConfigInstSnapshots(snapshotSet.getId());
+			List<Config> currentConfigs = configService.findConfigs(projectId);
+			List<ConfigInstance> currentConfigInsts = configService.findInstances(projectId, envId);
+			Map<Integer, Date> modifyTimes = configService.findModifyTime(projectId, envId);
+			
+			Map<String, ConfigSnapshot> configSnapshotMap = new HashMap<String, ConfigSnapshot>(configSnapshots.size());
+			for (ConfigSnapshot configSnapshot : configSnapshots) {
+				configSnapshotMap.put(configSnapshot.getKey(), configSnapshot);
+			}
+			Map<Integer, List<ConfigInstanceSnapshot>> configInstSnapshotMap = new HashMap<Integer, List<ConfigInstanceSnapshot>>(
+				configSnapshots.size()
+			);
+			for (ConfigInstanceSnapshot configInstSnapshot : configInstSnapshots) {
+				List<ConfigInstanceSnapshot> instList = configInstSnapshotMap.get(configInstSnapshot.getConfigId());
+				if (instList == null) {
+					instList = new ArrayList<ConfigInstanceSnapshot>();
+					configInstSnapshotMap.put(configInstSnapshot.getConfigId(), instList);
+				}
+				instList.add(configInstSnapshot);
+			}
+			Set<String> configSnapshotKeys = configSnapshotMap.keySet();
+			
+			final Map<String, Config> currentConfigMap = new HashMap<String, Config>(currentConfigs.size());
+			for (Config currentConfig : currentConfigs) {
+				currentConfigMap.put(currentConfig.getKey(), currentConfig);
+			}
+			Map<Integer, List<ConfigInstance>> currentConfigInstMap = new HashMap<Integer, List<ConfigInstance>>(currentConfigInsts.size());
+			for (ConfigInstance currentConfigInst : currentConfigInsts) {
+				List<ConfigInstance> instList = currentConfigInstMap.get(currentConfigInst.getConfigId());
+				if (instList == null) {
+					instList = new ArrayList<ConfigInstance>();
+					currentConfigInstMap.put(currentConfigInst.getConfigId(), instList);
+				}
+				instList.add(currentConfigInst);
+			}
+			Set<String> currentConfigKeys = currentConfigMap.keySet();
+			
+			Set<String> notRemovedKeys = new HashSet<String>();
+			//1. 清除当前存在，但未存在于配置镜像中的配置
+			/* Notice: 
+			 * 回滚时配置不删除，因为删除是即时反应到线上的系统的，并且回滚配置是在回滚程序之前执行，可能会造成线上系统因缺少配置
+			 * 而导致异常
+			 */
+			Collection<String> configNeedRemoveKeys = CollectionUtils.subtract(currentConfigKeys, configSnapshotKeys);
+			notRemovedKeys.addAll(configNeedRemoveKeys);
+	//		for (final String configNeedRemoveKey : configNeedRemoveKeys) {
+	//			this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+	//				@Override
+	//				protected void doInTransactionWithoutResult(TransactionStatus status) {
+	//					Config configNeedRemove = currentConfigMap.get(configNeedRemoveKey);
+	//					configService.deleteInstance(configNeedRemove.getId(), envId);
+	//				}
+	//			});
+	//		}
+			
+			//2. 恢复当前存在，且镜像中也存在，但被变更过的配置
+			Collection<String> intersectionKeys = CollectionUtils.intersection(currentConfigKeys, configSnapshotKeys);
+			for (String intersectionKey : intersectionKeys) {
+				ConfigSnapshot configSnapshot = configSnapshotMap.get(intersectionKey);
+				final Config currentConfig = currentConfigMap.get(intersectionKey);
+				final List<ConfigInstanceSnapshot> snapshotInstList = configInstSnapshotMap.get(configSnapshot.getConfigId());
+				final List<ConfigInstance> currentInstList = currentConfigInstMap.get(currentConfig.getId());
+				boolean snapshotNoInst = snapshotInstList == null || snapshotInstList.isEmpty();
+				boolean currentNoInst = currentInstList == null || currentInstList.isEmpty();
+				if (snapshotNoInst == true && currentNoInst == false) {
+					notRemovedKeys.add(intersectionKey);
+				} else if (snapshotNoInst == false && currentNoInst == true) {
+					//恢复该config的所有instance，并部署到register server上
+					this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+						@Override
+						protected void doInTransactionWithoutResult(TransactionStatus status) {
+							restoreConfigInstSnapshots(currentConfig.getId(), envId, snapshotInstList);
+						}
+					});
+				} else if (snapshotNoInst == false && currentNoInst == false) {
+					Date modifyTime = modifyTimes.get(currentConfig.getId());
+					Date recordModifyTime = configSnapshot.getValueModifyTime();
+					if (modifyTime == null || recordModifyTime == null || !modifyTime.equals(recordModifyTime)) {
+						boolean onlyOneSnapshotInst = snapshotInstList.size() == 1;
+						boolean onlyOneCurrentInst = currentInstList.size() == 1;
+						if (onlyOneSnapshotInst && onlyOneCurrentInst) {
+							ConfigInstanceSnapshot snapshotInst = snapshotInstList.get(0);
+							ConfigInstance currentInst = currentInstList.get(0);
+							if (snapshotInst.getContext().equals(currentInst.getContext())
+									&& snapshotInst.getValue().equals(currentInst.getValue())) {
+								continue;
+							}
+						}
+						this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+							@Override
+							protected void doInTransactionWithoutResult(TransactionStatus status) {
+								configDao.deleteInstance(currentConfig.getId(), envId);
+								restoreConfigInstSnapshots(currentConfig.getId(), envId, snapshotInstList);
+							}
+						});
+					}
+				}
+			}
+			
+			//3. 添加当前不存在，但镜像中存在的
+			Collection<String> configNeedAddKeys = CollectionUtils.subtract(configSnapshotKeys, currentConfigKeys);
+			for (final String configNeedAddKey : configNeedAddKeys) {
+				final ConfigSnapshot configSnapshot = configSnapshotMap.get(configNeedAddKey);
+				final List<ConfigInstanceSnapshot> snapshotInstList = configInstSnapshotMap.get(configSnapshot.getConfigId());
+				if (snapshotInstList != null && !snapshotInstList.isEmpty()) {
+					this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+						@Override
+						protected void doInTransactionWithoutResult(TransactionStatus status) {
+							int configId = configService.create(configSnapshot.toConfig());
+							restoreConfigInstSnapshots(configId, envId, snapshotInstList);
+						}
+					});
+				}
+			}
+			rollbackResult.setNotRemovedKeys(notRemovedKeys);
+			return rollbackResult;
+		} catch (RuntimeException e) {
+			Project project = projectService.getProject(projectId);
+			logger.error("rollback configs failed with[project=" + project.getName() + ", task=" 
+					+ snapshotSet.getTask() + "].", e);
+			throw e;
+		}
+	}
+	
+	/**
+	 * @param envId
+	 * @param snapshotInsts
+	 * @param currentConfig
+	 */
+	private void restoreConfigInstSnapshots(int configId, int envId, List<ConfigInstanceSnapshot> snapshotInsts) {
+		for (ConfigInstanceSnapshot snapshotInst : snapshotInsts) {
+			ConfigInstance instance = new ConfigInstance(configId, envId, snapshotInst.getContext(), 
+					snapshotInst.getValue());
+			instance.setCreateUserId(snapshotInst.getCreateUserId());
+			instance.setCreateTime(snapshotInst.getCreateTime());
+			instance.setModifyUserId(snapshotInst.getModifyUserId());
+			instance.setModifyTime(snapshotInst.getModifyTime());
+			configService.createInstance(instance, ConfigSetType.SaveOnly);
+		}
+		configService.register(configId, envId);
 	}
 
 	/**
@@ -145,10 +304,24 @@ public class ConfigReleaseServiceImpl implements ConfigRelaseService {
 	}
 
 	/**
+	 * @param configDao the configDao to set
+	 */
+	public void setConfigDao(ConfigDao configDao) {
+		this.configDao = configDao;
+	}
+
+	/**
 	 * @param configService the configService to set
 	 */
 	public void setConfigService(ConfigService configService) {
 		this.configService = configService;
+	}
+
+	/**
+	 * @param projectService the projectService to set
+	 */
+	public void setProjectService(ProjectService projectService) {
+		this.projectService = projectService;
 	}
 
 }

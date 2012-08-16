@@ -45,9 +45,9 @@ public class GetConfigServlet extends AbstractLionServlet {
 	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		PrintWriter writer = resp.getWriter();
 		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
+		String env = getNotBlankParameter(req, PARAM_ENV);
 		String key = getNotBlankParameter(req, PARAM_KEY);
 		String configKey = checkConfigKey(projectName, key);
-		String env = getNotBlankParameter(req, PARAM_ENV);
 		
 		Config config = configService.findConfigByKey(configKey);
 		if (config == null) {

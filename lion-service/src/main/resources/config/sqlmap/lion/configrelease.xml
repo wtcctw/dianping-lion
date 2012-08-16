@@ -27,8 +27,36 @@
 		<result column="createUserId" property="createUserId"/>
 	</resultMap>
 	
-	<resultMap id="ConfigSnapshotResult" class="com.dianping.lion.entity.ConfigSnapshot">
-		
+	<resultMap id="ConfigSnapshotResult" class="ConfigSnapshot">
+		<result column="id" property="id"/>
+		<result column="snapshotSetId" property="snapshotSetId"/>
+		<result column="configId" property="configId"/>
+		<result column="valueModifyTime" property="valueModifyTime"/>
+		<result column="key" property="key"/>
+		<result column="desc" property="desc"/>
+		<result column="type" property="type"/>
+		<result column="projectId" property="projectId"/>
+		<result column="createUserId" property="createUserId"/>
+		<result column="modifyUserId" property="modifyUserId"/>
+		<result column="createTime" property="createTime"/>
+		<result column="modifyTime" property="modifyTime"/>
+		<result column="seq" property="seq"/>
+	</resultMap>
+	
+	<resultMap id="ConfigInstSnapshotResult" class="ConfigInstanceSnapshot">
+		<result column="id" property="id"/>
+		<result column="snapshotSetId" property="snapshotSetId"/>
+		<result column="configId" property="configId"/>
+		<result column="envId" property="envId"/>
+		<result column="desc" property="desc"/>
+		<result column="value" property="value"/>
+		<result column="context" property="context"/>
+		<result column="contextmd5" property="contextmd5"/>
+		<result column="createUserId" property="createUserId"/>
+		<result column="modifyUserId" property="modifyUserId"/>
+		<result column="createTime" property="createTime"/>
+		<result column="modifyTime" property="modifyTime"/>
+		<result column="seq" property="seq"/>
 	</resultMap>
 	
 	<insert id="insertSetTask" parameterClass="ConfigSetTask">
@@ -39,7 +67,7 @@
         </selectKey> 
 	</insert>
 	
-	<select id="getSetTask" parameterClass="map">
+	<select id="getSetTask" parameterClass="map" resultMap="ConfigSetTaskResult">
 		SELECT t1.*
 		FROM config_set_task t1
 		WHERE t1.projectId = #projectId# AND t1.envId = #envId# 
@@ -73,6 +101,10 @@
 		</iterate>
 	</insert>
 	
+	<select id="findConfigSnapshots" parameterClass="int" resultMap="ConfigSnapshotResult">
+		SELECT * FROM config_snapshot WHERE snapshotSetId = #snapshotSetId#
+	</select>
+	
 	<insert id="insertConfigInstSnapshots" parameterClass="list">
 		INSERT INTO config_instance_snapshot(snapshotSetId, configId, envId, `desc`, value, context, contextmd5, createUserId, modifyUserId, createTime, modifyTime, seq)
 		VALUES
@@ -81,5 +113,9 @@
 				#[].modifyTime#, #[].seq#)
 		</iterate>
 	</insert>
+	
+	<select id="findConfigInstSnapshots" parameterClass="int" resultMap="ConfigInstSnapshotResult">
+		SELECT * FROM config_instance_snapshot WHERE snapshotSetId = #snapshotSetId# ORDER BY seq
+	</select>
 	
 </sqlMap>

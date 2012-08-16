@@ -13,7 +13,7 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.medium;
+package com.dianping.lion.register;
 
 import com.dianping.lion.entity.Environment;
 

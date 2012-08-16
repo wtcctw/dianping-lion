@@ -13,14 +13,14 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.medium.zookeeper;
+package com.dianping.lion.register.zookeeper;
 
 import java.io.IOException;
 
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.exception.RegisterRelatedException;
-import com.dianping.lion.medium.ConfigRegisterService;
-import com.dianping.lion.medium.ConfigRegisterServiceFactory;
+import com.dianping.lion.register.ConfigRegisterService;
+import com.dianping.lion.register.ConfigRegisterServiceFactory;
 
 /**
  * @author danson.liu

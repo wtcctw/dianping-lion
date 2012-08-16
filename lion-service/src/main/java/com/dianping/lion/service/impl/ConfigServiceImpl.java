@@ -48,8 +48,8 @@ import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.exception.RuntimeBusinessException;
-import com.dianping.lion.medium.ConfigRegisterService;
-import com.dianping.lion.medium.ConfigRegisterServiceRepository;
+import com.dianping.lion.register.ConfigRegisterService;
+import com.dianping.lion.register.ConfigRegisterServiceRepository;
 import com.dianping.lion.service.ConfigDeleteResult;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
@@ -200,8 +200,12 @@ public class ConfigServiceImpl implements ConfigService {
 		}
 		int currentUserId = SecurityUtils.getCurrentUserId();
 		int projectId = config.getProjectId();
-		config.setCreateUserId(currentUserId);
-		config.setModifyUserId(currentUserId);
+		if (config.getCreateUserId() == -1) {
+			config.setCreateUserId(currentUserId);
+		}
+		if (config.getModifyUserId() == -1) {
+			config.setModifyUserId(currentUserId);
+		}
 		projectDao.lockProject(projectId);
 		config.setSeq(configDao.getMaxSeq(projectId) + 1);
 		return configDao.create(config);
@@ -212,10 +216,14 @@ public class ConfigServiceImpl implements ConfigService {
 		return createInstance(instance, ConfigSetType.RegisterAndPush);
 	}
 	
-	private int createInstance(ConfigInstance instance, ConfigSetType setType) {
+	public int createInstance(ConfigInstance instance, ConfigSetType setType) {
 		int currentUserId = SecurityUtils.getCurrentUserId();
-		instance.setCreateUserId(currentUserId);
-		instance.setModifyUserId(currentUserId);
+		if (instance.getCreateUserId() == -1) {
+			instance.setCreateUserId(currentUserId);
+		}
+		if (instance.getModifyUserId() == -1) {
+			instance.setModifyUserId(currentUserId);
+		}
 		int retryTimes = 0;
 		while (true) {
 			try {
@@ -265,7 +273,7 @@ public class ConfigServiceImpl implements ConfigService {
 		setConfigValue(configId, envId, context, value, ConfigSetType.RegisterAndPush);
 	}
 	
-	private void setConfigValue(int configId, int envId, String context, String value, ConfigSetType setType) {
+	public void setConfigValue(int configId, int envId, String context, String value, ConfigSetType setType) {
 		ConfigInstance found = configDao.findInstance(configId, envId, context);
 		if (found == null) {
 			createInstance(new ConfigInstance(configId, envId, context, value), setType);
@@ -308,7 +316,8 @@ public class ConfigServiceImpl implements ConfigService {
 			registerService.registerDefaultValue(config.getKey(), defaultInst.getValue());
 		} catch (RuntimeException e) {
 			Environment environment = environmentService.findEnvByID(envId);
-			logger.error("Register config[" + config.getKey() + "] to env[" + environment.getLabel() + "] failed.", e);
+			logger.error("Register config[" + config.getKey() + "] to env[" + (environment != null ? environment.getLabel() : envId) 
+					+ "] failed.", e);
 			throw e;
 		}
 	}
@@ -330,7 +339,8 @@ public class ConfigServiceImpl implements ConfigService {
 			registerService.registerDefaultValue(config.getKey(), defaultInst.getValue());
 		} catch (RuntimeException e) {
 			Environment environment = environmentService.findEnvByID(envId);
-			logger.error("Register and push config[" + config.getKey() + "] to env[" + environment.getLabel() + "] failed.", e);
+			logger.error("Register and push config[" + config.getKey() + "] to env[" + (environment != null ? environment.getLabel() : envId) 
+					+ "] failed.", e);
 			throw e;
 		}
 	}
@@ -435,7 +445,7 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	public ConfigRegisterService getRegisterService(int envId) {
-		return registerServiceRepository.getRegisterService(envId);
+		return registerServiceRepository.getRequiredRegisterService(envId);
 	}
 
 	/**

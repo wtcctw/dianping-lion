@@ -13,7 +13,7 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.medium.zookeeper;
+package com.dianping.lion.register.zookeeper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -34,7 +34,7 @@ import com.dianping.lion.client.zookeeper.ZookeeperConstants;
 import com.dianping.lion.exception.ReadFromZookeeperException;
 import com.dianping.lion.exception.RegisterToZookeeperException;
 import com.dianping.lion.exception.UnregisterFromZookeeperException;
-import com.dianping.lion.medium.ConfigRegisterService;
+import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.util.EncodeUtils;
 
 /**
@@ -68,48 +68,72 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	}
 
 	@Override
-	public void registerContextValue(String key, String value) {
+	public void registerContextValue(final String key, final String value) {
 		try {
-			ensureParentPathExists();
-			ensurePathExists(parentPath + "/" + key);
-			set(parentPath + "/" + key + "/" + contextNode, value);
+			executeOperation(new ConfigZookeeperOperation() {
+				@Override
+				public Object execute() throws KeeperException, InterruptedException, IOException {
+					ensureParentPathExists();
+					ensurePathExists(parentPath + "/" + key);
+					set(parentPath + "/" + key + "/" + contextNode, value);
+					return null;
+				}
+			});
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Register config[" + key + "]'s context value to zookeeper failed.", e);
 		}
 	}
 
 	@Override
-	public void registerAndPushContextValue(String key, String value) {
+	public void registerAndPushContextValue(final String key, final String value) {
 		try {
-			ensureParentPathExists();
-			ensurePathExists(parentPath + "/" + key);
-			//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
-			//并且对于lion-client的客户端感知也很重要，key node变更后，如果判断timestamp的逻辑发生在更新之前就有问题，所以也需要先更新timestamp
-			set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
-			set(parentPath + "/" + key + "/" + contextNode, value);
+			executeOperation(new ConfigZookeeperOperation() {
+				@Override
+				public Object execute() throws KeeperException, InterruptedException, IOException {
+					ensureParentPathExists();
+					ensurePathExists(parentPath + "/" + key);
+					//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
+					//并且对于lion-client的客户端感知也很重要，key node变更后，如果判断timestamp的逻辑发生在更新之前就有问题，所以也需要先更新timestamp
+					set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
+					set(parentPath + "/" + key + "/" + contextNode, value);
+					return null;
+				}
+			});
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Push config[" + key + "]'s context value to zookeeper failed.", e);
 		}
 	}
 
 	@Override
-	public void registerDefaultValue(String key, String defaultVal) {
+	public void registerDefaultValue(final String key, final String defaultVal) {
 		try {
-			ensureParentPathExists();
-			set(parentPath + "/" + key, defaultVal);
+			executeOperation(new ConfigZookeeperOperation() {
+				@Override
+				public Object execute() throws KeeperException, InterruptedException, IOException {
+					ensureParentPathExists();
+					set(parentPath + "/" + key, defaultVal);
+					return null;
+				}
+			});
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Register config[" + key + "]'s default value to zookeeper failed.", e);
 		}
 	}
 
 	@Override
-	public void registerAndPushDefaultValue(String key, String defaultVal) {
+	public void registerAndPushDefaultValue(final String key, final String defaultVal) {
 		try {
-			ensureParentPathExists();
-			ensurePathExists(parentPath + "/" + key);
-			//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
-			set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
-			set(parentPath + "/" + key, defaultVal);
+			executeOperation(new ConfigZookeeperOperation() {
+				@Override
+				public Object execute() throws KeeperException, InterruptedException, IOException {
+					ensureParentPathExists();
+					ensurePathExists(parentPath + "/" + key);
+					//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
+					set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
+					set(parentPath + "/" + key, defaultVal);
+					return null;
+				}
+			});
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Push config[" + key + "]'s default value to zookeeper failed.", e);
 		}
@@ -119,6 +143,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	public void unregister(String key) {
 		try {
 			String path = parentPath + "/" + key;
+			existsEnsuredPaths.remove(path);
 			if (zookeeper.exists(path, false) != null) {
 				List<String> children = zookeeper.getChildren(path, false);
 				if (children != null && !children.isEmpty()) {
@@ -207,6 +232,18 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 			logger.warn("Ensure zookeeper's config initial path is failed, pay attention.", e);
 		}
 	}
+	
+	private Object executeOperation(ConfigZookeeperOperation operation) 
+		throws KeeperException, InterruptedException, IOException {
+		Object result = null;
+		try {
+			result = operation.execute();
+		} catch (NoNodeException e) {
+			existsEnsuredPaths.clear();
+			result = operation.execute();
+		}
+		return result;
+	}
 
 	/**
 	 * @param sessionTimeout the sessionTimeout to set
@@ -241,6 +278,15 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	 */
 	public void setTimestampNode(String timestampNode) {
 		this.timestampNode = timestampNode;
+	}
+
+	@Override
+	public String getAddresses() {
+		return this.serverIps;
+	}
+	
+	interface ConfigZookeeperOperation {
+		Object execute() throws KeeperException, InterruptedException, IOException;
 	}
 
 }

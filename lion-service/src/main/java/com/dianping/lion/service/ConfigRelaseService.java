@@ -53,7 +53,8 @@ public interface ConfigRelaseService {
 
 	/**
 	 * @param snapshotSet
+	 * @return 
 	 */
-	void rollbackSnapshotSet(ConfigSnapshotSet snapshotSet);
+	ConfigRollbackResult rollbackSnapshotSet(ConfigSnapshotSet snapshotSet);
 	
 }

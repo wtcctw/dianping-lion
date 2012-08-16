@@ -55,6 +55,19 @@ public class ConfigSnapshot extends Config {
 	 */
 	public ConfigSnapshot() {
 	}
+	
+	public Config toConfig() {
+		Config config = new Config();
+		config.setKey(key);
+		config.setDesc(desc);
+		config.setType(type);
+		config.setProjectId(projectId);
+		config.setCreateUserId(createUserId);
+		config.setCreateTime(createTime);
+		config.setModifyUserId(modifyUserId);
+		config.setModifyTime(modifyTime);
+		return config;
+	}
 
 	/**
 	 * @return the snapshotSetId

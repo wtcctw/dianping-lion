@@ -4,7 +4,8 @@
 	<thead>
 		<tr>
 			<th style="width: 30px">序号</th>
-			<th style="width: 100px">环境</th>
+			<th style="width: 100px">Name</th>
+			<th style="width: 100px">Label</th>
 			<th>zookeeper地址</th>
 			<th>顺序</th>
 			<th style="width: 80px">操作
@@ -16,6 +17,7 @@
 		<#list environmentList as environment>
 		<tr>
 			<td>${environment_index + 1}</td>
+			<td>${environment.name}</td>
 			<td>${environment.label}</td>
 			<td>${environment.ips}</td>
 			<td>${environment.seq}</td>

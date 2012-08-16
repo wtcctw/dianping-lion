@@ -13,7 +13,7 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.medium;
+package com.dianping.lion.register;
 
 /**
  * @author danson.liu
@@ -42,6 +42,8 @@ public interface ConfigRegisterService {
 	void unregister(String key);
 	
 	String get(String key);
+	
+	String getAddresses();
 	
 	void destroy();
 	

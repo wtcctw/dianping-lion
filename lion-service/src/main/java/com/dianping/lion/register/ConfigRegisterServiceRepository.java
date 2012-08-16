@@ -13,10 +13,11 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.medium;
+package com.dianping.lion.register;
 
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class ConfigRegisterServiceRepository {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConfigRegisterServiceRepository.class);
 	
-	private static Map<Integer, ConfigRegisterService> registerServices = new ConcurrentHashMap<Integer, ConfigRegisterService>();
+	private static ConcurrentMap<Integer, ConfigRegisterService> registerServices = new ConcurrentHashMap<Integer, ConfigRegisterService>();
 	
 	@Autowired
 	private ConfigRegisterServiceFactory registerServiceFactory;
@@ -43,7 +44,7 @@ public class ConfigRegisterServiceRepository {
 	@Autowired
 	private EnvironmentService environmentService;
 
-	public ConfigRegisterService getRegisterService(int envId) {
+	public ConfigRegisterService getRequiredRegisterService(int envId) {
 		ConfigRegisterService registerService = registerServices.get(envId);
 		if (registerService != null) {
 			return registerService;
@@ -55,19 +56,30 @@ public class ConfigRegisterServiceRepository {
 		try {
 			registerService = registerServiceFactory.createRegisterService(environment);
 			if (registerService != null) {
-				setRegisterService(envId, registerService);
-				return registerService;
+				return setRegisterService(envId, registerService);
 			}
 		} catch (RuntimeException e) {
-			logger.error("Create config register service failed.", e);
+			logger.error("Create config register service[env=" + environment.getLabel() 
+					+ ",ips=" + environment.getIps() + "] failed.", e);
 		}
 		return new NoAvailableRegisterService(environment.getLabel());
 	}
 	
-	public void setRegisterService(int envId, ConfigRegisterService registerService) {
-		ConfigRegisterService oldRegisterService = registerServices.put(envId, registerService);
-		if (oldRegisterService != null) {
-			destroyRegisterService(envId, oldRegisterService);
+	public ConfigRegisterService getRegisterService(int envId) {
+		return registerServices.get(envId);
+	}
+	
+	public Set<Integer> getRegisteredEnvironments() {
+		return registerServices.keySet();
+	}
+	
+	public ConfigRegisterService setRegisterService(int envId, ConfigRegisterService registerService) {
+		ConfigRegisterService oldRegisterService = registerServices.putIfAbsent(envId, registerService);
+		if (oldRegisterService != null && oldRegisterService != registerService) {
+			destroyRegisterService(envId, registerService);
+			return oldRegisterService;
+		} else {
+			return registerService;
 		}
 	}
 	
@@ -83,7 +95,7 @@ public class ConfigRegisterServiceRepository {
 			registerService.destroy();
 		} catch (RuntimeException e) {
 			Environment environment = environmentService.findEnvByID(envId);
-			logger.warn("Destroy environment[" + (environment != null ? environment.getLabel() : envId) + "]'s old" 
+			logger.warn("Destroy environment[" + (environment != null ? environment.getLabel() : envId) + "]'s noused " 
 					+ "registerService[" + registerService + "] failed.", e);
 		}
 	}
@@ -142,6 +154,11 @@ class NoAvailableRegisterService implements ConfigRegisterService {
 
 	private NoAvailableRegisterServiceException registerServiceNotFoundError() {
 		return new NoAvailableRegisterServiceException(environment, "环境[" + environment + "]没有可用的配置注册系统, 请检查环境设置或注册系统状态.");
+	}
+
+	@Override
+	public String getAddresses() {
+		return null;
 	}
 	
 }

@@ -39,8 +39,8 @@ public class ConfigInstance implements Serializable {
 	protected String value;
 	protected String context = NO_CONTEXT;
 	protected String contextmd5;
-	protected int createUserId;
-	protected int modifyUserId;
+	protected int createUserId = -1;
+	protected int modifyUserId = -1;
 	protected Date createTime;
 	protected Date modifyTime;
 	protected int seq;

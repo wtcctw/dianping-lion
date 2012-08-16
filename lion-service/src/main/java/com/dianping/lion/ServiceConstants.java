@@ -33,4 +33,6 @@ public interface ServiceConstants {
 	int USER_SA_ID = 101;
 	int USER_DBA_ID = 102;
 	
+	String CACHE_KEY_ENVLIST = "cache_env_list";
+	
 }

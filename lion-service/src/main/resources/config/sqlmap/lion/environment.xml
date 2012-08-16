@@ -8,29 +8,28 @@
 		<result column="name" property="name"/>
 		<result column="label" property="label"/>
 		<result column="ips" property="ips"/>
+		<result column="createUserId" property="createUserId"/>
+		<result column="createTime" property="createTime"/>
+		<result column="modifyUserId" property="modifyUserId"/>
+		<result column="modifyTime" property="modifyTime"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
 	
 	<select id="findAll" resultMap="EnvironmentResult">
 		<![CDATA[
-		SELECT id, name, label, ips, seq
-		FROM environment
-		ORDER BY seq, id
+		SELECT * FROM environment ORDER BY seq, id
 		]]>
     </select>
     
     <select id="findByID" resultMap="EnvironmentResult">
 		<![CDATA[
-		SELECT id, name, label, ips, seq
-		FROM environment
-		where id = #id#
-		ORDER BY seq, id
+		SELECT * FROM environment WHERE id = #id# ORDER BY seq, id
 		]]>
     </select>
     
     <select id="findByName" resultMap="EnvironmentResult" parameterClass="string">
 		<![CDATA[
-		SELECT id, name, label, ips, seq FROM environment where name = #name#
+		SELECT * FROM environment WHERE name = #name#
 		]]>
     </select>
     
@@ -44,10 +43,12 @@
     
     <update id="updateEnv" parameterClass="Environment">
     	update environment
-		set ips=#ips#,
-			label=#label#,
-			name=#name#,
-			seq=#seq#
+		set ips = #ips#,
+			label = #label#,
+			name = #name#,
+			modifyUserId = #modifyUserId#,
+			modifyTime = NOW(),
+			seq = #seq#
 		where id=#id#
     </update>
     
@@ -57,7 +58,8 @@
     
     <insert id="insertEnv" parameterClass="Environment">
     	<![CDATA[
-    	insert into environment(name,label,ips,seq) values(#name#,#label#,#ips#,#seq#);
+    	insert into environment(name,label,ips, createUserId, createTime, modifyUserId, modifyTime,seq) 
+    	values(#name#,#label#,#ips#, #createUserId#, NOW(), #modifyUserId#, NOW(),#seq#);
 		]]>
     	<selectKey resultClass="int" keyProperty="id">
              <![CDATA[   select last_insert_id() as id  ]]>

@@ -80,6 +80,13 @@ public interface ConfigService {
 	 * @param instance
 	 */
 	int createInstance(ConfigInstance instance);
+
+	/**
+	 * @param instance
+	 * @param setType
+	 * @return
+	 */
+	int createInstance(ConfigInstance instance, ConfigSetType setType);
 	
 	/**
 	 * 获取指定key配置的所有环境下的配置值, 若指定maxPerEnv则每个环境下至多获取maxPerEnv条(按照seq倒序)
@@ -142,6 +149,15 @@ public interface ConfigService {
 	 * @param value
 	 */
 	void setConfigValue(int configId, int envId, String context, String value);
+	
+	/**
+	 * @param configId
+	 * @param envId
+	 * @param context
+	 * @param value
+	 * @param setType
+	 */
+	void setConfigValue(int configId, int envId, String context, String value, ConfigSetType setType);
 
 	/**
 	 * @param id
@@ -157,5 +173,17 @@ public interface ConfigService {
 	 * @param envId
 	 */
 	Map<Integer, Date> findModifyTime(int projectId, int envId);
+
+	/**
+	 * @param configId
+	 * @param envId
+	 */
+	void register(int configId, int envId);
+
+	/**
+	 * @param configId
+	 * @param envId
+	 */
+	void registerAndPush(int configId, int envId);
 
 }

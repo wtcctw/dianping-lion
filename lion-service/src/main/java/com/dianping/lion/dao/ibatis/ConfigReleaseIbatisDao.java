@@ -80,5 +80,17 @@ public class ConfigReleaseIbatisDao extends SqlMapClientDaoSupport implements Co
 		return (ConfigSnapshotSet) getSqlMapClientTemplate().queryForObject("ConfigRelease.findFirstSnapshotSet", 
 				Maps.entry("projectId", projectId).entry("envId", envId).entry("task", task).get());
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConfigSnapshot> findConfigSnapshots(int snapshotSetId) {
+		return getSqlMapClientTemplate().queryForList("ConfigRelease.findConfigSnapshots", snapshotSetId);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConfigInstanceSnapshot> findConfigInstSnapshots(int snapshotSetId) {
+		return getSqlMapClientTemplate().queryForList("ConfigRelease.findConfigInstSnapshots", snapshotSetId);
+	}
 
 }

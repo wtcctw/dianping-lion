@@ -43,6 +43,11 @@
 		<result column="modifyUserId" property="modifyUserId"/>
 	</resultMap>
 	
+	<resultMap id="ConfigModifyTimeStatusResult" class="ConfigStatus">
+		<result column="configId" property="configId"/>
+		<result column="modifyTime" property="modifyTime"/>
+	</resultMap>
+	
 	<select id="findConfigsByProject" resultMap="ConfigResult" parameterClass="int">
 		SELECT * FROM config WHERE projectId = #projectId# ORDER BY seq, id
     </select>
@@ -139,7 +144,9 @@
     
     <insert id="insertConfig" parameterClass="Config">
     	INSERT INTO config(`key`, `desc`, type, projectId, createUserId, modifyUserId, createTime, modifyTime, seq)
-    	VALUES(#key#, #desc#, #type#, #projectId#, #createUserId#, #modifyUserId#, NOW(), NOW(), #seq#)
+    	VALUES(#key#, #desc#, #type#, #projectId#, #createUserId#, #modifyUserId#, 
+    	<isNotNull property="createTime">#createTime#</isNotNull><isNull property="createTime">NOW()</isNull>, 
+    	<isNotNull property="modifyTime">#modifyTime#</isNotNull><isNull property="modifyTime">NOW()</isNull>, #seq#)
     	<selectKey resultClass="int">    
             SELECT LAST_INSERT_ID() AS ID
         </selectKey> 
@@ -151,7 +158,9 @@
     
     <insert id="insertInstance" parameterClass="ConfigInstance">
     	INSERT INTO config_instance(configId, envId, value, context, contextmd5, createUserId, modifyUserId, createTime, modifyTime, `desc`, seq)
-    	VALUES(#configId#, #envId#, #value#, #context#, #contextmd5#, #createUserId#, #modifyUserId#, NOW(), NOW(), #desc#, #seq#)
+    	VALUES(#configId#, #envId#, #value#, #context#, #contextmd5#, #createUserId#, #modifyUserId#, 
+    	<isNotNull property="createTime">#createTime#</isNotNull><isNull property="createTime">NOW()</isNull>, 
+    	<isNotNull property="modifyTime">#modifyTime#</isNotNull><isNull property="modifyTime">NOW()</isNull>, #desc#, #seq#)
     	<selectKey resultClass="int">    
             SELECT LAST_INSERT_ID() AS ID
         </selectKey> 
@@ -189,7 +198,7 @@
     	WHERE c.projectId = #projectId# AND s.envId = #envId#
     </select>
     
-    <select id="findModifyTime" parameterClass="map" resultMap="ConfigStatusResult">
+    <select id="findModifyTime" parameterClass="map" resultMap="ConfigModifyTimeStatusResult">
     	SELECT s.configId, s.modifyTime
     	FROM config c INNER JOIN config_status s ON c.id = s.configId
     	WHERE c.projectId = #projectId# AND s.envId = #envId#

@@ -55,7 +55,7 @@ public class EnvironmentAction extends AbstractLionAction{
 		environment.setLabel(envLabel);
 		environment.setName(envName);
 		environment.setSeq(seq);
-		environmentService.save(environment);
+		environmentService.create(environment);
 		environmentList = environmentService.findAll();
 		return SUCCESS;
 	}

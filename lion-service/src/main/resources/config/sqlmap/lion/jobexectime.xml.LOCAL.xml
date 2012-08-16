@@ -8,11 +8,7 @@
 		<result column="id" property="id"/>
 		<result column="lastFetchTime" property="lastFetchTime"/>
 		<result column="lastJobExecTime" property="lastJobExecTime"/>
-<<<<<<< HEAD
 		<result column="switcher" property="switcher"/>
-=======
-		<result column="switcher" property="swither"/>
->>>>>>> 7671dd21202e62df52fad1c2b5848a642d8fd970
 		<result column="failMail" property="failMail"/>
 		<result column="jobName" property="jobName"/>
 	</resultMap>

@@ -15,17 +15,29 @@
  */
 package com.dianping.lion.service.impl;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.EnvironmentDao;
 import com.dianping.lion.entity.Environment;
-import com.dianping.lion.medium.ConfigRegisterServiceRepository;
+import com.dianping.lion.register.ConfigRegisterService;
+import com.dianping.lion.register.ConfigRegisterServiceRepository;
 import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.util.SecurityUtils;
 
 /**
  * @author danson.liu
@@ -33,15 +45,32 @@ import com.dianping.lion.service.EnvironmentService;
  */
 public class EnvironmentServiceImpl implements EnvironmentService {
 	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	private EnvironmentDao environmentDao;
 	
 	@Autowired
-	private ConfigRegisterServiceRepository mediumServiceRepository;
-
+	private ConfigRegisterServiceRepository registerServiceRepository;
+	
+	private Ehcache ehcache;
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Environment> findAll() {
-		return environmentDao.findAll();
+		Element element = ehcache.get(ServiceConstants.CACHE_KEY_ENVLIST);
+		if (element == null) {
+			synchronized (this) {
+				element = ehcache.get(ServiceConstants.CACHE_KEY_ENVLIST);
+				if (element == null) {
+					List<Environment> allEnvs = environmentDao.findAll();
+					element = new Element(ServiceConstants.CACHE_KEY_ENVLIST, allEnvs, true, null, null);
+					ehcache.put(element);
+					refreshRegisterServiceRepository(allEnvs);
+				}
+			}
+		}
+		return (List<Environment>) element.getObjectValue();
 	}
 
 	@Override
@@ -56,40 +85,104 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 	public void delete(int id) {
 		environmentDao.delete(id);
-		mediumServiceRepository.removeRegisterService(id);
+		ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
 	}
 
 	@Override
-	public int save(Environment env) {
-		return environmentDao.save(env);
+	public int create(Environment env) {
+		int currentUserId = SecurityUtils.getCurrentUserId();
+		env.setCreateUserId(currentUserId);
+		env.setModifyUserId(currentUserId);
+		int envId = environmentDao.create(env);
+		ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+		return envId;
 	}
 
 	@Override
 	public void update(Environment env) {
-		Environment oldEnv = findEnvByID(env.getId());
+		env.setModifyUserId(SecurityUtils.getCurrentUserId());
 		environmentDao.update(env);
-		if (!StringUtils.equals(oldEnv.getIps(), env.getIps())) {
-			mediumServiceRepository.removeRegisterService(env.getId());
-		}
+		ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
 	}
 	
 	@Override
 	public Environment findEnvByID(int id) {
-		return environmentDao.findEnvByID(id);
+		List<Environment> envList = findAll();
+		for (Environment env : envList) {
+			if (env.getId() == id) {
+				return env;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public Environment findEnvByName(String name) {
-		return environmentDao.findEnvByName(name);
+		List<Environment> envList = findAll();
+		for (Environment env : envList) {
+			if (StringUtils.equals(env.getName(), name)) {
+				return env;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public Environment findPrevEnv(int envId) {
-		return environmentDao.findPrevEnv(envId);
+		Environment prevEnv = null;
+		List<Environment> envList = findAll();
+		for (Environment env : envList) {
+			if (env.getId() == envId) {
+				return prevEnv;
+			}
+			prevEnv = env;
+		}
+		return null;
 	}
 
-	public void setMediumServiceRepository(ConfigRegisterServiceRepository mediumServiceRepository) {
-		this.mediumServiceRepository = mediumServiceRepository;
+	/**
+	 * @param allEnvs
+	 */
+	@SuppressWarnings("unchecked")
+	private void refreshRegisterServiceRepository(List<Environment> allEnvs) {
+		Set<Integer> allEnvIds = new HashSet<Integer>(allEnvs.size());
+		for (Environment env : allEnvs) {
+			allEnvIds.add(env.getId());
+			ConfigRegisterService registerService = registerServiceRepository.getRegisterService(env.getId());
+			if (registerService != null && !StringUtils.equals(registerService.getAddresses(), env.getIps())) {
+				registerServiceRepository.removeRegisterService(env.getId());
+			}
+		}
+		Set<Integer> registeredEnvironments = registerServiceRepository.getRegisteredEnvironments();
+		Collection<Integer> needRemovedEnvIds = CollectionUtils.subtract(registeredEnvironments, allEnvIds);
+		for (Integer needRemovedEnvId : needRemovedEnvIds) {
+			registerServiceRepository.removeRegisterService(needRemovedEnvId);
+		}
+	}
+	
+	public void init() {
+		final List<Environment> environments = findAll();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for (Environment environment : environments) {
+					try {
+						registerServiceRepository.getRequiredRegisterService(environment.getId());
+					} catch (RuntimeException e) {
+						logger.warn("Build config register service[env=" + environment.getLabel() 
+								+ "] failed while environment initialize.", e);
+					}
+				}
+			}
+		}).start();
+	}
+
+	public void setRegisterServiceRepository(ConfigRegisterServiceRepository registerServiceRepository) {
+		this.registerServiceRepository = registerServiceRepository;
+	}
+
+	public void setEhcache(Ehcache ehcache) {
+		this.ehcache = ehcache;
 	}
 
 }

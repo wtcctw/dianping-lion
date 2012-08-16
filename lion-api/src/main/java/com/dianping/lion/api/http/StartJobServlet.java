@@ -15,30 +15,20 @@
  */
 package com.dianping.lion.api.http;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONObject;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.web.context.ServletContextAware;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.dianping.lion.entity.Config;
-import com.dianping.lion.entity.ConfigInstance;
-import com.dianping.lion.entity.Environment;
-import com.dianping.lion.exception.RegisterRelatedException;
-import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.job.SyncJob;
+import com.dianping.lion.util.ThrowableUtils;
 
 
 /**
  * TODO Comment of GetConfigServlet
- * @author danson.liu
+ * @author youngphy.yang
  *
  */
 public class StartJobServlet extends AbstractLionServlet{
@@ -46,10 +36,20 @@ public class StartJobServlet extends AbstractLionServlet{
 	private static final long serialVersionUID = 1512883947325409564L;
 
 	@Override
-	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	    PrintWriter writer = resp.getWriter();
 		String jobName = req.getParameter("jobName");
-		SyncJob sJob = (SyncJob)context.getBean(jobName);
-		sJob.work();
+		SyncJob sJob = (SyncJob) getBean(jobName);
+		if (sJob == null) {
+		    writer.print("Job[" + jobName + "] not found.");
+		} else {
+		    try {
+                sJob.work();
+                writer.print("OK!");
+            }
+            catch (Exception e) {
+                writer.print(ThrowableUtils.extractStackTrace(e));
+            }
+		}
 	}
 }
