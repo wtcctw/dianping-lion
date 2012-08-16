@@ -8,7 +8,7 @@
 		<result column="id" property="id"/>
 		<result column="lastFetchTime" property="lastFetchTime"/>
 		<result column="lastJobExecTime" property="lastJobExecTime"/>
-		<result column="swither" property="swither"/>
+		<result column="switcher" property="swither"/>
 		<result column="failMail" property="failMail"/>
 	</resultMap>
 	
