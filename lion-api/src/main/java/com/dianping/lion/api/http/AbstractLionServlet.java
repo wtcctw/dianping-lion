@@ -180,6 +180,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	 * @throws IOException 
 	 * @throws ServletException 
 	 */
-	protected abstract void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception;
+	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	}
 	
 }
