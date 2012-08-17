@@ -19,13 +19,15 @@
 			<td>${jobExecTime_index + 1}</td>
 			<td>${jobExecTime.jobName}</td>
 			<td>${jobExecTime.lastJobExecTime?string("yyyy-MM-dd HH:mm:ss")}</td>
-			<td>${jobExecTime.switcher}</td>
+			<td><#if jobExecTime.switcher>开<#else>关</#if></td>
+			<!-- <@s.if test="%{jobExecTime.switcher}">value="开"</@s.if> 
+			<#if jobExecTime.switcher>开<#else>关</#if>-->
 			<td>${jobExecTime.failMail}</td>
 			<td style="text-align: center;">
 			<a data-toggle="modal" href="<@s.url action='jobEditAjax' namespace='/system'/>?jobId=${jobExecTime.id}"
 				rel="tooltip" title="修改任务"> <i class="icon-edit"></i> </a>
 			&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
-			<a class="deletelink" href="<@s.url action='jobDelete' namespace='/system'/>?jobId=${jobExecTime.id}"
+			<a class="deletelink" href="<@s.url action='jobDeleteAjax' namespace='/system'/>?jobId=${jobExecTime.id}"
 				rel="tooltip" title="删除任务"> <i class="icon-remove"></i> </a>
 			</td>
 		</tr>

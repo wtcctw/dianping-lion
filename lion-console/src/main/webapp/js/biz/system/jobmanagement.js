@@ -34,8 +34,34 @@ function bind() {
 		height : 140,
 		buttons : {
 			"是" : function() {
-				$(location).attr("href", $(this).data("location"));
-			},
+		$(this).dialog("close");
+		$.ajax( {
+			type : "GET",
+			contentType : "application/json;",
+			url : $(this).data("location"),
+			dataType : 'html',
+			success : function(response) {
+				var temp = response.replace(/&quot;/g, '\"');
+				if(temp.indexOf('table-job-list') != -1) {
+					document.getElementById('table-job-list').innerHTML = temp;
+					bind();
+				} else {
+					var $deleteAlert2 = $("<div> [<font color='red'>"+response+"</font>]</div>")
+					.dialog({
+							autoOpen : false,
+							resizable : false,
+							modal : true,
+							title : "提示框",
+							height : 140,
+							buttons : {
+							"确定" : function() {$(this).dialog("close");}
+						}
+					});
+					$deleteAlert2.dialog("open");
+				}
+			}
+		});
+	},
 			"否" : function() {$(this).dialog("close");}
 		}
 	});
@@ -83,7 +109,7 @@ function updateJob() {
 	id = document.getElementById('input-job-id').value;
 	jobName = document.getElementById('input-job-name').value;
 //	switcher = document.getElementsByName('input-job-switcher').value;
-	switcher = $("input[name='input-job-switcher'][checked]").val();
+	switcher = $("input[name='input-job-switcher']:checked").val();
 	failMail = document.getElementById('input-job-failMail').value;
 	if (validateConfigForm()) {
 		var clientdata = {
@@ -109,6 +135,14 @@ function updateJob() {
 	}
 }
 
+function verifyMail(mailAddress) {
+	var re=/^\w+@\w+(\.\w+)+(,\w+@\w+(\.\w+)+)*$/g; //匹配邮箱地址的正则表达式
+	if(re.test(mailAddress)) {
+		return true;
+	}
+	return false;
+}
+
 function validateConfigForm() {
 	var checkPass = true;
 	resetConfigFormValidation();
@@ -122,6 +156,10 @@ function validateConfigForm() {
 		setValidateError($("#input-job-failMail"),$("#span-job-failMail-error"),"必填");
 		checkPass = false;
 	}
+	if(!verifyMail($("#input-job-failMail").val())) {
+		setValidateError($("#input-job-failMail"),$("#span-job-failMail-error"),"地址不合法");
+		checkPass = false;
+	}
 	return checkPass;
 }
 
@@ -133,5 +171,17 @@ function setValidateError($element,$error,message) {
 function resetConfigFormValidation() {
 	$(".control-group").removeClass("error");
 	$(".message").hide();
-	
+}
+
+function changeRadioStatus(radioID, changedInputID) {
+	var radio_oj = document.getElementsByName(radioID);
+	var changedItem = document.getElementById(changedInputID);
+	/*for(var i=0;i<radio_oj.length;i++) //循环
+	   {
+	   if(radio_oj[i].id==changedItem.id) { 
+		   radio_oj[i].checked=true; //修改选中状态
+		} else {
+			radio_oj[i].checked = false;
+		}
+	}*/
 }

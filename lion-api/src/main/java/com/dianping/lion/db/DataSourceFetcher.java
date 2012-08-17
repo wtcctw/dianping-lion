@@ -31,6 +31,7 @@ public class DataSourceFetcher {
 	private int port;
 	private String protocal;
 	private String path;
+	private String srtkey;
 	
 	private HttpClient httcClient;
 	private GetMethod dsGetter;
@@ -41,8 +42,9 @@ public class DataSourceFetcher {
 	}
 	public String fetchDS(long lastFetchTime) {
 		String dsContent = null;
-		
-		dsGetter = new GetMethod(path+lastFetchTime);
+		long minEffectionTime = System.currentTimeMillis() / 60000 + 10;
+		String url = path+lastFetchTime+"&srtkey="+srtkey+minEffectionTime;
+		dsGetter = new GetMethod(url);
 		try {
 			httcClient.executeMethod(dsGetter);
 			dsContent = dsGetter.getResponseBodyAsString();
@@ -64,6 +66,12 @@ public class DataSourceFetcher {
 	}
 	public void setPath(String path) {
 		this.path = path;
+	}
+	public String getSrtkey() {
+		return srtkey;
+	}
+	public void setSrtkey(String srtkey) {
+		this.srtkey = srtkey;
 	}
 	
 }
