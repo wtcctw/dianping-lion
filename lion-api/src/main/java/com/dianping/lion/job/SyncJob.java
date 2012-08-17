@@ -46,7 +46,7 @@ public abstract class SyncJob {
 			@Override
 			public void execute() throws Exception {
 				JobExecTime jobExecTime = jobExecTimeDao.getJobExecTime(jobName);
-				if(jobExecTime.isSwither()) {
+				if(jobExecTime.isSwitcher()) {
 					Calendar can = Calendar.getInstance();
 					can.setTime(jobExecTime.getLastJobExecTime());
 					if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {

@@ -92,6 +92,25 @@
 			<result name="success">/WEB-INF/pages/system/environment.ftl</result>
 		</action>
 		
+		<!-- 任务管理  -->
+		<action name="jobManagement" class="com.dianping.lion.web.action.system.JobManagementAction" method="getJobLists">
+			<result name="success">/WEB-INF/pages/system/jobmanagement.ftl</result>
+		</action>
+		<action name="jobAddAjax" class="com.dianping.lion.web.action.system.JobManagementAction" method="addJob">
+			<result name="success">/WEB-INF/pages/system/jobmanagement-detail.ftl</result>
+		</action>
+		<action name="addJobSubmitAjax" class="com.dianping.lion.web.action.system.JobManagementAction" method="addJobSubmit">
+			<result name="success">/WEB-INF/pages/system/jobmanagement-list.ftl</result>
+		</action>
+		<action name="jobEditAjax" class="com.dianping.lion.web.action.system.JobManagementAction" method="editJob">
+			<result name="success">/WEB-INF/pages/system/jobmanagement-detail.ftl</result>
+		</action>
+		<action name="updateJobSubmitAjax" class="com.dianping.lion.web.action.system.JobManagementAction" method="editJobSubmit">
+			<result name="success">/WEB-INF/pages/system/jobmanagement-list.ftl</result>
+		</action>
+		<action name="jobDelete" class="com.dianping.lion.web.action.system.JobManagementAction" method="deleteJobAjax">
+			<result name="success">/WEB-INF/pages/system/jobmanagement.ftl</result>
+		</action>
 	</package>
 
 </struts>

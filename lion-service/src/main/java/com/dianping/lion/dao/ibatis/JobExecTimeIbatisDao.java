@@ -16,6 +16,7 @@
 package com.dianping.lion.dao.ibatis;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
@@ -39,6 +40,12 @@ public class JobExecTimeIbatisDao extends SqlMapClientDaoSupport implements
 		  Object obj = getSqlMapClientTemplate().queryForObject("JobExecTime.findTime", name);
 		  return (JobExecTime) obj;
 	}
+	
+	@Override
+	public JobExecTime getJobById(int jobId) {
+		  Object obj = getSqlMapClientTemplate().queryForObject("JobExecTime.findJobByID", jobId);
+		  return (JobExecTime) obj;
+	}
 
 	@Override
 	public void updateLastJobExecTime(JobExecTime jobExecTime) {
@@ -59,6 +66,26 @@ public class JobExecTimeIbatisDao extends SqlMapClientDaoSupport implements
 	@Override
 	public void endTransaction() throws SQLException {
 		getSqlMapClientTemplate().getSqlMapClient().endTransaction();
-//		session.endTransaction();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<JobExecTime> findAll() {
+		return getSqlMapClientTemplate().queryForList("JobExecTime.findAll");
+	}
+
+	@Override
+	public void addJob(JobExecTime jobExecTime){
+		getSqlMapClientTemplate().insert("JobExecTime.insertJob", jobExecTime);
+	}
+
+	@Override
+	public void deleteJob(int id) {
+		getSqlMapClientTemplate().delete("JobExecTime.deleteJob", id);
+	}
+
+	@Override
+	public void updateJob(JobExecTime jobExecTime) {
+		getSqlMapClientTemplate().update("JobExecTime.updateJob", jobExecTime);
 	}
 }
