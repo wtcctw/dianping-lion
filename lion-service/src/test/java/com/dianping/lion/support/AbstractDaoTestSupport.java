@@ -31,6 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @TransactionConfiguration(transactionManager = "Lion.TransactionManager", defaultRollback = true)
 @Transactional
-public class AbstractDaoTestSupport {
+public abstract class AbstractDaoTestSupport {
 
 }

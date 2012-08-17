@@ -25,6 +25,10 @@ public class SecurityUtils {
 	
 	private static ThreadLocal<User> currentUser = new InheritableThreadLocal<User>();
 	
+//	public static boolean hasPrivilege(int userId, String resource) {
+//	    
+//	}
+	
 	public static User getCurrentUser() {
 		User user = currentUser.get();
 		if (user != null) {

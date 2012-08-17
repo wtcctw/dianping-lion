@@ -48,7 +48,7 @@ public class JsonParserTest {
 	private static String content = null;
 	@BeforeClass
 	public static void setup() throws Exception {
-		URL url = JsonParserTest.class.getClassLoader().getResource("dbjson.txt");
+		URL url = JsonParserTest.class.getResource("/dbjson.txt");
 		File f = new File(url.getPath());
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);

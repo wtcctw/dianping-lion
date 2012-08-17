@@ -24,7 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.dianping.lion.db.Storager;
-import com.dianping.lion.support.AbstractDaoTestSupport;
 import com.dianping.lion.util.JsonParser;
 
 /**
@@ -32,11 +31,13 @@ import com.dianping.lion.util.JsonParser;
  * @author youngphy.yang
  *
  */
-public class StoragerTest extends AbstractDaoTestSupport{
+public class StoragerTest {
+    
 	private static String content = null;
+	
 	@BeforeClass
 	public static void setup() throws Exception {
-		URL url = JsonParserTest.class.getClassLoader().getResource("dbjson.txt");
+		URL url = JsonParserTest.class.getResource("/dbjson.txt");
 		File f = new File(url.getPath());
 		FileReader fr = new FileReader(f);
 		BufferedReader br = new BufferedReader(fr);

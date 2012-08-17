@@ -63,7 +63,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>lion-api</finalName>
+		<finalName>lion-api-${env}</finalName>
 		<filters>
 			<filter>src/main/filters/config-${env}.properties</filter>
 		</filters>

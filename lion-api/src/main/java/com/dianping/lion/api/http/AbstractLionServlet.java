@@ -63,7 +63,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	public static final String 		PARAM_PUSH 		= "p";		//配置变更是否实时推送到app
 	public static final String 		PARAM_CORRECT 	= "c";		//设置registerpoint是否正确
 	
-	public static final String 		SUCCESS_CODE 	= "0";		//正确返回码
+	public static final String 		SUCCESS_CODE 	= "0|";		//正确返回码
 	public static final String 		ERROR_CODE 		= "1|";		//错误返回码
 	
 	protected ApplicationContext 	applicationContext;

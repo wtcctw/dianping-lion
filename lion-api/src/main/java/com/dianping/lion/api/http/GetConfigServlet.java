@@ -68,7 +68,7 @@ public class GetConfigServlet extends AbstractLionServlet {
 		} catch (RegisterRelatedException e) {
 			throw new RuntimeBusinessException("get config value from zk failed.");
 		}
-		writer.print(SUCCESS_CODE + "|" + resultJson.toString());
+		writer.print(SUCCESS_CODE + resultJson.toString());
 	}
 
 }

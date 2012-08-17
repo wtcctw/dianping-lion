@@ -1,0 +1,68 @@
+$(function(){
+	$("#login-modal").on("hidden", function() {
+		$("input[type='text'],input[type='password']").val("");
+		$("#login-error-msg").html("");
+		resetLoginFormValidation();
+	});
+	
+	$("#login_link").click(function() {
+		$("#login-modal").modal({
+			backdrop : "static", 
+			keyboard : true
+		});
+		return false;
+	});	
+	
+	var formSubmitHandler = function(event) {
+		$("#login-error-msg").html("");
+		if (validateLoginForm()) {
+			$.ajax("/loginAjax.vhtml".prependcontext(), {
+				data : $.param({
+					"loginName" : $("#loginName").val().trim(),
+					"passwd" : $("#loginPasswd").val()
+				}, true),
+				dataType : "json",
+				success : function(result) {
+					if (result.code == Res_Code_Success) {
+						$("#login-msg").html("<font color='green'>登陆成功, 载入中...</font>");
+						window.location.reload();
+					} else if (result.code == Res_Code_Error) {
+						$("#login-msg").html("<font color='red'>" + result.msg + "</font>");
+					}
+				}
+			});
+		}
+		return false;
+	};
+	
+	$("input[type='text'],input[type='password']").keypress(function(e) {
+		var keyCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
+		if (keyCode == 13) {
+			formSubmitHandler(e);
+		}
+	});
+	
+	$("#login-btn").click(formSubmitHandler);
+	
+	function validateLoginForm() {
+		var checkPass = true;
+		resetLoginFormValidation();
+		$("#loginName, #loginPasswd").each(function() {
+			if ($(this).val().isBlank()) {
+				setValidateError($(this));
+				checkPass = false;
+			}
+		});
+		return checkPass;
+	}
+	
+	function resetLoginFormValidation() {
+		$(".control-group").removeClass("error");
+		$(".message").hide();
+	}
+	
+	function setValidateError($element) {
+		$element.parents(".control-group").addClass("error");
+		$element.next(".message").show();
+	}
+});

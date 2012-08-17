@@ -54,7 +54,7 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
 			checkConfigKeys(projectName, keys);
 			configReleaseService.executeSetTask(project.getId(), environment.getId(), features, keys, PUSH_TO_APP.equals(push2App));
 			
-			resp.getWriter().write(SUCCESS_CODE + "|" + snapshotId);
+			resp.getWriter().write(SUCCESS_CODE + snapshotId);
 		} else {
 			resp.getWriter().write(SUCCESS_CODE);
 		}

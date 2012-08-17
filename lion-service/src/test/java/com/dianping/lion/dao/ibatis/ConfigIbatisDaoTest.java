@@ -62,20 +62,20 @@ public class ConfigIbatisDaoTest extends AbstractDaoTestSupport {
 	
 	@Test
 	public void testReadConfigValue() throws JSONException {
-		List<ConfigInstance> instances = configDao.findInstanceByConfig(1, 1, 30);
-		JSONArray array = new JSONArray();
-		for (ConfigInstance instance : instances) {
-			JSONObject json = new JSONObject();
-			json.put("value", instance.getValue());
-			json.put("context", instance.getContext());
-			array.put(json);
-		}
-		String nodeValue = array.toString();
-		JSONArray array2 = new JSONArray(nodeValue);
-		JSONObject jsonObj = (JSONObject) array2.get(1);
-		String configValue = (String) jsonObj.get("value");
-		JSONObject configJson = new JSONObject("{\"main-db.passwd\":[]}");
-		System.out.println(configJson.get("main-db.passwd"));
+//		List<ConfigInstance> instances = configDao.findInstanceByConfig(1, 1, 30);
+//		JSONArray array = new JSONArray();
+//		for (ConfigInstance instance : instances) {
+//			JSONObject json = new JSONObject();
+//			json.put("value", instance.getValue());
+//			json.put("context", instance.getContext());
+//			array.put(json);
+//		}
+//		String nodeValue = array.toString();
+//		JSONArray array2 = new JSONArray(nodeValue);
+//		JSONObject jsonObj = (JSONObject) array2.get(1);
+//		String configValue = (String) jsonObj.get("value");
+//		JSONObject configJson = new JSONObject("{\"main-db.passwd\":[]}");
+//		System.out.println(configJson.get("main-db.passwd"));
 	}
 	
 }

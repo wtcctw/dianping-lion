@@ -59,7 +59,7 @@ public class RollbackConfigsServlet extends AbstractLionServlet {
 			}
 			hasRollbacked = true;
 		}
-		resp.getWriter().print(SUCCESS_CODE + "|" + (hasRollbacked ? "1|" + keysNotRemoved : "0"));
+		resp.getWriter().print(SUCCESS_CODE + (hasRollbacked ? "1|" + keysNotRemoved : "0"));
 	}
 
 }

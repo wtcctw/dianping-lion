@@ -19,6 +19,7 @@
 	<script type="text/javascript" src="<@s.url value="/js/bootstrap.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/json2.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/my97/WdatePicker.js"/>"></script>
+	<script type="text/javascript" src="<@s.url value="/js/biz/system/login.js"/>"></script>
 	<#include "/WEB-INF/pages/common/common.ftl">
     <style type="text/css">
 		body {
@@ -45,7 +46,7 @@
 		        	<@lion.SubNav/>
 		        </ul>
 		        <ul class="nav pull-right">
-		        	<li><a href="#">登录</a></li>
+		        	<li><a href="#" id="login_link">登录</a></li>
 		        </ul>
 	          	<ul class="nav pull-right">
 	          		<@lion.MainNav/>
@@ -64,5 +65,6 @@
 	<div class="container">
 		<footer class="footer"><center>©2012 Dianping平台架构, Mail: <a href="mailto:www@dianping.com">www@dianping.com</a></center></footer>
 	</div>
+	<#include "/WEB-INF/pages/common/login-modal.ftl">
 </body>
 </html>

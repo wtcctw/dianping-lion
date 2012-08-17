@@ -15,16 +15,9 @@
  */
 package com.dianping.lion.db;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.net.URL;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
-
-import com.dianping.lion.api.db.JsonParserTest;
 
 /**
  * DataSourceFetcher
@@ -73,16 +66,4 @@ public class DataSourceFetcher {
 		this.path = path;
 	}
 	
-	public String testDS() throws Exception {
-		URL url = JsonParserTest.class.getClassLoader().getResource("dbjson.txt");
-		File f = new File(url.getPath());
-		FileReader fr = new FileReader(f);
-		BufferedReader br = new BufferedReader(fr);
-		StringBuffer sb = new StringBuffer();
-		String line = null;
-		while((line = br.readLine()) != null)
-			sb.append(line);
-		String content = sb.toString();
-		return content;
-	}
 }
