@@ -15,6 +15,10 @@
  */
 package com.dianping.lion.db;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
@@ -47,7 +51,15 @@ public class DataSourceFetcher {
 		dsGetter = new GetMethod(url);
 		try {
 			httcClient.executeMethod(dsGetter);
-			dsContent = dsGetter.getResponseBodyAsString();
+			InputStream inputStream = dsGetter.getResponseBodyAsStream();   
+	        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));   
+	        StringBuffer stringBuffer = new StringBuffer();   
+	        String str= "";   
+	        while((str = br.readLine()) != null){
+	            stringBuffer .append(str );   
+	        }
+	        dsContent = stringBuffer.toString();
+/*			dsContent = dsGetter.getResponseBodyAsString();*/
 		} catch (Exception e) {
 			logger.error("Job execution failed this time.", e);
 			return null;
