@@ -9,23 +9,19 @@
 		<result column="name" property="name"/>
 		<result column="email" property="email"/>
 		<result column="system" property="system"/>
+		<result column="locked" property="locked"/>
 		<result column="createTime" property="createTime"/>
 	</resultMap>
 	
 	<select id="findAll" resultMap="UserResult">
 		<![CDATA[
-		SELECT id, loginName, name, email, createTime, system
-		FROM user
-		ORDER BY id
+		SELECT * FROM user ORDER BY id
 		]]>
     </select>
     
     <select id="findById" resultMap="UserResult">
 		<![CDATA[
-		SELECT id, loginName, name, email, createTime, system
-		FROM user
-		WHERE id=#id#
-		ORDER BY id
+		SELECT * FROM user WHERE id=#id# ORDER BY id
 		]]>
     </select>
     

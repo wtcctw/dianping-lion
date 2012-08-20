@@ -16,4 +16,9 @@
 		<tag-class>com.dianping.lion.web.tag.SubNavigator</tag-class>
 		<body-content>empty</body-content>
 	</tag>
+	<tag>
+		<name>UserLogin</name>
+		<tag-class>com.dianping.lion.web.tag.UserLoginTag</tag-class>
+		<body-content>empty</body-content>
+	</tag>
 </taglib>

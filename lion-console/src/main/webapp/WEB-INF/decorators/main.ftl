@@ -46,7 +46,7 @@
 		        	<@lion.SubNav/>
 		        </ul>
 		        <ul class="nav pull-right">
-		        	<li><a href="#" id="login_link">登录</a></li>
+		        	<li><@lion.UserLogin/></li>
 		        </ul>
 	          	<ul class="nav pull-right">
 	          		<@lion.MainNav/>

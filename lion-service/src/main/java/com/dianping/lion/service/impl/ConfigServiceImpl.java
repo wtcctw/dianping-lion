@@ -198,12 +198,12 @@ public class ConfigServiceImpl implements ConfigService {
 			Project project = projectDao.getProject(configFound.getProjectId());
 			throw new RuntimeBusinessException("该配置项已存在(project: " + (project != null ? project.getName() : "***") + ", desc: " + configFound.getDesc() + ")!");
 		}
-		int currentUserId = SecurityUtils.getCurrentUserId();
+		Integer currentUserId = SecurityUtils.getCurrentUserId();
 		int projectId = config.getProjectId();
-		if (config.getCreateUserId() == -1) {
+		if (config.getCreateUserId() == null) {
 			config.setCreateUserId(currentUserId);
 		}
-		if (config.getModifyUserId() == -1) {
+		if (config.getModifyUserId() == null) {
 			config.setModifyUserId(currentUserId);
 		}
 		projectDao.lockProject(projectId);
@@ -217,11 +217,11 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 	
 	public int createInstance(ConfigInstance instance, ConfigSetType setType) {
-		int currentUserId = SecurityUtils.getCurrentUserId();
-		if (instance.getCreateUserId() == -1) {
+		Integer currentUserId = SecurityUtils.getCurrentUserId();
+		if (instance.getCreateUserId() == null) {
 			instance.setCreateUserId(currentUserId);
 		}
-		if (instance.getModifyUserId() == -1) {
+		if (instance.getModifyUserId() == null) {
 			instance.setModifyUserId(currentUserId);
 		}
 		int retryTimes = 0;
@@ -349,7 +349,7 @@ public class ConfigServiceImpl implements ConfigService {
 		int updated = configDao.updateModifyStatus(configId, envId);
 		if (updated == 0) {
 			ConfigStatus status = new ConfigStatus(configId, envId);
-			int currentUserId = SecurityUtils.getCurrentUserId();
+			Integer currentUserId = SecurityUtils.getCurrentUserId();
 			status.setCreateUserId(currentUserId);
 			status.setModifyUserId(currentUserId);
 			configDao.createStatus(status);

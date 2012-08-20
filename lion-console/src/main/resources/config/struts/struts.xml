@@ -69,8 +69,11 @@
 		<action name="navigate" class="com.dianping.lion.web.action.common.NavigationAction">
 			<result name="success" type="redirect">${redirectUrl}</result>
 		</action>
-		<action name="loginAjax" class="com.dianping.lion.web.action.common.LoginAction">
+		<action name="loginAjax" class="com.dianping.lion.web.action.common.LoginAction" method="login">
 			<result name="success" type="stream"/>
+		</action>
+		<action name="logout" class="com.dianping.lion.web.action.common.LoginAction" method="logout">
+			<result name="success" type="redirect">/</result>
 		</action>
 	</package>
 </struts>

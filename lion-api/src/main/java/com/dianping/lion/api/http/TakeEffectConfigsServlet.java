@@ -34,21 +34,27 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
 	private static final long serialVersionUID 	= 4596830426101363885L;
 	
 	private static final String PUSH_TO_APP 	= "1";
+	private static final String CREATE_SNAPSHOT 	= "1";
 
 	@Override
 	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
 		String env = getNotBlankParameter(req, PARAM_ENV);
-		String task = getNotBlankParameter(req, PARAM_TASK);
+		String task = req.getParameter(PARAM_TASK);
 		String[] keys = req.getParameterValues(PARAM_KEY);
 		String push2App = req.getParameter(PARAM_PUSH);
+		String snapshot = req.getParameter(PARAM_SNAPSHOT);
 		push2App = push2App != null ? push2App : "0";
+		boolean createSnapshot = snapshot != null ? CREATE_SNAPSHOT.equals(snapshot.trim()) : false;
 		
 		if (keys != null && keys.length > 0) {
 			Project project = getRequiredProject(projectName);
 			Environment environment = getRequiredEnv(env);
 			
-			int snapshotId = configReleaseService.createSnapshotSet(project.getId(), environment.getId(), task);
+			int snapshotId = -1;
+			if (createSnapshot) {
+			    snapshotId = configReleaseService.createSnapshotSet(project.getId(), environment.getId(), task != null ? task : "");
+			}
 			
 			String[] features = getRequiredParameters(req, PARAM_FEATURE);
 			checkConfigKeys(projectName, keys);

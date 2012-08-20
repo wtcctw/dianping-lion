@@ -52,6 +52,8 @@ public interface ProjectService {
 	 */
 	Project getProject(int projectId);
 	
+	Project loadProject(int projectId);
+	
 	Project findProject(String name);
 	
 	Integer addProject(Project project);
@@ -60,4 +62,6 @@ public interface ProjectService {
 	Integer delProject(int projectId);
 	
 	List<Project> getProjectsByProduct(int productId);
+
+    boolean isMember(int projectId, int userId);
 }

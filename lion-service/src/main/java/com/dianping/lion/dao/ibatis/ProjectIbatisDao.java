@@ -23,6 +23,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
+import com.dianping.lion.util.Maps;
 
 /**
  * @author danson.liu
@@ -84,5 +85,11 @@ public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectD
 		List<Project> productProjects = getSqlMapClientTemplate().queryForList("Project.selectProjectsByProduct", productId);
 		return productProjects;
 	}
+
+    @Override
+    public boolean isMember(int projectId, int userId) {
+        return  getSqlMapClientTemplate().queryForObject("Project.findMember", Maps.entry("projectId", projectId)
+                .entry("userId", userId).get()) != null;
+    }
 
 }

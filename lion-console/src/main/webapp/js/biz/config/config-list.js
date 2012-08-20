@@ -284,6 +284,17 @@ $(function(){
 			setValidateError($("#config-value"));
 			checkPass = false;
 		}
+		var envselected = false;
+		$(":checkbox[name='config-env']").each(function() {
+			if ($(this).is(":checked")) {
+				envselected = true;
+				return false;
+			}
+		});
+		if (!envselected) {
+			setValidateError($(":checkbox[name='config-env']"));
+			checkPass = false;
+		}
 		return checkPass;
 	}
 	
@@ -293,6 +304,17 @@ $(function(){
 		if (parseInt($("#edit-config-type-selector").val()) == Type_Number
 				&& !$("#edit-config-value").val().isNumber()) {
 			setValidateError($("#edit-config-value"));
+			checkPass = false;
+		}
+		var envselected = false;
+		$(":checkbox[name='edit-config-env']").each(function() {
+			if ($(this).is(":checked")) {
+				envselected = true;
+				return false;
+			}
+		});
+		if (!envselected) {
+			setValidateError($(":checkbox[name='edit-config-env']"));
 			checkPass = false;
 		}
 		return checkPass;
@@ -425,7 +447,7 @@ $(function(){
 			$("#edit-config-modal .config-key").text(getConfigKey($(this)));
 			var config_type = getConfigType($(this));
 			$("#edit-config-type-selector").val(config_type);
-			$("[name='edit-config-env'][value='" + $("[name='envId']").val() + "']").attr("checked", true);
+			$("[name='edit-config-env'][value='" + $("[name='envId']").val() + "']:enabled").attr("checked", true);
 			$("#edit-config-value-container").html(generateValueComponent(parseInt(config_type), "edit-config-value"));
 			$("#edit-config-modal").modal({
 				backdrop : "static", 

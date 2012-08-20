@@ -39,8 +39,8 @@ public class ConfigInstance implements Serializable {
 	protected String value;
 	protected String context = NO_CONTEXT;
 	protected String contextmd5;
-	protected int createUserId = -1;
-	protected int modifyUserId = -1;
+	protected Integer createUserId = -1;
+	protected Integer modifyUserId = -1;
 	protected Date createTime;
 	protected Date modifyTime;
 	protected int seq;
@@ -166,25 +166,25 @@ public class ConfigInstance implements Serializable {
 	/**
 	 * @return the createUserId
 	 */
-	public int getCreateUserId() {
+	public Integer getCreateUserId() {
 		return createUserId;
 	}
 	/**
 	 * @param createUserId the createUserId to set
 	 */
-	public void setCreateUserId(int createUserId) {
+	public void setCreateUserId(Integer createUserId) {
 		this.createUserId = createUserId;
 	}
 	/**
 	 * @return the modifyUserId
 	 */
-	public int getModifyUserId() {
+	public Integer getModifyUserId() {
 		return modifyUserId;
 	}
 	/**
 	 * @param modifyUserId the modifyUserId to set
 	 */
-	public void setModifyUserId(int modifyUserId) {
+	public void setModifyUserId(Integer modifyUserId) {
 		this.modifyUserId = modifyUserId;
 	}
 	/**

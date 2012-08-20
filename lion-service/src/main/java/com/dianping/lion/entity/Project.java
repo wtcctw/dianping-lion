@@ -37,14 +37,15 @@ public class Project implements Serializable {
 	 */
 	private Product product;
 	
-	//TODO remove me!!! by danson.liu, 向彬操作
 	private String productName;
 	
 	private String teamName;
 	
-	private int techLeaderId;
+	private Integer managerId;
 	
-	private int operId;
+	private Integer techLeaderId;
+	
+	private Integer operId;
 	
 	private Date createTime;
 	
@@ -178,19 +179,33 @@ public class Project implements Serializable {
 		this.product = product;
 	}
 
-	public int getTechLeaderId() {
+	/**
+     * @return the managerId
+     */
+    public Integer getManagerId() {
+        return managerId;
+    }
+
+    /**
+     * @param managerId the managerId to set
+     */
+    public void setManagerId(Integer managerId) {
+        this.managerId = managerId;
+    }
+
+    public Integer getTechLeaderId() {
 		return techLeaderId;
 	}
 
-	public void setTechLeaderId(int techLeaderId) {
+	public void setTechLeaderId(Integer techLeaderId) {
 		this.techLeaderId = techLeaderId;
 	}
 
-	public int getOperId() {
+	public Integer getOperId() {
 		return operId;
 	}
 
-	public void setOperId(int operId) {
+	public void setOperId(Integer operId) {
 		this.operId = operId;
 	}
 

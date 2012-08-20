@@ -29,4 +29,8 @@ public interface UserService {
 	
 	User findById(int id);
 	
+	User loadById(int id);
+
+    User login(String loginName, String passwd);
+
 }

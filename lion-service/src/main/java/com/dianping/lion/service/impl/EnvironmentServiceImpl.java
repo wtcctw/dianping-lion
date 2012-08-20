@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.EnvironmentDao;
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.register.ConfigRegisterServiceRepository;
 import com.dianping.lion.service.EnvironmentService;
@@ -90,7 +91,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 	@Override
 	public int create(Environment env) {
-		int currentUserId = SecurityUtils.getCurrentUserId();
+		Integer currentUserId = SecurityUtils.getCurrentUserId();
 		env.setCreateUserId(currentUserId);
 		env.setModifyUserId(currentUserId);
 		int envId = environmentDao.create(env);
@@ -115,6 +116,15 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 		}
 		return null;
 	}
+
+    @Override
+    public Environment loadEnvByID(int id) {
+        Environment environment = findEnvByID(id);
+        if (environment == null) {
+            throw new EntityNotFoundException("Environment[id=" + id + "] not found.");
+        }
+        return environment;
+    }
 
 	@Override
 	public Environment findEnvByName(String name) {

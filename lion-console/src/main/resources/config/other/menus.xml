@@ -12,22 +12,26 @@
 	<menu name="testitem" label="测试菜单项" url="/"/>
 	 -->
 	
+	<!-- 
 	<group label="个人中心">
 		<group label="base">
 			<menu name="workbench" label="工作台" url="/"/>
 			<menu name="userlog" label="操作日志" url="/"/>
 		</group>
 	</group>
+	 -->
 	
 	<group label="系统选项">
-		<menu name="projectconfig" label="项目设置" url="/system/projectList.vhtml"/>
-		<menu name="syssetting" label="系统设置" url="/"/>
-		<menu name="jobmanagement" label="任务管理" url="/system/jobManagement.vhtml"/>
-		<menu name="usersetting" label="用户设置" url="/"/>
-		<menu name="security" label="权限设置" url=""/>
-		<menu name="envsetting" label="环境设置" url="/system/envSetting.vhtml"/>
+		<menu name="envsetting" label="环境管理" url="/system/envSetting.vhtml"/>
+		<menu name="projectconfig" label="项目管理" url="/system/projectList.vhtml"/>
+		<menu name="usersetting" label="用户管理" url="/"/>
+		<menu name="security" label="权限管理" url="/"/>
 		<menu name="oplog" label="操作日志" url="/system/opLog.vhtml"/>
+		<menu name="jobmanagement" label="系统Job管理" url="/system/jobManagement.vhtml"/>
+		<menu name="syssetting" label="系统设置" url="/"/>
+		<!-- 
 		<menu sperator="true"/>
 		<menu name="aboutlion" label="关于lion" url="/"/>
+		 -->
 	</group>
 </menus>

@@ -41,13 +41,13 @@
 <table class="table table-bordered table-striped table-condensed">
 	  <thead>
 	    <tr>
-	      <th>序号</th>
-	      <th>业务组</th>
-	      <th>所属产品线</th>
+	      <th width="65">序号</th>
+	      <th width="120">业务组</th>
+	      <th width="120">所属产品线</th>
 	      <th>项目名</th>
-	      <th>创建时间</th>
-	      <th>更新时间</th>
-	      <th >操作<a href="#" id="add_project_btn" rel="tooltip" title="添加项目"><i class="icon-plus pull-right"/>&nbsp&nbsp</a></th>
+	      <th width="230">创建时间</th>
+	      <th width="230">更新时间</th>
+	      <th width="100">操作<a href="#" id="add_project_btn" rel="tooltip" title="添加项目"><i class="icon-plus pull-right"/>&nbsp&nbsp</a></th>
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -62,13 +62,12 @@
 	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 				<td style="text-align:center;">
 					<a href="#" id="edit_project_btn" productId="${project.productId}" 
-					projectName="${project.name}" rel="tooltip" title="修改项目" onclick="editOpen(${project.id},'${project.name}',${project.productId},'<#list userList as user><#if user.id==project.techLeaderId>${user.name}@${user.loginName}@${user.id}</#if></#list>','<#list userList as user><#if user.id==project.operId>${user.name}@${user.loginName}@${user.id}</#if></#list>')">
-	      		    <i class="icon-edit"></i>
-	      		    </a>
-	      		    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-	      		    <a class="deletelink" href="<@s.url action='projectDel' namespace='/system'/>?projectId=${project.id}" rel="tooltip" title="删除项目">
-					<i class="icon-remove"></i>
-					</a>
+					projectName="${project.name}" rel="tooltip" title="修改项目" 
+					onclick="editOpen(${project.id},'${project.name}',${project.productId},'<#list userList as user><#if user.id==project.managerId>${user.name}@${user.loginName}@${user.id}</#if></#list>','<#list userList as user><#if user.id==project.techLeaderId>${user.name}@${user.loginName}@${user.id}</#if></#list>','<#list userList as user><#if user.id==project.operId>${user.name}@${user.loginName}@${user.id}</#if></#list>');return false;"
+					><i class="icon-edit"></i></a>&nbsp;&nbsp;&nbsp;
+					<a href="#" rel="tooltip" title="编辑成员"><i class="icon-user"></i></a>&nbsp;&nbsp;&nbsp;
+	      		    <a class="deletelink" href="<@s.url action='projectDel' namespace='/system'/>?projectId=${project.id}" rel="tooltip" title="删除项目"
+	      		    ><i class="icon-remove"></i></a>&nbsp;&nbsp;&nbsp;
 			     </td>
 	      	</tr>
 	  	</#list>
@@ -105,12 +104,22 @@
 				      </div>
 				    </div>
 				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for=" id="manager">PM:</label>
+				      <div class="controls lion-controls">
+				        <input id="manager" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
+				        	<span id="managerWarn" class="help-inline">
+							可输入名字或域账号提示
+	      				 	</span> 
+				        </div>
+				    </div>
+				    <div class="control-group control-lion-group">
 				      <label class="control-label control-lion-label" for=" id="techLeader">TechLeader:</label>
 				      <div class="controls lion-controls">
 				        <input id="techLeader" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
 						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
 				        	<span id="techLeaderWarn" class="help-inline">
-							可输入名字或拼音提示
+							可输入名字或域账号提示
 	      				 	</span> 
 				        </div>
 				    </div>
@@ -120,7 +129,7 @@
 				        <input id="oper" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
 						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
 						 <span id="operWarn" class="help-inline">
-							可输入名字或拼音提示
+							可输入名字或域账号提示
 	      				 </span> 
 				      </div>
 				    </div>
@@ -160,22 +169,32 @@
 				      </div>
 				    </div>
 				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for=" id="techLeader">TechLeader:</label>
+				      <label class="control-label control-lion-label" for=" id="managerEdit">PM:</label>
 				      <div class="controls lion-controls">
-				        <input id="techLeaderEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+				        <input id="managerEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
 						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
-				        	<span id="techLeaderWarnEdit" class="help-inline">
-							可输入名字或拼音提示
+				        	<span id="managerWarnEdit" class="help-inline">
+							可输入名字或域账号提示
 	      				 	</span> 
 				        </div>
 				    </div>
 				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="oper">业务运维:</label>
+				      <label class="control-label control-lion-label" for=" id="techLeaderEdit">TechLeader:</label>
+				      <div class="controls lion-controls">
+				        <input id="techLeaderEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
+						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
+				        	<span id="techLeaderWarnEdit" class="help-inline">
+							可输入名字或域账号提示
+	      				 	</span> 
+				        </div>
+				    </div>
+				    <div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label" for="operEdit">业务运维:</label>
 				      <div class="controls lion-controls">
 				        <input id="operEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
 						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
 						 <span id="operWarnEdit" class="help-inline">
-							可输入名字或拼音提示
+							可输入名字或域账号提示
 	      				 </span> 
 				      </div>
 				    </div>

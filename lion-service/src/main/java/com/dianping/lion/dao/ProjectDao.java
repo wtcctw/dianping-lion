@@ -49,4 +49,6 @@ public interface ProjectDao {
 	
 	List<Project> getProjectsByProduct(int productId);
 
+    boolean isMember(int projectId, int userId);
+
 }

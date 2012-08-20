@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
+import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.service.ProjectService;
 
 /**
@@ -44,10 +45,19 @@ public class ProjectServiceImpl implements ProjectService {
 	public List<Project> getProjects() {
 		return this.projectDao.getProjects();
 	}
-
+	
 	@Override
 	public Project getProject(int projectId) {
-		return projectDao.getProject(projectId);
+	    return projectDao.getProject(projectId);
+	}
+
+	@Override
+	public Project loadProject(int projectId) {
+	    Project project = getProject(projectId);
+	    if (project == null) {
+            throw new EntityNotFoundException("Project[id=" + projectId + "] not found.");
+        }
+		return project;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -83,5 +93,10 @@ public class ProjectServiceImpl implements ProjectService {
 		}
 		return projectDao.findProject(name);
 	}
+
+    @Override
+    public boolean isMember(int projectId, int userId) {
+        return projectDao.isMember(projectId, userId);
+    }
 
 }

@@ -37,15 +37,18 @@ function contain(value,itemsStr){
 	return false;
 }
 
-function editOpen(projectId,projectName,productId,techLeader,oper){
+function editOpen(projectId,projectName,productId,manager,techLeader,oper){
+	$("#managerWarnEdit").removeClass("lion_red");
+	$("#managerWarnEdit").html("可输入名字或域账号提示");
 	$("#techLeaderWarnEdit").removeClass("lion_red");
-	$("#techLeaderWarnEdit").html("可输入名字或拼音提示");
+	$("#techLeaderWarnEdit").html("可输入名字或域账号提示");
 	$("#operWarnEdit").removeClass("lion_red");
-	$("#operWarnEdit").html("可输入名字或拼音提示");
+	$("#operWarnEdit").html("可输入名字或域账号提示");
 
 	var productS = "option[value='"+productId+"']"
 	$("#productSelectEdit").find(productS).attr("selected","true");
 	$("#projectNameEdit").attr("value",projectName);
+	$("#managerEdit").attr("value",manager);
 	$("#techLeaderEdit").attr("value",techLeader);
 	$("#operEdit").attr("value",oper);
 	$("#projectIdEdit").attr("value",projectId);
@@ -56,9 +59,9 @@ function editOpen(projectId,projectName,productId,techLeader,oper){
 }
 
 $(document).ready(function(){
+	$("[rel=tooltip]").tooltip({delay : {show : 800}});
 	var v = 0;
 	$("#productSelect option").each(function(){
-		
 		var opattr = new Array();
 		opattr[0]=$(this).attr("team");
 		opattr[1]=$(this).attr("value");
@@ -86,10 +89,12 @@ $(document).ready(function(){
 		return false;
 	});
 	$("#add_project_btn").click(function(){
+		$("#managerWarn").removeClass("lion_red");
+		$("#managerWarn").html("可输入名字或域账号提示");
 		$("#techLeaderWarn").removeClass("lion_red");
-		$("#techLeaderWarn").html("可输入名字或拼音提示");
+		$("#techLeaderWarn").html("可输入名字或域账号提示");
 		$("#operWarn").removeClass("lion_red");
-		$("#operWarn").html("可输入名字或拼音提示");
+		$("#operWarn").html("可输入名字或域账号提示");
 		$("#add-project-modal").modal({
 			backdrop : "static"
 		});
@@ -97,10 +102,18 @@ $(document).ready(function(){
 	});
 	
 	$("#addProject").click(function(){
-		
-		var psa, pn, tl, op;
+		var psa, pn, pm, tl, op;
 		psa = $("#productSelectAdd").children('option:selected').val();
 		pn = $("#projectName").attr("value");
+		pm = $("#manager").attr("value");
+		if(!contain(pm,$("#manager").attr("data-source"))){
+			$("#managerWarn").addClass("lion_red");
+			$("#managerWarn").html("PM必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
+			return;
+		}else{
+			$("#managerWarn").removeClass("lion_red");
+			$("#managerWarn").html("可输入名字或域账号提示");
+		}
 		tl = $("#techLeader").attr("value");
 		if(!contain(tl,$("#techLeader").attr("data-source"))){
 			$("#techLeaderWarn").addClass("lion_red");
@@ -108,20 +121,21 @@ $(document).ready(function(){
 			return;
 		}else{
 			$("#techLeaderWarn").removeClass("lion_red");
-			$("#techLeaderWarn").html("可输入名字或拼音提示");
+			$("#techLeaderWarn").html("可输入名字或域账号提示");
 		}
 		op = $("#oper").attr("value");
 		if(!contain(op,$("#oper").attr("data-source"))){
 			$("#operWarn").addClass("lion_red");
-			$("#operWarn").html("TechLeader必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
+			$("#operWarn").html("业务运维必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
 			return;
 		}else{
 			$("#operWarn").removeClass("lion_red");
-			$("#operWarn").html("可输入名字或拼音提示");
+			$("#operWarn").html("可输入名字或域账号提示");
 		}
     	var clientdata = {
     			productId : psa,
     			projectName : pn,
+    			manager : pm,
     			techLeader : tl,
     			oper : op
     	};
@@ -142,34 +156,42 @@ $(document).ready(function(){
 		return false;
 	});
 $("#editProject").click(function(){
-		
-
-	var projectId, psa, pn, tl, op;
+	var projectId, psa, pn, pm, tl, op;
 	psa = $("#productSelectEdit").children('option:selected').val();
 	pn = $("#projectNameEdit").attr("value");
-	tl = $("#techLeaderEdit").attr("value");
 	projectId = $("#projectIdEdit").attr("value");
+	pm = $("#managerEdit").attr("value");
+	if(!contain(pm,$("#managerEdit").attr("data-source"))){
+		$("#managerWarnEdit").addClass("lion_red");
+		$("#managerWarnEdit").html("PM必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
+		return;
+	}else{
+		$("#managerWarnEdit").removeClass("lion_red");
+		$("#managerWarnEdit").html("可输入名字或域账号提示");
+	}
+	tl = $("#techLeaderEdit").attr("value");
 	if(!contain(tl,$("#techLeaderEdit").attr("data-source"))){
 		$("#techLeaderWarnEdit").addClass("lion_red");
 		$("#techLeaderWarnEdit").html("TechLeader必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
 		return;
 	}else{
 		$("#techLeaderWarnEdit").removeClass("lion_red");
-		$("#techLeaderWarnEdit").html("可输入名字或拼音提示");
+		$("#techLeaderWarnEdit").html("可输入名字或域账号提示");
 	}
 	op = $("#operEdit").attr("value");
 	if(!contain(op,$("#operEdit").attr("data-source"))){
 		$("#operWarnEdit").addClass("lion_red");
-		$("#operWarnEdit").html("TechLeader必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
+		$("#operWarnEdit").html("业务运维必须是下拉框中的成员，如果不存在请让其先用域帐号登录系统");
 		return;
 	}else{
 		$("#operWarnEdit").removeClass("lion_red");
-		$("#operWarnEdit").html("可输入名字或拼音提示");
+		$("#operWarnEdit").html("可输入名字或域账号提示");
 	}
 	var clientdata = {
 			projectId : projectId,
 			productId : psa,
 			projectName : pn,
+			manager : pm,
 			techLeader : tl,
 			oper : op
 	};
@@ -189,7 +211,6 @@ $("#editProject").click(function(){
 		}
 	});
 	return false;
-	
 	});
 
 var $deleteAlert = $("<div>确认删除该项目? [<font color='green'>不可恢复</font>]</div>")

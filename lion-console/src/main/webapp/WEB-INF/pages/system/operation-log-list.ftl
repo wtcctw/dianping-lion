@@ -2,13 +2,13 @@
 <table id="table-oplog-list" class="table table-bordered table-striped table-condensed">
 	  <thead>
 	    <tr>
-	      <th style="width: 30px">序号</th>
-	      <th style="width: 100px">操作类型</th>
-	      <th style="width: 60px">操作人员</th>
-	      <th style="width: 60px">操作主机</th>
-	      <th style="width: 30px">环境</th>
-	      <th style="width: 70px">创建时间</th>
-	      <th style="width: 120px">项目</th>
+	      <th width="30">序号</th>
+	      <th width="100">操作类型</th>
+	      <th width="60">操作人员</th>
+	      <th width="60">操作主机</th>
+	      <th width="50">环境</th>
+	      <th width="70">操作时间</th>
+	      <th width="120">项目</th>
 	      <th>内容</th>
 	    </tr>
 	  </thead>

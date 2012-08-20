@@ -35,11 +35,11 @@ public class ConfigStatus implements Serializable {
 	
 	private Date createTime;
 	
-	private int createUserId;
+	private Integer createUserId;
 	
 	private Date modifyTime;
 	
-	private int modifyUserId;
+	private Integer modifyUserId;
 
 	public ConfigStatus(int configId, int envId) {
 		this.configId = configId;
@@ -108,14 +108,14 @@ public class ConfigStatus implements Serializable {
 	/**
 	 * @return the createUserId
 	 */
-	public int getCreateUserId() {
+	public Integer getCreateUserId() {
 		return createUserId;
 	}
 
 	/**
 	 * @param createUserId the createUserId to set
 	 */
-	public void setCreateUserId(int createUserId) {
+	public void setCreateUserId(Integer createUserId) {
 		this.createUserId = createUserId;
 	}
 
@@ -136,14 +136,14 @@ public class ConfigStatus implements Serializable {
 	/**
 	 * @return the modifyUserId
 	 */
-	public int getModifyUserId() {
+	public Integer getModifyUserId() {
 		return modifyUserId;
 	}
 
 	/**
 	 * @param modifyUserId the modifyUserId to set
 	 */
-	public void setModifyUserId(int modifyUserId) {
+	public void setModifyUserId(Integer modifyUserId) {
 		this.modifyUserId = modifyUserId;
 	}
 

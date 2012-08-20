@@ -30,9 +30,10 @@ public class Environment implements Serializable {
 	private String name;
 	private String label;
 	private String ips;
-	private int createUserId;
+	private boolean online;    //是否线上环境(有更严格的权限控制)
+	private Integer createUserId;
 	private Date createTime;
-	private int modifyUserId;
+	private Integer modifyUserId;
 	private Date modifyTime;
 	private int seq;
 	
@@ -73,6 +74,18 @@ public class Environment implements Serializable {
 		this.ips = ips;
 	}
 	/**
+     * @return the online
+     */
+    public boolean isOnline() {
+        return online;
+    }
+    /**
+     * @param online the online to set
+     */
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+    /**
 	 * @return the seq
 	 */
 	public int getSeq() {
@@ -99,13 +112,13 @@ public class Environment implements Serializable {
 	/**
 	 * @return the createUserId
 	 */
-	public int getCreateUserId() {
+	public Integer getCreateUserId() {
 		return createUserId;
 	}
 	/**
 	 * @param createUserId the createUserId to set
 	 */
-	public void setCreateUserId(int createUserId) {
+	public void setCreateUserId(Integer createUserId) {
 		this.createUserId = createUserId;
 	}
 	/**
@@ -123,13 +136,13 @@ public class Environment implements Serializable {
 	/**
 	 * @return the modifyUserId
 	 */
-	public int getModifyUserId() {
+	public Integer getModifyUserId() {
 		return modifyUserId;
 	}
 	/**
 	 * @param modifyUserId the modifyUserId to set
 	 */
-	public void setModifyUserId(int modifyUserId) {
+	public void setModifyUserId(Integer modifyUserId) {
 		this.modifyUserId = modifyUserId;
 	}
 	/**

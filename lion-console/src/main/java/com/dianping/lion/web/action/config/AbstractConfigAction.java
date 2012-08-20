@@ -15,13 +15,19 @@
  */
 package com.dianping.lion.web.action.config;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.service.ConfigPrivilegeService;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.ProjectService;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.util.UrlUtils;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
@@ -41,9 +47,14 @@ public class AbstractConfigAction extends AbstractLionAction {
 	protected Environment environment;
 	
 	protected String query;
+	
+	protected Map<Integer, Boolean> editPrivilegeMap;
 
 	@Autowired
 	protected ConfigService configService;
+	
+	@Autowired
+	protected ConfigPrivilegeService configPrivilegeService;
 	
 	@Autowired
 	protected ProjectService projectService;
@@ -59,6 +70,43 @@ public class AbstractConfigAction extends AbstractLionAction {
 	@SuppressWarnings("unchecked")
 	protected void createQueryParam2() {
 		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId", "criteria.key", "criteria.status");
+	}
+	
+	public boolean hasLookPrivilege() {
+	    return  hasLookPrivilege(projectId, envId);
+	}
+	
+	public boolean hasLookPrivilege(int projectId, int envId) {
+	    return configPrivilegeService.hasLookPrivilege(projectId, envId, SecurityUtils.getCurrentUserId());
+	}
+	
+	public boolean hasEditPrivilege() {
+	    Boolean hasPrivilege = getEditPrivileges().get(envId);
+	    return hasPrivilege != null ? hasPrivilege : false;
+	}
+	
+	public boolean hasEditPrivilege(int projectId, int envId) {
+	    return configPrivilegeService.hasEditPrivilege(projectId, envId, SecurityUtils.getCurrentUserId());
+	}
+	
+	public Map<Integer, Boolean> getEditPrivileges() {
+	    if (editPrivilegeMap == null) {
+	        editPrivilegeMap = new HashMap<Integer, Boolean>();
+        	    for (Environment env : environmentService.findAll()) {
+        	        editPrivilegeMap.put(env.getId(), hasEditPrivilege(projectId, env.getId()));
+        	    }
+	    }
+        return editPrivilegeMap;  
+	}
+	
+	public boolean hasAnyEnvEditPrivilege() {
+	    Map<Integer, Boolean> editPrivileges = getEditPrivileges();
+	    for (Entry<Integer, Boolean> privilegeEntry : editPrivileges.entrySet()) {
+	        if (Boolean.TRUE.equals(privilegeEntry.getValue())) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 
 	/**

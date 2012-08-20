@@ -38,6 +38,7 @@
 	<resultMap id="ProjectResultBasic" class="Project">
 		<result column="id" property="id"/>
 		<result column="name" property="name"/>
+		<result column="managerId" property="managerId"/>
 		<result column="techLeaderId" property="techLeaderId"/>
 		<result column="operId" property="operId"/>
 		<result column="productId" property="productId"/>
@@ -53,6 +54,13 @@
 	
 	<resultMap id="ProjectReverseResult" class="Project" extends="ProjectResultBasic">
 		<result property="product" column="productId" select="Project.getProduct"/>
+	</resultMap>
+	
+	<resultMap id="MemberResult" class="com.dianping.lion.entity.ProjectMember">
+		<result column="id" property="id"/>
+		<result column="projectId" property="projectId"/>
+		<result column="userId" property="userId"/>
+		<result column="createUserId" property="createUserId"/>
 	</resultMap>
 	
 	<select id="getTeams" resultMap="TeamResult">
@@ -74,7 +82,7 @@
     
     <select id="selectProjectsByProduct" resultMap="ProjectResultBasic" parameterClass="int">
     	<![CDATA[
-    	SELECT id, name,techLeaderId,operId, productId, createTime, modifyTime, seq
+    	SELECT id, name,managerId,techLeaderId,operId, productId, createTime, modifyTime, seq
     	FROM project
     	WHERE productId = #productId#
     	ORDER BY seq
@@ -83,7 +91,7 @@
     
     <select id="getProjects" resultMap="ProjectResult">
 		<![CDATA[
-		SELECT pj.id, pj.name, pj.techLeaderId,pj.operId,pj.productId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
+		SELECT pj.id, pj.name,pj.managerId, pj.techLeaderId,pj.operId,pj.productId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
 		FROM project pj,product pd,team t
 		where pd.id = pj.productId
 		and pd.teamId = t.id
@@ -93,7 +101,7 @@
     
     <select id="getProjectsByTeamAndProduct" resultMap="ProjectResult" parameterClass="java.util.Map">
 		
-		SELECT pj.id, pj.name, pj.productId,pj.techLeaderId,pj.operId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
+		SELECT pj.id, pj.name,pj.managerId, pj.productId,pj.techLeaderId,pj.operId,pd.name as productName,t.name as teamName,pj.createTime, pj.modifyTime, pj.seq
 		FROM project pj,product pd,team t
 		where pd.id = pj.productId
 		and pd.teamId = t.id
@@ -120,25 +128,34 @@
     <select id="getProject" resultMap="ProjectReverseResult" parameterClass="int">
     	<![CDATA[SELECT * FROM project WHERE id = #projectId#]]>
     </select>
+    
     <select id="findProjectByName" resultMap="ProjectReverseResult" parameterClass="string">
     	<![CDATA[SELECT * FROM project WHERE name = #name#]]>
     </select>
+    
     <insert id="insertProject" parameterClass="Project">
-    	INSERT INTO project(name, techLeaderId, operId, productId,createTime, modifyTime)
-    	VALUES(#name#, #techLeaderId#, #operId#, #productId#, #createTime#, #modifyTime#)
+    	INSERT INTO project(name, managerId, techLeaderId, operId, productId,createTime, modifyTime)
+    	VALUES(#name#, #managerId#, #techLeaderId#, #operId#, #productId#, #createTime#, #modifyTime#)
     	<selectKey resultClass="int">    
             SELECT LAST_INSERT_ID() AS ID
         </selectKey> 
     </insert>
+    
     <update id="updateProject" parameterClass="Project">
-    	update project set name=#name#, techLeaderId=#techLeaderId#, operId=#operId#, productId=#productId#,createTime=#createTime#, modifyTime=#modifyTime#
+    	update project set name=#name#, managerId=#managerId#, techLeaderId=#techLeaderId#, operId=#operId#, productId=#productId#,createTime=#createTime#, modifyTime=#modifyTime#
     	where id = #id#
     </update>
+    
     <delete id="delProject" parameterClass="int">
 		delete from project where id=#id#
     </delete>
+    
     <statement id="lockProject" parameterClass="int">
     	<![CDATA[SELECT 1 FROM project WHERE id = #projectId# FOR UPDATE]]>
     </statement>
+    
+    <select id="findMember" parameterClass="map" resultMap="MemberResult">
+    		SELECT * FROM project_member WHERE projectId = #projectId# AND userId = #userId#
+    </select>
     
 </sqlMap>

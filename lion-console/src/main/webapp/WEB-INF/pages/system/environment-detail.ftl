@@ -33,6 +33,15 @@
 				        <span class="help-inline hide message" id="span-env-ips-error"></span>
 				      </div>
 				    </div>
+	        		<div class="control-group control-lion-group">
+				      <label class="control-label control-lion-label">是否线上环境</label>
+				      <div class="controls lion-controls">
+				      	<input type="radio" name="input-env-online" id="input-env-online1" value="true"
+				      		<@s.if test="%{environment.online}">checked="checked"</@s.if>><label for="input-env-online1" class="help-inline">是</label>
+				      	<input type="radio" name="input-env-online" id="input-env-online2" value="false"
+				      		<@s.if test="%{environment == null || !environment.online}">checked="checked"</@s.if>><label for="input-env-online2" class="help-inline">否</label>
+				      </div>
+				    </div>
 				    <div class="control-group control-lion-group">
 				      <label class="control-label control-lion-label">环境顺序</label>
 				      <div class="controls lion-controls">

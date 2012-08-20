@@ -38,8 +38,8 @@ public class Config implements Serializable {
 	protected int type;
 	protected ConfigTypeEnum typeEnum;
 	protected int projectId;
-	protected int createUserId;
-	protected int modifyUserId;
+	protected Integer createUserId;
+	protected Integer modifyUserId;
 	protected Date createTime;
 	protected Date modifyTime;
 	protected int seq;
@@ -128,25 +128,25 @@ public class Config implements Serializable {
 	/**
 	 * @return the createUserId
 	 */
-	public int getCreateUserId() {
+	public Integer getCreateUserId() {
 		return createUserId;
 	}
 	/**
 	 * @param createUserId the createUserId to set
 	 */
-	public void setCreateUserId(int createUserId) {
+	public void setCreateUserId(Integer createUserId) {
 		this.createUserId = createUserId;
 	}
 	/**
 	 * @return the modifyUserId
 	 */
-	public int getModifyUserId() {
+	public Integer getModifyUserId() {
 		return modifyUserId;
 	}
 	/**
 	 * @param modifyUserId the modifyUserId to set
 	 */
-	public void setModifyUserId(int modifyUserId) {
+	public void setModifyUserId(Integer modifyUserId) {
 		this.modifyUserId = modifyUserId;
 	}
 	/**

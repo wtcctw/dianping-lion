@@ -40,9 +40,10 @@
 			      		<input type="checkbox" id="select-all-env"/><label for="select-all-env" class="help-inline">全选</label>
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
+			      		<@s.set name="hasEditPrivilege" value="%{editPrivileges[id]}"/>
 			      		<input type="checkbox" name="config-env" id="config-env-${envStatus.index}" value="${id}"
-			      		<@s.if test="%{#envStatus.index == 0}"> checked="checked"</@s.if>
-			      		<@s.if test="%{#envStatus.first}"> disabled="disabled"</@s.if>
+			      		<@s.if test="%{#envStatus.index == 0 && #hasEditPrivilege}"> checked="checked"</@s.if>
+			      		<@s.if test="%{#envStatus.first || !#hasEditPrivilege}"> disabled="disabled"</@s.if>
 			      		><label for="config-env-${envStatus.index}" class="help-inline">${label}</label>
 			      		&nbsp;&nbsp;
 			      	</@s.iterator>

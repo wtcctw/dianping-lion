@@ -37,6 +37,7 @@ public class EnvironmentAction extends AbstractLionAction{
 	private String envName;
 	private String envLabel;
 	private String envIps;
+	private boolean online;
 	private int seq;
 	
 	public String getEnvLists() {
@@ -54,6 +55,7 @@ public class EnvironmentAction extends AbstractLionAction{
 		environment.setIps(envIps);
 		environment.setLabel(envLabel);
 		environment.setName(envName);
+		environment.setOnline(online);
 		environment.setSeq(seq);
 		environmentService.create(environment);
 		environmentList = environmentService.findAll();
@@ -71,6 +73,7 @@ public class EnvironmentAction extends AbstractLionAction{
 		environment.setIps(envIps);
 		environment.setLabel(envLabel);
 		environment.setName(envName);
+		environment.setOnline(online);
 		environment.setSeq(seq);
 		environmentService.update(environment);
 		environmentList = environmentService.findAll();
@@ -139,7 +142,15 @@ public class EnvironmentAction extends AbstractLionAction{
 		this.envIps = envIps;
 	}
 
-	public int getSeq() {
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    public int getSeq() {
 		return seq;
 	}
 

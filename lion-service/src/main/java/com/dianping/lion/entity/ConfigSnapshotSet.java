@@ -37,7 +37,7 @@ public class ConfigSnapshotSet implements Serializable {
 	
 	private Date createTime;
 	
-	private int createUserId;
+	private Integer createUserId;
 
 	public ConfigSnapshotSet(int projectId, int envId, String task) {
 		this.projectId = projectId;
@@ -121,14 +121,14 @@ public class ConfigSnapshotSet implements Serializable {
 	/**
 	 * @return the createUserId
 	 */
-	public int getCreateUserId() {
+	public Integer getCreateUserId() {
 		return createUserId;
 	}
 
 	/**
 	 * @param createUserId the createUserId to set
 	 */
-	public void setCreateUserId(int createUserId) {
+	public void setCreateUserId(Integer createUserId) {
 		this.createUserId = createUserId;
 	}
 

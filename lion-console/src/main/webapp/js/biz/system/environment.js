@@ -5,6 +5,7 @@ $(document).ready(function() {
 });
 
 function bind() {
+	$("[rel=tooltip]").tooltip({delay : {show : 800}});
 	$('[data-toggle="modal"]').click(function(e) {
 		e.preventDefault();
 		var href = $(this).attr('href');
@@ -47,10 +48,11 @@ function bind() {
 }
 
 function saveEnv() {
-    	var envName, envLabel, ips, seq;
+    	var envName, envLabel, ips, online, seq;
     	envName = document.getElementById('input-env-name').value;
     	envLabel = document.getElementById('input-env-label').value;
     	envIps = document.getElementById('input-env-ips').value;
+    	online = $(":radio[name='input-env-online']:checked").val();
     	seq = document.getElementById('input-env-seq').value;
     	if (validateConfigForm()) {
 	    	var clientdata = {
@@ -58,6 +60,7 @@ function saveEnv() {
 	//    			envLabel : encodeURI(encodeURI(envLabel)),
 	    			envLabel : envLabel,
 	    			envIps : envIps,
+	    			online : online,
 	    			seq : seq
 	    	};
 	//    	clientdata = encodeURIComponent(encodeURIComponent(clientdata));
@@ -80,11 +83,12 @@ function saveEnv() {
 }
 
 function updateEnv() {
-	var envId, envName, envLabel, ips, seq;
+	var envId, envName, envLabel, ips, online, seq;
 	envId = document.getElementById('input-env-id').value;
 	envName = document.getElementById('input-env-name').value;
 	envLabel = document.getElementById('input-env-label').value;
 	envIps = document.getElementById('input-env-ips').value;
+	online = $(":radio[name='input-env-online']:checked").val();
 	seq = document.getElementById('input-env-seq').value;
 	if (validateConfigForm()) {
 		var clientdata = {
@@ -92,6 +96,7 @@ function updateEnv() {
 				envName : envName,
 				envLabel : envLabel,
 				envIps : envIps,
+				online : online,
 				seq : seq
 		};
 		href = "/system/updateEnvSubmitAjax.vhtml";

@@ -5,6 +5,10 @@ $(function(){
 		resetLoginFormValidation();
 	});
 	
+	$("#login-modal").on("shown", function() {
+		$("#loginName").focus();
+	});
+	
 	$("#login_link").click(function() {
 		$("#login-modal").modal({
 			backdrop : "static", 
@@ -27,7 +31,7 @@ $(function(){
 						$("#login-msg").html("<font color='green'>登陆成功, 载入中...</font>");
 						window.location.reload();
 					} else if (result.code == Res_Code_Error) {
-						$("#login-msg").html("<font color='red'>" + result.msg + "</font>");
+						$("#login-msg").html("<font color='#c09853'>" + result.msg + "</font>");
 					}
 				}
 			});
@@ -46,13 +50,20 @@ $(function(){
 	
 	function validateLoginForm() {
 		var checkPass = true;
+		var firstErrorEle;
 		resetLoginFormValidation();
 		$("#loginName, #loginPasswd").each(function() {
 			if ($(this).val().isBlank()) {
 				setValidateError($(this));
+				if (firstErrorEle == null) {
+					firstErrorEle = $(this);
+				}
 				checkPass = false;
 			}
 		});
+		if (!checkPass && firstErrorEle != null) {
+			firstErrorEle.focus();
+		}
 		return checkPass;
 	}
 	

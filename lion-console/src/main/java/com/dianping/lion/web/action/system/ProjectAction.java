@@ -57,6 +57,7 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	private int projectId;
 	private int productId;
 	private String projectName;
+	private String manager;
 	private String techLeader;
 	private String oper;
 
@@ -75,8 +76,10 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		Project project = new Project();
 		project.setName(this.projectName);
 		project.setProductId(this.productId);
+		int managerId = Integer.parseInt(this.manager.split("@")[2]);
 		int techLeaderId = Integer.parseInt(this.techLeader.split("@")[2]);
 		int operId = Integer.parseInt(this.oper.split("@")[2]);
+		project.setManagerId(managerId);
 		project.setTechLeaderId(techLeaderId);
 		project.setOperId(operId);
 		Date date = new Date();
@@ -91,8 +94,10 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		project.setId(this.projectId);
 		project.setName(this.projectName);
 		project.setProductId(this.productId);
+		int managerId = Integer.parseInt(this.manager.split("@")[2]);
 		int techLeaderId = Integer.parseInt(this.techLeader.split("@")[2]);
 		int operId = Integer.parseInt(this.oper.split("@")[2]);
+		project.setManagerId(managerId);
 		project.setTechLeaderId(techLeaderId);
 		project.setOperId(operId);
 		Date date = new Date();
@@ -203,7 +208,15 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		this.projectName = projectName;
 	}
 
-	public String getTechLeader() {
+    public String getManager() {
+        return manager;
+    }
+
+    public void setManager(String manager) {
+        this.manager = manager;
+    }
+
+    public String getTechLeader() {
 		return techLeader;
 	}
 

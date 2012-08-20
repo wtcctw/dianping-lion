@@ -8,6 +8,7 @@
 		<result column="name" property="name"/>
 		<result column="label" property="label"/>
 		<result column="ips" property="ips"/>
+		<result column="online" property="online"/>
 		<result column="createUserId" property="createUserId"/>
 		<result column="createTime" property="createTime"/>
 		<result column="modifyUserId" property="modifyUserId"/>
@@ -46,6 +47,7 @@
 		set ips = #ips#,
 			label = #label#,
 			name = #name#,
+			online = #online#,
 			modifyUserId = #modifyUserId#,
 			modifyTime = NOW(),
 			seq = #seq#
@@ -58,8 +60,8 @@
     
     <insert id="insertEnv" parameterClass="Environment">
     	<![CDATA[
-    	insert into environment(name,label,ips, createUserId, createTime, modifyUserId, modifyTime,seq) 
-    	values(#name#,#label#,#ips#, #createUserId#, NOW(), #modifyUserId#, NOW(),#seq#);
+    	insert into environment(name,label,ips, online, createUserId, createTime, modifyUserId, modifyTime,seq) 
+    	values(#name#,#label#,#ips#, #online#, #createUserId#, NOW(), #modifyUserId#, NOW(),#seq#);
 		]]>
     	<selectKey resultClass="int" keyProperty="id">
              <![CDATA[   select last_insert_id() as id  ]]>

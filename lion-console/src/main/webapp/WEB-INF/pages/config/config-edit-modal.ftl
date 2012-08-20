@@ -27,7 +27,9 @@
 			      		<input type="checkbox" id="edit-select-all-env"/><label for="edit-select-all-env" class="help-inline">全选</label>
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
+			      		<@s.set name="hasEditPrivilege" value="%{editPrivileges[id]}"/>
 			      		<input type="checkbox" name="edit-config-env" id="edit-config-env-${envStatus.index}" value="${id}"
+			      		<@s.if test="%{!#hasEditPrivilege}"> disabled="disabled"</@s.if>
 			      		><label for="edit-config-env-${envStatus.index}" class="help-inline">${label}</label>
 			      		&nbsp;&nbsp;
 			      	</@s.iterator>

@@ -60,7 +60,8 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	public static final String 		PARAM_VALUE 	= "v";		//配置项值
 	public static final String 		PARAM_TASK 		= "t";		//项目任务id
 	public static final String 		PARAM_EFFECT 	= "ef";		//配置是否立即生效
-	public static final String 		PARAM_PUSH 		= "p";		//配置变更是否实时推送到app
+	public static final String 		PARAM_PUSH 		= "pu";		//配置变更是否实时推送到app
+	public static final String 		PARAM_SNAPSHOT = "sn";		//生效时是否生成snapshot，用于后续的回滚
 	public static final String 		PARAM_CORRECT 	= "c";		//设置registerpoint是否正确
 	
 	public static final String 		SUCCESS_CODE 	= "0|";		//正确返回码

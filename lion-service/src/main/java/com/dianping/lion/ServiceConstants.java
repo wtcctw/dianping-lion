@@ -29,9 +29,13 @@ public interface ServiceConstants {
 	int PROJECT_DB_ID = 100;
 	int PROJECT_PUBLIC_ID = 101;
 	
-	int USER_REDMINE_ID = 100;
-	int USER_SA_ID = 101;
-	int USER_DBA_ID = 102;
+	int USER_LION_ID = 1;
+	int USER_REDMINE_ID = 2;
+	int USER_SA_ID = 3;
+	int USER_DBA_ID = 4;
+	
+	int ROLE_SCM_ID = 1;
+	int ROLE_SA_ID = 2;
 	
 	String CACHE_KEY_ENVLIST = "cache_env_list";
 	

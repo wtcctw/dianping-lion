@@ -5,6 +5,7 @@ $(document).ready(function() {
 });
 
 function bind() {
+	$("[rel=tooltip]").tooltip({delay : {show : 800}});
 	$('[data-toggle="modal"]').click(function(e) {
 		e.preventDefault();
 		var href = $(this).attr('href');

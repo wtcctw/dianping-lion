@@ -21,6 +21,8 @@
 		<property name="registerServiceRepository" ref="registerServiceRepository"/>
 	</bean>
 	
+	<bean id="configPrivilegeService" class="com.dianping.lion.service.impl.ConfigPrivilegeServiceImpl"/>
+	
 	<bean id="configReleaseService" class="com.dianping.lion.service.impl.ConfigReleaseServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
 	</bean>
