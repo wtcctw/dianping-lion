@@ -78,7 +78,7 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 		product.setTeamId(teamId);
 		product.setCreateTime(new Date(System.currentTimeMillis()));
 		product.setModifyTime(new Date(System.currentTimeMillis()));
-		productService.save(product);
+		productService.create(product);
 		reInitiate();
 		return SUCCESS;
 	}

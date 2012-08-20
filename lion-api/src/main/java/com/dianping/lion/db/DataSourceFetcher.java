@@ -15,6 +15,10 @@
  */
 package com.dianping.lion.db;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
@@ -31,6 +35,7 @@ public class DataSourceFetcher {
 	private int port;
 	private String protocal;
 	private String path;
+	private String srtkey;
 	
 	private HttpClient httcClient;
 	private GetMethod dsGetter;
@@ -41,11 +46,20 @@ public class DataSourceFetcher {
 	}
 	public String fetchDS(long lastFetchTime) {
 		String dsContent = null;
-		
-		dsGetter = new GetMethod(path+lastFetchTime);
+		long minEffectionTime = System.currentTimeMillis() / 60000 + 10;
+		String url = path+lastFetchTime+"&srtkey="+srtkey+minEffectionTime;
+		dsGetter = new GetMethod(url);
 		try {
 			httcClient.executeMethod(dsGetter);
-			dsContent = dsGetter.getResponseBodyAsString();
+			InputStream inputStream = dsGetter.getResponseBodyAsStream();   
+	        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));   
+	        StringBuffer stringBuffer = new StringBuffer();   
+	        String str= "";   
+	        while((str = br.readLine()) != null){
+	            stringBuffer .append(str );   
+	        }
+	        dsContent = stringBuffer.toString();
+/*			dsContent = dsGetter.getResponseBodyAsString();*/
 		} catch (Exception e) {
 			logger.error("Job execution failed this time.", e);
 			return null;
@@ -64,6 +78,12 @@ public class DataSourceFetcher {
 	}
 	public void setPath(String path) {
 		this.path = path;
+	}
+	public String getSrtkey() {
+		return srtkey;
+	}
+	public void setSrtkey(String srtkey) {
+		this.srtkey = srtkey;
 	}
 	
 }

@@ -20,4 +20,9 @@
 		<property name="cacheName" value="clusteredCache"/>
 	</bean>
 	
+	<bean id="clusteredProjectCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager" ref="cacheManager"/>
+		<property name="cacheName" value="clusteredProjectCache"/>
+	</bean>
+	
 </beans>

@@ -26,7 +26,7 @@ public class TeamIbatisDao extends SqlMapClientDaoSupport implements TeamDao {
 	}
 
 	@Override
-	public int save(Team team) {
+	public int create(Team team) {
 		getSqlMapClientTemplate().insert("Team.insertTeam", team);
 		return team.getId();
 	}

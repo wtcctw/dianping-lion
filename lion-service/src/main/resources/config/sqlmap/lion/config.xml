@@ -15,6 +15,7 @@
 		<result column="modifyUserId" property="modifyUserId"/>
 		<result column="createTime" property="createTime"/>
 		<result column="modifyTime" property="modifyTime"/>
+		<result column="private" property="privatee"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
 	
@@ -138,15 +139,15 @@
     
     <update id="updateConfig" parameterClass="Config">
     	UPDATE config
-    	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = #modifyTime#, seq = #seq#
+    	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = #modifyTime#, private = #privatee#, seq = #seq#
     	WHERE id = #id#
     </update>
     
     <insert id="insertConfig" parameterClass="Config">
-    	INSERT INTO config(`key`, `desc`, type, projectId, createUserId, modifyUserId, createTime, modifyTime, seq)
+    	INSERT INTO config(`key`, `desc`, type, projectId, createUserId, modifyUserId, createTime, modifyTime, private, seq)
     	VALUES(#key#, #desc#, #type#, #projectId#, #createUserId#, #modifyUserId#, 
     	<isNotNull property="createTime">#createTime#</isNotNull><isNull property="createTime">NOW()</isNull>, 
-    	<isNotNull property="modifyTime">#modifyTime#</isNotNull><isNull property="modifyTime">NOW()</isNull>, #seq#)
+    	<isNotNull property="modifyTime">#modifyTime#</isNotNull><isNull property="modifyTime">NOW()</isNull>, #privatee#, #seq#)
     	<selectKey resultClass="int">    
             SELECT LAST_INSERT_ID() AS ID
         </selectKey> 

@@ -9,7 +9,14 @@
 	</defaultCache>
 	
 	<Cache name="clusteredCache" maxElementsInMemory="10000" memoryStoreEvictionPolicy="LRU" eternal="false"
-		timeToIdleSeconds="1800" timeToLiveSeconds="1800" overflowToDisk="false" diskPersistent="false">
+		timeToIdleSeconds="1800" timeToLiveSeconds="3600" overflowToDisk="true" diskPersistent="false" maxElementsOnDisk="10000"
+		diskExpiryThreadIntervalSeconds="120">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true " />
+	</Cache>
+	
+	<Cache name="clusteredProjectCache" maxElementsInMemory="10000" memoryStoreEvictionPolicy="LRU" eternal="false"
+		timeToIdleSeconds="1800" timeToLiveSeconds="3600" overflowToDisk="false" diskPersistent="false">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true " />
 	</Cache>

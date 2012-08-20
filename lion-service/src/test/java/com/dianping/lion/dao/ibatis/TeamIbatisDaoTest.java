@@ -39,7 +39,7 @@ public class TeamIbatisDaoTest extends AbstractDaoTestSupport {
 		team.setName("teamx");
 		team.setCreateTime(new Date(System.currentTimeMillis()));
 		team.setModifyTime(new Date(System.currentTimeMillis()));
-		id = teamDao.save(team);
+		id = teamDao.create(team);
 		int nowSize = teamDao.findAll().size();
 		assertTrue(nowSize > oriSize);
 	}

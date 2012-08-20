@@ -47,6 +47,7 @@ public class ConfigSnapshot extends Config {
 		this.modifyUserId = config.getModifyUserId();
 		this.createTime = config.getCreateTime();
 		this.modifyTime = config.getModifyTime();
+		this.privatee = config.isPrivatee();
 		this.seq = config.getSeq();
 	}
 

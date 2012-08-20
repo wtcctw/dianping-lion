@@ -12,7 +12,20 @@
 		<property name="ehcache" ref="clusteredCache"/>
 	</bean>
 	
-	<bean id="projectService" class="com.dianping.lion.service.impl.ProjectServiceImpl"/>
+	<bean id="teamService" class="com.dianping.lion.service.impl.TeamServiceImpl">
+		<property name="ehcache" ref="clusteredCache"/>
+		<property name="projectEhcache" ref="clusteredProjectCache"/>
+	</bean>
+	
+	<bean id="productService" class="com.dianping.lion.service.impl.ProductServiceImpl">
+		<property name="ehcache" ref="clusteredCache"/>
+		<property name="projectEhcache" ref="clusteredProjectCache"/>
+	</bean>
+	
+	<bean id="projectService" class="com.dianping.lion.service.impl.ProjectServiceImpl">
+		<property name="ehcache" ref="clusteredCache"/>
+		<property name="projectEhcache" ref="clusteredProjectCache"/>
+	</bean>
 	
 	<bean id="jobExecTimeService" class="com.dianping.lion.service.impl.JobExecTimeServiceImpl"/>
 	
@@ -30,10 +43,6 @@
 	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
 	
 	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl"/>
-	
-	<bean id="productService" class="com.dianping.lion.service.impl.ProductServiceImpl"/>
-	
-	<bean id="teamService" class="com.dianping.lion.service.impl.TeamServiceImpl"/>
 	
 	<bean id="registerServiceRepository" class="com.dianping.lion.register.ConfigRegisterServiceRepository">
 		<property name="registerServiceFactory" ref="registerServiceFactory"/>

@@ -25,8 +25,8 @@
 			<a data-toggle="modal" href="<@s.url action='jobEditAjax' namespace='/system'/>?jobId=${jobExecTime.id}"
 				rel="tooltip" title="修改任务"><i class="icon-edit"></i></a>
 			&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
-			<a class="deletelink" href="<@s.url action='jobDelete' namespace='/system'/>?jobId=${jobExecTime.id}"
-				rel="tooltip" title="删除任务"><i class="icon-remove"></i></a>
+			<a class="deletelink" href="<@s.url action='jobDeleteAjax' namespace='/system'/>?jobId=${jobExecTime.id}"
+				rel="tooltip" title="删除任务"> <i class="icon-remove"></i> </a>
 			</td>
 		</tr>
 		</#list>

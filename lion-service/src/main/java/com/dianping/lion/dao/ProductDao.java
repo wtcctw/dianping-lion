@@ -11,7 +11,7 @@ public interface ProductDao {
 	
 	List<Product> findProductByTeamID(int teamId);
 	
-	int save(Product product);
+	int create(Product product);
 	
 	void update(Product product);
 	

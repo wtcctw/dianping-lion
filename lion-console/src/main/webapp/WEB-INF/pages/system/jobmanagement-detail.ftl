@@ -22,10 +22,12 @@
 				    <div class="control-group control-lion-group">
 			      	<label class="control-label control-lion-label" for="config-value">任务开关:</label>
 			      	<div class="controls lion-controls" id="input-job-switcher-id">
-				      <input type="radio" name="input-job-switcher" id="config-value-yes" value="true" checked="checked"/>
-				     	 <label for="config-value-yes" class="help-inline">true</label>
-				      <input type="radio" name="input-job-switcher" id="config-value-no" value="false" <@s.if test="%{jobId != 0 && !jobExecTime.switcher}">checked="checked"</@s.if>/>
-				      <label for="config-value-no" class="help-inline">false</label>
+				      <input type="radio" name="input-job-switcher" onclick="changeRadioStatus('input-job-switcher', 'config-value-yes')" 
+				      id="config-value-yes" value="true" <@s.if test="%{jobId == 0 || jobExecTime.switcher}">checked="checked"</@s.if>/>
+				     	 <label for="config-value-yes" class="help-inline">开</label>
+				      <input type="radio" name="input-job-switcher" onclick="changeRadioStatus('input-job-switcher', 'config-value-no')" 
+				      id="config-value-no" value="false" <@s.if test="%{jobId != 0 && !jobExecTime.switcher}">checked="checked"</@s.if>/>
+				      <label for="config-value-no" class="help-inline">关</label>
 			      </div>
 			    	</div>
 	        		<div class="control-group control-lion-group">

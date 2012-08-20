@@ -18,9 +18,13 @@ package com.dianping.lion.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
@@ -35,20 +39,45 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	@Autowired
 	private ProjectDao projectDao;
+	
+	private Ehcache ehcache;
+	private Ehcache projectEhcache;
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public List<Team> getTeams() {
-		return projectDao.getTeams();
+	    Element element = ehcache.get(ServiceConstants.CACHE_KEY_TEAMS);
+	    if (element == null) {
+	        List<Team> teams = projectDao.getTeams();
+	        element = new Element(ServiceConstants.CACHE_KEY_TEAMS, teams);
+	        ehcache.put(element);
+	    }
+        return (List<Team>) element.getObjectValue();
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public List<Project> getProjects() {
-		return this.projectDao.getProjects();
+	    Element element = ehcache.get(ServiceConstants.CACHE_KEY_PROJECTS);
+	    if (element == null) {
+	        List<Project> projects = this.projectDao.getProjects();
+	        element = new Element(ServiceConstants.CACHE_KEY_PROJECTS, projects);
+	        ehcache.put(element);
+	    }
+		return (List<Project>) element.getObjectValue();
 	}
 	
 	@Override
 	public Project getProject(int projectId) {
-	    return projectDao.getProject(projectId);
+	    Element element = projectEhcache.get(ServiceConstants.CACHE_KEY_PROJECT_PREFIX + projectId);
+	    if (element == null) {
+	        Project project = projectDao.getProject(projectId);
+	        if (project != null) {
+	            element = new Element(ServiceConstants.CACHE_KEY_PROJECT_PREFIX + projectId, project);
+	            projectEhcache.put(element);
+	        }
+	    }
+	    return element != null ? (Project) element.getObjectValue(): null;
 	}
 
 	@Override
@@ -68,17 +97,28 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public Integer addProject(Project project) {
-		return projectDao.insertProject(project);
+		Integer projectId = projectDao.insertProject(project);
+		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+        return projectId;
 	}
 
 	@Override
 	public Integer editProject(Project project) {
-		return projectDao.updateProject(project);
+		Integer updated = projectDao.updateProject(project);
+		projectEhcache.remove(ServiceConstants.CACHE_KEY_PROJECT_PREFIX + project.getId());
+		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+        return updated;
 	}
 
 	@Override
 	public Integer delProject(int projectId) {
-		return projectDao.delProject(projectId);
+		Integer deleted = projectDao.delProject(projectId);
+		projectEhcache.remove(ServiceConstants.CACHE_KEY_PROJECT_PREFIX + projectId);
+		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+        return deleted;
 	}
 
 	@Override
@@ -97,6 +137,20 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public boolean isMember(int projectId, int userId) {
         return projectDao.isMember(projectId, userId);
+    }
+
+    /**
+     * @param ehcache the ehcache to set
+     */
+    public void setEhcache(Ehcache ehcache) {
+        this.ehcache = ehcache;
+    }
+
+    /**
+     * @param projectEhcache the projectEhcache to set
+     */
+    public void setProjectEhcache(Ehcache projectEhcache) {
+        this.projectEhcache = projectEhcache;
     }
 
 }

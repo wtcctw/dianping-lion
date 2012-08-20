@@ -9,7 +9,7 @@ public interface TeamDao {
 	
 	Team findTeamByID(int id);
 	
-	int save(Team team);
+	int create(Team team);
 	
 	void update(Team team);
 	

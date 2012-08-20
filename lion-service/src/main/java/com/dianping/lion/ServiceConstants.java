@@ -38,5 +38,8 @@ public interface ServiceConstants {
 	int ROLE_SA_ID = 2;
 	
 	String CACHE_KEY_ENVLIST = "cache_env_list";
+	String CACHE_KEY_TEAMS = "cache_team_list";
+	String CACHE_KEY_PROJECTS = "cache_project_list";
+	String CACHE_KEY_PROJECT_PREFIX = "cache_project_";
 	
 }

@@ -41,7 +41,7 @@ public class ProductIbatisDaoTest extends AbstractDaoTestSupport {
 		product.setTeamId(1);
 		product.setCreateTime(new Date(System.currentTimeMillis()));
 		product.setModifyTime(new Date(System.currentTimeMillis()));
-		id = productDao.save(product);
+		id = productDao.create(product);
 		int nowSize = productDao.findAll().size();
 		assertTrue(nowSize > oriSize);
 	}

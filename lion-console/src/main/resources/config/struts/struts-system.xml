@@ -108,8 +108,9 @@
 		<action name="updateJobSubmitAjax" class="com.dianping.lion.web.action.system.JobManagementAction" method="editJobSubmit">
 			<result name="success">/WEB-INF/pages/system/jobmanagement-list.ftl</result>
 		</action>
-		<action name="jobDelete" class="com.dianping.lion.web.action.system.JobManagementAction" method="deleteJobAjax">
-			<result name="success">/WEB-INF/pages/system/jobmanagement.ftl</result>
+		<action name="jobDeleteAjax" class="com.dianping.lion.web.action.system.JobManagementAction" method="deleteJobAjax">
+			<result name="success">/WEB-INF/pages/system/jobmanagement-list.ftl</result>
+			<result name="error">/WEB-INF/pages/system/error.ftl</result>
 		</action>
 	</package>
 

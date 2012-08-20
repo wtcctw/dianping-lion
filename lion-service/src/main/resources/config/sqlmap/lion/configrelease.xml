@@ -40,6 +40,7 @@
 		<result column="modifyUserId" property="modifyUserId"/>
 		<result column="createTime" property="createTime"/>
 		<result column="modifyTime" property="modifyTime"/>
+		<result column="private" property="privatee"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
 	
@@ -93,11 +94,11 @@
 	</select>
 	
 	<insert id="insertConfigSnapshots" parameterClass="list">
-		INSERT INTO config_snapshot(snapshotSetId, configId, `key`, `desc`, `type`, projectId, createUserId, createTime, modifyUserId, modifyTime, seq, valueModifyTime)
+		INSERT INTO config_snapshot(snapshotSetId, configId, `key`, `desc`, `type`, projectId, createUserId, createTime, modifyUserId, modifyTime, private, seq, valueModifyTime)
 		VALUES
 		<iterate conjunction=",">
 			(#[].snapshotSetId#, #[].configId#, #[].key#, #[].desc#, #[].type#, #[].projectId#, #[].createUserId#, #[].createTime#, #[].modifyUserId#, #[].modifyTime#, 
-				#[].seq#, #[].valueModifyTime#)
+				#[].privatee#, #[].seq#, #[].valueModifyTime#)
 		</iterate>
 	</insert>
 	

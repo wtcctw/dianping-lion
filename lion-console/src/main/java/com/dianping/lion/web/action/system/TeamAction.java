@@ -46,7 +46,7 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 		team.setName(name);
 		team.setCreateTime(new Date(System.currentTimeMillis()));
 		team.setModifyTime(new Date(System.currentTimeMillis()));
-		teamService.save(team);
+		teamService.create(team);
 		reInitiate();
 		return SUCCESS;
 	}

@@ -24,7 +24,7 @@
 	 <td style="border: 0px">
             <label class="control-label" for="select05">开始时间</label>
 			<input type="text" id="input-time-start-log"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',lang:'zh-cn'})"/>
-            <label class="control-label" for="select06">结束时间</label>
+            <label class="control-label" for="select06" style="margin-top:9px;">结束时间</label>
 			<input type="text" id="input-time-end-log"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd  HH:mm',lang:'zh-cn'})"/>
 	 </td>
 	 <td style="border: 0px">
