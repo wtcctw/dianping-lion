@@ -1,7 +1,7 @@
 /**
- * Project: com.dianping.lion.lion-console-0.0.1
+ * Project: lion-service
  * 
- * File Created at 2012-7-12
+ * File Created at 2012-8-20
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -13,22 +13,16 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.dao;
-
-import java.util.List;
+package com.dianping.lion.service;
 
 import com.dianping.lion.entity.User;
 
-public interface UserDao {
-
-	List<User> findAll();
-	
-	User findById(int id);
-	
-	User findByName(String userName);
-	
-	void insertUser(User user);
-	
-	void updatePassword(User user);
-	
+/**
+ * LDAPAuthenticationService
+ * @author youngphy.yang
+ *
+ */
+public interface LDAPAuthenticationService {
+	public User authenticate(String userName, String password);
+	User getUserInfo(String cn);
 }

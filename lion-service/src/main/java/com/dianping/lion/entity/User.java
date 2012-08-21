@@ -35,6 +35,7 @@ public class User {
     private Date createTime;
     private boolean system; // 是否系统用户
     private boolean locked; // 是否被锁定(禁止登陆)
+    private String password;
     private List<Role> roles = new ArrayList<Role>();
     
     private Boolean isSCM;
@@ -150,8 +151,16 @@ public class User {
         }
         return isSA;
     }
+    
+    public String getPassword() {
+		return password;
+	}
 
-    /**
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
      * @return the roles
      */
     public List<Role> getRoles() {

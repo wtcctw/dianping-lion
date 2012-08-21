@@ -44,6 +44,12 @@
 	
 	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl"/>
 	
+	<bean id="ldapAuthenticationService" class="com.dianping.lion.service.impl.LDAPAuthenticationServiceImpl">
+		<property name="ldapUrl" value="ldap://192.168.50.11:389/DC=dianpingoa,DC=com"></property>
+		<property name="ldapBaseDN" value="OU=Technolog Department,OU=shoffice,DC=dianpingoa,DC=com"></property>
+		<property name="ldapFactory" value="com.sun.jndi.ldap.LdapCtxFactory"></property>
+	</bean>
+	
 	<bean id="registerServiceRepository" class="com.dianping.lion.register.ConfigRegisterServiceRepository">
 		<property name="registerServiceFactory" ref="registerServiceFactory"/>
 	</bean>

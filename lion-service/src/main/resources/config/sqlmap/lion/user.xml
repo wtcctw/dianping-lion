@@ -11,6 +11,7 @@
 		<result column="system" property="system"/>
 		<result column="locked" property="locked"/>
 		<result column="createTime" property="createTime"/>
+		<result column="password" property="password"/>
 	</resultMap>
 	
 	<select id="findAll" resultMap="UserResult">
@@ -24,5 +25,26 @@
 		SELECT * FROM user WHERE id=#id# ORDER BY id
 		]]>
     </select>
+    
+    <select id="findByName" resultMap="UserResult">
+		<![CDATA[
+		SELECT * FROM user WHERE loginName=#userName# ORDER BY id
+		]]>
+    </select>
+    
+    <insert id="insertUser" parameterClass="User">
+		<![CDATA[
+		insert into user(loginName, name, email, system, createTime, locked, password) values(#loginName#, #name#, #email#, #system#, #createTime#, #locked#, #password#)
+		]]>
+		<selectKey resultClass="int" keyProperty="id">
+             <![CDATA[   select last_insert_id() as id  ]]>
+        </selectKey>
+    </insert>
+    
+    <insert id="updateMD5Password" parameterClass="User">
+		<![CDATA[
+		update user set password = #password# where id = #id#
+		]]>
+    </insert>
     
 </sqlMap>
