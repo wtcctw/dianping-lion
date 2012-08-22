@@ -101,5 +101,18 @@
         		</isNotEmpty>
 		</dynamic>
 	</select>
+	<insert id="insertOpLog" parameterClass="OpLog">
+	<![CDATA[
+		INSERT INTO op_log
+            (opType,
+             opUserId,
+             opUserIp,
+             envId,
+             opTime,
+             projectId,
+             content)
+		VALUES(#opType#, #opUserId#, #opUserIp#, #envId# , #opTime# , #projectId#, #content#);
+		]]>
+	</insert>
     
 </sqlMap>
