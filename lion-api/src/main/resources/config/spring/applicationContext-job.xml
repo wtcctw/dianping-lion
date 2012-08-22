@@ -4,7 +4,7 @@
 	
 	<bean id="DataSourceJob" class="com.dianping.lion.db.DataSourceJob">
 		<property name="jobName" value="DataSourceJob"></property>
-		<property name="jobDownTime" value="20000"></property>
+		<property name="jobDownTime" value="20"></property>
 	</bean>
 	
 	<bean id="dataSourceFetchJobTask"

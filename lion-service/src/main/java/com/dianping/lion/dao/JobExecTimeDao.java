@@ -32,4 +32,5 @@ public interface JobExecTimeDao {
 	void updateLastFetchTime(JobExecTime jobExecTime);
 	void commitTransaction()throws SQLException;
 	void endTransaction() throws SQLException;
+	int tryUpdateLastJobExecTime(String jobName, double effectiveRange);
 }

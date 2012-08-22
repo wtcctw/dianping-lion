@@ -16,7 +16,9 @@
 package com.dianping.lion.dao.ibatis;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
@@ -50,6 +52,15 @@ public class JobExecTimeIbatisDao extends SqlMapClientDaoSupport implements
 	@Override
 	public void updateLastJobExecTime(JobExecTime jobExecTime) {
 		getSqlMapClientTemplate().update("JobExecTime.updateLastJobExecTime", jobExecTime);
+	}
+	
+	@Override
+	public int tryUpdateLastJobExecTime(String jobName, double effectiveRange) {
+		Map<String, Object> parameter = new HashMap<String, Object>();
+		parameter.put("jobName", jobName);
+		parameter.put("effectiveRange", effectiveRange);
+		int updatedRows = getSqlMapClientTemplate().update("JobExecTime.tryupdateLastJobExecTime", parameter); 
+		return updatedRows;
 	}
 
 	@Override

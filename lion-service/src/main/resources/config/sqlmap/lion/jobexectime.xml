@@ -21,7 +21,7 @@
 	
     <select id="findTime" resultMap="JobExecTimeResult" parameterClass="string">
 		<![CDATA[
-			SELECT id, lastFetchTime, lastJobExecTime, switcher, failMail, jobName from job_exec_time where jobName=#name# for update;
+			SELECT id, lastFetchTime, lastJobExecTime, switcher, failMail, jobName from job_exec_time where jobName=#name#;
 		]]>
     </select>
     <select id="findJobByID" resultMap="JobExecTimeResult" parameterClass="int">
@@ -29,6 +29,9 @@
 			SELECT id, lastFetchTime, lastJobExecTime, switcher, failMail, jobName from job_exec_time where id=#jobId#;
 		]]>
     </select>
+    <update id="tryupdateLastJobExecTime" parameterClass="java.util.HashMap">
+			UPDATE job_exec_time SET lastJobExecTime=now() WHERE jobName=#jobName# AND TIMESTAMPDIFF(second, lastJobExecTime, now()) > #effectiveRange#
+    </update>
     <update id="updateLastJobExecTime" parameterClass="JobExecTime">
     	update job_exec_time
 		set lastJobExecTime=#lastJobExecTime#
