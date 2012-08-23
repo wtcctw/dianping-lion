@@ -51,13 +51,15 @@ public abstract class SyncJob {
 					if(jobExecTime.isSwitcher()) {
 						Calendar can = Calendar.getInstance();
 						can.setTime(jobExecTime.getLastJobExecTime());
-						if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {
-							doBusiness();
-							jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
+//						if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {
+						doBusiness();
+						jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
 //							jobExecTimeDao.updateLastJobExecTime(jobExecTime);
-						}
+//						}
 					}
 				}});
+		} else {
+			
 		}
 	}
 	

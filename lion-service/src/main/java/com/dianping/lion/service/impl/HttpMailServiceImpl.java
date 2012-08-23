@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
 import com.dianping.lion.service.HttpMailService;
@@ -37,7 +38,7 @@ public class HttpMailServiceImpl implements HttpMailService{
 	private String path;
 	
 	private HttpClient httpClient;
-	private GetMethod dsGetter;
+	private PostMethod method;
 	
 	public void init() {
 		httpClient = new HttpClient();
@@ -50,10 +51,12 @@ public class HttpMailServiceImpl implements HttpMailService{
 		StringBuffer mailPara = new StringBuffer();
 		mailPara.append("{type:").append(mailType).append(",to:").append(mail).append(",pair:{title:")
 		.append(title).append(",body:").append(body).append("}}");
-		dsGetter = new GetMethod(mailUrl.toString()+URLEncoder.encode(mailPara.toString(),"utf-8"));
+		method = new PostMethod(mailUrl.toString());
+		method.addParameter("jsonm", mailPara.toString());
+		method.setRequestHeader("Content-Type","application/x-www-form-urlencoded;charset=utf-8");
 		try {
-			httpClient.executeMethod(dsGetter);
-			result = dsGetter.getResponseBodyAsString();
+			httpClient.executeMethod(method);
+			result = method.getResponseBodyAsString();
 		} catch (Exception e) {
 			logger.error(e);
 			return false;

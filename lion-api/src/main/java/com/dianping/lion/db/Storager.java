@@ -64,6 +64,7 @@ public class Storager {
 				//not exist, then insert
 				if(config == null) {
 					config = new Config();
+					config.setPrivatee(true);
 					config.setDesc("");
 					config.setKey(entry.getKey());
 					config.setType(ConfigTypeEnum.String.getValue());

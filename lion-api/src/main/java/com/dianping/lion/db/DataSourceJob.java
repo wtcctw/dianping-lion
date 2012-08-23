@@ -110,10 +110,9 @@ public class DataSourceJob extends SyncJob{
 				String[] mails = jobExecTime.getFailMail().split(",");
 				for(String email : mails) {
 					StringBuffer body = new StringBuffer();
-//					body.append("从"+jobExecTime.getLastFetchTime()+"开始增量DB信息\n"+dsContent+"\n");
-//					body.append("异常信息：\n"+e.getMessage());
-					body.append("增量DB信息\n"+dsContent+"\n");
-					boolean emailSendResult = httpMailService.sendMail(mailCode, email, title, body.toString());
+					body.append("从"+jobExecTime.getLastFetchTime()+"开始增量DB信息"+dsContent);
+					body.append("         异常信息->"+e.getMessage());
+					boolean emailSendResult = httpMailService.sendMail(mailCode, email, title, body.toString().replace("{", "brackets").replace(":", "-"));
 					if (!emailSendResult) {
 						logger.error("Send mail Fail!Email Address:" + email);
 					}
