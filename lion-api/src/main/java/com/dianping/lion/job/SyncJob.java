@@ -39,23 +39,26 @@ public abstract class SyncJob {
 	
 	protected String jobName;
 	
-	private long jobDownTime;
+	private double jobDownTime;
 	
 	public void work() throws Exception {
-		jobExecTimeService.execTransaction(new Callback(){
-			@Override
-			public void execute() throws Exception {
-				JobExecTime jobExecTime = jobExecTimeDao.getJobExecTime(jobName);
-				if(jobExecTime.isSwitcher()) {
-					Calendar can = Calendar.getInstance();
-					can.setTime(jobExecTime.getLastJobExecTime());
-					if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {
-						doBusiness();
-						jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
-						jobExecTimeDao.updateLastJobExecTime(jobExecTime);
+		//先抢坑位，后做事务
+		if(jobExecTimeDao.tryUpdateLastJobExecTime(jobName, jobDownTime) > 0) {
+			jobExecTimeService.execTransaction(new Callback(){
+				@Override
+				public void execute() throws Exception {
+					JobExecTime jobExecTime = jobExecTimeDao.getJobExecTime(jobName);
+					if(jobExecTime.isSwitcher()) {
+						Calendar can = Calendar.getInstance();
+						can.setTime(jobExecTime.getLastJobExecTime());
+						if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {
+							doBusiness();
+							jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
+//							jobExecTimeDao.updateLastJobExecTime(jobExecTime);
+						}
 					}
-				}
-			}});
+				}});
+		}
 	}
 	
 	abstract protected void  doBusiness() throws Exception;
@@ -68,11 +71,11 @@ public abstract class SyncJob {
 		this.jobName = jobName;
 	}
 
-	public long getJobDownTime() {
+	public double getJobDownTime() {
 		return jobDownTime;
 	}
 
-	public void setJobDownTime(long jobDownTime) {
+	public void setJobDownTime(double jobDownTime) {
 		this.jobDownTime = jobDownTime;
 	}
 	

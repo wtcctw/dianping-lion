@@ -37,4 +37,9 @@ public class OperationLogIbatisDao extends SqlMapClientDaoSupport implements Ope
 		return getSqlMapClientTemplate().queryForList("OperationLog.getOpLogList",operationLogSearch);
 	}
 
+	@Override
+	public void insertOpLog(OperationLog opLog) {
+		getSqlMapClientTemplate().insert("OperationLog.insertOpLog", opLog);
+	}
+
 }

@@ -44,4 +44,18 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
         return getSqlMapClientTemplate().queryForList("User.findByNameOrLoginNameLike", name);
     }
 
+	@Override
+	public User findByName(String userName) {
+		return (User)getSqlMapClientTemplate().queryForObject("User.findByName", userName);
+	}
+
+	@Override
+	public void insertUser(User user) {
+		getSqlMapClientTemplate().insert("User.insertUser", user);
+	}
+	
+	@Override
+	public void updatePassword(User user) {
+		getSqlMapClientTemplate().insert("User.updateMD5Password", user);
+	}
 }

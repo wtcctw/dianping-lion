@@ -15,6 +15,7 @@
  */
 package com.dianping.lion.dao.ibatis;
 
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.dao.OperationLogDao;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationLogSearch;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.support.AbstractDaoTestSupport;
 
 public class OpeationLogIbatisDaoTest extends AbstractDaoTestSupport {
@@ -59,5 +61,24 @@ public class OpeationLogIbatisDaoTest extends AbstractDaoTestSupport {
 		opeationLogs = operationLogDao.getLogList(operationLogSearch);
 		Assert.assertTrue(opeationLogs.size() != 0);
 	}
+	
+	@Test
+	public void testInsertOpLog() {
+		List<OperationLog> preAllOpLogs = operationLogDao.getLogs();
+		int preSize = preAllOpLogs==null?0:preAllOpLogs.size();
+		OperationLog opLog = new OperationLog();
+		opLog.setContent("Junit test insert oplog");
+		opLog.setEnvId(2);
+		opLog.setOpUserId(1);
+		opLog.setOpUserIp("192.168.7.34");
+		opLog.setOpTime(new Date(System.currentTimeMillis()));
+		opLog.setProjectId(1);
+		opLog.setOpType(OperationTypeEnum.ROLLBACK.ordinal());
+		operationLogDao.insertOpLog(opLog);
+		List<OperationLog> postAllOpLogs = operationLogDao.getLogs();
+		int postSize = postAllOpLogs==null?0:postAllOpLogs.size();
+		Assert.assertTrue(postSize > preSize);
+	}
+	
 
 }

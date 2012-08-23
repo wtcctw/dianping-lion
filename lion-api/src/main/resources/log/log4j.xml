@@ -69,6 +69,10 @@
 		<level value="WARN" />
 		<appender-ref ref="ibatisAppender" />
 	</logger>
+	
+	<logger name="org.apache.commons.httpclient.HttpMethodBase" additivity="false">
+		<level value="ERROR" />
+	</logger>
 
 	<logger name="java.sql">
 		<level value="WARN" />

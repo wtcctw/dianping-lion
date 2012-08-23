@@ -24,7 +24,9 @@ public enum OperationTypeEnum {
 	ADD("增加"),
 	MODIFY("修改"),
 	DELETE("删除"),
-	QUERY("查找");
+	QUERY("查找"),
+	EFFECT("生效"),
+	ROLLBACK("回滚");
 	
     private final String value;
     static OperationTypeEnum[] opTypes = OperationTypeEnum.values();

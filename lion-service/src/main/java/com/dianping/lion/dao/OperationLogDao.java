@@ -24,4 +24,5 @@ public interface OperationLogDao {
 
 	List<OperationLog> getLogs();
 	List<OperationLog> getLogList(OperationLogSearch operationLogSearch);
+	void insertOpLog(OperationLog opLog);
 }
