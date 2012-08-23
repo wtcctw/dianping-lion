@@ -78,4 +78,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public List<User> findByNameOrLoginNameLike(String name) {
+        return userDao.findByNameOrLoginNameLike(name);
+    }
+
 }

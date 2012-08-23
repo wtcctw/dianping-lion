@@ -138,6 +138,39 @@ $(function(){
 		}
 	});
 	
+	$("#edit-config-attr-modal").on("show", function() {
+		var config_id = $("#edit-config-attr-modal [name='config-id']").val();
+		$.ajax("/config/loadConfigAjax.vhtml".prependcontext(), {
+			data : $.param({
+				"configId" : config_id
+			}, true),
+			dataType : "json",
+			success : function(result) {
+				$("#edit-config-attr-modal").hideAlerts();
+				if (result.code == Res_Code_Success) {
+					var config = $.parseJSON(result.result);
+					if (config != null) {
+						$("[name='config-public'][value='" + !config.privatee + "']").attr("checked", true);
+					} else {
+						loadConfigAttrFailed("配置不存在.");
+					}
+				} else {
+					loadConfigAttrFailed("加载数据失败.");
+				}
+			},
+			error : function() {loadConfigAttrFailed("加载数据失败.");}
+		});
+	});
+	
+	$("#edit-config-attr-modal").on("hidden", function() {
+		$("#edit-config-attr-modal").hideAlerts();
+	});
+	
+	function loadConfigAttrFailed(error) {
+		$("#edit-config-attr-modal .form-error").showAlert(error);
+		$("#attr-save-btn").attr("disabled", true);
+	}
+	
 	$("#edit-save-btn").click(function() {
 		if (validateEditConfigForm()) {
 			var envs = new Array();
@@ -204,6 +237,26 @@ $(function(){
 				}
 			});
 		}
+	});
+	
+	$("#attr-save-btn").click(function() {
+		var config_id = $("#edit-config-attr-modal [name='config-id']").val();
+		$.ajax("/config/editConfigAttrAjax.vhtml".prependcontext(), {
+			data : $.param({
+				"configId" : config_id,
+				"configAttr.public" : $(":radio[name='config-public']:checked").val()
+			}, true),
+			dataType: "json",
+			success : function(result) {
+				$("#edit-config-attr-modal").hideAlerts();
+				if (result.code == Res_Code_Success) {
+					$("#edit-config-attr-modal").modal("hide");
+					reloadConfigListTable();
+				} else {
+					$("#edit-config-attr-modal .form-error").showAlert("保存失败.");
+				}
+			}
+		});
 	});
 	
 	function reloadConfigListTable() {
@@ -450,6 +503,15 @@ $(function(){
 			$("[name='edit-config-env'][value='" + $("[name='envId']").val() + "']:enabled").attr("checked", true);
 			$("#edit-config-value-container").html(generateValueComponent(parseInt(config_type), "edit-config-value"));
 			$("#edit-config-modal").modal({
+				backdrop : "static", 
+				keyboard : false
+			});
+			return false;
+		});
+		
+		$(".edit-config-attr").click(function() {
+			$("#edit-config-attr-modal [name='config-id']").val(getConfigId($(this)));
+			$("#edit-config-attr-modal").modal({
 				backdrop : "static", 
 				keyboard : false
 			});

@@ -19,6 +19,16 @@
 			<result name="success">/WEB-INF/pages/system/project-message.ftl</result>
 		</action>
 		
+		<action name="getMembersAjax" class="com.dianping.lion.web.action.system.ProjectAction" method="getAllMembers">
+			<result name="success">/WEB-INF/pages/system/project-member-list.ftl</result>
+		</action>
+		<action name="addMemeberAjax" class="com.dianping.lion.web.action.system.ProjectAction" method="addMember">
+			<result name="success" type="stream"/>
+		</action>
+		<action name="deleteMemeberAjax" class="com.dianping.lion.web.action.system.ProjectAction" method="deleteMember">
+			<result name="success" type="stream"/>
+		</action>
+		
 		<!-- 产品线操作 -->
 		<action name="productList" class="com.dianping.lion.web.action.system.ProductAction" method="productList">
 			<result name="success">/WEB-INF/pages/system/product.ftl</result>
@@ -59,6 +69,10 @@
 		<action name="teamDeleteAjax" class="com.dianping.lion.web.action.system.TeamAction" method="deleteTeamAjax">
 			<result name="success">/WEB-INF/pages/system/team-list.ftl</result>
 			<result name="error">/WEB-INF/pages/system/error.ftl</result>
+		</action>
+		
+		<action name="getUsersAjax" class="com.dianping.lion.web.action.system.UserAction" method="ajaxGetUsers">
+			<result name="success" type="stream"/>
 		</action>
 		
 		<!-- 操作日志 -->

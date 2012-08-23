@@ -22,8 +22,10 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.ProjectMember;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.util.Maps;
+import com.dianping.lion.util.SecurityUtils;
 
 /**
  * @author danson.liu
@@ -90,6 +92,57 @@ public class ProjectIbatisDao extends SqlMapClientDaoSupport implements ProjectD
     public boolean isMember(int projectId, int userId) {
         return  getSqlMapClientTemplate().queryForObject("Project.findMember", Maps.entry("projectId", projectId)
                 .entry("userId", userId).get()) != null;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ProjectMember> getMembers(int projectId) {
+        return getSqlMapClientTemplate().queryForList("Project.findMemebers", projectId);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ProjectMember> getOwners(int projectId) {
+        return getSqlMapClientTemplate().queryForList("Project.findOwners", projectId);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ProjectMember> getOperators(int projectId) {
+        return getSqlMapClientTemplate().queryForList("Project.findOperators", projectId);
+    }
+
+    @Override
+    public void addOwner(int projectId, int userId) {
+        getSqlMapClientTemplate().insert("Project.addOwner", Maps.entry("projectId", projectId).entry("userId", userId)
+                .entry("createUserId", SecurityUtils.getCurrentUserId()).get());
+    }
+
+    @Override
+    public void addMember(int projectId, int userId) {
+        getSqlMapClientTemplate().insert("Project.addMember", Maps.entry("projectId", projectId).entry("userId", userId)
+                .entry("createUserId", SecurityUtils.getCurrentUserId()).get());
+    }
+
+    @Override
+    public void addOperator(int projectId, int userId) {
+        getSqlMapClientTemplate().insert("Project.addOperator", Maps.entry("projectId", projectId).entry("userId", userId)
+                .entry("createUserId", SecurityUtils.getCurrentUserId()).get());
+    }
+
+    @Override
+    public void deleteOwner(int projectId, int userId) {
+        getSqlMapClientTemplate().delete("Project.deleteOwner", Maps.entry("projectId", projectId).entry("userId", userId).get());
+    }
+
+    @Override
+    public void deleteMember(int projectId, int userId) {
+        getSqlMapClientTemplate().delete("Project.deleteMember", Maps.entry("projectId", projectId).entry("userId", userId).get());
+    }
+
+    @Override
+    public void deleteOperator(int projectId, int userId) {
+        getSqlMapClientTemplate().delete("Project.deleteOperator", Maps.entry("projectId", projectId).entry("userId", userId).get());
     }
 
 }

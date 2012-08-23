@@ -26,6 +26,7 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.dianping.lion.ConsoleConstants;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.ProjectMember;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ProjectService;
@@ -47,7 +48,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	private List<User> userList;
 	
 	private String active = ConsoleConstants.PROJECT_NAME;
-	private HttpServletRequest request;
 	
 	private int teamSelect = 0;
 	private int productSelect = 0;
@@ -56,12 +56,19 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	
 	private int projectId;
 	private int productId;
+	private int userId;
+	private String memberType;
 	private String projectName;
 	private String manager;
 	private String techLeader;
 	private String oper;
+	
+    private List<ProjectMember> owners;
+    private List<ProjectMember> members;
+    private List<ProjectMember> operators;
 
-	public String execute() {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    public String execute() {
 		Map param = new HashMap();
 		param.put("teamId", this.teamSelect);
 		param.put("productId", this.productSelect);
@@ -85,7 +92,7 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		Date date = new Date();
 		project.setCreateTime(date);
 		project.setModifyTime(date);
-		int dd = this.projectService.addProject(project);
+		this.projectService.addProject(project);
 		return SUCCESS;
 	}
 	
@@ -103,7 +110,7 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		Date date = new Date();
 		project.setCreateTime(date);
 		project.setModifyTime(date);
-		int dd = this.projectService.editProject(project);
+		this.projectService.editProject(project);
 		return SUCCESS;
 	}
 	
@@ -120,6 +127,25 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	public String teamList(){
 		this.active = ConsoleConstants.TEAM_NAME;
 		return SUCCESS;
+	}
+	
+	public String getAllMembers() {
+	    owners = projectService.getOwners(projectId);
+	    members = projectService.getMembers(projectId);
+	    operators = projectService.getOperators(projectId);
+	    return SUCCESS;
+	}
+	
+	public String addMember() {
+	    projectService.addMember(projectId, memberType, userId);
+	    createSuccessStreamResponse();
+	    return SUCCESS;
+	}
+	
+	public String deleteMember() {
+	    projectService.deleteMember(projectId, memberType, userId);
+	    createSuccessStreamResponse();
+	    return SUCCESS;
 	}
 
 	public ProjectService getProjectService() {
@@ -162,7 +188,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		this.teamSelect = teamSelect;
 	}
 
-
 	@Override
 	public void setServletRequest(HttpServletRequest request) {
 		this.request = request;
@@ -200,7 +225,15 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		this.productId = productId;
 	}
 
-	public String getProjectName() {
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setMemberType(String memberType) {
+        this.memberType = memberType;
+    }
+
+    public String getProjectName() {
 		return projectName;
 	}
 
@@ -247,5 +280,26 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	public void setProductSelect(int productSelect) {
 		this.productSelect = productSelect;
 	}
+
+    /**
+     * @return the owners
+     */
+    public List<ProjectMember> getOwners() {
+        return owners;
+    }
+
+    /**
+     * @return the members
+     */
+    public List<ProjectMember> getMembers() {
+        return members;
+    }
+
+    /**
+     * @return the operators
+     */
+    public List<ProjectMember> getOperators() {
+        return operators;
+    }
 
 }

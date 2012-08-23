@@ -8,6 +8,7 @@
       <th width="290">KEY</th>
       <th width="230">DESC</th>
       <th>VALUE</th>
+      <th width="55">线上公开</th>
       <th width="65">Status</th>
       <th width="110">
       	操作 &nbsp;&nbsp;<input type="checkbox" id="display-all-btn" rel="tooltip" data-original-title="显示全部操作">
@@ -46,6 +47,9 @@
   			<@s.else>&nbsp;</@s.else>
   		</td>
   		<td>
+  			<@s.if test="%{#configVo.config.isPrivatee()}">否</@s.if><@s.else>是</@s.else>
+  		</td>
+  		<td>
   			<@s.if test="%{#configVo.hasInstance}">
   				已设置
   			</@s.if>
@@ -63,9 +67,14 @@
 					</@s.else>
 		  			<a href="#" class="remove-config-btn"><i class="icon-remove" rel="tooltip" data-original-title="删除配置项"></i></a>
 	  			</@s.if>
+  			</@s.if>
+  			<@s.if test="%{hasLockPrivilege()}">
+  				<a href="#" class="edit-config-attr optional hide"><i class="icon-list-alt" rel="tooltip" title="属性编辑"></i></a>
+  			</@s.if>
+  			<@s.if test="#hasAnyEnvEditPrivilege">
 	  			<a href="#" class="moveup-config-btn optional hide"><i class="icon-arrow-up" rel="tooltip" data-original-title="上移"></i></a>
 	  			<a href="#" class="movedown-config-btn optional hide"><i class="icon-arrow-down" rel="tooltip" data-original-title="下移"></i></a>
-  			</@s.if>
+	  		</@s.if>
   		</td>
   	</tr>
   	</@s.iterator>

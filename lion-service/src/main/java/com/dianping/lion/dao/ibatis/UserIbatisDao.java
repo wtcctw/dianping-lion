@@ -38,4 +38,10 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
 		return (User)getSqlMapClientTemplate().queryForObject("User.findById", id);
 	}
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<User> findByNameOrLoginNameLike(String name) {
+        return getSqlMapClientTemplate().queryForList("User.findByNameOrLoginNameLike", name);
+    }
+
 }

@@ -12,10 +12,12 @@
 	<link href="<@s.url value="/css/bootstrap-responsive.css"/>" rel="stylesheet" type="text/css" />
 	<link href="<@s.url value="/css/google-prettify.css"/>" rel="stylesheet" type="text/css" />
 	<link href="<@s.url value="/css/jquery-ui-1.8.21.custom.css"/>" rel="stylesheet" type="text/css" />
+	<link href="<@s.url value="/css/jquery.autocomplete.css"/>" rel="stylesheet" type="text/css" />
 	<link href="<@s.url value="/css/lion.css"/>" rel="stylesheet" type="text/css" />
 	<link rel="shortcut icon" href="<@s.url value="/img/favicon.ico"/>">
 	<script type="text/javascript" src="<@s.url value="/js/jquery.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/jquery-ui-1.8.21.custom.min.js"/>"></script>
+	<script type="text/javascript" src="<@s.url value="/js/jquery.autocomplete.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/bootstrap.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/json2.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/my97/WdatePicker.js"/>"></script>

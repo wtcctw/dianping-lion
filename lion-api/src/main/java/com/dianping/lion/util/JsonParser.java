@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.dianping.lion.entity.Config;
@@ -35,7 +34,6 @@ import com.dianping.lion.service.EnvironmentService;
  *
  */
 public class JsonParser {
-	private static Logger logger = Logger.getLogger(JsonParser.class);
 	private static String TIMESTAMP = "timestamp";
 	private static String REMOVED = "remove";
 	

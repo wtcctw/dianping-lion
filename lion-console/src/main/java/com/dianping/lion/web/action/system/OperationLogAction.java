@@ -149,7 +149,7 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 		return envs;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void initializePage() {
 		if(pid != -1) {
 			Project project = projectService.getProject(pid);

@@ -62,8 +62,8 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 	}
 
 	@Override
-	public void update(Config config) {
-		getSqlMapClientTemplate().update("Config.updateConfig", config);
+	public int update(Config config) {
+		return getSqlMapClientTemplate().update("Config.updateConfig", config);
 	}
 
 	@SuppressWarnings("unchecked")

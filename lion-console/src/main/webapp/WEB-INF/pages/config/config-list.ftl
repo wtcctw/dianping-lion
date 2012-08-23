@@ -58,8 +58,9 @@
 		<div class="row">
 			<div class="span12" style="padding:1px;">
 				<strong>按钮提示：</strong>
-				<i class="icon-edit icon-intro" data-original-title="编辑配置值" data-content="编辑指定配置项在当前环境下的设定值."></i>
-				<i class="icon-trash icon-intro" style="margin-left: 10px;" data-original-title="清除配置值" data-content="清除指定配置项在当前环境下的设定值."></i>
+				<i class="icon-edit icon-intro" data-original-title="编辑配置值" data-content="编辑配置项在当前环境下的设定值."></i>
+				<i class="icon-list-alt icon-intro" style="margin-left: 10px;" data-original-title="编辑配置属性" data-content="编辑配置项除值以外的其他属性值."></i>
+				<i class="icon-trash icon-intro" style="margin-left: 10px;" data-original-title="清除配置值" data-content="清除配置项在当前环境下的设定值."></i>
 				<i class="icon-remove icon-intro" style="margin-left: 10px;" data-original-title="删除配置项" data-content="完全删除该配置项，所有环境下不再存在该配置项值."></i>
 				<i class="icon-arrow-up icon-intro" style="margin-left: 10px;" data-original-title="上移" data-content="上移配置项的位置，将相关的配置项编排在一起."></i>
 				<i class="icon-arrow-down icon-intro" style="margin-left: 10px;" data-original-title="下移" data-content="下移配置项的位置，将相关的配置项编排在一起."></i>
@@ -76,6 +77,7 @@
 	<br/>
 	<#include "/WEB-INF/pages/config/config-add-modal.ftl">
 	<#include "/WEB-INF/pages/config/config-edit-modal.ftl">
+	<#include "/WEB-INF/pages/config/config-attr-modal.ftl">
 	<#include "/WEB-INF/pages/config/config-list-editor.ftl">
 	<#include "/WEB-INF/pages/config/config-map-editor.ftl">
 </body>
