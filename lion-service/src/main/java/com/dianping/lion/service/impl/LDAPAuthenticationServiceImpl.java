@@ -27,6 +27,8 @@ import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
+import org.apache.log4j.Logger;
+
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.LDAPAuthenticationService;
 
@@ -36,6 +38,7 @@ import com.dianping.lion.service.LDAPAuthenticationService;
  *
  */
 public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService {
+	private static Logger logger = Logger.getLogger(LDAPAuthenticationServiceImpl.class);
 	private String ldapUrl = null;
 	private String ldapBaseDN = null;
 	private String ldapFactory = null; 
@@ -58,9 +61,9 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
         try{
             ctx = new InitialLdapContext(env,connCtls);
         }catch(javax.naming.AuthenticationException e){
-            System.out.println("Authentication faild: "+e.toString());
+            logger.error("Authentication faild: "+e.toString());
         }catch(Exception e){
-            System.out.println("Something wrong while authenticating: "+e.toString());
+        	logger.error("Something wrong while authenticating: "+e.toString());
         }
         if(ctx != null) {
         	user = getUserInfo(userName);
@@ -77,16 +80,16 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 			constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
 			NamingEnumeration en = ctx.search("", "cn=" + cn, constraints);
 			if (en == null) {
-				System.out.println("Have no NamingEnumeration.");
+				logger.warn("Have no NamingEnumeration.");
 			}
 			if (!en.hasMoreElements()) {
-				System.out.println("Have no element.");
+				logger.warn("Have no element.");
 			}
 			while (en != null && en.hasMoreElements()) {
 				Object obj = en.nextElement();
 				if (obj instanceof SearchResult) {
 					SearchResult sr = (SearchResult) obj;
-					System.out.println(sr);
+					logger.debug(sr);
 					Attributes attrs = sr.getAttributes();
 					user.setLoginName((String)attrs.get("cn").get());
 					user.setName((String)attrs.get("displayName").get());
@@ -97,7 +100,7 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in search():" + e);
+			logger.error("Exception in search():" + e);
 		}
 
 		return user;
