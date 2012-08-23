@@ -111,6 +111,8 @@ public interface ConfigService {
 	 */
 	Config getConfig(int configId);
 	
+	int updateConfig(Config config);
+	
 	String getConfigFromRegisterServer(int envId, String key);
 	
 	/**

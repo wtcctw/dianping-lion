@@ -29,6 +29,7 @@ import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.ConfigDeleteResult;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
+import com.dianping.lion.web.vo.ConfigAttribute;
 
 /**
  * @author danson.liu
@@ -46,6 +47,8 @@ public class ConfigListAction extends AbstractConfigAction {
 	private List<ConfigVo> configVos;
 	
 	private Config config;
+	
+	private ConfigAttribute configAttr;
 	
 	private Map<Integer, List<ConfigInstance>> instanceMap;
 
@@ -72,6 +75,26 @@ public class ConfigListAction extends AbstractConfigAction {
 		criteria.setEnvId(envId);
 		configVos = configService.findConfigVos(criteria);
 		return SUCCESS;
+	}
+	
+	public String ajaxLoad() {
+	    Config config = configService.getConfig(configId);
+	    createSuccessStreamResponse(config);
+	    return SUCCESS;
+	}
+	
+	public String editConfigAttr() {
+	    try {
+        	    Config config = configService.getConfig(configId);
+        	    if (config != null) {
+        	        config.setPrivatee(!configAttr.isPublic());
+        	        configService.updateConfig(config);
+        	    }
+        	    createSuccessStreamResponse();
+	    } catch (RuntimeException e) {
+	        createErrorStreamResponse();
+	    }
+	    return SUCCESS;
 	}
 	
 	public String clearInstance() {
@@ -207,5 +230,19 @@ public class ConfigListAction extends AbstractConfigAction {
 	public void setInstanceMap(Map<Integer, List<ConfigInstance>> instanceMap) {
 		this.instanceMap = instanceMap;
 	}
+
+    /**
+     * @return the configAttrs
+     */
+    public ConfigAttribute getConfigAttr() {
+        return configAttr;
+    }
+
+    /**
+     * @param configAttr the configAttrs to set
+     */
+    public void setConfigAttr(ConfigAttribute configAttr) {
+        this.configAttr = configAttr;
+    }
 	
 }

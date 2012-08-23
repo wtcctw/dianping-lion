@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ConfigPrivilegeService;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
@@ -107,6 +108,11 @@ public class AbstractConfigAction extends AbstractLionAction {
 	        }
 	    }
 	    return false;
+	}
+	
+	public boolean hasLockPrivilege() {
+	    User currentUser = SecurityUtils.getCurrentUser();
+        return currentUser.isAdmin() || currentUser.isSA();
 	}
 
 	/**

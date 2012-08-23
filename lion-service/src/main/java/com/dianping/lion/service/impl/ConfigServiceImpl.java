@@ -370,6 +370,11 @@ public class ConfigServiceImpl implements ConfigService {
 	public Config getConfig(int configId) {
 		return configDao.getConfig(configId);
 	}
+	
+	public int updateConfig(Config config) {
+	    config.setModifyUserId(SecurityUtils.getCurrentUserId());
+	    return configDao.update(config);
+	}
 
 	@Override
 	public String getConfigFromRegisterServer(int envId, String key) {

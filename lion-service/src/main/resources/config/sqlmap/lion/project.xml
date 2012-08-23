@@ -5,6 +5,7 @@
 	<typeAlias alias="Product" type="com.dianping.lion.entity.Product" />
 	<typeAlias alias="Project" type="com.dianping.lion.entity.Project" />
 	<typeAlias alias="ProjectStatus" type="com.dianping.lion.entity.ProjectStatus" />
+	<typeAlias alias="ProjectMember" type="com.dianping.lion.entity.ProjectMember" />
 
 	<resultMap id="TeamResultBasic" class="Team">
 		<result column="id" property="id"/>
@@ -56,11 +57,16 @@
 		<result property="product" column="productId" select="Project.getProduct"/>
 	</resultMap>
 	
-	<resultMap id="MemberResult" class="com.dianping.lion.entity.ProjectMember">
+	<resultMap id="MemberResultBasic" class="ProjectMember">
 		<result column="id" property="id"/>
 		<result column="projectId" property="projectId"/>
 		<result column="userId" property="userId"/>
 		<result column="createUserId" property="createUserId"/>
+		<result column="createTime" property="createTime"/>
+	</resultMap>
+	
+	<resultMap id="MemberReverseResult" class="ProjectMember" extends="MemberResultBasic">
+		<result property="user" resultMap="User.UserResultBasic2"/>
 	</resultMap>
 	
 	<select id="getTeams" resultMap="TeamResult">
@@ -113,7 +119,7 @@
              pj.productId = #productId#
         </isGreaterThan>
         </dynamic>
-		ORDER BY t.seq,pd.seq,pj.seq
+		ORDER BY t.seq,pd.seq,pj.seq,pj.id
 		
     </select>
     
@@ -154,8 +160,38 @@
     	<![CDATA[SELECT 1 FROM project WHERE id = #projectId# FOR UPDATE]]>
     </statement>
     
-    <select id="findMember" parameterClass="map" resultMap="MemberResult">
+    <select id="findMember" parameterClass="map" resultMap="MemberResultBasic">
     		SELECT * FROM project_member WHERE projectId = #projectId# AND userId = #userId#
     </select>
+    <select id="findOwners" parameterClass="int" resultMap="MemberReverseResult">
+    		SELECT m.*, u.* FROM project_owner m INNER JOIN user u ON m.userId = u.id WHERE m.projectId = #value#
+    </select>
+    <select id="findMemebers" parameterClass="int" resultMap="MemberReverseResult">
+    		SELECT m.*, u.* FROM project_member m INNER JOIN user u ON m.userId = u.id WHERE m.projectId = #value#
+    </select>
+    <select id="findOperators" parameterClass="int" resultMap="MemberReverseResult">
+    		SELECT m.*, u.* FROM project_operator m INNER JOIN user u ON m.userId = u.id WHERE m.projectId = #value#
+    </select>
+    <insert id="addOwner" parameterClass="map">
+    		INSERT INTO project_owner(projectId, userId, createUserId, createTime)
+    		VALUES(#projectId#, #userId#, #createUserId#, NOW())
+    </insert>
+    <insert id="addMember" parameterClass="map">
+    		INSERT INTO project_member(projectId, userId, createUserId, createTime)
+    		VALUES(#projectId#, #userId#, #createUserId#, NOW())
+    </insert>
+    <insert id="addOperator" parameterClass="map">
+    		INSERT INTO project_operator(projectId, userId, createUserId, createTime)
+    		VALUES(#projectId#, #userId#, #createUserId#, NOW())
+    </insert>
+    <delete id="deleteOwner" parameterClass="map">
+    		DELETE FROM project_owner WHERE projectId = #projectId# AND userId = #userId#
+    </delete>
+    <delete id="deleteMember" parameterClass="map">
+    		DELETE FROM project_member WHERE projectId = #projectId# AND userId = #userId#
+    </delete>
+    <delete id="deleteOperator" parameterClass="map">
+    		DELETE FROM project_operator WHERE projectId = #projectId# AND userId = #userId#
+    </delete>
     
 </sqlMap>

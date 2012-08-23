@@ -139,7 +139,7 @@
     
     <update id="updateConfig" parameterClass="Config">
     	UPDATE config
-    	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = #modifyTime#, private = #privatee#, seq = #seq#
+    	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = NOW(), private = #privatee#, seq = #seq#
     	WHERE id = #id#
     </update>
     

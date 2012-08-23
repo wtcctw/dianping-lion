@@ -42,6 +42,14 @@
 			<result name="success" type="stream"/>
 		</action>
 		
+		<action name="loadConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="ajaxLoad">
+			<result name="success" type="stream"/>
+		</action>
+		
+		<action name="editConfigAttrAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="editConfigAttr">
+			<result name="success" type="stream"/>
+		</action>
+		
 		<action name="saveDefaultValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="saveDefaultValue">
 			<result name="success" type="stream"/>
 		</action>

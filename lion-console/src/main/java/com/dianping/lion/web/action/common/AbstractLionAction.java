@@ -22,9 +22,13 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.apache.struts2.json.JSONException;
+import org.apache.struts2.json.JSONUtil;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dianping.lion.exception.RuntimeBusinessException;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -150,6 +154,27 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 	
 	protected void createSuccessStreamResponse() {
 		createSuccessStreamResponse("");
+	}
+	
+	protected void createSuccessStreamResponse(Object result) {
+	    JSONObject resultJSON = new JSONObject();
+	    try {
+	        resultJSON.put("code", 0);
+            resultJSON.put("result", JSONUtil.serialize(result));
+            createStreamResponse(resultJSON.toString());
+        } catch (Exception e) {
+            logger.error("Create json response failed.", e);
+            throw new RuntimeBusinessException(e);
+        }
+	}
+	
+	protected void createJsonStreamResponse(Object result) {
+	    try {
+            createStreamResponse(JSONUtil.serialize(result));
+        } catch (JSONException e) {
+            logger.error("Create json response failed.", e);
+            throw new RuntimeBusinessException(e);
+        }
 	}
 	
 }

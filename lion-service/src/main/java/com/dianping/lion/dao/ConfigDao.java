@@ -68,7 +68,7 @@ public interface ConfigDao {
 	/**
 	 * @param config
 	 */
-	void update(Config config);
+	int update(Config config);
 
 	/**
 	 * @param projectId

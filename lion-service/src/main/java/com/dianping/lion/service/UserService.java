@@ -33,4 +33,6 @@ public interface UserService {
 
     User login(String loginName, String passwd);
 
+    List<User> findByNameOrLoginNameLike(String name);
+
 }

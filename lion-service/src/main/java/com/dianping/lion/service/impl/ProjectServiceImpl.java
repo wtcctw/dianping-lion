@@ -27,9 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.ProjectMember;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.service.ProjectService;
+import com.dianping.lion.util.DBUtils;
 
 /**
  * @author danson.liu
@@ -137,6 +139,49 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public boolean isMember(int projectId, int userId) {
         return projectDao.isMember(projectId, userId);
+    }
+
+    @Override
+    public List<ProjectMember> getMembers(int projectId) {
+        return projectDao.getMembers(projectId);
+    }
+
+    @Override
+    public List<ProjectMember> getOwners(int projectId) {
+        return projectDao.getOwners(projectId);
+    }
+
+    @Override
+    public List<ProjectMember> getOperators(int projectId) {
+        return projectDao.getOperators(projectId);
+    }
+
+    @Override
+    public void addMember(int projectId, String memberType, int userId) {
+        try {
+            if (ServiceConstants.PROJECT_OWNER.equals(memberType)) {
+                projectDao.addOwner(projectId, userId);
+            } else if (ServiceConstants.PROJECT_MEMBER.equals(memberType)) {
+                projectDao.addMember(projectId, userId);
+            } else if (ServiceConstants.PROJECT_OPERATOR.equals(memberType)) {
+                projectDao.addOperator(projectId, userId);
+            }
+        } catch (RuntimeException e) {
+            if (!DBUtils.isDuplicateKeyError(e)) {
+                throw e;
+            }
+        }
+    }
+
+    @Override
+    public void deleteMember(int projectId, String memberType, int userId) {
+        if (ServiceConstants.PROJECT_OWNER.equals(memberType)) {
+            projectDao.deleteOwner(projectId, userId);
+        } else if (ServiceConstants.PROJECT_MEMBER.equals(memberType)) {
+            projectDao.deleteMember(projectId, userId);
+        } else if (ServiceConstants.PROJECT_OPERATOR.equals(memberType)) {
+            projectDao.deleteOperator(projectId, userId);
+        }
     }
 
     /**

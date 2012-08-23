@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.ProjectMember;
 import com.dianping.lion.entity.Team;
 
 /**
@@ -63,5 +64,17 @@ public interface ProjectService {
 	
 	List<Project> getProjectsByProduct(int productId);
 
+	@Deprecated
+	//@TODO checkme! 
     boolean isMember(int projectId, int userId);
+    
+    List<ProjectMember> getMembers(int projectId);
+
+    List<ProjectMember> getOwners(int projectId);
+
+    List<ProjectMember> getOperators(int projectId);
+
+    void addMember(int projectId, String memberType, int userId);
+
+    void deleteMember(int productId, String memberType, int userId);
 }

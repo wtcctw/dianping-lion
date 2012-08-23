@@ -4,6 +4,7 @@
 package com.dianping.lion.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author danson.liu
@@ -19,7 +20,11 @@ public class ProjectMember implements Serializable {
     
     private int userId;
     
-    private int createUserId;
+    private User user;
+    
+    private Integer createUserId;
+    
+    private Date createTime;
 
     /**
      * @return the id
@@ -64,17 +69,45 @@ public class ProjectMember implements Serializable {
     }
 
     /**
+     * @return the user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    /**
      * @return the createUserId
      */
-    public int getCreateUserId() {
+    public Integer getCreateUserId() {
         return createUserId;
     }
 
     /**
      * @param createUserId the createUserId to set
      */
-    public void setCreateUserId(int createUserId) {
+    public void setCreateUserId(Integer createUserId) {
         this.createUserId = createUserId;
+    }
+
+    /**
+     * @return the createTime
+     */
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    /**
+     * @param createTime the createTime to set
+     */
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
 }

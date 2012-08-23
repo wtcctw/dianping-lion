@@ -2,28 +2,39 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <sqlMap namespace="User">
 	<typeAlias alias="User" type="com.dianping.lion.entity.User" />
-
-	<resultMap id="UserResult" class="User">
-		<result column="id" property="id"/>
+	
+	<resultMap id="UserResultBasic_" class="User">
 		<result column="loginName" property="loginName"/>
 		<result column="name" property="name"/>
 		<result column="email" property="email"/>
 		<result column="system" property="system"/>
 		<result column="locked" property="locked"/>
 		<result column="createTime" property="createTime"/>
+	</resultMap>
+
+	<resultMap id="UserResultBasic" class="User" extends="UserResultBasic_">
 		<result column="password" property="password"/>
+		<result column="id" property="id"/>
+	</resultMap>
+
+	<resultMap id="UserResultBasic2" class="User" extends="UserResultBasic_">
+		<result column="userId" property="id"/>
 	</resultMap>
 	
-	<select id="findAll" resultMap="UserResult">
+	<select id="findAll" resultMap="UserResultBasic">
 		<![CDATA[
 		SELECT * FROM user ORDER BY id
 		]]>
     </select>
     
-    <select id="findById" resultMap="UserResult">
+    <select id="findById" resultMap="UserResultBasic">
 		<![CDATA[
 		SELECT * FROM user WHERE id=#id# ORDER BY id
 		]]>
+    </select>
+    
+    <select id="findByNameOrLoginNameLike" resultMap="UserResultBasic" parameterClass="string">
+    		SELECT * FROM user WHERE (loginName LIKE CONCAT('%', #value#, '%') OR name LIKE CONCAT('%', #value#, '%')) AND system = 0
     </select>
     
     <select id="findByName" resultMap="UserResult">

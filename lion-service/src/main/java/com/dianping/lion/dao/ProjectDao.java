@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.entity.ProjectMember;
 import com.dianping.lion.entity.Team;
 
 /**
@@ -50,5 +51,23 @@ public interface ProjectDao {
 	List<Project> getProjectsByProduct(int productId);
 
     boolean isMember(int projectId, int userId);
+
+    List<ProjectMember> getMembers(int projectId);
+
+    List<ProjectMember> getOwners(int projectId);
+
+    List<ProjectMember> getOperators(int projectId);
+
+    void addOwner(int projectId, int userId);
+
+    void addMember(int projectId, int userId);
+
+    void addOperator(int projectId, int userId);
+
+    void deleteOwner(int projectId, int userId);
+
+    void deleteMember(int projectId, int userId);
+
+    void deleteOperator(int projectId, int userId);
 
 }
