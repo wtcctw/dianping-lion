@@ -15,7 +15,6 @@
  */
 package com.dianping.lion.dao.ibatis;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +26,6 @@ import com.dianping.lion.entity.JobExecTime;
 
 public class JobExecTimeIbatisDao extends SqlMapClientDaoSupport implements
 		JobExecTimeDao {
-
-	@Override
-	public void startTransaction() throws SQLException {
-		getSqlMapClientTemplate().getSqlMapClient().startTransaction();
-		boolean autoCommit = getSqlMapClientTemplate().getSqlMapClient().getCurrentConnection().getAutoCommit();
-		if (autoCommit) { 
-			getSqlMapClientTemplate().getSqlMapClient().getCurrentConnection().setAutoCommit(false);
-		}
-	}
 
 	@Override
 	public JobExecTime getJobExecTime(String name) {
@@ -66,17 +56,6 @@ public class JobExecTimeIbatisDao extends SqlMapClientDaoSupport implements
 	@Override
 	public void updateLastFetchTime(JobExecTime jobExecTime) {
 		getSqlMapClientTemplate().update("JobExecTime.updateLastFetchTime", jobExecTime);
-	}
-
-	@Override
-	public void commitTransaction() throws SQLException {
-		getSqlMapClientTemplate().getSqlMapClient().commitTransaction();
-//		session.commitTransaction();
-	}
-
-	@Override
-	public void endTransaction() throws SQLException {
-		getSqlMapClientTemplate().getSqlMapClient().endTransaction();
 	}
 
 	@SuppressWarnings("unchecked")

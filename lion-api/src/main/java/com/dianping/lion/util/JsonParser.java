@@ -78,7 +78,6 @@ public class JsonParser {
 			String[] envs = JSONObject.getNames(envDSContent);
 			for (int j = 0; j < envs.length; j++) {
 				if(REMOVED.equals(envs[j])) {
-//					cis.add(ci);
 					continue;
 				}
 				ConfigInstance ci = new ConfigInstance();
@@ -86,12 +85,7 @@ public class JsonParser {
 				ci.setConfigId(config.getId());
 				Environment env = getEnvService().findEnvByName(envs[j].toLowerCase());
 				ci.setEnvId(env.getId());
-/*				ci.setCreateUserId(0);
-				ci.setModifyUserId(0);
-				ci.setModifyTime(new Date(System.currentTimeMillis()));
-				ci.setCreateTime(new Date(System.currentTimeMillis()));*/
 				ci.setValue(envDSContent.getString(envs[j]));
-//				ci.setSeq(1);
 				boolean isRemovedContains = false;
 				isRemovedContains = envDSContent.getJSONObject(envs[j]).has(REMOVED);	
 				if(isRemovedContains) {
