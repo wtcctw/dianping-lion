@@ -29,9 +29,8 @@ import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 
 /**
- * JsonParser
+ * JsonParser 解析DB增量json格式数据，生成返回config、configInstance实例
  * @author youngphy.yang
- *
  */
 public class JsonParser {
 	private static String TIMESTAMP = "timestamp";
@@ -40,6 +39,12 @@ public class JsonParser {
 	private EnvironmentService envService;
 	private ConfigService configService;
 	
+	/**
+	 * 获取增量config信息
+	 * @param dbContent 增量DB信息
+	 * @return
+	 * @throws Exception
+	 */
 	public Map<String, Boolean> getDBAlias(String dbContent) throws Exception {
 		Map<String, Boolean> dbAliases = null;
 		JSONObject jsonObj = new JSONObject(dbContent);
@@ -63,6 +68,12 @@ public class JsonParser {
 		return dbAliases;
 	}
 	
+	/**
+	 * 获取增量configInstances信息
+	 * @param dbContent 增量DB信息
+	 * @return
+	 * @throws Exception
+	 */
 	public Map<ConfigInstance, Boolean> getConfigInstances(String dbContent) throws Exception {
 		Map<ConfigInstance, Boolean> cis = new HashMap<ConfigInstance, Boolean>();
 		JSONObject jsonObj = new JSONObject(dbContent);

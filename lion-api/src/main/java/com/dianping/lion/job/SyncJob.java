@@ -28,7 +28,7 @@ import com.dianping.lion.service.JobExecTimeService;
 import com.dianping.lion.service.spi.Callback;
 
 /**
- * SyncJob
+ * SyncJob 保证HA多实例中，只有一个实例运行
  * @author youngphy.yang
  *
  */
@@ -44,8 +44,11 @@ public abstract class SyncJob {
 	
 	private double jobDownTime;
 	
+	/**
+	 * 先抢坑位，后做事务。
+	 * @throws Exception
+	 */
 	public void work() throws Exception {
-		//先抢坑位，后做事务
 		if(jobExecTimeDao.tryUpdateLastJobExecTime(jobName, jobDownTime) > 0) {
 			jobExecTimeService.execTransaction(new Callback(){
 				@Override

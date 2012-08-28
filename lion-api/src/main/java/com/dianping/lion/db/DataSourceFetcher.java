@@ -24,7 +24,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 /**
- * DataSourceFetcher
+ * DataSourceFetcher 定期获取增量DB信息
  * @author youngphy.yang
  *
  */
@@ -35,6 +35,9 @@ public class DataSourceFetcher {
 	private int port;
 	private String protocal;
 	private String path;
+	/**
+	 * 获取DB增量信息的密码，生成策略：'lionsrt1234_'+System.currentTimeMillis() / 60000 + 10
+	 */
 	private String srtkey;
 	
 	private HttpClient httcClient;
@@ -44,6 +47,12 @@ public class DataSourceFetcher {
 		httcClient = new HttpClient();
 		httcClient.getHostConfiguration().setHost(host, port, protocal);
 	}
+	
+	/**
+	 * 增量获取DB修改信息
+	 * @param lastFetchTime 上次获取时间
+	 * @return
+	 */
 	public String fetchDS(long lastFetchTime) {
 		String dsContent = null;
 		long minEffectionTime = System.currentTimeMillis() / 60000 + 10;
@@ -59,7 +68,6 @@ public class DataSourceFetcher {
 	            stringBuffer .append(str );   
 	        }
 	        dsContent = stringBuffer.toString();
-/*			dsContent = dsGetter.getResponseBodyAsString();*/
 		} catch (Exception e) {
 			logger.error("Job execution failed this time.", e);
 			return null;
