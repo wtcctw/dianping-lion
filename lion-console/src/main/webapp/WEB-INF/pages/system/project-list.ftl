@@ -10,31 +10,24 @@
 		
 <#include "/WEB-INF/pages/system/project-span.ftl"> 
 
-<form id="projectQuery" class="form-inline lion" action="<@s.url action='projectList' namespace='/system'/>" method="post">
-
-	
-	            <label class="control-label" for="teamSelect">业务组</label>
-	              <select id="teamSelect">
-	                <option value=0>所有的</option>
-	                <#list teamList as team>
-	                	<option value=${team.id}>${team.name}</option>
-					</#list>
-	              </select>
-	   
-
-
-	            <label class="control-label" for="productSelect">产品线</label>
-	              <select id="productSelect">
-	                <option team=0 value=0>所有的</option>
-	                <#list teamList as team>
-	                	<#list team.products as product>
-	                	<option team=${team.id} value=${product.id}>${product.name}</option>
-	                	</#list>
-					</#list>
-	              </select>
-
+<form id="projectQuery" class="form-inline lion" action="<@s.url action='projectList' namespace='/system'/>" method="get">
+	<label class="control-label" for="teamSelect">业务组</label>
+	  <select id="teamSelect" name="teamSelect">
+	<option value=0>所有的</option>
+	<#list teamList as team>
+		<option value=${team.id}>${team.name}</option>
+	</#list>
+	  </select>
+	<label class="control-label" for="productSelect">产品线</label>
+	  <select id="productSelect" name="productSelect">
+	<option team=0 value=0>所有的</option>
+	<#list teamList as team>
+		<#list team.products as product>
+		<option team=${team.id} value=${product.id}>${product.name}</option>
+		</#list>
+	</#list>
+	</select>
 	<button id="query_btn" type="submit" class="btn">查询</button>
-
 </form>
 <div class="row">
 <div class="span12">

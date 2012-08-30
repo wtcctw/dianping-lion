@@ -41,7 +41,7 @@
 	  			(<i class="icon-indent-left" rel="tooltip" data-original-title="存在基于上下文的配置项值"></i>)
 	  			</@s.if>
   			</@s.if>
-  			<@s.else>==============无权查看==============</@s.else>
+  			<@s.else>=无权查看=</@s.else>
   		</td>
   		<td>
   			<@s.if test="%{#configVo.config.isPrivatee()}">否</@s.if><@s.else>是</@s.else>

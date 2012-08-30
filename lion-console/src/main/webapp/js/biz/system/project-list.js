@@ -79,17 +79,6 @@ $(document).ready(function() {
 	linkage();
 	// 联动select
 	$("#teamSelect").change(linkage);
-	// 提交
-	$("#query_btn").click(function() {
-		var purl = "/system/projectList.vhtml?teamSelect="
-				+ $("#teamSelect").children('option:selected').val()
-				+ "&productSelect="
-				+ $("#productSelect").children('option:selected').val();
-		purl = purl.prependcontext();
-		$("#projectQuery").attr("action", purl);
-		$("#projectQuery").submit();
-		return false;
-	});
 	$("#add_project_btn").click(function() {
 		$("#add-project-modal").modal({
 			backdrop : "static"

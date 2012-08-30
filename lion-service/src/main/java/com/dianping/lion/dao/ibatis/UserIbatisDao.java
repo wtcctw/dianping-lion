@@ -61,6 +61,6 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
 	
 	@Override
 	public void updatePassword(User user) {
-		getSqlMapClientTemplate().insert("User.updateMD5Password", user);
+		getSqlMapClientTemplate().update("User.updateMD5Password", user);
 	}
 }

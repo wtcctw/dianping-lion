@@ -11,7 +11,7 @@
 			<th width="100">顺序</th>
 			<th width="100">操作
 				<a data-toggle="modal" href="<@s.url action='envAddAjax' namespace='/system'/>"
-				rel="tooltip" title="添加环境"> <i class="icon-plus pull-right" />&nbsp&nbsp</a></th>
+				> <i class="icon-plus pull-right" rel="tooltip" title="添加环境"/>&nbsp&nbsp</a></th>
 		</tr>
 	</thead>
 	<tbody>

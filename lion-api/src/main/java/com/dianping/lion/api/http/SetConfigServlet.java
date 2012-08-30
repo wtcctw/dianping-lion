@@ -18,6 +18,7 @@ package com.dianping.lion.api.http;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigSetTask;
 import com.dianping.lion.entity.ConfigSetType;
@@ -51,8 +52,17 @@ public class SetConfigServlet extends AbstractLionServlet {
 		Project project = getRequiredProject(projectName);
 		Environment environment = getRequiredEnv(env);
 		
-		String cutvalue = StringUtils.cutString(value, 120);
-        String logcontent = "设置配置项: "+ configKey +", value: " + cutvalue;
+		String cutvalue = StringUtils.cutString(value, 60);
+		String logcontent = "设置配置项: "+ configKey +", value: " + cutvalue;
+		Config existConfig = configService.findConfigByKey(configKey);
+		String existValue = null;
+		if (existConfig != null) {
+            ConfigInstance existInstance = configService.findInstance(existConfig.getId(), environment.getId(), ConfigInstance.NO_CONTEXT);
+            if (existInstance != null) {
+                existValue = existInstance.getValue();
+                logcontent += ", before: " + StringUtils.cutString(existInstance.getValue(), 60);
+            }
+        }
 		try {
         		if (EFFECT_SOON.equals(effect)) {
         			configService.setConfigValue(project.getId(), environment.getId(), configKey, "", ConfigInstance.NO_CONTEXT, value, 
@@ -70,11 +80,11 @@ public class SetConfigServlet extends AbstractLionServlet {
         			configReleaseService.createSetTask(configSetTask);
         		}
         		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_SetConfig, project.getId(), environment.getId(),
-        		        "成功: " + logcontent).key(configKey, "true", null, querystr));
+        		        "成功: " + logcontent).key(configKey, "true", existValue, querystr));
         		resp.getWriter().print(SUCCESS_CODE);
 		} catch (Exception e) {
 		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_SetConfig, project.getId(), environment.getId(),
-		            "失败: " + logcontent).key(configKey, "false", null, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
+		            "失败: " + logcontent).key(configKey, "false", existValue, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
 		    throw e;
 		}
 	}
