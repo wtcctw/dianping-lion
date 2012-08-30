@@ -49,7 +49,7 @@ public class UserServiceImplTest {
 	
 	//change the username and pwd to the proper one for test
 	private String rightUserNameForTest = "youngphy.yang";
-	private String rightPwdForTest = "*******";
+	private String rightPwdForTest = "********";
 	
 	@Test
 	public void testLoginRejectedDueLock() {
@@ -107,6 +107,7 @@ public class UserServiceImplTest {
 		userDao.updatePassword(userTmp);
 		User user = userService.login(rightUserNameForTest, rightPwdForTest);
 		assertNotNull(user);
-		assertTrue(DigestUtils.md5Hex(rightPwdForTest).toUpperCase().equals(user.getPassword()));
+		User userTmp2 = userDao.findByName(rightUserNameForTest);
+		assertTrue(DigestUtils.md5Hex(rightPwdForTest).toUpperCase().equals(userTmp2.getPassword()));
 	}
 }

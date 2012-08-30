@@ -94,6 +94,7 @@ public class UserServiceImpl implements UserService {
     			//insert the user
     			userDao.insertUser(user);
     		} else if(isUpdateNeeded) {
+    			user.setId(dbUser.getId());
     			userDao.updatePassword(user);
     		}
     		return user;
