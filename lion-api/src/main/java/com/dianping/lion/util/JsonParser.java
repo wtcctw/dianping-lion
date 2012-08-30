@@ -29,9 +29,8 @@ import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 
 /**
- * JsonParser
+ * JsonParser 解析DB增量json格式数据，生成返回config、configInstance实例
  * @author youngphy.yang
- *
  */
 public class JsonParser {
 	private static String TIMESTAMP = "timestamp";
@@ -40,6 +39,12 @@ public class JsonParser {
 	private EnvironmentService envService;
 	private ConfigService configService;
 	
+	/**
+	 * 获取增量config信息
+	 * @param dbContent 增量DB信息
+	 * @return
+	 * @throws Exception
+	 */
 	public Map<String, Boolean> getDBAlias(String dbContent) throws Exception {
 		Map<String, Boolean> dbAliases = null;
 		JSONObject jsonObj = new JSONObject(dbContent);
@@ -63,6 +68,12 @@ public class JsonParser {
 		return dbAliases;
 	}
 	
+	/**
+	 * 获取增量configInstances信息
+	 * @param dbContent 增量DB信息
+	 * @return
+	 * @throws Exception
+	 */
 	public Map<ConfigInstance, Boolean> getConfigInstances(String dbContent) throws Exception {
 		Map<ConfigInstance, Boolean> cis = new HashMap<ConfigInstance, Boolean>();
 		JSONObject jsonObj = new JSONObject(dbContent);
@@ -78,7 +89,6 @@ public class JsonParser {
 			String[] envs = JSONObject.getNames(envDSContent);
 			for (int j = 0; j < envs.length; j++) {
 				if(REMOVED.equals(envs[j])) {
-//					cis.add(ci);
 					continue;
 				}
 				ConfigInstance ci = new ConfigInstance();
@@ -86,12 +96,7 @@ public class JsonParser {
 				ci.setConfigId(config.getId());
 				Environment env = getEnvService().findEnvByName(envs[j].toLowerCase());
 				ci.setEnvId(env.getId());
-/*				ci.setCreateUserId(0);
-				ci.setModifyUserId(0);
-				ci.setModifyTime(new Date(System.currentTimeMillis()));
-				ci.setCreateTime(new Date(System.currentTimeMillis()));*/
 				ci.setValue(envDSContent.getString(envs[j]));
-//				ci.setSeq(1);
 				boolean isRemovedContains = false;
 				isRemovedContains = envDSContent.getJSONObject(envs[j]).has(REMOVED);	
 				if(isRemovedContains) {

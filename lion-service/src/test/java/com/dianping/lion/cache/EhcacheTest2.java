@@ -32,8 +32,8 @@ public class EhcacheTest2 {
 		Cache cache = cacheManager.getCache("templateCache");
 		Element element = cache.get("Nice");
 		System.out.println(element != null ? element.getObjectValue() : null);
-//		cache.put(new Element("Nice", "hello"));
-		cache.remove("Nice");
+		cache.put(new Element("Nice", "hello"));
+//		cache.remove("Nice");
 		element = cache.get("Nice");
 		System.out.println(element != null ? element.getObjectValue() : null);
 		

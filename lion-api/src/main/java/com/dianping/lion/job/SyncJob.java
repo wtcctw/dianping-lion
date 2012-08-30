@@ -18,6 +18,8 @@ package com.dianping.lion.job;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.JobExecTimeDao;
@@ -26,11 +28,12 @@ import com.dianping.lion.service.JobExecTimeService;
 import com.dianping.lion.service.spi.Callback;
 
 /**
- * SyncJob
+ * SyncJob 保证HA多实例中，只有一个实例运行
  * @author youngphy.yang
  *
  */
 public abstract class SyncJob {
+	private static final Logger logger = LoggerFactory.getLogger(SyncJob.class);
 	@Autowired
 	protected JobExecTimeService jobExecTimeService;
 	
@@ -41,8 +44,11 @@ public abstract class SyncJob {
 	
 	private double jobDownTime;
 	
+	/**
+	 * 先抢坑位，后做事务。
+	 * @throws Exception
+	 */
 	public void work() throws Exception {
-		//先抢坑位，后做事务
 		if(jobExecTimeDao.tryUpdateLastJobExecTime(jobName, jobDownTime) > 0) {
 			jobExecTimeService.execTransaction(new Callback(){
 				@Override
@@ -51,13 +57,12 @@ public abstract class SyncJob {
 					if(jobExecTime.isSwitcher()) {
 						Calendar can = Calendar.getInstance();
 						can.setTime(jobExecTime.getLastJobExecTime());
-						if(System.currentTimeMillis() - can.getTimeInMillis() > jobDownTime) {
-							doBusiness();
-							jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
-//							jobExecTimeDao.updateLastJobExecTime(jobExecTime);
-						}
+						doBusiness();
+						jobExecTime.setLastJobExecTime(new Date(System.currentTimeMillis()));
 					}
 				}});
+		} else {
+			logger.info("Job discarded as the task been done by the same job at this time.");
 		}
 	}
 	

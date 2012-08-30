@@ -15,7 +15,6 @@
  */
 package com.dianping.lion.service.impl;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,32 +36,8 @@ public class JobExecTimeServiceImpl implements JobExecTimeService {
 	private OperationLogService operationLogService;
 
 	@Override
-	public void startTransaction() {
-		try {
-			jobExecTimeDao.startTransaction();
-		} catch (SQLException e) {
-			//TODO
-		}
-	}
-	@Override
 	public JobExecTime getJobExecTime(String name) {
 		return jobExecTimeDao.getJobExecTime(name);
-	}
-
-	@Override
-	public void commitTransaction() {
-		try {
-			jobExecTimeDao.commitTransaction();
-		} catch (SQLException e) {
-		}
-	}
-
-	@Override
-	public void endTransaction() {
-		try {
-			jobExecTimeDao.endTransaction();
-		} catch (SQLException e) {
-		}
 	}
 
 	@Override

@@ -47,6 +47,11 @@ public class Storager {
 		jsonParser.setEnvService(envService);
 	}
 	
+	/**
+	 * 存储增量DB信息到数据库
+	 * @param dsContent
+	 * @throws Exception
+	 */
 	public void store(String dsContent) throws Exception {
 		checkAndSaveDBConfig(dsContent);
 		checkAndUpdateDBConfigInstance(dsContent);
@@ -54,6 +59,11 @@ public class Storager {
 		checkAndUpdateDBConfigAgain(dsContent);
 	}
 	
+	/**
+	 * 存储增量config信息
+	 * @param dsContent
+	 * @throws Exception
+	 */
 	protected void checkAndSaveDBConfig(String dsContent) throws Exception {
 		Map<String,Boolean> dbAlias = jsonParser.getDBAlias(dsContent);
 		for(Entry<String,Boolean> entry : dbAlias.entrySet()) {
@@ -64,6 +74,7 @@ public class Storager {
 				//not exist, then insert
 				if(config == null) {
 					config = new Config();
+					config.setPrivatee(true);
 					config.setDesc("");
 					config.setKey(entry.getKey());
 					config.setType(ConfigTypeEnum.String.getValue());
@@ -74,6 +85,11 @@ public class Storager {
 		}
 	}
 	
+	/**
+	 * 存储增量configInstance信息
+	 * @param dsContent
+	 * @throws Exception
+	 */
 	protected void checkAndUpdateDBConfigInstance(String dsContent) throws Exception {
 		Map<ConfigInstance, Boolean> cis = jsonParser.getConfigInstances(dsContent);
 		for (Entry<ConfigInstance, Boolean> entry : cis.entrySet()) {
@@ -93,6 +109,11 @@ public class Storager {
 		}
 	}
 	
+	/**
+	 * 检验如果configInstance完全删除，则删除config记录
+	 * @param dsContent
+	 * @throws Exception
+	 */
 	protected void checkAndUpdateDBConfigAgain(String dsContent) throws Exception {
 		Map<String,Boolean> dbAlias = jsonParser.getDBAlias(dsContent);
 		for(Entry<String,Boolean> entry : dbAlias.entrySet()) {
@@ -107,7 +128,6 @@ public class Storager {
 				}
 			}
 		}
-		
 	}
 
 	public JsonParser getJsonParser() {
