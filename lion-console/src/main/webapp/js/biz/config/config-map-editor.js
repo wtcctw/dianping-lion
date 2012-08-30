@@ -3,12 +3,12 @@
 		var init = this.data('map-editor-init');
 		if (!init) {
 			this.on("show", function() {
-				$('body').css({ 'overflow' : 'hidden' });
+//				$('body').css({ 'overflow' : 'hidden' });
 				//let me stay in the center
 				$(this).css('margin-left', ($(this).outerWidth() / 2) * -1);
 			});
 			this.on("hide", function() {
-				$('body').css({ 'overflow' : 'auto' });
+//				$('body').css({ 'overflow' : 'auto' });
 			});
 			this.data('map-editor-init', true);
 		}

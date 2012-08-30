@@ -24,9 +24,13 @@ import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
+import com.dianping.lion.entity.User;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.ConfigDeleteResult;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
 import com.dianping.lion.web.vo.ConfigAttribute;
@@ -65,15 +69,15 @@ public class ConfigListAction extends AbstractConfigAction {
 			}
 			criteria.setProjectId(projectId);
 			criteria.setEnvId(envId);
-			configVos = configService.findConfigVos(criteria);
+			configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), configService.findConfigVos(criteria));
 		}
 		return SUCCESS;
 	}
-	
-	public String ajaxList() {
+
+    public String ajaxList() {
 		criteria.setProjectId(projectId);
 		criteria.setEnvId(envId);
-		configVos = configService.findConfigVos(criteria);
+		configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), configService.findConfigVos(criteria));
 		return SUCCESS;
 	}
 	
@@ -86,9 +90,11 @@ public class ConfigListAction extends AbstractConfigAction {
 	public String editConfigAttr() {
 	    try {
         	    Config config = configService.getConfig(configId);
-        	    if (config != null) {
+        	    if (config != null && hasLockPrivilege()) {
         	        config.setPrivatee(!configAttr.isPublic());
         	        configService.updateConfig(config);
+        	        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_EditAttr, config.getProjectId(), 
+        	                "设置配置属性: " + config.getKey() + ", [公开: " + configAttr.isPublic() + "]").key(config.getKey()));
         	    }
         	    createSuccessStreamResponse();
 	    } catch (RuntimeException e) {
@@ -100,6 +106,11 @@ public class ConfigListAction extends AbstractConfigAction {
 	public String clearInstance() {
 		try {
 			configService.deleteInstance(configId, envId);
+			Config configFound = configService.getConfig(configId);
+			if (configFound != null) {
+			    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Clear, configFound.getProjectId(), envId, 
+			            "清除配置项值[" + configFound.getKey() + "]").key(configFound.getKey()));
+			}
 			createSuccessStreamResponse();
 		} catch (RuntimeException e) {
 			createErrorStreamResponse("清除失败[" + e.getMessage() + "].");
@@ -111,6 +122,11 @@ public class ConfigListAction extends AbstractConfigAction {
 		try {
 			ConfigDeleteResult deleteResult = configService.delete(configId);
 			if (deleteResult.isSucceed()) {
+			    Config configDeleted = deleteResult.getConfig();
+			    if (configDeleted != null) {
+			        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, configDeleted.getProjectId(), 
+			                "删除配置项[" + configDeleted.getKey() + "]").key(configDeleted.getKey()));
+			    }
 				createSuccessStreamResponse();
 			} else {
 				List<Environment> failedEnvs = deleteResult.getFailedEnvs();
@@ -160,6 +176,20 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
+    
+    private List<ConfigVo> enrichWithPrivilege(int projectId, int envId, User user, List<ConfigVo> configVos) {
+        boolean hasLockPrivilege = user != null && configPrivilegeService.hasLockPrivilege(user.getId());
+        Integer userId = user != null ? user.getId() : null;
+        for (ConfigVo configVo : configVos) {
+            Config config = configVo.getConfig();
+            boolean hasReadPrivilege = configPrivilegeService.hasReadPrivilege(projectId, envId, config.getId(), userId);
+            configVo.setHasReadPrivilege(hasReadPrivilege);
+            boolean hasEditPrivilege = configPrivilegeService.hasEditPrivilege(projectId, envId, config.getId(), userId);
+            configVo.setHasEditPrivilege(hasEditPrivilege);
+            configVo.setHasLockPrivilege(hasLockPrivilege);
+        }
+        return configVos;
+    }
 
 	/**
 	 * @return the configInsts

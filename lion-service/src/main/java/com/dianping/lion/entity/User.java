@@ -36,6 +36,7 @@ public class User {
     private boolean system; // 是否系统用户
     private boolean locked; // 是否被锁定(禁止登陆)
     private String password;
+    private boolean onlineConfigView;
     private List<Role> roles = new ArrayList<Role>();
     
     private Boolean isSCM;
@@ -160,7 +161,15 @@ public class User {
 		this.password = password;
 	}
 
-	/**
+	public boolean isOnlineConfigView() {
+        return onlineConfigView;
+    }
+
+    public void setOnlineConfigView(boolean onlineConfigView) {
+        this.onlineConfigView = onlineConfigView;
+    }
+
+    /**
      * @return the roles
      */
     public List<Role> getRoles() {

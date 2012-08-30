@@ -5,6 +5,7 @@ import java.util.List;
 import com.dianping.lion.entity.Team;
 
 public interface TeamDao {
+    
 	List<Team> findAll();
 	
 	Team findTeamByID(int id);

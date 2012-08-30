@@ -18,8 +18,13 @@ package com.dianping.lion.api.http;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.util.ThrowableUtils;
 
 
 /**
@@ -37,34 +42,42 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
 	private static final String CREATE_SNAPSHOT 	= "1";
 
 	@Override
-	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
-		String env = getNotBlankParameter(req, PARAM_ENV);
-		String task = req.getParameter(PARAM_TASK);
-		String[] keys = req.getParameterValues(PARAM_KEY);
-		String push2App = req.getParameter(PARAM_PUSH);
-		String snapshot = req.getParameter(PARAM_SNAPSHOT);
-		push2App = push2App != null ? push2App : "0";
-		boolean createSnapshot = snapshot != null ? CREATE_SNAPSHOT.equals(snapshot.trim()) : false;
-		
-		if (keys != null && keys.length > 0) {
-			Project project = getRequiredProject(projectName);
-			Environment environment = getRequiredEnv(env);
-			
-			int snapshotId = -1;
-			if (createSnapshot) {
-			    snapshotId = configReleaseService.createSnapshotSet(project.getId(), environment.getId(), task != null ? task : "");
-			}
-			
-			String[] features = getRequiredParameters(req, PARAM_FEATURE);
-			checkConfigKeys(projectName, keys);
-			configReleaseService.executeSetTask(project.getId(), environment.getId(), features, keys, PUSH_TO_APP.equals(push2App));
-			
-			resp.getWriter().write(SUCCESS_CODE + snapshotId);
-		} else {
-			resp.getWriter().write(SUCCESS_CODE);
-		}
-		
+	protected void doService(HttpServletRequest req, HttpServletResponse resp, String querystr) throws Exception {
+    		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
+    		String env = getNotBlankParameter(req, PARAM_ENV);
+    		String task = req.getParameter(PARAM_TASK);
+    		String[] keys = req.getParameterValues(PARAM_KEY);
+    		String push2App = req.getParameter(PARAM_PUSH);
+    		String snapshot = req.getParameter(PARAM_SNAPSHOT);
+    		push2App = push2App != null ? push2App : "0";
+    		boolean createSnapshot = snapshot != null ? CREATE_SNAPSHOT.equals(snapshot.trim()) : false;
+        		
+    		if (keys != null && keys.length > 0) {
+    		    Project project = getRequiredProject(projectName);
+    		    Environment environment = getRequiredEnv(env);
+    		    
+    		    checkConfigKeys(projectName, keys);
+    		    String logcontent = "生效task: " + task + ", key: " + StringUtils.join(keys, ',');
+    		    try {
+        			int snapshotId = -1;
+        			if (createSnapshot) {
+        			    snapshotId = configReleaseService.createSnapshotSet(project.getId(), environment.getId(), task != null ? task : "");
+        			}
+        			
+        			String[] features = getRequiredParameters(req, PARAM_FEATURE);
+        			configReleaseService.executeSetTask(project.getId(), environment.getId(), features, keys, PUSH_TO_APP.equals(push2App));
+        			
+        			resp.getWriter().write(SUCCESS_CODE + snapshotId);
+        			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_TakeEffect, project.getId(), environment.getId(),
+        			        "成功: " + logcontent).key(StringUtils.join(keys, ','), "true", null, querystr));
+    		    } catch (Exception e) {
+    		        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_TakeEffect, project.getId(), environment.getId(),
+    		                "失败: " + logcontent).key(StringUtils.join(keys, ','), "false", null, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
+    		        throw e;
+    		    }
+    		} else {
+    			resp.getWriter().write(SUCCESS_CODE);
+    		}
 	}
 	
 	private void checkConfigKeys(String projectName, String[] keys) {

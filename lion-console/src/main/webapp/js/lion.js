@@ -11,7 +11,8 @@ String.prototype.prependcontext = function() {
 	if (typeof contextpath == "undefined") {
 		throw new Error("global variable contextpath not found, maybe you not include common.ftl.");
 	}
-	return contextpath + (this.startsWith("/") ? "" : "/") + this;
+	var result = (this.startsWith("/") ? "" : "/") + this;
+	return result.startsWith(contextpath) ? result: contextpath + result;
 }
 
 /**
@@ -84,6 +85,20 @@ String.prototype.abbreviate = function(maxSize) {
 
 String.prototype.chineseLength = function() {
 	return this.replace(/[^\x00-\xff]/g,"**").length;
+}
+
+String.prototype.substringAfterLast = function(separator) {
+	if (this.isEmpty()) {
+		return this;
+	}
+	if (separator.isEmpty()) {
+		return String.EMPTY;
+	}
+	var pos = this.lastIndexOf(separator);
+	if (pos == -1 || pos == (this.length - separator.length)) {
+		return String.EMPTY;
+	}
+	return this.substring(pos + separator.length);
 }
 
 /**************************对Array对象的扩展*********************************/

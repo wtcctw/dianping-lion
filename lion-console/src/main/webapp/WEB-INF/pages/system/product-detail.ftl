@@ -15,26 +15,20 @@
         			<div class="control-group control-lion-group">
 				      <label class="control-label control-lion-label">名称</label>
 				      <div class="controls lion-controls">
-				        <input type="text" class="input-xlarge" id="input-product-name" <@s.if test="%{id != 0}">value="${product.name}"</@s.if>/>
+				        <input type="text" class="input-middle" id="input-product-name" <@s.if test="%{id != 0}">value="${product.name}"</@s.if>/>
 				        <span class="help-inline hide message" id="span-product-name-error"></span>
 				      </div>
 				    </div>
 	        		<div class="control-group control-lion-group">
 				      <label class="control-label control-lion-label">负责人</label>
 				      <div class="controls lion-controls">
-				      <input id="input-product-productLeaderName" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
-				      <@s.if test="%{id != 0}">value="${selectedUserValue}"</@s.if>
-						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&#34;${user.name}@${user.loginName}@${user.id}&#34;</#list>]">
-				        	<span id="span-product-productLeaderName-error" class="help-inline">
-									可输入名字或拼音提示
-	      				 	</span> 
-				        <!-- <@s.select id="input-product-productLeaderName" list=r"userList" listKey="id" listValue="name" value="${selectedUserValue}"/>
-				          theme="simple" <@s.if test="%{id != 0}">headerKey="${product.productLeaderId}" headerValue="${product.productLeaderName}"</@s.if> 
-				        <span class="help-inline hide message" id="span-product-productLeaderName-error"></span>-->
+				      <input id="input-product-productLeaderName" type="text" class="input-middle" style="margin: 0 auto;"
+				      	<@s.if test="%{id != 0 && productLeader != null}">value="${productLeader.loginName}/${productLeader.name}"</@s.if>/>
+				      <input id="input-product-productLeaderId" type="hidden"<@s.if test="%{id != 0 && productLeader != null}"> value="${product.productLeaderId}"</@s.if>/>
 				      </div>
 				    </div>
 	        		<div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label">所属部门</label>
+				      <label class="control-label control-lion-label">所属团队</label>
 				      <div class="controls lion-controls">
 				        <@s.select id="input-product-teamName" list=r"teamList" listKey="id" listValue="name" value="${selectedTeamValue}"/>
 				        <!--  -->

@@ -64,9 +64,11 @@ public interface ProjectService {
 	
 	List<Project> getProjectsByProduct(int productId);
 
-	@Deprecated
-	//@TODO checkme! 
-    boolean isMember(int projectId, int userId);
+	boolean isMember(int projectId, int userId);
+	
+	boolean isOwner(int projectId, int userId);
+	
+    boolean isOperator(int projectId, int userId);
     
     List<ProjectMember> getMembers(int projectId);
 

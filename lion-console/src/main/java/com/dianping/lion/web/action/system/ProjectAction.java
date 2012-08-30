@@ -59,9 +59,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	private int userId;
 	private String memberType;
 	private String projectName;
-	private String manager;
-	private String techLeader;
-	private String oper;
 	
     private List<ProjectMember> owners;
     private List<ProjectMember> members;
@@ -83,12 +80,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		Project project = new Project();
 		project.setName(this.projectName);
 		project.setProductId(this.productId);
-		int managerId = Integer.parseInt(this.manager.split("@")[2]);
-		int techLeaderId = Integer.parseInt(this.techLeader.split("@")[2]);
-		int operId = Integer.parseInt(this.oper.split("@")[2]);
-		project.setManagerId(managerId);
-		project.setTechLeaderId(techLeaderId);
-		project.setOperId(operId);
 		Date date = new Date();
 		project.setCreateTime(date);
 		project.setModifyTime(date);
@@ -101,12 +92,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 		project.setId(this.projectId);
 		project.setName(this.projectName);
 		project.setProductId(this.productId);
-		int managerId = Integer.parseInt(this.manager.split("@")[2]);
-		int techLeaderId = Integer.parseInt(this.techLeader.split("@")[2]);
-		int operId = Integer.parseInt(this.oper.split("@")[2]);
-		project.setManagerId(managerId);
-		project.setTechLeaderId(techLeaderId);
-		project.setOperId(operId);
 		Date date = new Date();
 		project.setCreateTime(date);
 		project.setModifyTime(date);
@@ -239,30 +224,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
-	}
-
-    public String getManager() {
-        return manager;
-    }
-
-    public void setManager(String manager) {
-        this.manager = manager;
-    }
-
-    public String getTechLeader() {
-		return techLeader;
-	}
-
-	public void setTechLeader(String techLeader) {
-		this.techLeader = techLeader;
-	}
-
-	public String getOper() {
-		return oper;
-	}
-
-	public void setOper(String oper) {
-		this.oper = oper;
 	}
 
 	public int getProjectId() {

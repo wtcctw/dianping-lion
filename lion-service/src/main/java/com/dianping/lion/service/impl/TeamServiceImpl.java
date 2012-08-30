@@ -23,13 +23,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.TeamDao;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Team;
+import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.TeamService;
 
 public class TeamServiceImpl implements TeamService {
 	
 	@Autowired
 	private TeamDao teamDao;
+	
+	@Autowired
+	private OperationLogService operationLogService;
 	
 	private Ehcache ehcache;
 	private Ehcache projectEhcache;
@@ -41,8 +47,15 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public void delete(int id) {
-		teamDao.delete(id);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    try {
+        	    Team team = findTeamByID(id);
+        		teamDao.delete(id);
+        		if (team != null) {
+        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Team_Delete, "删除业务团队: " + team.getName()));
+        		}
+	    } finally {
+	        ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    }
 	}
 
 	@Override
@@ -52,18 +65,34 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public int create(Team team) {
-		teamDao.create(team);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
-		return team.getId();
+	    try {
+        		teamDao.create(team);
+        		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Team_Add, "创建业务团队: " + team.getName()));
+        		return team.getId();
+	    } finally {
+	        ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    }
 	}
 
 	@Override
 	public void update(Team team) {
-		teamDao.update(team);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
-		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
-		projectEhcache.removeAll();
+	    try {
+        	    Team existTeam = findTeamByID(team.getId());
+        		teamDao.update(team);
+        		if (existTeam != null) {
+        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Team_Edit, "编辑业务团队, before[名称: " 
+        		            + existTeam.getName() + "], after[名称: " + team.getName() + "]"));
+        		}
+	    } finally {
+        		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+        		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+        		projectEhcache.removeAll();
+	    }
 	}
+
+    public void setOperationLogService(OperationLogService operationLogService) {
+        this.operationLogService = operationLogService;
+    }
 
     /**
      * @param ehcache the ehcache to set

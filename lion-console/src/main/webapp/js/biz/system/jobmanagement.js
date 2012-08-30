@@ -76,22 +76,18 @@ function bind() {
 function saveJob() {
     	var jobName, switcher, failMail;
     	jobName = document.getElementById('input-job-name').value;
-//    	switcher = document.getElementsByName('input-job-switcher').value;
     	switcher = $("input[name='input-job-switcher'][checked]").val();
     	failMail = document.getElementById('input-job-failMail').value;
     	if (validateConfigForm()) {
 	    	var clientdata = {
 	    			jobName : jobName,
-	//    			envLabel : encodeURI(encodeURI(envLabel)),
 	    			switcher : switcher,
 	    			failMail : failMail
 	    	};
-	//    	clientdata = encodeURIComponent(encodeURIComponent(clientdata));
 	    	href = "/system/addJobSubmitAjax.vhtml";
 			$.ajax( {
 				type : "GET",
 				contentType : "application/json;",
-	//			contentType: "application/x-www-form-urlencoded; charset=utf-8",
 				url : href.prependcontext(),
 				data : clientdata,
 				dataType : 'html',
@@ -109,15 +105,14 @@ function updateJob() {
 	var id, jobName, switcher, failMail;
 	id = document.getElementById('input-job-id').value;
 	jobName = document.getElementById('input-job-name').value;
-//	switcher = document.getElementsByName('input-job-switcher').value;
 	switcher = $("input[name='input-job-switcher']:checked").val();
 	failMail = document.getElementById('input-job-failMail').value;
 	if (validateConfigForm()) {
 		var clientdata = {
 				jobId : id,
-    			jobName : jobName,
-    			switcher : switcher,
-    			failMail : failMail
+    				jobName : jobName,
+    				switcher : switcher,
+    				failMail : failMail
 		};
 		href = "/system/updateJobSubmitAjax.vhtml";
 		$.ajax( {
@@ -137,7 +132,7 @@ function updateJob() {
 }
 
 function verifyMail(mailAddress) {
-	var re=/^\w+@\w+(\.\w+)+(,\w+@\w+(\.\w+)+)*$/g; //匹配邮箱地址的正则表达式
+	var re=/^\w+\.?\w+@\w+(\.\w+)+(,\w+\.?\w+@\w+(\.\w+)+)*$/g; //匹配邮箱地址的正则表达式
 	if(re.test(mailAddress)) {
 		return true;
 	}

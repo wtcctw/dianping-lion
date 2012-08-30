@@ -115,6 +115,9 @@ $(function(){
 			success : function(result) {
 				$("#edit-config-modal").hideAlerts();
 				if (result.code == Res_Code_Success) {
+					for (var envId in result.privilege) {
+						$("#edit-config-env-" + envId).attr("disabled", !result.privilege[envId]);
+					}
 					var config_type = parseInt($("#edit-config-type-selector").val());
 					if (config_type == Type_Bool) {
 						$("[name='edit-config-value'][value='" + result.value + "']").attr("checked", true);

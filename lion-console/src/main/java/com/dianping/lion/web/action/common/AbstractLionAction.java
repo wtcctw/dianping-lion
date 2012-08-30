@@ -27,8 +27,10 @@ import org.apache.struts2.json.JSONUtil;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.exception.RuntimeBusinessException;
+import com.dianping.lion.service.OperationLogService;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -51,6 +53,9 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 	protected HttpServletRequest request;
 	
 	protected InputStream inputStream;
+	
+	@Autowired
+	protected OperationLogService operationLogService;
 
 	/**
 	 * @return the menu
@@ -176,5 +181,9 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
             throw new RuntimeBusinessException(e);
         }
 	}
+
+    public void setOperationLogService(OperationLogService operationLogService) {
+        this.operationLogService = operationLogService;
+    }
 	
 }

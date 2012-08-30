@@ -71,7 +71,7 @@ public class UrlUtils {
 		if (url == null) {
 			throw new NullPointerException("Param[url] cannot be null.");
 		}
-		return resolveUrl(url, resolveUrl(parameters));
+		return resolveUrl(url, resolveUrl(parameters, includes));
 	}
 	
 	public static String resolveUrl(String url, String paramStr) {

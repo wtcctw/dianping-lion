@@ -1,3 +1,4 @@
+<@s.set name="hasLockPrivilege" value="%{hasLockPrivilege()}"/>
 <div id="edit-config-attr-modal" class="modal hide fade">
 	<div class="modal-header">
       <a class="close" data-dismiss="modal" >&times;</a>
@@ -12,8 +13,10 @@
         		<div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label" for="config-key">线上是否公开:</label>
 			      <div class="controls lion-controls">
-			      	<input type="radio" name="config-public" id="config-public-1" value="true"><label for="config-public-1" class="help-inline">是</label>
-			      	<input type="radio" name="config-public" id="config-public-2" value="false"><label for="config-public-2" class="help-inline">否</label>
+			      	<input type="radio"<@s.if test="!#hasLockPrivilege"> disabled="disabled"</@s.if> name="config-public" 
+			      		id="config-public-1" value="true"><label for="config-public-1" class="help-inline">是</label>
+			      	<input type="radio"<@s.if test="!#hasLockPrivilege"> disabled="disabled"</@s.if> name="config-public" 
+			      		id="config-public-2" value="false"><label for="config-public-2" class="help-inline">否</label>
 			      </div>
 			    </div>
 		</fieldset>

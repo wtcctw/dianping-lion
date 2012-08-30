@@ -31,6 +31,7 @@
 	
 	<bean id="configService" class="com.dianping.lion.service.impl.ConfigServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
+		<property name="ehcache" ref="clusteredShortCache"/>
 		<property name="registerServiceRepository" ref="registerServiceRepository"/>
 	</bean>
 	

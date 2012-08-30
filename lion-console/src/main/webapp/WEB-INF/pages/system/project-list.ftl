@@ -47,7 +47,7 @@
 	      <th>项目名</th>
 	      <th width="230">创建时间</th>
 	      <th width="230">更新时间</th>
-	      <th width="100">操作<a href="#" id="add_project_btn" rel="tooltip" title="添加项目"><i class="icon-plus pull-right"/>&nbsp&nbsp</a></th>
+	      <th width="100">操作<a href="#" id="add_project_btn"><i class="icon-plus pull-right" rel="tooltip" title="添加项目"/>&nbsp&nbsp</a></th>
 	    </tr>
 	  </thead>
 	  <tbody>
@@ -103,36 +103,6 @@
 				        <input type="text" class="input-middle" id="projectName">
 				      </div>
 				    </div>
-				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for=" id="manager">PM:</label>
-				      <div class="controls lion-controls">
-				        <input id="manager" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
-						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
-				        	<span id="managerWarn" class="help-inline">
-							可输入名字或域账号提示
-	      				 	</span> 
-				        </div>
-				    </div>
-				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for=" id="techLeader">TechLeader:</label>
-				      <div class="controls lion-controls">
-				        <input id="techLeader" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
-						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
-				        	<span id="techLeaderWarn" class="help-inline">
-							可输入名字或域账号提示
-	      				 	</span> 
-				        </div>
-				    </div>
-				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="oper">业务运维:</label>
-				      <div class="controls lion-controls">
-				        <input id="oper" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
-						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
-						 <span id="operWarn" class="help-inline">
-							可输入名字或域账号提示
-	      				 </span> 
-				      </div>
-				    </div>
 			    </fieldset>
         	</form>
         </div>
@@ -166,36 +136,6 @@
 				      <label class="control-label control-lion-label" for="projectName">项目名:</label>
 				      <div class="controls lion-controls">
 				        <input type="text" class="input-middle" id="projectNameEdit">
-				      </div>
-				    </div>
-				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for=" id="managerEdit">PM:</label>
-				      <div class="controls lion-controls">
-				        <input id="managerEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
-						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
-				        	<span id="managerWarnEdit" class="help-inline">
-							可输入名字或域账号提示
-	      				 	</span> 
-				        </div>
-				    </div>
-				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for=" id="techLeaderEdit">TechLeader:</label>
-				      <div class="controls lion-controls">
-				        <input id="techLeaderEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
-						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
-				        	<span id="techLeaderWarnEdit" class="help-inline">
-							可输入名字或域账号提示
-	      				 	</span> 
-				        </div>
-				    </div>
-				    <div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="operEdit">业务运维:</label>
-				      <div class="controls lion-controls">
-				        <input id="operEdit" type="text" class="input-middle" style="margin: 0 auto;" data-provide="typeahead" data-items="4" 
-						     data-source="[<#list userList as user><#if user_index != 0>,</#if>&quot;${user.name}@${user.loginName}@${user.id}&quot;</#list>]">
-						 <span id="operWarnEdit" class="help-inline">
-							可输入名字或域账号提示
-	      				 </span> 
 				      </div>
 				    </div>
 			    </fieldset>

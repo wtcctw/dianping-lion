@@ -3,10 +3,10 @@
 		var init = this.data('list-editor-init');
 		if (!init) {
 			this.on("show", function() {
-				$('body').css({ 'overflow' : 'hidden' });
+//				$('body').css({ 'overflow' : 'hidden' });
 			});
 			this.on("hide", function() {
-				$('body').css({ 'overflow' : 'auto' });
+//				$('body').css({ 'overflow' : 'auto' });
 			});
 			this.data('list-editor-init', true);
 		}

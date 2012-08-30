@@ -27,10 +27,10 @@
 			      		<input type="checkbox" id="edit-select-all-env"/><label for="edit-select-all-env" class="help-inline">全选</label>
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
-			      		<@s.set name="hasEditPrivilege" value="%{editPrivileges[id]}"/>
-			      		<input type="checkbox" name="edit-config-env" id="edit-config-env-${envStatus.index}" value="${id}"
+			      		<@s.set name="hasEditPrivilege" value="%{hasEditPrivilege(pid, id)}"/>
+			      		<input type="checkbox" name="edit-config-env" id="edit-config-env-${id}" value="${id}"
 			      		<@s.if test="%{!#hasEditPrivilege}"> disabled="disabled"</@s.if>
-			      		><label for="edit-config-env-${envStatus.index}" class="help-inline">${label}</label>
+			      		><label for="edit-config-env-${id}" class="help-inline">${label}</label>
 			      		&nbsp;&nbsp;
 			      	</@s.iterator>
 			      </div>

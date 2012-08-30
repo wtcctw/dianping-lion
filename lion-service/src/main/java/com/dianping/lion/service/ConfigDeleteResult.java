@@ -18,6 +18,7 @@ package com.dianping.lion.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.Environment;
 
 /**
@@ -27,6 +28,7 @@ import com.dianping.lion.entity.Environment;
 public class ConfigDeleteResult {
 
 	private List<Environment> failedEnvs;
+    private Config config;
 	
 	public void addFailedEnv(Environment env) {
 		if (failedEnvs == null) {
@@ -45,5 +47,13 @@ public class ConfigDeleteResult {
 	public List<Environment> getFailedEnvs() {
 		return failedEnvs;
 	}
+
+    public void setConfig(Config config) {
+        this.config = config;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
 	
 }

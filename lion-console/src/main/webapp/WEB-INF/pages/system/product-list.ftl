@@ -8,7 +8,7 @@
 	      <th>创建时间</th>
 	      <th>更新时间</th>
 	      <th width="100">操作<a data-toggle="modal" href="<@s.url action='productAddAjax' namespace='/system'/>"
-				rel="tooltip" title="添加产品线"> <i class="icon-plus pull-right" />&nbsp&nbsp</a></th>
+				> <i class="icon-plus pull-right" rel="tooltip" title="添加产品线"/>&nbsp&nbsp</a></th>
 	    </tr>
 	  </thead>
 	  <tbody>

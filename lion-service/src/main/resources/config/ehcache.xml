@@ -15,6 +15,12 @@
 			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true " />
 	</Cache>
 	
+	<Cache name="clusteredShortCache" maxElementsInMemory="10000" memoryStoreEvictionPolicy="LRU" eternal="false"
+		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="false" diskPersistent="false">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true " />
+	</Cache>
+	
 	<Cache name="clusteredProjectCache" maxElementsInMemory="10000" memoryStoreEvictionPolicy="LRU" eternal="false"
 		timeToIdleSeconds="1800" timeToLiveSeconds="3600" overflowToDisk="false" diskPersistent="false">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"

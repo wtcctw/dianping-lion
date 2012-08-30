@@ -23,13 +23,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.ProductDao;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Product;
+import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.ProductService;
 
 public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
 	private ProductDao productDao;
+	
+	@Autowired
+    private OperationLogService operationLogService;
 	
 	private Ehcache ehcache;
 	private Ehcache projectEhcache;
@@ -41,8 +47,15 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void delete(int id) {
-		productDao.delete(id);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    try {
+        	    Product product = findProductByID(id);
+        		productDao.delete(id);
+        		if (product != null) {
+        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Delete, "删除产品线: " + product.getName()));
+        		}
+	    } finally {
+	        ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    }
 	}
 
 	@Override
@@ -57,17 +70,29 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public int create(Product product) {
-		productDao.create(product);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
-		return product.getId();
+	    try {
+        		productDao.create(product);
+        		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Add, "创建产品线: " + product.getName()));
+        		return product.getId();
+	    } finally {
+	        ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    }
 	}
 
 	@Override
 	public void update(Product product) {
-		productDao.update(product);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
-		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
-		projectEhcache.removeAll();
+	    try {
+        	    Product existProduct = findProductByID(product.getId());
+        		productDao.update(product);
+        		if (existProduct != null) {
+        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Edit, "编辑产品线, before[名称: " 
+                            + existProduct.getName() + "], after[名称: " + product.getName() + "]"));
+        		}
+	    } finally {
+        		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+        		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+        		projectEhcache.removeAll();
+	    }
 	}
 
     /**
@@ -75,6 +100,10 @@ public class ProductServiceImpl implements ProductService {
      */
     public void setProductDao(ProductDao productDao) {
         this.productDao = productDao;
+    }
+
+    public void setOperationLogService(OperationLogService operationLogService) {
+        this.operationLogService = operationLogService;
     }
 
     /**

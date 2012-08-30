@@ -5,10 +5,11 @@ package com.dianping.lion.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.Environment;
-import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ConfigPrivilegeService;
+import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.UserService;
@@ -26,61 +27,88 @@ public class ConfigPrivilegeServiceImpl implements ConfigPrivilegeService {
     private ProjectService projectService;
     
     @Autowired
+    private ConfigService configService;
+    
+    @Autowired
     private UserService userService;
 
     @Override
-    public boolean hasLookPrivilege(int projectId, int envId, Integer userId) {
+    public boolean hasReadPrivilege(int projectId, int envId, int configId, Integer userId) {
         Environment environment = environmentService.loadEnvByID(envId);
-        if (environment.isOnline()) {
-            if (userId != null) {
-                User user = userService.loadById(userId);
-                if (user.isAdmin() || user.isSA() || user.isSystem()) {
-                    return true;
-                }
-                Project project = projectService.loadProject(projectId);
-                Integer managerId = project.getManagerId();
-                Integer techLeaderId = project.getTechLeaderId();
-                if (managerId == userId || techLeaderId == userId) {
-                    return true;
-                }
-                boolean isMember = projectService.isMember(projectId, userId);
-                if (isMember) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
+        User user = userId != null ? userService.loadById(userId) : null;
+        if (user != null && (user.isAdmin() || user.isSystem() || user.isSA())) {
             return true;
         }
+        if (environment != null) {
+            if (environment.isOnline()) {
+                if (user != null) {
+                    Config config = configService.getConfig(configId);
+                    if (config != null && !config.isPrivatee()) {
+                        return user.isOnlineConfigView() || projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId)
+                                        || projectService.isOperator(projectId, userId);
+                    }
+                    return false;
+                }
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public boolean hasEditPrivilege(int projectId, int envId, Integer userId) {
+    public boolean hasAddPrivilege(int projectId, int envId, Integer userId) {
+        if (userId == null) {
+            return false;
+        }
+        Environment environment = environmentService.loadEnvByID(envId);
+        User user = userService.loadById(userId);
+        if (user != null && (user.isAdmin() || user.isSystem() || user.isSA())) {
+            return true;
+        }
+        if (environment != null) {
+            if (environment.isOnline()) {
+                return projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId);
+            } else {
+                return projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
+                            || projectService.isOperator(projectId, userId);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hasEditPrivilege(int projectId, int envId, int configId, Integer userId) {
+        if (userId == null) {
+            return false;
+        }
+        Environment environment = environmentService.loadEnvByID(envId);
+        User user = userService.loadById(userId);
+        if (user != null && (user.isAdmin() || user.isSystem() || user.isSA())) {
+            return true;
+        }
+        if (environment != null) {
+            if (environment.isOnline()) {
+                Config config = configService.getConfig(configId);
+                if (config != null && !config.isPrivatee()) {
+                    return projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId);
+                }
+                return false;
+            } else {
+                return projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
+                            || projectService.isOperator(projectId, userId);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hasLockPrivilege(Integer userId) {
         if (userId == null) {
             return false;
         }
         User user = userService.loadById(userId);
-        if (user.isAdmin() || user.isSystem()) {
-            return true;
-        }
-        Environment environment = environmentService.loadEnvByID(envId);
-        Project project = projectService.loadProject(projectId);
-        Integer managerId = project.getManagerId();
-        Integer techLeaderId = project.getTechLeaderId();
-        if (managerId == userId || techLeaderId == userId) {
-            return true;
-        }
-        if (environment.isOnline()) {
-            if (user.isSA()) {
-                return true;
-            }
-        } else {
-            boolean isMember = projectService.isMember(projectId, userId);
-            if (isMember || user.isSCM()) {
-                return true;
-            }
-        }
-        return false;
+        return user.isAdmin() || user.isSA();
     }
 
     /**
@@ -95,6 +123,10 @@ public class ConfigPrivilegeServiceImpl implements ConfigPrivilegeService {
      */
     public void setProjectService(ProjectService projectService) {
         this.projectService = projectService;
+    }
+
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
     }
 
     /**

@@ -18,11 +18,23 @@ package com.dianping.lion.dao;
 import java.util.List;
 
 import com.dianping.lion.entity.OperationLog;
-import com.dianping.lion.entity.OperationLogSearch;
+import com.dianping.lion.vo.OperationLogCriteria;
+import com.dianping.lion.vo.Paginater;
 
 public interface OperationLogDao {
 
-	List<OperationLog> getLogs();
-	List<OperationLog> getLogList(OperationLogSearch operationLogSearch);
-	void insertOpLog(OperationLog opLog);
+	void insertOpLog(OperationLog oplog);
+	
+    long getLogCount(OperationLogCriteria logCriteria, Paginater<OperationLog> paginater);
+
+    List<OperationLog> getLogList(OperationLogCriteria logCriteria, Paginater<OperationLog> paginater);
+    
+    /**
+     * 获取指定oplog的指定key("key1", "key2"...)的内容
+     * @param logId
+     * @param key
+     * @return
+     */
+    String getLogKey(int logId, String key);
+    
 }

@@ -35,6 +35,10 @@ public class ConfigVo implements Serializable {
 	private boolean hasContextInst;	//有context based配置实例
 	
 	private ConfigInstance defaultInstance;	//默认配置实例
+	
+	private boolean hasReadPrivilege;
+	private boolean hasEditPrivilege;
+	private boolean hasLockPrivilege;
 
 	/**
 	 * @param config
@@ -102,5 +106,29 @@ public class ConfigVo implements Serializable {
 	public void setHasContextInst(boolean hasContextInst) {
 		this.hasContextInst = hasContextInst;
 	}
+
+    public boolean isHasReadPrivilege() {
+        return hasReadPrivilege;
+    }
+
+    public void setHasReadPrivilege(boolean hasReadPrivilege) {
+        this.hasReadPrivilege = hasReadPrivilege;
+    }
+
+    public boolean isHasEditPrivilege() {
+        return hasEditPrivilege;
+    }
+
+    public void setHasEditPrivilege(boolean hasEditPrivilege) {
+        this.hasEditPrivilege = hasEditPrivilege;
+    }
+
+    public boolean isHasLockPrivilege() {
+        return hasLockPrivilege;
+    }
+
+    public void setHasLockPrivilege(boolean hasLockPrivilege) {
+        this.hasLockPrivilege = hasLockPrivilege;
+    }
 
 }

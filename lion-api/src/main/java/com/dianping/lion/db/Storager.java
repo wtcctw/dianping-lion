@@ -86,7 +86,6 @@ public class Storager {
 				if(result ==  null) {
 					configService.createInstance(ci);
 				} else {
-//					ci.setConfigId(result.getConfigId());
 					ci.setId(result.getId());
 					configService.updateInstance(ci);
 				}

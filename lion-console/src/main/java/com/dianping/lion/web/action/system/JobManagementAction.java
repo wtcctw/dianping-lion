@@ -50,7 +50,6 @@ public class JobManagementAction extends AbstractLionAction{
 	
 	public String addJobSubmit() {
 		JobExecTime jobExecTime = new JobExecTime();
-//		jobExecTime.setId(jobId);
 		jobExecTime.setFailMail(failMail);
 		jobExecTime.setSwitcher(switcher);
 		jobExecTime.setJobName(jobName);

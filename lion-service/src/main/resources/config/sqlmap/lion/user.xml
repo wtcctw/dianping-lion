@@ -9,6 +9,7 @@
 		<result column="email" property="email"/>
 		<result column="system" property="system"/>
 		<result column="locked" property="locked"/>
+		<result column="onlineConfigView" property="onlineConfigView"/>
 		<result column="createTime" property="createTime"/>
 	</resultMap>
 
@@ -23,7 +24,7 @@
 	
 	<select id="findAll" resultMap="UserResultBasic">
 		<![CDATA[
-		SELECT * FROM user ORDER BY id
+		SELECT * FROM user ORDER BY `name`
 		]]>
     </select>
     
@@ -37,7 +38,7 @@
     		SELECT * FROM user WHERE (loginName LIKE CONCAT('%', #value#, '%') OR name LIKE CONCAT('%', #value#, '%')) AND system = 0
     </select>
     
-    <select id="findByName" resultMap="UserResult">
+    <select id="findByName" resultMap="UserResultBasic">
 		<![CDATA[
 		SELECT * FROM user WHERE loginName=#userName# ORDER BY id
 		]]>
@@ -45,7 +46,8 @@
     
     <insert id="insertUser" parameterClass="User">
 		<![CDATA[
-		insert into user(loginName, name, email, system, createTime, locked, password) values(#loginName#, #name#, #email#, #system#, #createTime#, #locked#, #password#)
+		insert into user(loginName, name, email, system, createTime, locked, onlineConfigView, password) 
+		values(#loginName#, #name#, #email#, #system#, NOW(), #locked#, #onlineConfigView#, #password#)
 		]]>
 		<selectKey resultClass="int" keyProperty="id">
              <![CDATA[   select last_insert_id() as id  ]]>

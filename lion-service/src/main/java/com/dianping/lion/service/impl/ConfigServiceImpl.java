@@ -23,6 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,6 +85,8 @@ public class ConfigServiceImpl implements ConfigService {
 	
 	private TransactionTemplate transactionTemplate;
 	
+	private Ehcache ehcache;
+	
 	public ConfigServiceImpl(PlatformTransactionManager transactionManager) {
 		this.transactionTemplate = new TransactionTemplate(transactionManager);
 		this.transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -117,41 +122,55 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public void moveDown(int projectId, int configId) {
-		Config config = configDao.getConfig(configId);
+		Config config = getConfig(configId);
 		if (config == null) {
 			throw new EntityNotFoundException("Config[id=" + configId + "] not found.");
 		}
 		projectDao.lockProject(projectId);	//锁定指定projectId，避免同一项目下的config出现相同的seq值
 		Config nextConfig = configDao.getNextConfig(configId);
 		if (nextConfig != null) {
-			int seq = config.getSeq();
-			config.setSeq(nextConfig.getSeq());
-			nextConfig.setSeq(seq);
-			configDao.update(config);
-			configDao.update(nextConfig);
+		    try {
+        			int seq = config.getSeq();
+        			config.setSeq(nextConfig.getSeq());
+        			nextConfig.setSeq(seq);
+        			configDao.update(config);
+        			configDao.update(nextConfig);
+		    } finally {
+		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
+		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
+		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + nextConfig.getId());
+		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + nextConfig.getKey());
+		    }
 		}
 	}
 
 	@Override
 	public void moveUp(int projectId, Integer configId) {
-		Config config = configDao.getConfig(configId);
+		Config config = getConfig(configId);
 		if (config == null) {
 			throw new EntityNotFoundException("Config[id=" + configId + "] not found.");
 		}
 		projectDao.lockProject(projectId);
 		Config prevConfig = configDao.getPrevConfig(configId);
 		if (prevConfig != null) {
-			int seq = config.getSeq();
-			config.setSeq(prevConfig.getSeq());
-			prevConfig.setSeq(seq);
-			configDao.update(config);
-			configDao.update(prevConfig);
+		    try {
+        			int seq = config.getSeq();
+        			config.setSeq(prevConfig.getSeq());
+        			prevConfig.setSeq(seq);
+        			configDao.update(config);
+        			configDao.update(prevConfig);
+		    } finally {
+		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
+		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
+		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + prevConfig.getId());
+		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + prevConfig.getKey());
+		    }
 		}
 	}
 
 	@Override
 	public void deleteInstance(int configId, int envId) {
-		Config config = configDao.getConfig(configId);
+		Config config = getConfig(configId);
 		if (config == null) {
 			throw new EntityNotFoundException("Config[id=" + configId + "] not found.");
 		}
@@ -167,8 +186,9 @@ public class ConfigServiceImpl implements ConfigService {
 	@Override
 	public ConfigDeleteResult delete(int configId) {
 		final ConfigDeleteResult result = new ConfigDeleteResult();
-		final Config config = configDao.getConfig(configId);
+		final Config config = getConfig(configId);
 		if (config != null) {
+		    result.setConfig(config);
 			List<Environment> environments = environmentService.findAll();
 			for (final Environment environment : environments) {
 				try {
@@ -186,6 +206,8 @@ public class ConfigServiceImpl implements ConfigService {
 			}
 			if (result.isSucceed()) {
 				configDao.delete(configId);
+				ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + configId);
+				ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
 			}
 		}
 		return result;
@@ -358,7 +380,15 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public Config findConfigByKey(String key) {
-		return configDao.findConfigByKey(key);
+	    Element element = ehcache.get(ServiceConstants.CACHE_CONFIG_PREFIX + key);
+        if (element == null) {
+            Config config = configDao.findConfigByKey(key);
+            if (config != null) {
+                element = new Element(ServiceConstants.CACHE_CONFIG_PREFIX + key, config);
+                ehcache.put(element);
+            }
+        }
+        return element != null ? (Config) element.getObjectValue(): null;
 	}
 
 	@Override
@@ -368,12 +398,25 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public Config getConfig(int configId) {
-		return configDao.getConfig(configId);
+	    Element element = ehcache.get(ServiceConstants.CACHE_CONFIG_PREFIX + configId);
+	    if (element == null) {
+            Config config = configDao.getConfig(configId);
+            if (config != null) {
+                element = new Element(ServiceConstants.CACHE_CONFIG_PREFIX + configId, config);
+                ehcache.put(element);
+            }
+        }
+        return element != null ? (Config) element.getObjectValue(): null;
 	}
 	
 	public int updateConfig(Config config) {
-	    config.setModifyUserId(SecurityUtils.getCurrentUserId());
-	    return configDao.update(config);
+	    try {
+        	    config.setModifyUserId(SecurityUtils.getCurrentUserId());
+        	    return configDao.update(config);
+	    } finally {
+	        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
+	        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
+	    }
 	}
 
 	@Override
@@ -467,7 +510,11 @@ public class ConfigServiceImpl implements ConfigService {
 		this.projectDao = projectDao;
 	}
 
-	/**
+	public void setEhcache(Ehcache ehcache) {
+        this.ehcache = ehcache;
+    }
+
+    /**
 	 * @param registerServiceRepository the mediumServiceRepository to set
 	 */
 	public void setRegisterServiceRepository(ConfigRegisterServiceRepository registerServiceRepository) {

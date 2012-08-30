@@ -41,12 +41,6 @@ public class Project implements Serializable {
 	
 	private String teamName;
 	
-	private Integer managerId;
-	
-	private Integer techLeaderId;
-	
-	private Integer operId;
-	
 	private Date createTime;
 	
 	private Date modifyTime;
@@ -177,36 +171,6 @@ public class Project implements Serializable {
 	 */
 	public void setProduct(Product product) {
 		this.product = product;
-	}
-
-	/**
-     * @return the managerId
-     */
-    public Integer getManagerId() {
-        return managerId;
-    }
-
-    /**
-     * @param managerId the managerId to set
-     */
-    public void setManagerId(Integer managerId) {
-        this.managerId = managerId;
-    }
-
-    public Integer getTechLeaderId() {
-		return techLeaderId;
-	}
-
-	public void setTechLeaderId(Integer techLeaderId) {
-		this.techLeaderId = techLeaderId;
-	}
-
-	public Integer getOperId() {
-		return operId;
-	}
-
-	public void setOperId(Integer operId) {
-		this.operId = operId;
 	}
 
 }

@@ -15,8 +15,10 @@
  */
 package com.dianping.lion.dao.ibatis;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.dianping.lion.dao.UserDao;
@@ -41,6 +43,9 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
     @SuppressWarnings("unchecked")
     @Override
     public List<User> findByNameOrLoginNameLike(String name) {
+        if (StringUtils.isBlank(name)) {
+            return Collections.emptyList();
+        }
         return getSqlMapClientTemplate().queryForList("User.findByNameOrLoginNameLike", name);
     }
 

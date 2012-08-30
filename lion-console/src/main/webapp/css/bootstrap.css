@@ -1623,7 +1623,7 @@ table {
 
 .table tbody tr:hover td,
 .table tbody tr:hover th {
-  background-color: #f5f5f5;
+  background-color: #f5f5ff;
 }
 
 table .span1 {

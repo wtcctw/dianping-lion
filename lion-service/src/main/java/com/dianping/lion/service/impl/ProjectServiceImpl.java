@@ -15,8 +15,10 @@
  */
 package com.dianping.lion.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -26,10 +28,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.ProjectDao;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
+import com.dianping.lion.entity.Product;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.ProjectMember;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.exception.EntityNotFoundException;
+import com.dianping.lion.service.OperationLogService;
+import com.dianping.lion.service.ProductService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.util.DBUtils;
 
@@ -41,6 +48,12 @@ public class ProjectServiceImpl implements ProjectService {
 	
 	@Autowired
 	private ProjectDao projectDao;
+	
+    @Autowired
+    private OperationLogService operationLogService;
+    
+    @Autowired
+    private ProductService productService;
 	
 	private Ehcache ehcache;
 	private Ehcache projectEhcache;
@@ -99,28 +112,49 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public Integer addProject(Project project) {
-		Integer projectId = projectDao.insertProject(project);
-		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
-        return projectId;
+	    try {
+        		Integer projectId = projectDao.insertProject(project);
+        		Product product = productService.findProductByID(project.getProductId());
+        		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Project_Add, "创建项目: " + project.getName() 
+        		        + ", 所属产品线: " + product.getName()));
+        		return projectId;
+	    } finally {
+        		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+        		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    }
 	}
 
 	@Override
 	public Integer editProject(Project project) {
-		Integer updated = projectDao.updateProject(project);
-		projectEhcache.remove(ServiceConstants.CACHE_KEY_PROJECT_PREFIX + project.getId());
-		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
-        return updated;
+	    try {
+        	    Project existProject = projectDao.getProject(project.getId());
+        		Integer updated = projectDao.updateProject(project);
+        		Product existProduct = productService.findProductByID(existProject.getProductId());
+        		Product product = productService.findProductByID(project.getProductId());
+        		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Project_Edit, "编辑项目, before[名称: " + existProject.getName() 
+        		        + ", 产品线: " + existProduct.getName() + "], after[名称: " + project.getName() + ", 产品线: " + product.getName() + "]"));
+        		return updated;
+	    } finally {
+        		projectEhcache.remove(ServiceConstants.CACHE_KEY_PROJECT_PREFIX + project.getId());
+        		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+        		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    }
 	}
 
 	@Override
 	public Integer delProject(int projectId) {
-		Integer deleted = projectDao.delProject(projectId);
-		projectEhcache.remove(ServiceConstants.CACHE_KEY_PROJECT_PREFIX + projectId);
-		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
-		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
-        return deleted;
+	    try {
+        	    Project project = getProject(projectId);
+        		Integer deleted = projectDao.delProject(projectId);
+        		if (project != null) {
+        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Project_Delete, "删除项目: " + project.getName()));
+        		}
+        		return deleted;
+	    } finally {
+        		projectEhcache.remove(ServiceConstants.CACHE_KEY_PROJECT_PREFIX + projectId);
+        		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+        		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    }
 	}
 
 	@Override
@@ -136,9 +170,67 @@ public class ProjectServiceImpl implements ProjectService {
 		return projectDao.findProject(name);
 	}
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean isMember(int projectId, int userId) {
-        return projectDao.isMember(projectId, userId);
+        Element element = ehcache.get(ServiceConstants.CACHE_PROJECT_MEMBER_PREFIX + projectId);
+        if (element == null) {
+            synchronized (this) {
+                element = ehcache.get(ServiceConstants.CACHE_PROJECT_MEMBER_PREFIX + projectId);
+                if (element == null) {
+                    Set<Integer> memberIds = new HashSet<Integer>();
+                    List<ProjectMember> members = getMembers(projectId);
+                    for (ProjectMember member : members) {
+                        memberIds.add(member.getUserId());
+                    }
+                    element = new Element(ServiceConstants.CACHE_PROJECT_MEMBER_PREFIX + projectId, memberIds);
+                    ehcache.put(element);
+                }
+            }
+        }
+        return ((Set<Integer>) element.getObjectValue()).contains(userId);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean isOwner(int projectId, int userId) {
+        Element element = ehcache.get(ServiceConstants.CACHE_PROJECT_OWNER_PREFIX + projectId);
+        if (element == null) {
+            synchronized (this) {
+                element = ehcache.get(ServiceConstants.CACHE_PROJECT_OWNER_PREFIX + projectId);
+                if (element == null) {
+                    Set<Integer> ownerIds = new HashSet<Integer>();
+                    List<ProjectMember> owners = getOwners(projectId);
+                    for (ProjectMember owner : owners) {
+                        ownerIds.add(owner.getUserId());
+                    }
+                    element = new Element(ServiceConstants.CACHE_PROJECT_OWNER_PREFIX + projectId, ownerIds);
+                    ehcache.put(element);
+                }
+            }
+        }
+        return ((Set<Integer>) element.getObjectValue()).contains(userId);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean isOperator(int projectId, int userId) {
+        Element element = ehcache.get(ServiceConstants.CACHE_PROJECT_OPERATOR_PREFIX + projectId);
+        if (element == null) {
+            synchronized (this) {
+                element = ehcache.get(ServiceConstants.CACHE_PROJECT_OPERATOR_PREFIX + projectId);
+                if (element == null) {
+                    Set<Integer> operatorIds = new HashSet<Integer>();
+                    List<ProjectMember> operators = getOperators(projectId);
+                    for (ProjectMember operator : operators) {
+                        operatorIds.add(operator.getUserId());
+                    }
+                    element = new Element(ServiceConstants.CACHE_PROJECT_OPERATOR_PREFIX + projectId, operatorIds);
+                    ehcache.put(element);
+                }
+            }
+        }
+        return ((Set<Integer>) element.getObjectValue()).contains(userId);
     }
 
     @Override
@@ -161,10 +253,13 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             if (ServiceConstants.PROJECT_OWNER.equals(memberType)) {
                 projectDao.addOwner(projectId, userId);
+                ehcache.remove(ServiceConstants.CACHE_PROJECT_OWNER_PREFIX + projectId);
             } else if (ServiceConstants.PROJECT_MEMBER.equals(memberType)) {
                 projectDao.addMember(projectId, userId);
+                ehcache.remove(ServiceConstants.CACHE_PROJECT_MEMBER_PREFIX + projectId);
             } else if (ServiceConstants.PROJECT_OPERATOR.equals(memberType)) {
                 projectDao.addOperator(projectId, userId);
+                ehcache.remove(ServiceConstants.CACHE_PROJECT_OPERATOR_PREFIX + projectId);
             }
         } catch (RuntimeException e) {
             if (!DBUtils.isDuplicateKeyError(e)) {
@@ -177,11 +272,22 @@ public class ProjectServiceImpl implements ProjectService {
     public void deleteMember(int projectId, String memberType, int userId) {
         if (ServiceConstants.PROJECT_OWNER.equals(memberType)) {
             projectDao.deleteOwner(projectId, userId);
+            ehcache.remove(ServiceConstants.CACHE_PROJECT_OWNER_PREFIX + projectId);
         } else if (ServiceConstants.PROJECT_MEMBER.equals(memberType)) {
             projectDao.deleteMember(projectId, userId);
+            ehcache.remove(ServiceConstants.CACHE_PROJECT_MEMBER_PREFIX + projectId);
         } else if (ServiceConstants.PROJECT_OPERATOR.equals(memberType)) {
             projectDao.deleteOperator(projectId, userId);
+            ehcache.remove(ServiceConstants.CACHE_PROJECT_OPERATOR_PREFIX + projectId);
         }
+    }
+
+    public void setOperationLogService(OperationLogService operationLogService) {
+        this.operationLogService = operationLogService;
+    }
+
+    public void setProductService(ProductService productService) {
+        this.productService = productService;
     }
 
     /**

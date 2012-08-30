@@ -68,8 +68,8 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 		return user;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
+	@SuppressWarnings("rawtypes")
+    @Override
 	public User getUserInfo(String cn) {
 		User user = new User();
 		try {

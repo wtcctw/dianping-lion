@@ -25,10 +25,8 @@
 			  u.name AS productLeaderName,
 			  p.createTime,
 			  p.modifyTime
-			FROM product AS p,
-			  user u,
-			  team t
-			WHERE p.teamId = t.id AND p.productLeaderId = u.id
+			FROM product AS p LEFT JOIN user u ON p.productLeaderId = u.id, team t
+			WHERE p.teamId = t.id
 		]]>
     </select>
     <select id="findByID" resultMap="ProductResult">
@@ -42,12 +40,8 @@
 			  u.name AS productLeaderName,
 			  p.createTime,
 			  p.modifyTime
-			FROM product AS p,
-			  user u,
-			  team t
-			WHERE p.teamId = t.id 
-			AND p.productLeaderId = u.id
-			AND p.id=#id#
+			FROM product AS p LEFT JOIN user u ON p.productLeaderId = u.id, team t
+			WHERE p.teamId = t.id AND p.id=#id#
 		]]>
     </select>
     <select id="findProductByTeamID" resultMap="ProductResult">
@@ -61,17 +55,13 @@
 			  u.name AS productLeaderName,
 			  p.createTime,
 			  p.modifyTime
-			FROM product AS p,
-			  user u,
-			  team t
-			WHERE p.teamId = t.id 
-			AND p.productLeaderId = u.id
-			AND p.teamId=#teamId#
+			FROM product AS p LEFT JOIN user u ON p.productLeaderId = u.id, team t
+			WHERE p.teamId = t.id AND p.teamId=#teamId#
 		]]>
     </select>
     
     <update id="updateProduct" parameterClass="Product">
-    	update product
+    		update product
 		set name=#name#,
 			teamId=#teamId#,
 			productLeaderId=#productLeaderId#,

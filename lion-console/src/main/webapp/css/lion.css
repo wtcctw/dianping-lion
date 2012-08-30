@@ -79,6 +79,16 @@ body {
 	padding-bottom : 8px !important;
 }
 
+.modal-middle {
+	width: 660px;
+  	margin: -250px 0 0 -330px;
+}
+
+.modal-big {
+	width: 1000px !important;
+  	margin: -290px 0 0 -500px !important;
+}
+
 .modal-backdrop {
 	background-color : "white";
 }
@@ -169,6 +179,10 @@ table.lion tr:hover td {
 	background-color: white !important;
 }
 
+table.table-page {
+	margin-bottom : 8px !important;
+}
+
 td.lion-label {
 	text-align: right;
 	background-color: #f5f5f5;
@@ -202,6 +216,14 @@ table.lion input[type="radio"], input[type="checkbox"] {
 	margin : 0 0;
 }
 
+a.no-dec {
+	text-decoration: none;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
 .lion-h3 {
 	margin: 0;
 	font-family: inherit;
@@ -228,6 +250,15 @@ table.lion input[type="radio"], input[type="checkbox"] {
 .form-horizontal .lion-controls {
 	margin-left : 120px;
 }
+
+.pagination {
+	margin : 0 0;
+}
+
+.pagination a {
+	line-height : 23px;
+}
+
 
 @media (min-width: 768px) and (max-width: 979px) {
 	.alert-lion {

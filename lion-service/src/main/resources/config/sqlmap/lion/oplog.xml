@@ -2,8 +2,7 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
 <sqlMap namespace="OperationLog">
 	<typeAlias alias="OpLog" type="com.dianping.lion.entity.OperationLog" />
-	<typeAlias alias="OpLogSearch"
-		type="com.dianping.lion.entity.OperationLogSearch" />
+	<typeAlias alias="OpLogCriteria" type="com.dianping.lion.entity.OperationLogCriteria" />
 		
 	<resultMap id="OperationLogResult" class="OpLog">
 		<result column="id" property="id"/>
@@ -14,95 +13,91 @@
 		<result column="envId" property="envId"/>
 		<result column="envName" property="envName"/>
 		<result column="opTime" property="opTime"/>
-		<result column="envId" property="envId"/>
 		<result column="projectId" property="projectId"/>
 		<result column="projectName" property="projectName"/>
 		<result column="content" property="content"/>
+		<result column="key1" property="key1"/>
+		<result column="key2" property="key2"/>
+		<result column="key3" property="key3"/>
+		<result column="key4" property="key4"/>
+		<result column="key5" property="key5"/>
 	</resultMap>
 	
-	<select id="getOpLogs" resultMap="OperationLogResult">
-		<![CDATA[
-		SELECT
-		  T2.id,
-		  opType,
-		  opUserId,
-		  opUserName,
-		  opUserIp,
-		  envId,
-		  environment.label AS envName,
-		  opTime,
-		  projectId,
-		  projectName,
-		  content
-		FROM (SELECT
-		        T1.id,
-		        opType,
-		        opUserId,
-		        user.name AS opUserName,
-		        opUserIp,
-		        envId,
-		        opTime,
-		        projectId,
-		        projectName,
-		        content
-		      FROM (SELECT
-		              ol.id  AS id,
-		              opType,
-		              opUserId,
-		              opUserIp,
-		              envId,
-		              opTime,
-		              projectId,
-		              p.name  AS projectName,
-		              content
-		            FROM op_log AS ol
-		              LEFT JOIN project AS p
-		                ON ol.projectId = p.id) AS T1
-		        LEFT JOIN user
-		          ON T1.opUserId = user.id) AS T2
-		  LEFT JOIN environment
-		    ON environment.id = T2.envId
-		]]>
-    </select>
-    <select id="getOpLogList" resultMap="OperationLogResult" parameterClass="OpLogSearch">
-	    <![CDATA[
-		SELECT OL.id, opType, opUserIp, opUserId, U.name as opUserName, envId, E.label envName,opTime, projectId, project.name projectName, content
-		FROM op_log AS OL,
-		  user AS U,
-		  environment AS E,
-		  project
-		WHERE OL.envId = E.id
-		    AND OL.opUserId = U.id
-		    AND OL.projectId = project.id
-		]]>
+	<sql id="getOpLog_Fragment">
 		<dynamic>
-		    	<isNotEqual prepend="AND" property="project" compareValue="-1">
-            		OL.projectId=#project#
-        		</isNotEqual>
-        		<isNotEqual prepend="AND" property="user" compareValue="-1">
-            		OL.opUserId=#user#
-        		</isNotEqual>
-        		<isNotEqual prepend="AND" property="opType" compareValue="-1">
-            		OL.opType=#opType#
-        		</isNotEqual>
-        		<isNotEqual prepend="AND" property="env" compareValue="-1">
-            		OL.envId=#env#
-        		</isNotEqual>
-        		<isNotEqual prepend="AND" property="content" compareValue="">
-            		content like #content#
-        		</isNotEqual>
-        		<isNotEmpty prepend="AND" property="from">
-            		OL.opTime >= #from#
-        		</isNotEmpty>
-        		<isNotEmpty prepend="AND" property="to">
-        			<![CDATA[
-            		OL.opTime <= #to#
-            		]]>
-        		</isNotEmpty>
+			<isNotNull prepend="AND" property="criteria.opTypeStart">
+				o.opType >= #criteria.opTypeStart#
+			</isNotNull>
+			<isNotNull prepend="AND" property="criteria.opTypeEnd">
+				<![CDATA[o.opType <= #criteria.opTypeEnd#]]>
+			</isNotNull>
+			<isNotNull prepend="AND" property="criteria.projectId">
+				o.projectId = #criteria.projectId#
+			</isNotNull>
+			<isNotNull prepend="AND" property="criteria.envId">
+				(o.envId = #criteria.envId# OR o.envId IS NULL)
+			</isNotNull>
+			<isNotNull prepend="AND" property="criteria.userId">
+				o.opUserId = #criteria.userId#
+			</isNotNull>
+			<isNotEmpty prepend="AND" property="criteria.content">
+				o.content LIKE CONCAT('%', #criteria.content#, '%')
+			</isNotEmpty>
+			<isNotNull prepend="AND" property="criteria.from">
+				o.opTime >= #criteria.from#
+			</isNotNull>
+			<isNotNull prepend="AND" property="criteria.to">
+				<![CDATA[o.opTime <= #criteria.to#]]>
+			</isNotNull>
 		</dynamic>
+	</sql>
+	
+    <select id="getOpLogList" resultMap="OperationLogResult" parameterClass="map">
+	    <![CDATA[
+		SELECT o.id, opType, opUserIp, opUserId, u.name as opUserName, envId, e.label as envName, opTime, projectId, p.name as projectName, 
+			content, key1, key2, "" as key3, "" as key4, "" as key5
+		FROM op_log o LEFT JOIN user u ON o.opUserId = u.id LEFT JOIN environment e ON o.envId = e.id LEFT JOIN project p ON o.projectId = p.id  
+		WHERE 1 = 1
+		]]>
+		<include refid="getOpLog_Fragment"/>
+		ORDER BY o.opTime DESC
+		LIMIT #paginater.firstResult#, #paginater.maxResults#
 	</select>
+	
+	<select id="getOpLogCount" resultClass="long" parameterClass="map">
+		SELECT COUNT(*)
+		FROM op_log o
+		WHERE 1 = 1
+		<include refid="getOpLog_Fragment"/>
+	</select>
+	
+	<!-- 使用remapResults=“true”时性能稍差 -->
+	<select id="getOpLogKey" resultClass="string" parameterClass="map" remapResults="true">
+		SELECT $key$ FROM op_log WHERE id = #id#
+	</select>
+	
+	<select id="getOpLogKey1" resultClass="string" parameterClass="map">
+		SELECT key1 FROM op_log WHERE id = #id#
+	</select>
+	
+	<select id="getOpLogKey2" resultClass="string" parameterClass="map">
+		SELECT key2 FROM op_log WHERE id = #id#
+	</select>
+	
+	<select id="getOpLogKey3" resultClass="string" parameterClass="map">
+		SELECT key3 FROM op_log WHERE id = #id#
+	</select>
+	
+	<select id="getOpLogKey4" resultClass="string" parameterClass="map">
+		SELECT key4 FROM op_log WHERE id = #id#
+	</select>
+	
+	<select id="getOpLogKey5" resultClass="string" parameterClass="map">
+		SELECT key5 FROM op_log WHERE id = #id#
+	</select>
+	
 	<insert id="insertOpLog" parameterClass="OpLog">
-	<![CDATA[
+		<![CDATA[
 		INSERT INTO op_log
             (opType,
              opUserId,
@@ -110,8 +105,13 @@
              envId,
              opTime,
              projectId,
-             content)
-		VALUES(#opType#, #opUserId#, #opUserIp#, #envId# , #opTime# , #projectId#, #content#);
+             content,
+             key1,
+             key2,
+             key3,
+             key4,
+             key5)
+		VALUES(#opType#, #opUserId#, #opUserIp#, #envId# , NOW() , #projectId#, #content#, #key1#, #key2#, #key3#, #key4#, #key5#)
 		]]>
 	</insert>
     

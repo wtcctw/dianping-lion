@@ -15,133 +15,128 @@
  */
 package com.dianping.lion.web.action.system;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
+import org.apache.commons.lang.xwork.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.OperationLog;
-import com.dianping.lion.entity.OperationLogSearch;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Project;
-import com.dianping.lion.entity.User;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.ProjectService;
-import com.dianping.lion.service.UserService;
+import com.dianping.lion.vo.OperationLogCriteria;
+import com.dianping.lion.vo.Paginater;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
 public class OperationLogAction extends AbstractLionAction implements ServletRequestAware{
 	
+	private List<Project> projects;
+	private List<Environment> envs;
+	private Map<String, String> opTypes = new LinkedHashMap<String, String>();
+	
+	private Integer projectId;
+	private Project project;
+	private int logid;
+	private String keys;
+	private Map<String, String> keyMap = new HashMap<String, String>();
+	
+	private OperationLogCriteria logCriteria = new OperationLogCriteria();
+	private Paginater<OperationLog> paginater = new Paginater<OperationLog>();
+	
 	@Autowired
 	private OperationLogService operationLogService;
-	
 	@Autowired
 	private ProjectService projectService;
-	
-	@Autowired
-	private UserService userService;
-	
 	@Autowired
 	private EnvironmentService environmentService;
 	
-	//表格内容
-	private List<OperationLog> operationLogs;
-	
-	//搜索条件
-	private HttpServletRequest request;
-	private List<Project> projects;
-	private List<User> users;
-	private Map<Integer, String> opTypes = new LinkedHashMap<Integer, String>();
-	private List<Environment> envs;
-	
-	//for project search
-	private int pid = -1;
-	private String projectName;
-	
 	public String getOpLogs() {
 		initializePage();
-		operationLogs = operationLogService.getLogs();
-		return SUCCESS;
-	}
-	
-	public String getOpLogList() {
-		OperationLogSearch operationLogSearch = new OperationLogSearch();
-		operationLogSearch.setContent(request.getParameter("content"));
-		operationLogSearch.setEnv(Integer.valueOf(request.getParameter("env")));
-		operationLogSearch.setFrom(request.getParameter("from"));
-		operationLogSearch.setTo(request.getParameter("to"));
-		operationLogSearch.setOpType(Integer.valueOf(request.getParameter("opType")));
-		operationLogSearch.setUser(Integer.valueOf(request.getParameter("user")));
-		operationLogSearch.setProject(Integer.valueOf(request.getParameter("project")));
-		operationLogSearch.setContent("%"+operationLogSearch.getContent()+"%");
-		operationLogs = operationLogService.getLogList(operationLogSearch);
+		paginater.setMaxResults(20);
+		paginater = operationLogService.getLogList(logCriteria, paginater);
 		return SUCCESS;
 	}
 	
 	public String getOpLogsByProject() {
 		initializePage();
-		OperationLogSearch operationLogSearch = new OperationLogSearch();
-		operationLogSearch.setProject(pid);
-		operationLogs = operationLogService.getLogList(operationLogSearch);
+		logCriteria.setProjectId(projectId);
+		if (logCriteria.getOpType() == null) {
+		    logCriteria.setOpTypeStart(OperationTypeEnum.Project_Related_All.getBegin());
+		    logCriteria.setOpTypeEnd(OperationTypeEnum.Project_Related_All.getEnd());
+		}
+		paginater.setMaxResults(20);
+		paginater = operationLogService.getLogList(logCriteria, paginater);
 		return SUCCESS;
 	}
 	
-	public String getOpLogListByProject() {
-		OperationLogSearch operationLogSearch = new OperationLogSearch();
-		operationLogSearch.setContent(request.getParameter("content"));
-		operationLogSearch.setEnv(Integer.valueOf(request.getParameter("env")));
-		operationLogSearch.setFrom(request.getParameter("from"));
-		operationLogSearch.setTo(request.getParameter("to"));
-		operationLogSearch.setOpType(Integer.valueOf(request.getParameter("opType")));
-		operationLogSearch.setUser(Integer.valueOf(request.getParameter("user")));
-		operationLogSearch.setProject(Integer.valueOf(request.getParameter("project")));
-		operationLogSearch.setContent("%"+operationLogSearch.getContent()+"%");
-		operationLogs = operationLogService.getLogList(operationLogSearch);
-		return SUCCESS;
-	}
-	
-	public int getPid() {
-		return pid;
+	public String viewKeys() {
+	    String[] keyTokens = StringUtils.split(keys, ",");
+	    for (String keyToken : keyTokens) {
+	        String[] tokens = StringUtils.split(keyToken, ":");
+	        String keycontent = operationLogService.getLogKey(logid, tokens[1]);
+	        keyMap.put(tokens[0], keycontent);
+	    }
+	    return SUCCESS;
 	}
 
-	public void setPid(int pid) {
-		this.pid = pid;
-	}
+    protected void initializePage() {
+        List<OperationTypeEnum> typeEnumList;
+        if(projectId != null) {
+            project = projectService.getProject(projectId);
+            typeEnumList = OperationTypeEnum.projectRelatedTypes();
+        } else {
+            projects = projectService.getProjects();
+                Collections.sort(projects, new Comparator<Project>() {
+                    @Override
+                    public int compare(Project p1, Project p2) {
+                        return p1.getName().compareTo(p2.getName());
+                    }
+                });
+                typeEnumList = Arrays.asList(OperationTypeEnum.values());
+                opTypes.put("||false", "任意类型");
+        }
+        envs = environmentService.findAll();
+        for (OperationTypeEnum typeEnum : typeEnumList) {
+            opTypes.put(typeEnum.getBegin() + "|" + typeEnum.getEnd() + "|" + typeEnum.isProjectRelated(), typeEnum.getLabel());
+        }
+    }
 	
-	public String getProjectName() {
-		return projectName;
+	public Integer getPid() {
+		return projectId;
 	}
 
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
+	public void setPid(Integer pid) {
+		this.projectId = pid;
 	}
+	
+	public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 
 	public OperationLogService getOperationLogService() {
 		return operationLogService;
-	}
-
-	public List<OperationLog> getOperationLogs() {
-		return operationLogs;
 	}
 	
 	public List<Project> getProjects() {
 		return projects;
 	}
 
-	public List<User> getUsers() {
-		return users;
-	}
-
-	public Map<Integer, String> getOpTypes() {
+	public Map<String, String> getOpTypes() {
 		return opTypes;
 	}
 
@@ -149,31 +144,44 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 		return envs;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void initializePage() {
-		if(pid != -1) {
-			Project project = projectService.getProject(pid);
-			projectName = project.getName();
-		}
-		projects = projectService.getProjects();
-		Collections.sort(projects, new Comparator() {
-			@Override
-			public int compare(Object o1, Object o2) {
-				return ((Project)o1).getName().compareTo(((Project)o2).getName());
-			}
-		});
-		users = userService.findAll();
-		envs = environmentService.findAll();
-		opTypes.put(-1, "任意类型");
-		for(int i = 0; i < OperationTypeEnum.values().length; i++) {
-			opTypes.put(i, OperationTypeEnum.values()[i].getValue());
-		}
-	}
+    public OperationLogCriteria getLogCriteria() {
+        return logCriteria;
+    }
 
-	@Override
-	public void setServletRequest(HttpServletRequest request) {
-		this.request =  request;
-		
-	}
+    public void setLogCriteria(OperationLogCriteria logCriteria) {
+        this.logCriteria = logCriteria;
+    }
+
+    public Paginater<OperationLog> getPaginater() {
+        return paginater;
+    }
+
+    public void setPaginater(Paginater<OperationLog> paginater) {
+        this.paginater = paginater;
+    }
+
+    public String getKeys() {
+        return keys;
+    }
+
+    public void setKeys(String keys) {
+        this.keys = keys;
+    }
+
+    public Map<String, String> getKeyMap() {
+        return keyMap;
+    }
+
+    public void setKeyMap(Map<String, String> keyMap) {
+        this.keyMap = keyMap;
+    }
+
+    public int getLogid() {
+        return logid;
+    }
+
+    public void setLogid(int logid) {
+        this.logid = logid;
+    }
 	
 }

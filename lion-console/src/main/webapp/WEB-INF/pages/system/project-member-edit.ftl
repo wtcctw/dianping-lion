@@ -3,9 +3,10 @@
     		<input type="hidden" id="member_projectId">
     		<div class="tabbable">
     			<ul class="nav nav-tabs">
-			    <li class="active"><a href="#owner" data-toggle="tab">管理员</a></li>
+			    <li class="active"><a href="#owner" id="owner-link" data-toggle="tab">管理员</a></li>
 				<li><a href="#member" data-toggle="tab">项目成员</a></li>
 			    <li><a href="#operator" data-toggle="tab">运维</a></li>
+			    &nbsp;
 				<input type="text" id="user-search" style="margin-bottom:1px;">
 	    			<input type="hidden" id="user-search-id">&nbsp;
 	    			<a href="#" id="add-member">添加</a>

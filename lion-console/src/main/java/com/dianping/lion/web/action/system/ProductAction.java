@@ -43,17 +43,16 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	
 	private List<Product> productList;
 	private List<Team> teamList;
-	private List<User> userList;
 	
 	private String active = ConsoleConstants.PRODUCT_NAME;
 	
 	private Product product;
-	private String selectedTeamValue, selectedUserValue;
+	private String selectedTeamValue;
 	private int id;
 	private String name;
 	private int teamId;
 	private String teamName;
-	private String productLeader; 
+	private User productLeader;
 	private int productLeaderId;
 	private String productLeaderName;
 	private String errorMessage = "产品已关联项目，不能删除";
@@ -63,17 +62,12 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 		if(teamList != null && teamList.size() > 0) {
 			selectedTeamValue = String.valueOf(teamList.get(0).getId());
 		}
-		userList = userService.findAll();
-		if(userList != null && userList.size() > 0) {
-			selectedUserValue = String.valueOf(userList.get(0).getId());
-		}
 		return SUCCESS;
 	}
 	
 	public String productAddSubmit(){
 		Product product = new Product();
 		product.setName(name);
-		productLeaderId = Integer.valueOf(productLeader.split("@")[2]);
 		product.setProductLeaderId(productLeaderId);
 		product.setTeamId(teamId);
 		product.setCreateTime(new Date(System.currentTimeMillis()));
@@ -85,11 +79,11 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	
 	public String productEdit(){
 		teamList = teamService.findAll();
-		userList = userService.findAll();
 		product = productService.findProductByID(id);
 		selectedTeamValue = String.valueOf(product.getTeamId());
-		User user = userService.findById(product.getProductLeaderId());
-		selectedUserValue = user.getName()+"@"+user.getLoginName()+"@"+user.getId();
+		if (product.getProductLeaderId() != null) {
+		    productLeader = userService.findById(product.getProductLeaderId());
+		}
 		return SUCCESS;
 	}
 	
@@ -97,7 +91,6 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 		Product product = new Product();
 		product.setId(id);
 		product.setName(name);
-		productLeaderId = Integer.valueOf(productLeader.split("@")[2]);
 		product.setProductLeaderId(productLeaderId);
 		product.setTeamId(teamId);
 		product.setCreateTime(new Date(System.currentTimeMillis()));
@@ -205,14 +198,6 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 		this.teamList = teamList;
 	}
 
-	public List<User> getUserList() {
-		return userList;
-	}
-
-	public void setUserList(List<User> userList) {
-		this.userList = userList;
-	}
-
 	public Product getProduct() {
 		return product;
 	}
@@ -277,20 +262,12 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 		this.selectedTeamValue = selectedTeamValue;
 	}
 
-	public String getSelectedUserValue() {
-		return selectedUserValue;
-	}
+    public User getProductLeader() {
+        return productLeader;
+    }
 
-	public void setSelectedUserValue(String selectedUserValue) {
-		this.selectedUserValue = selectedUserValue;
-	}
-
-	public String getProductLeader() {
-		return productLeader;
-	}
-
-	public void setProductLeader(String productLeader) {
-		this.productLeader = productLeader;
-	}
+    public void setProductLeader(User productLeader) {
+        this.productLeader = productLeader;
+    }
 	
 }

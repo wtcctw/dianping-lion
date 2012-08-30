@@ -5,6 +5,7 @@ package com.dianping.lion.web.action.system;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.json.JSONException;
 import org.apache.struts2.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class UserAction extends AbstractLionAction {
     
     public String ajaxGetUsers() throws JSONException {
         //TODO refactor me!
+        if (name.contains("/")) {
+            name = StringUtils.substringBefore(name, "/");
+        }
         List<User> users = userService.findByNameOrLoginNameLike(name);
         StringBuilder content = new StringBuilder();
         if (callback != null) {

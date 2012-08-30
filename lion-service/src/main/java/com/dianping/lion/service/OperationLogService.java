@@ -15,22 +15,20 @@
  */
 package com.dianping.lion.service;
 
-import java.util.List;
-
 import com.dianping.lion.entity.OperationLog;
-import com.dianping.lion.entity.OperationLogSearch;
+import com.dianping.lion.vo.OperationLogCriteria;
+import com.dianping.lion.vo.Paginater;
 
 public interface OperationLogService {
-
-	/**
-	 * 获取所有操作日志信息, 按时间倒排
-	 * @return
-	 */
-	List<OperationLog> getLogs();
+    
+    void createOpLog(OperationLog oplog);
 	
 	/**
 	 * 根据搜索条件查找 操作日志信息，按时间倒排
 	 * @return
 	 */
-	List<OperationLog> getLogList(OperationLogSearch operationLogSearch);
+	Paginater<OperationLog> getLogList(OperationLogCriteria logCriteria, Paginater<OperationLog> paginater);
+	
+	String getLogKey(int logid, String key);
+	
 }

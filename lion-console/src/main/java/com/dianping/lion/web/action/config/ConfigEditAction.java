@@ -20,12 +20,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.json.JSONException;
+import org.apache.struts2.json.JSONUtil;
 import org.json.JSONObject;
 
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigTypeEnum;
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.exception.RuntimeBusinessException;
 
@@ -55,6 +59,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 		int configId;
 		try {
 			configId = configService.create(config);
+			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(), 
+			        "创建配置项[" + config.getKey() + "]").key(config.getKey()));
 		} catch (RuntimeBusinessException e) {
 			createErrorStreamResponse(e.getMessage());
 			return SUCCESS;
@@ -68,6 +74,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 			instance.setValue(value);
 			try {
 				configService.createInstance(instance);
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId, 
+				        "设置配置项[" + config.getKey() + "]").key(config.getKey(), ConfigInstance.NO_CONTEXT, null, instance.getValue()));
 			} catch (RuntimeException e) {
 				String env = envMap.get(envId).getLabel();
 				logger.error("创建配置[key=" + config.getKey() + ", env=" + env + "]失败.", e);
@@ -92,7 +100,11 @@ public class ConfigEditAction extends AbstractConfigAction {
 		Map<Integer, Environment> envMap = environmentService.findEnvMap();
 		for (Integer envId : envIds) {
 			try {
+			    ConfigInstance existInstance = configService.findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
 				configService.setConfigValue(configId, envId, ConfigInstance.NO_CONTEXT, value);
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, configFound.getProjectId(), envId,
+				        "设置配置项: " + configFound.getKey())
+				        .key(configFound.getKey(), ConfigInstance.NO_CONTEXT, existInstance != null ? existInstance.getValue() : null, value));
 			} catch (Exception e) {
 				String env = envMap.get(envId).getLabel();
 				logger.error("保存配置[key=" + configFound.getKey() + ", env=" + env + "]失败.", e);
@@ -124,8 +136,13 @@ public class ConfigEditAction extends AbstractConfigAction {
 				}
 			}
 		}
-		createStreamResponse("{\"code\":0, \"value\":" + JSONObject.quote(instanceFound != null ? instanceFound.getValue() : "") + ", " 
-				+ "\"msg\":\"" + (message != null ? message : "") + "\"}");
+		try {
+            createStreamResponse("{\"code\":0, \"value\":" + JSONObject.quote(instanceFound != null ? instanceFound.getValue() : "") 
+                    + ", \"privilege\":" + JSONUtil.serialize(getEditPrivileges(configFound.getProjectId(), configId)) + ", \"msg\":\"" + (message != null ? message : "") + "\"}");
+        } catch (JSONException e) {
+            logger.error("get config edit privilege failed.", e);
+            createErrorStreamResponse("get config edit privilege failed.");
+        }
 		return SUCCESS;
 	}
 	

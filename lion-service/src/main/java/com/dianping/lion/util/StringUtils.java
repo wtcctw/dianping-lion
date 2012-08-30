@@ -24,9 +24,11 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
  *
  */
 public class StringUtils {
+    
+    public static final String CUT_EXT_SYMBOL = "...";
 
 	public static String cutString(String inputString, int byteCount) {
-		return cutString(inputString, byteCount, "...");
+		return cutString(inputString, byteCount, CUT_EXT_SYMBOL);
 	}
 	
 	public static String cutString(String inputString, int byteCount, String nfix) {

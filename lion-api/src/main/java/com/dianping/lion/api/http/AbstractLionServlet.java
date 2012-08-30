@@ -17,6 +17,7 @@ package com.dianping.lion.api.http;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,6 +38,7 @@ import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.ConfigRelaseService;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.UserService;
 import com.dianping.lion.util.SecurityUtils;
@@ -72,6 +74,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	protected EnvironmentService 	environmentService;
 	protected ConfigService 		configService;
 	protected ConfigRelaseService	configReleaseService;
+	protected OperationLogService operationLogService;
 	
 	@Override
 	public void init() throws ServletException {
@@ -80,6 +83,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		environmentService = getBean(EnvironmentService.class);
 		configService = getBean(ConfigService.class);
 		configReleaseService = getBean(ConfigRelaseService.class);
+		operationLogService = getBean(OperationLogService.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -158,13 +162,31 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		return key.startsWith(projectName + ".") ? key : projectName + "." + key;
 	}
 	
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	@SuppressWarnings("unchecked")
+    protected String getParameterString(HttpServletRequest request) {
+        StringBuilder builder = new StringBuilder();
+        Enumeration<String> parameterNames = request.getParameterNames();
+        int i = 0;
+        while (parameterNames.hasMoreElements()) {
+            String parameterName = parameterNames.nextElement();
+            String[] parameterValues = request.getParameterValues(parameterName);
+            for (String parameterValue : parameterValues) {
+                builder.append(i++ > 0 ? "&" : StringUtils.EMPTY)
+                    .append(parameterName)
+                    .append("=")
+                    .append(parameterValue);
+            }
+        }
+        return builder.toString();
+    }
+	
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/html;charset=utf-8");
 		PrintWriter writer = resp.getWriter();
 		try {
 			User user = getRequiredIdentity(req);
 			SecurityUtils.setCurrentUser(user);
-			doService(req, resp);
+			doService(req, resp, getParameterString(req));
 		} catch (Exception e) {
 			logger.warn("Error happend in [" + getClass().getSimpleName() + "], detail: ", e);
 			writer.print(ERROR_CODE + e.getMessage());
@@ -177,11 +199,12 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	/**
 	 * @param req
 	 * @param resp
+	 * @param querystr 
 	 * @param user
 	 * @throws IOException 
 	 * @throws ServletException 
 	 */
-	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	protected void doService(HttpServletRequest req, HttpServletResponse resp, String querystr) throws Exception {
 	}
 	
 }

@@ -8,7 +8,7 @@
     		<form class="form-horizontal">
 		  <fieldset>
 		    <div class="control-group">
-		      <label class="control-label" for="loginName">工号/邮箱:</label>
+		      <label class="control-label" for="loginName">域账号:</label>
 		      <div class="controls">
 		        <input type="text" class="input-xlarge" id="loginName">
 		        <span class="help-inline hide message">必填!</span>

@@ -15,7 +15,7 @@
         			<div class="control-group control-lion-group">
 				      <label class="control-label control-lion-label">环境名称</label>
 				      <div class="controls lion-controls">
-				        <input type="text" class="input-xlarge" id="input-env-name" <@s.if test="%{envId != 0}">value="${environment.name}"</@s.if>/>
+				        <input type="text" class="input-xlarge" id="input-env-name" <@s.if test="%{envId != 0}">readonly="readonly" value="${environment.name}"</@s.if>/>
 				        <span class="help-inline hide message" id="span-env-name-error"></span>
 				      </div>
 				    </div>

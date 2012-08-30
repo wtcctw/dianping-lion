@@ -76,14 +76,14 @@
 		</action>
 		
 		<!-- 操作日志 -->
-		<action name="opLog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogs">
+		<action name="oplog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogs">
 			<result name="success">/WEB-INF/pages/system/operation-log.ftl</result>
-		</action>
-		<action name="opLogListAjax" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogList">
-			<result name="success">/WEB-INF/pages/system/operation-log-list.ftl</result>
 		</action>
 		<action name="appoplog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogsByProject">
 			<result name="success">/WEB-INF/pages/system/operation-log-project.ftl</result>
+		</action>
+		<action name="viewKeysAjax" class="com.dianping.lion.web.action.system.OperationLogAction" method="viewKeys">
+			<result name="success">/WEB-INF/pages/system/operation-log-detail.ftl</result>
 		</action>
 		
 		<!-- 环境操作 -->

@@ -42,7 +42,7 @@ public class GetConfigServlet extends AbstractLionServlet {
 	private static final String PROP_ZK = "zk";
 
 	@Override
-	protected void doService(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	protected void doService(HttpServletRequest req, HttpServletResponse resp, String querystr) throws Exception {
 		PrintWriter writer = resp.getWriter();
 		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
 		String env = getNotBlankParameter(req, PARAM_ENV);

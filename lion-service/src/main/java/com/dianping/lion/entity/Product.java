@@ -37,7 +37,7 @@ public class Product implements Serializable {
 	
 	private String teamName;
 	
-	private int productLeaderId;
+	private Integer productLeaderId;
 	
 	private String productLeaderName;
 	
@@ -169,11 +169,11 @@ public class Product implements Serializable {
 		this.teamName = teamName;
 	}
 
-	public int getProductLeaderId() {
+	public Integer getProductLeaderId() {
 		return productLeaderId;
 	}
 
-	public void setProductLeaderId(int productLeaderId) {
+	public void setProductLeaderId(Integer productLeaderId) {
 		this.productLeaderId = productLeaderId;
 	}
 

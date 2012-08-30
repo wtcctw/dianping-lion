@@ -34,10 +34,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.EnvironmentDao;
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.register.ConfigRegisterServiceRepository;
 import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.util.SecurityUtils;
 
 /**
@@ -50,6 +53,9 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	
 	@Autowired
 	private EnvironmentDao environmentDao;
+	
+	@Autowired
+	private OperationLogService operationLogService;
 	
 	@Autowired
 	private ConfigRegisterServiceRepository registerServiceRepository;
@@ -85,25 +91,45 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	}
 
 	public void delete(int id) {
-		environmentDao.delete(id);
-		ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+	    try {
+        	    Environment environment = findEnvByID(id);
+        		environmentDao.delete(id);
+        		if (environment != null) {
+        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Delete, "删除" + environment.getLabel() + "环境"));
+        		}
+	    } finally {
+	        ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+	    }
 	}
 
 	@Override
 	public int create(Environment env) {
-		Integer currentUserId = SecurityUtils.getCurrentUserId();
-		env.setCreateUserId(currentUserId);
-		env.setModifyUserId(currentUserId);
-		int envId = environmentDao.create(env);
-		ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
-		return envId;
+	    try {
+        		Integer currentUserId = SecurityUtils.getCurrentUserId();
+        		env.setCreateUserId(currentUserId);
+        		env.setModifyUserId(currentUserId);
+        		int envId = environmentDao.create(env);
+        		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Add, "创建" + env.getLabel() + "环境, ip: " + env.getIps()
+        		        + ", 线上: " + env.isOnline()));
+        		return envId;
+	    } finally {
+	        ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+	    }
 	}
 
 	@Override
 	public void update(Environment env) {
-		env.setModifyUserId(SecurityUtils.getCurrentUserId());
-		environmentDao.update(env);
-		ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+	    try {
+        	    Environment existEnv = findEnvByID(env.getId());
+        		env.setModifyUserId(SecurityUtils.getCurrentUserId());
+        		environmentDao.update(env);
+        		if (existEnv != null) {
+                		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Edit, "编辑" + env.getLabel() + "环境, before[ip: " 
+                		        + existEnv.getIps() + ", 线上: " + existEnv.isOnline() + "], after[ip: " + env.getIps() + ", 线上: " + env.isOnline() + "]"));
+        		}
+	    } finally {
+	        ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+	    }
 	}
 	
 	@Override
@@ -191,7 +217,15 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 		this.registerServiceRepository = registerServiceRepository;
 	}
 
-	public void setEhcache(Ehcache ehcache) {
+	public void setEnvironmentDao(EnvironmentDao environmentDao) {
+        this.environmentDao = environmentDao;
+    }
+
+    public void setOperationLogService(OperationLogService operationLogService) {
+        this.operationLogService = operationLogService;
+    }
+
+    public void setEhcache(Ehcache ehcache) {
 		this.ehcache = ehcache;
 	}
 
