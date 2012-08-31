@@ -15,15 +15,18 @@
  */
 package com.dianping.lion.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author youngphy.yang
  * @author danson.liu
  */
-public class OperationLog {
+public class OperationLog implements Serializable {
 
-    private int id;
+	private static final long serialVersionUID = -3699763845428209444L;
+	
+	private int id;
     private int opType;
     private OperationTypeEnum opTypeEnum;
     private Integer opUserId;
@@ -38,6 +41,7 @@ public class OperationLog {
     private String key3;
     private String key4;
     private String key5;
+    private String key6;
 
     private String projectName;
     private String envName;
@@ -59,7 +63,7 @@ public class OperationLog {
     }
     
     public OperationLog(OperationTypeEnum opType, Integer projectId, Integer envId, String content) {
-        this(opType, projectId, envId, content, null, null, null, null, null);
+        this(opType, projectId, envId, content, null, null, null, null, null, null);
     }
     
     public OperationLog(OperationTypeEnum opType, Integer projectId, Integer envId) {
@@ -67,9 +71,9 @@ public class OperationLog {
     }
     
     public OperationLog(OperationTypeEnum opType, Integer projectId, Integer envId, String content, String key1, String key2, String key3, 
-        String key4, String key5) {
+        String key4, String key5, String key6) {
         
-        this.setOpType(opType);
+		this.setOpType(opType);
         this.projectId = projectId;
         this.envId = envId;
         this.content = content;
@@ -78,15 +82,21 @@ public class OperationLog {
         this.key3 = key3;
         this.key4 = key4;
         this.key5 = key5;
+        this.key6 = key6;
+    }
+    
+    public OperationLog key(String key1, String key2, String key3, String key4, String key5, String key6) {
+    	this.key1 = key1;
+    	this.key2 = key2;
+    	this.key3 = key3;
+    	this.key4 = key4;
+    	this.key5 = key5;
+		this.key6 = key6;
+    	return this;
     }
     
     public OperationLog key(String key1, String key2, String key3, String key4, String key5) {
-        this.key1 = key1;
-        this.key2 = key2;
-        this.key3 = key3;
-        this.key4 = key4;
-        this.key5 = key5;
-        return this;
+        return key(key1, key2, key3, key4, key5, null);
     }
     
     public OperationLog key(String key1, String key2, String key3, String key4) {
@@ -178,6 +188,14 @@ public class OperationLog {
     public void setContent(String content) {
         this.content = content;
     }
+    
+    public void appendContent(String content) {
+    	if (this.content != null) {
+    		this.content += content;
+    	} else {
+    		this.content = content;
+    	}
+    }
 
     public String getKey1() {
         return key1;
@@ -219,7 +237,15 @@ public class OperationLog {
         this.key5 = key5;
     }
 
-    public String getProjectName() {
+    public String getKey6() {
+		return key6;
+	}
+
+	public void setKey6(String key6) {
+		this.key6 = key6;
+	}
+
+	public String getProjectName() {
         return projectName;
     }
 

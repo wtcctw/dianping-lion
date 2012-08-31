@@ -27,48 +27,52 @@ import com.dianping.lion.util.EnumUtils;
  */
 public enum OperationTypeEnum {
     
-    Project_Related_All("项目相关---------------全部日志", -1000, 600, true),
-    Config_All("项目相关-配置----------全部日志", 1, 20, true),
-    Config_Add("项目相关-配置-添加", 5, true),
-    Config_Delete("项目相关-配置-删除", 8, true),
-    Config_Edit("项目相关-配置-设置", 11, true),
-    Config_EditAttr("项目相关-配置-设置属性", 14, true),
-    Config_Clear("项目相关-配置-清除", 17, true),
-    API_All("项目相关-api-----------全部日志", 101, 120, true),
-    API_SetConfig("项目相关-api-setconfig", 105, true),
-    API_TakeEffect("项目相关-api-takeeffect", 106, true),
-    API_Rollback("项目相关-api-rollback", 107, true),
+//    Project_Related_All("项目相关---------------全部日志", -1000, 600, true),
+//    Config_All("项目相关-配置----------全部日志", 1, 20, true),
+    Config_All("配置管理", 1, 20, true),
+    Config_Add("配置-添加", 5, true),
+    Config_Delete("配置-删除", 8, true),
+    Config_Edit("配置-设置", 11, true),
+    Config_EditAttr("配置-设置属性", 14, true),
+    Config_Clear("配置-清除", 17, true),
+//    API_All("项目相关-api-----------全部日志", 101, 120, true),
+    API_All("API调用", 101, 120, true),
+    API_SetConfig("API-setconfig", 105, true),
+    API_TakeEffect("API-takeeffect", 106, true),
+    API_Rollback("API-rollback", 107, true),
     
-    Job_DSFetcher("job-ds-fetcher", 660, false),
-    Env_All("环境------------------全部日志", 701, 720, false),
+    Job_DSFetcher("Job-DS-Fetcher", 660, false),
+    Env_All("环境管理", 701, 720, false),
     Env_Add("环境-新增", 705, false),
     Env_Delete("环境-删除", 706, false),
     Env_Edit("环境-修改", 707, false),
-    Tpp_All("team/product/project---全部日志", 801, 820, false),
-    Team_Add("team-新增", 805, false),
-    Team_Delete("team-删除", 806, false),
-    Team_Edit("team-修改", 807, false),
-    Product_Add("product-新增", 808, false),
-    Product_Delete("product-删除", 809, false),
-    Product_Edit("product-修改", 810, false),
-    Project_Add("project-新增", 811, false),
-    Project_Delete("project-删除", 812, false),
-    Project_Edit("project-修改", 813, false),
-    User_All("user------------------全部日志", 901, 920, false),
-    User_Add("user-新增", 905, false),
-    User_Delete("user-删除", 906, false),
-    User_Edit("user-修改", 907, false),
-    Job_All("job-------------------全部日志", 1001, 1020, false),
-    Job_Add("job-新增", 1005, false),
-    Job_Delete("job-删除", 1006, false),
-    Job_Edit("job-修改", 1007, false);
+    TPP_All("Team/Product/Project管理", 801, 820, false),
+    Team_Add("Team-新增", 805, false),
+    Team_Delete("Team-删除", 806, false),
+    Team_Edit("Team-修改", 807, false),
+    Product_Add("Product-新增", 808, false),
+    Product_Delete("Product-删除", 809, false),
+    Product_Edit("Product-修改", 810, false),
+    Project_Add("Project-新增", 811, false),
+    Project_Delete("Project-删除", 812, false),
+    Project_Edit("Project-修改", 813, false),
+    User_All("User管理", 901, 920, false),
+    User_Add("User-新增", 905, false),
+    User_Delete("User-删除", 906, false),
+    User_Edit("User-修改", 907, false),
+    Job_All("Job管理", 1001, 1020, false),
+    Job_Add("Job-新增", 1005, false),
+    Job_Delete("Job-删除", 1006, false),
+    Job_Edit("Job-修改", 1007, false);
 	
     private final String label;
     private int begin;
     private int end;
     private int value;
     private boolean projectRelated;
-    private static volatile List<OperationTypeEnum> projectRelatedTypes;
+    private boolean forPageSelect;
+    private static volatile List<OperationTypeEnum> pageSelectTypes;
+    private static volatile List<OperationTypeEnum> projectPageSelectTypes;
     
     OperationTypeEnum(String label, int value, boolean projectRelated) {
         this.label = label;
@@ -76,6 +80,7 @@ public enum OperationTypeEnum {
         this.begin = value;
         this.end = value;
         this.projectRelated = projectRelated;
+        this.forPageSelect = false;
     }
     
     OperationTypeEnum(String label, int begin, int end, boolean projectRelated) {
@@ -83,6 +88,7 @@ public enum OperationTypeEnum {
         this.begin = begin;
         this.end = end;
         this.projectRelated = projectRelated;
+        this.forPageSelect = true;
     }
     
     public String getLabel() {
@@ -121,24 +127,48 @@ public enum OperationTypeEnum {
         this.projectRelated = projectRelated;
     }
 
-    public static OperationTypeEnum fromValue(int value) {
+    public boolean isForPageSelect() {
+		return forPageSelect;
+	}
+
+	public void setForPageSelect(boolean forPageSelect) {
+		this.forPageSelect = forPageSelect;
+	}
+
+	public static OperationTypeEnum fromValue(int value) {
         return EnumUtils.fromEnumProperty(OperationTypeEnum.class, "value", value);
     }
-    
-    public static List<OperationTypeEnum> projectRelatedTypes() {
-        if (projectRelatedTypes == null) {
+	
+	public static List<OperationTypeEnum> pageSelectTypes() {
+		if (pageSelectTypes == null) {
             synchronized (OperationTypeEnum.class) {
-                if (projectRelatedTypes == null) {
-                    projectRelatedTypes = new ArrayList<OperationTypeEnum>(20);
+                if (pageSelectTypes == null) {
+                	pageSelectTypes = new ArrayList<OperationTypeEnum>(20);
                     for (OperationTypeEnum typeEnum : OperationTypeEnum.values()) {
-                        if (typeEnum.isProjectRelated()) {
-                            projectRelatedTypes.add(typeEnum);
+                        if (typeEnum.isForPageSelect()) {
+                        	pageSelectTypes.add(typeEnum);
                         }
                     }
                 }
             }
         }
-        return projectRelatedTypes;
+        return pageSelectTypes;
+	}
+    
+    public static List<OperationTypeEnum> projectPageSelectTypes() {
+        if (projectPageSelectTypes == null) {
+            synchronized (OperationTypeEnum.class) {
+                if (projectPageSelectTypes == null) {
+                    projectPageSelectTypes = new ArrayList<OperationTypeEnum>(20);
+                    for (OperationTypeEnum typeEnum : OperationTypeEnum.values()) {
+                        if (typeEnum.isProjectRelated() && typeEnum.isForPageSelect()) {
+                            projectPageSelectTypes.add(typeEnum);
+                        }
+                    }
+                }
+            }
+        }
+        return projectPageSelectTypes;
     }
     
 }

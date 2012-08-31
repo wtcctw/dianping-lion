@@ -38,7 +38,6 @@ public class MenuManager {
 	private static final String TAG_GROUP = "group";
 	private static final String TAG_MENU = "menu";
 	private static final String TAG_SUBMENU = "sub-menu";
-	public static final String MENU_PROJECT = "project";
 	
 	private static NavMenus navMenus;
 	
@@ -131,7 +130,7 @@ public class MenuManager {
 		return subMenu;
 	}
 
-	public static class NavMenus {
+	public static class NavMenus implements Cloneable {
 		
 		public List<Object> menuOrGroups = new ArrayList<Object>();
 
@@ -145,7 +144,7 @@ public class MenuManager {
 		
 		public boolean hasProjectMenu() {
 			for (Object item : menuOrGroups) {
-				if ((item instanceof Menu) && MENU_PROJECT.equals(((Menu) item).name)) {
+				if ((item instanceof Menu) && ConsoleConstants.MENU_PROJECT.equals(((Menu) item).name)) {
 					return true;
 				}
 			}
@@ -177,15 +176,30 @@ public class MenuManager {
 			return null;
 		}
 		
+		@Override
+		protected Object clone() throws CloneNotSupportedException {
+			NavMenus cloned = new NavMenus();
+			List<Object> menuOrGroups = new ArrayList<Object>();
+			for (Object menuOrGroup : this.menuOrGroups) {
+				if (menuOrGroup instanceof Menu) {
+					menuOrGroups.add(((Menu) menuOrGroup).clone());
+				} else if (menuOrGroup instanceof MenuGroup) {
+					menuOrGroups.add(((MenuGroup) menuOrGroup).clone());
+				}
+			}
+			cloned.menuOrGroups = menuOrGroups;
+			return cloned;
+		}
+		
 	}
 	
-	public static class MenuGroup {
+	public static class MenuGroup implements Cloneable {
 		public String label;
 		public List<Object> menuOrGroups = new ArrayList<Object>();	//maybe group, menu*|submenu*
+		
 		public void addGroup(MenuGroup group) {
 			menuOrGroups.add(group);
 		}
-		
 		public Menu getMenu(String menu) {
 			for (Object menuOrGroup : menuOrGroups) {
 				if (menuOrGroup instanceof MenuGroup) {
@@ -220,9 +234,28 @@ public class MenuManager {
 			}
 			return null;
 		}
+		@Override
+		protected Object clone() throws CloneNotSupportedException {
+			MenuGroup cloned = new MenuGroup();
+			cloned.label = this.label;
+			List<Object> menuOrGroups = new ArrayList<Object>();
+			if (this.menuOrGroups != null) {
+				for (Object menuOrGroup : this.menuOrGroups) {
+					if (menuOrGroup instanceof Menu) {
+						menuOrGroups.add(((Menu) menuOrGroup).clone());
+					} else if (menuOrGroup instanceof MenuGroup) {
+						menuOrGroups.add(((MenuGroup) menuOrGroup).clone());
+					} else if (menuOrGroup instanceof SubMenu) {
+						menuOrGroups.add(menuOrGroup);
+					}
+				}
+			}
+			cloned.menuOrGroups = menuOrGroups;
+			return cloned;
+		}
 	}
 	
-	public static class Menu {
+	public static class Menu implements Cloneable {
 		public String name;
 		public String label;
 		public String url;
@@ -249,6 +282,27 @@ public class MenuManager {
 		}
 		public boolean hasSubMenu() {
 			return !subMenuOrGroups.isEmpty();	//不对空的group进行判断
+		}
+		
+		@Override
+		protected Object clone() throws CloneNotSupportedException {
+			Menu cloned = new Menu();
+			cloned.name = this.name;
+			cloned.label = this.label;
+			cloned.url = this.url;
+			cloned.seprator = this.seprator;
+			List<Object> subMenuOrGroups = new ArrayList<Object>();
+			if (this.subMenuOrGroups != null) {
+				for (Object menuOrGroup : this.subMenuOrGroups) {
+					if (menuOrGroup instanceof MenuGroup) {
+						subMenuOrGroups.add(((MenuGroup) menuOrGroup).clone());
+					} else {
+						subMenuOrGroups.add(menuOrGroup);
+					}
+				}
+			}
+			cloned.subMenuOrGroups = subMenuOrGroups;
+			return cloned;
 		}
 	}
 	

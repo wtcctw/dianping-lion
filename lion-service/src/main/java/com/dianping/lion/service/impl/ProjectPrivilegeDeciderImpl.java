@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.User;
-import com.dianping.lion.service.ConfigPrivilegeService;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.UserService;
 
@@ -18,7 +18,7 @@ import com.dianping.lion.service.UserService;
  * @author danson.liu
  *
  */
-public class ConfigPrivilegeServiceImpl implements ConfigPrivilegeService {
+public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
     
     @Autowired
     private EnvironmentService environmentService;
@@ -33,7 +33,7 @@ public class ConfigPrivilegeServiceImpl implements ConfigPrivilegeService {
     private UserService userService;
 
     @Override
-    public boolean hasReadPrivilege(int projectId, int envId, int configId, Integer userId) {
+    public boolean hasReadConfigPrivilege(int projectId, int envId, int configId, Integer userId) {
         Environment environment = environmentService.loadEnvByID(envId);
         User user = userId != null ? userService.loadById(userId) : null;
         if (user != null && (user.isAdmin() || user.isSystem() || user.isSA())) {
@@ -44,8 +44,8 @@ public class ConfigPrivilegeServiceImpl implements ConfigPrivilegeService {
                 if (user != null) {
                     Config config = configService.getConfig(configId);
                     if (config != null && !config.isPrivatee()) {
-                        return user.isOnlineConfigView() || projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId)
-                                        || projectService.isOperator(projectId, userId);
+                        return true/*user.isOnlineConfigView() || projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId)
+                                        || projectService.isOperator(projectId, userId)*/;
                     }
                     return false;
                 }
@@ -57,7 +57,7 @@ public class ConfigPrivilegeServiceImpl implements ConfigPrivilegeService {
     }
 
     @Override
-    public boolean hasAddPrivilege(int projectId, int envId, Integer userId) {
+    public boolean hasAddConfigPrivilege(int projectId, int envId, Integer userId) {
         if (userId == null) {
             return false;
         }
@@ -68,17 +68,17 @@ public class ConfigPrivilegeServiceImpl implements ConfigPrivilegeService {
         }
         if (environment != null) {
             if (environment.isOnline()) {
-                return projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId);
+                return true/*projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId)*/;
             } else {
-                return projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
-                            || projectService.isOperator(projectId, userId);
+                return true/*projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
+                            || projectService.isOperator(projectId, userId)*/;
             }
         }
         return false;
     }
 
     @Override
-    public boolean hasEditPrivilege(int projectId, int envId, int configId, Integer userId) {
+    public boolean hasEditConfigPrivilege(int projectId, int envId, int configId, Integer userId) {
         if (userId == null) {
             return false;
         }
@@ -91,25 +91,35 @@ public class ConfigPrivilegeServiceImpl implements ConfigPrivilegeService {
             if (environment.isOnline()) {
                 Config config = configService.getConfig(configId);
                 if (config != null && !config.isPrivatee()) {
-                    return projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId);
+                    return true/*projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId)*/;
                 }
                 return false;
             } else {
-                return projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
-                            || projectService.isOperator(projectId, userId);
+                return true/*projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
+                            || projectService.isOperator(projectId, userId)*/;
             }
         }
         return false;
     }
 
     @Override
-    public boolean hasLockPrivilege(Integer userId) {
+    public boolean hasLockConfigPrivilege(Integer userId) {
         if (userId == null) {
             return false;
         }
         User user = userService.loadById(userId);
         return user.isAdmin() || user.isSA();
     }
+
+	@Override
+	public boolean hasReadLogPrivilege(int projectId, Integer userId) {
+		if (userId == null) {
+			return false;
+		}
+		User user = userService.loadById(userId);
+		return user.isAdmin() || user.isSA() || projectService.isOwner(projectId, userId) || projectService.isMember(projectId, userId)
+			|| projectService.isOperator(projectId, userId);
+	}
 
     /**
      * @param environmentService the environmentService to set

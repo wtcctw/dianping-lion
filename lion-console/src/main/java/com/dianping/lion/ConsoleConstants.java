@@ -12,6 +12,8 @@ public class ConsoleConstants {
 	public static final String CONFIG_OP_FORPUB = "forpub";
 	public static final String CONFIG_OP_DEPLOY = "deploy";
 	
+	public static final String MENU_PROJECT = "project";
+	public static final String MENU_APPLOG = "appoplog";
 	
 	public static Boolean IS_DEV_MODE;
 	public static boolean isDevMode() {

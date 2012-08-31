@@ -15,9 +15,18 @@
  */
 package com.dianping.lion.web.tag;
 
+import java.util.Iterator;
+
 import javax.servlet.jsp.JspException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dianping.lion.ConsoleConstants;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.tag.MenuManager.Menu;
+import com.dianping.lion.web.tag.MenuManager.MenuGroup;
+import com.dianping.lion.web.tag.MenuManager.SubMenu;
 
 /**
  * 二级导航菜单
@@ -31,6 +40,9 @@ public class SubNavigator extends StrutsTagSupport {
 	
 	private String query;	//include menu if exists
 	
+	@Autowired
+	private ProjectPrivilegeDecider projectPrivilegeDecider;
+	
 	public SubNavigator() {
 		setTemplateName("sub-nav.ftl");
 	}
@@ -40,12 +52,83 @@ public class SubNavigator extends StrutsTagSupport {
 		String menu = getRequest().getParameter("menu");
 		if (menu != null) {
 			mainMenu = MenuManager.getNavMenus().getMenu(menu);
+			mainMenu = filterWithPrivilege(mainMenu);
 			query = "menu=" + menu;
-			if (MenuManager.MENU_PROJECT.equals(menu)) {
+			if (ConsoleConstants.MENU_PROJECT.equals(menu)) {
 				query += "&pid=" + getRequest().getParameter("pid");
 			}
 		}
 		return SKIP_BODY;
+	}
+
+	private Menu filterWithPrivilege(Menu menu) {
+		if (menu == null) {
+			return null;
+		}
+		try {
+			Menu cloned = (Menu) menu.clone();
+			Iterator<Object> iterator = cloned.subMenuOrGroups.iterator();
+			while (iterator.hasNext()) {
+				Object next = iterator.next();
+				if (next instanceof SubMenu) {
+					if (hasPrivilege((SubMenu) next) < 0) {
+						iterator.remove();
+					}
+				} else if (next instanceof MenuGroup) {
+					if (hasPrivilege((MenuGroup) next) < 0) {
+						iterator.remove();
+					}
+				}
+			}
+			return cloned;
+		} catch (Exception e) {
+			logger.error("Generate sub navigator failed.", e);
+			throw new RuntimeException("Generate sub navigator failed.", e);
+		}
+	}
+
+	private int hasPrivilege(MenuGroup menuGroup) {
+		if (menuGroup.menuOrGroups.isEmpty()) {
+			return -1;
+		}
+		int menuSize = menuGroup.menuOrGroups.size();
+		Iterator<Object> iterator = menuGroup.menuOrGroups.iterator();
+		while (iterator.hasNext()) {
+			Object next = iterator.next();
+			if (next instanceof SubMenu) {
+				int hasPrivilege = hasPrivilege((SubMenu) next);
+				if (hasPrivilege < 0) {
+					iterator.remove();
+					menuSize--;
+				} else if (hasPrivilege == 0) {
+					menuSize--;
+				}
+			} else if (next instanceof MenuGroup) {
+				int hasPrivilege = hasPrivilege((MenuGroup) next);
+				if (hasPrivilege < 0) {
+					iterator.remove();
+					menuSize--;
+				}
+			}
+			//二级菜单中没有Menu
+		}
+		return menuSize > 0 ? 1 : -1;
+	}
+
+	private int hasPrivilege(SubMenu subMenu) {
+		if (subMenu.seprator) {
+			return 0;
+		}
+		if (ConsoleConstants.MENU_APPLOG.equals(subMenu.name)) {
+			String pid = getRequest().getParameter("pid");
+			Integer projectId = pid != null ? Integer.parseInt(pid) : null;
+			if (projectId != null) {
+				boolean hasReadLogPrivilege = projectPrivilegeDecider.hasReadLogPrivilege(projectId, SecurityUtils.getCurrentUserId());
+				return hasReadLogPrivilege ? 1 : -1;
+			}
+			return -1;
+		}
+		return 1;
 	}
 
 	public Menu getMainMenu() {
@@ -68,6 +151,10 @@ public class SubNavigator extends StrutsTagSupport {
 	 */
 	public void setQuery(String query) {
 		this.query = query;
+	}
+
+	public void setProjectPrivilegeDecider(ProjectPrivilegeDecider projectPrivilegeDecider) {
+		this.projectPrivilegeDecider = projectPrivilegeDecider;
 	}
 
 }

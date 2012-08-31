@@ -178,13 +178,13 @@ public class ConfigListAction extends AbstractConfigAction {
 	}
     
     private List<ConfigVo> enrichWithPrivilege(int projectId, int envId, User user, List<ConfigVo> configVos) {
-        boolean hasLockPrivilege = user != null && configPrivilegeService.hasLockPrivilege(user.getId());
+        boolean hasLockPrivilege = user != null && configPrivilegeDecider.hasLockConfigPrivilege(user.getId());
         Integer userId = user != null ? user.getId() : null;
         for (ConfigVo configVo : configVos) {
             Config config = configVo.getConfig();
-            boolean hasReadPrivilege = configPrivilegeService.hasReadPrivilege(projectId, envId, config.getId(), userId);
+            boolean hasReadPrivilege = configPrivilegeDecider.hasReadConfigPrivilege(projectId, envId, config.getId(), userId);
             configVo.setHasReadPrivilege(hasReadPrivilege);
-            boolean hasEditPrivilege = configPrivilegeService.hasEditPrivilege(projectId, envId, config.getId(), userId);
+            boolean hasEditPrivilege = configPrivilegeDecider.hasEditConfigPrivilege(projectId, envId, config.getId(), userId);
             configVo.setHasEditPrivilege(hasEditPrivilege);
             configVo.setHasLockPrivilege(hasLockPrivilege);
         }

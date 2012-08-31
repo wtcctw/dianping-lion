@@ -69,10 +69,10 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
         			
         			resp.getWriter().write(SUCCESS_CODE + snapshotId);
         			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_TakeEffect, project.getId(), environment.getId(),
-        			        "成功: " + logcontent).key(StringUtils.join(keys, ','), "true", null, querystr));
+        			        "成功: " + logcontent).key(StringUtils.join(keys, ','), "true", null, null, querystr));
     		    } catch (Exception e) {
     		        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_TakeEffect, project.getId(), environment.getId(),
-    		                "失败: " + logcontent).key(StringUtils.join(keys, ','), "false", null, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
+    		                "失败: " + logcontent).key(StringUtils.join(keys, ','), "false", null, null, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
     		        throw e;
     		    }
     		} else {

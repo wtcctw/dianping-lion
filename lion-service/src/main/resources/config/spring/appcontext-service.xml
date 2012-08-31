@@ -35,7 +35,7 @@
 		<property name="registerServiceRepository" ref="registerServiceRepository"/>
 	</bean>
 	
-	<bean id="configPrivilegeService" class="com.dianping.lion.service.impl.ConfigPrivilegeServiceImpl"/>
+	<bean id="configPrivilegeDecider" class="com.dianping.lion.service.impl.ProjectPrivilegeDeciderImpl"/>
 	
 	<bean id="configReleaseService" class="com.dianping.lion.service.impl.ConfigReleaseServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
@@ -43,7 +43,9 @@
 	
 	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
 	
-	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl"/>
+	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl">
+		<property name="ehcache" ref="clusteredCache"/>
+	</bean>
 	
 	<bean id="ldapAuthenticationService" class="com.dianping.lion.service.impl.LDAPAuthenticationServiceImpl">
 		<property name="ldapUrl" value="ldap://192.168.50.11:389/DC=dianpingoa,DC=com"></property>

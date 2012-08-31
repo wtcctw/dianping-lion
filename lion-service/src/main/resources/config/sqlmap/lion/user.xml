@@ -18,11 +18,15 @@
 		<result column="id" property="id"/>
 	</resultMap>
 
+	<resultMap id="UserNoPasswordResult" class="User" extends="UserResultBasic_">
+		<result column="id" property="id"/>
+	</resultMap>
+
 	<resultMap id="UserResultBasic2" class="User" extends="UserResultBasic_">
 		<result column="userId" property="id"/>
 	</resultMap>
 	
-	<select id="findAll" resultMap="UserResultBasic">
+	<select id="findAll" resultMap="UserNoPasswordResult">
 		<![CDATA[
 		SELECT * FROM user ORDER BY `name`
 		]]>
@@ -34,7 +38,7 @@
 		]]>
     </select>
     
-    <select id="findByNameOrLoginNameLike" resultMap="UserResultBasic" parameterClass="string">
+    <select id="findByNameOrLoginNameLike" resultMap="UserNoPasswordResult" parameterClass="string">
     		SELECT * FROM user WHERE (loginName LIKE CONCAT('%', #value#, '%') OR name LIKE CONCAT('%', #value#, '%')) AND system = 0
     </select>
     

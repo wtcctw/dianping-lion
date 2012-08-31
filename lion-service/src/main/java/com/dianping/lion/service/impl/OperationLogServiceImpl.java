@@ -27,7 +27,7 @@ import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.User;
-import com.dianping.lion.service.ConfigPrivilegeService;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.util.SecurityUtils;
@@ -46,7 +46,7 @@ public class OperationLogServiceImpl implements OperationLogService {
 	private ConfigService configService;
 	
 	@Autowired
-	private ConfigPrivilegeService configPrivilegeService;
+	private ProjectPrivilegeDecider configPrivilegeDecider;
 
     @Override
     public Paginater<OperationLog> getLogList(OperationLogCriteria logCriteria, Paginater<OperationLog> paginater) {
@@ -61,24 +61,34 @@ public class OperationLogServiceImpl implements OperationLogService {
         User currentUser = SecurityUtils.getCurrentUser();
         for (OperationLog log : logList) {
             OperationTypeEnum opType = log.getOpTypeEnum();
-            if (opType == OperationTypeEnum.Config_Edit) {
+            if (opType == OperationTypeEnum.Config_Edit || opType == OperationTypeEnum.API_SetConfig) {
                 Config config = configService.findConfigByKey(log.getKey1());
                 boolean hasLookPrivilege = false;
                 if (config != null) {
-                    hasLookPrivilege = configPrivilegeService.hasReadPrivilege(log.getProjectId(), log.getEnvId(), config.getId(), 
+                    hasLookPrivilege = configPrivilegeDecider.hasReadConfigPrivilege(log.getProjectId(), log.getEnvId(), config.getId(), 
                             currentUser != null ? currentUser.getId() : null);
                 } else {
                     hasLookPrivilege = currentUser != null && (currentUser.isAdmin() || currentUser.isSA());
                 }
                 //TODO 这里进行性能优化, 一次获取
                 String oldValue = (String) ObjectUtils.defaultIfNull(getLogKey(log.getId(), "key3"), "");
-                String newValue = (String) ObjectUtils.defaultIfNull(getLogKey(log.getId(), "key4"), "");
-                String oldCutValue = StringUtils.cutString(oldValue, 60);
-                String newCutValue = StringUtils.cutString(newValue, 60);
-                log.setContent("设置配置项: " + log.getKey1() + ", before[" + (hasLookPrivilege ? oldCutValue : "***") 
-                        + "], after[" + (hasLookPrivilege ? newCutValue : "***") + "]");
-                if (hasLookPrivilege && (oldCutValue.length() != oldValue.length() || newCutValue.length() != newValue.length())) {
-                    log.setKey5("true");
+                if (opType == OperationTypeEnum.Config_Edit) {
+                	String newValue = (String) ObjectUtils.defaultIfNull(getLogKey(log.getId(), "key4"), "");
+	                String oldCutValue = StringUtils.cutString(oldValue, 80);
+	                String newCutValue = StringUtils.cutString(newValue, 80);
+	                log.setContent("设置配置项: " + log.getKey1() + ", before[" + (hasLookPrivilege ? oldCutValue : "***") 
+	                        + "], after[" + (hasLookPrivilege ? newCutValue : "***") + "]");
+	                if (hasLookPrivilege && (oldCutValue.length() != oldValue.length() || newCutValue.length() != newValue.length())) {
+	                    log.setKey5("true");
+	                }
+                } else if (opType == OperationTypeEnum.API_SetConfig) {
+                	if (!hasLookPrivilege) {
+                		log.setContent("设置配置项: " + log.getKey1() + ", value: ***");
+                		log.setKey1("false");
+                	} else {
+                		log.appendContent(", before: " + StringUtils.cutString(oldValue, 80));
+                		log.setKey1("true");
+                	}
                 }
             }
         }
@@ -106,8 +116,8 @@ public class OperationLogServiceImpl implements OperationLogService {
         this.configService = configService;
     }
 
-    public void setConfigPrivilegeService(ConfigPrivilegeService configPrivilegeService) {
-        this.configPrivilegeService = configPrivilegeService;
+    public void setConfigPrivilegeDecider(ProjectPrivilegeDecider configPrivilegeDecider) {
+        this.configPrivilegeDecider = configPrivilegeDecider;
     }
     
 }

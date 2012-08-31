@@ -52,7 +52,7 @@ public class SetConfigServlet extends AbstractLionServlet {
 		Project project = getRequiredProject(projectName);
 		Environment environment = getRequiredEnv(env);
 		
-		String cutvalue = StringUtils.cutString(value, 60);
+		String cutvalue = StringUtils.cutString(value, 80);
 		String logcontent = "设置配置项: "+ configKey +", value: " + cutvalue;
 		Config existConfig = configService.findConfigByKey(configKey);
 		String existValue = null;
@@ -60,7 +60,6 @@ public class SetConfigServlet extends AbstractLionServlet {
             ConfigInstance existInstance = configService.findInstance(existConfig.getId(), environment.getId(), ConfigInstance.NO_CONTEXT);
             if (existInstance != null) {
                 existValue = existInstance.getValue();
-                logcontent += ", before: " + StringUtils.cutString(existInstance.getValue(), 60);
             }
         }
 		try {
@@ -80,11 +79,11 @@ public class SetConfigServlet extends AbstractLionServlet {
         			configReleaseService.createSetTask(configSetTask);
         		}
         		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_SetConfig, project.getId(), environment.getId(),
-        		        "成功: " + logcontent).key(configKey, "true", existValue, querystr));
+        		        "成功: " + logcontent).key(configKey, "true", existValue, value, querystr));
         		resp.getWriter().print(SUCCESS_CODE);
 		} catch (Exception e) {
 		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_SetConfig, project.getId(), environment.getId(),
-		            "失败: " + logcontent).key(configKey, "false", existValue, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
+		            "失败: " + logcontent).key(configKey, "false", existValue, value, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
 		    throw e;
 		}
 	}

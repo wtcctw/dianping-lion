@@ -17,9 +17,13 @@ package com.dianping.lion.service.impl;
 
 import java.util.List;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.dao.UserDao;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.exception.EntityNotFoundException;
@@ -37,6 +41,8 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserDao userDao;
 	
+	private Ehcache ehcache;
+	
 	@Override
 	public List<User> findAll() {
 		return userDao.findAll();
@@ -44,7 +50,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User findById(int id) {
-		return userDao.findById(id);
+		Element element = ehcache.get(ServiceConstants.CACHE_USER_PREFIX + id);
+		if (element == null) {
+			User user = userDao.findById(id);
+			if (user != null) {
+				element = new Element(ServiceConstants.CACHE_USER_PREFIX + id, user);
+				ehcache.put(element);
+			}
+		}
+		return element != null ? (User) element.getObjectValue() : null;
 	}
 
     @Override
@@ -96,6 +110,7 @@ public class UserServiceImpl implements UserService {
     		} else if(isUpdateNeeded) {
     			user.setId(dbUser.getId());
     			userDao.updatePassword(user);
+    			ehcache.remove(ServiceConstants.CACHE_USER_PREFIX + dbUser.getId());
     		}
     		return user;
     	} else if(isUpdateNeeded) {
@@ -109,5 +124,9 @@ public class UserServiceImpl implements UserService {
     public List<User> findByNameOrLoginNameLike(String name) {
         return userDao.findByNameOrLoginNameLike(name);
     }
+
+	public void setEhcache(Ehcache ehcache) {
+		this.ehcache = ehcache;
+	}
 
 }

@@ -15,7 +15,6 @@
  */
 package com.dianping.lion.web.action.system;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -72,8 +71,8 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 		initializePage();
 		logCriteria.setProjectId(projectId);
 		if (logCriteria.getOpType() == null) {
-		    logCriteria.setOpTypeStart(OperationTypeEnum.Project_Related_All.getBegin());
-		    logCriteria.setOpTypeEnd(OperationTypeEnum.Project_Related_All.getEnd());
+		    logCriteria.setOpTypeStart(OperationTypeEnum.Config_All.getBegin());
+		    logCriteria.setOpTypeEnd(OperationTypeEnum.Config_All.getEnd());
 		}
 		paginater.setMaxResults(20);
 		paginater = operationLogService.getLogList(logCriteria, paginater);
@@ -94,7 +93,7 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
         List<OperationTypeEnum> typeEnumList;
         if(projectId != null) {
             project = projectService.getProject(projectId);
-            typeEnumList = OperationTypeEnum.projectRelatedTypes();
+            typeEnumList = OperationTypeEnum.projectPageSelectTypes();
         } else {
             projects = projectService.getProjects();
                 Collections.sort(projects, new Comparator<Project>() {
@@ -103,7 +102,7 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
                         return p1.getName().compareTo(p2.getName());
                     }
                 });
-                typeEnumList = Arrays.asList(OperationTypeEnum.values());
+                typeEnumList = OperationTypeEnum.pageSelectTypes();
                 opTypes.put("||false", "任意类型");
         }
         envs = environmentService.findAll();

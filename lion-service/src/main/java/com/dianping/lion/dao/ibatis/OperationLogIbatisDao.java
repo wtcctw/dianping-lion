@@ -59,6 +59,8 @@ public class OperationLogIbatisDao extends SqlMapClientDaoSupport implements Ope
             selectClause = "OperationLog.getOpLogKey4";
         } else if ("key5".equals(key)) {
             selectClause = "OperationLog.getOpLogKey5";
+        } else if ("key6".equals(key)) {
+            selectClause = "OperationLog.getOpLogKey6";
         } else {
             return null;
         }

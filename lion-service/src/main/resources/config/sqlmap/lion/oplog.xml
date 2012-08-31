@@ -21,6 +21,7 @@
 		<result column="key3" property="key3"/>
 		<result column="key4" property="key4"/>
 		<result column="key5" property="key5"/>
+		<result column="key6" property="key6"/>
 	</resultMap>
 	
 	<sql id="getOpLog_Fragment">
@@ -55,7 +56,7 @@
     <select id="getOpLogList" resultMap="OperationLogResult" parameterClass="map">
 	    <![CDATA[
 		SELECT o.id, opType, opUserIp, opUserId, u.name as opUserName, envId, e.label as envName, opTime, projectId, p.name as projectName, 
-			content, key1, key2, "" as key3, "" as key4, "" as key5
+			content, key1, key2, "" as key3, "" as key4, "" as key5, "" as key6
 		FROM op_log o LEFT JOIN user u ON o.opUserId = u.id LEFT JOIN environment e ON o.envId = e.id LEFT JOIN project p ON o.projectId = p.id  
 		WHERE 1 = 1
 		]]>
@@ -96,6 +97,10 @@
 		SELECT key5 FROM op_log WHERE id = #id#
 	</select>
 	
+	<select id="getOpLogKey6" resultClass="string" parameterClass="map">
+		SELECT key6 FROM op_log WHERE id = #id#
+	</select>
+	
 	<insert id="insertOpLog" parameterClass="OpLog">
 		<![CDATA[
 		INSERT INTO op_log
@@ -110,8 +115,9 @@
              key2,
              key3,
              key4,
-             key5)
-		VALUES(#opType#, #opUserId#, #opUserIp#, #envId# , NOW() , #projectId#, #content#, #key1#, #key2#, #key3#, #key4#, #key5#)
+             key5,
+             key6)
+		VALUES(#opType#, #opUserId#, #opUserIp#, #envId# , NOW() , #projectId#, #content#, #key1#, #key2#, #key3#, #key4#, #key5#, #key6#)
 		]]>
 	</insert>
     

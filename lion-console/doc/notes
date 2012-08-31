@@ -15,6 +15,7 @@
 15.config的描述(desc)可修改
 16.创建内建的用户数据(如：redmine, sa, dba, lion[admin])，且这几个用户都是超户权限，除了lion，其他都不能登陆，另外保留20之前的userid，作为内建用户(除了lion，其他都是system)
 	 创建内建的角色数据(Role: SCM, SA...)
+	 创建sa名称的用户，用于feature1的sa账号，feature2修改
 17.创建context config value时需要先创建默认配置值(如果清除了默认配置，然后点击编辑复杂配置，保存复杂配置时需要检查是否有默认配置)
 18.初始导入config脚本中，需要全量的创建一个初始registerpoint
 19.注意发布接口必须调用，即使本次没有config走redmine，因为可能存在lion上配置的config，设置为发布生效

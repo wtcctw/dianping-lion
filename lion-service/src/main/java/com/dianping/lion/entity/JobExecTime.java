@@ -15,6 +15,7 @@
  */
 package com.dianping.lion.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -22,7 +23,10 @@ import java.util.Date;
  * @author youngphy.yang
  *
  */
-public class JobExecTime {
+public class JobExecTime implements Serializable {
+	
+	private static final long serialVersionUID = -6797329565625334947L;
+	
 	private int id;
 	private Date lastFetchTime;
 	private Date lastJobExecTime;

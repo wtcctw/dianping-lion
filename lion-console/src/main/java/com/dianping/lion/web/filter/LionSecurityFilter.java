@@ -38,7 +38,6 @@ public class LionSecurityFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
         throws IOException, ServletException {
-        System.out.println(((HttpServletRequest) request).getRequestURL());
         Object securityChecked = request.getAttribute(SECURITY_CHECKED);
         boolean authEntry = false;
         if (securityChecked == null) {

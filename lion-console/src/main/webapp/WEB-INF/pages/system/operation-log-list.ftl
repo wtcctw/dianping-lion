@@ -23,15 +23,23 @@
 	      		<td>${opTime?string("yy/MM/dd HH:mm:ss")}</td>
 	      		<td>${projectName}</td>
 	      		<td style="word-break:break-all;">
-	      			<@s.if test="%{#operationLog.opTypeEnum == @com.dianping.lion.entity.OperationTypeEnum@API_SetConfig
-	      				|| #operationLog.opTypeEnum == @com.dianping.lion.entity.OperationTypeEnum@API_TakeEffect
+	      			<@s.if test="%{#operationLog.opTypeEnum == @com.dianping.lion.entity.OperationTypeEnum@API_TakeEffect
 	      				|| #operationLog.opTypeEnum == @com.dianping.lion.entity.OperationTypeEnum@API_Rollback}">
 	      				${content} &nbsp;&nbsp;
-	      				<span class="label label-info pointer" onclick="viewdetail('middle', ${id}, 'Param:key4');">&nbsp;&nbsp;url&nbsp;&nbsp;</span>
+	      				<span class="label label-info pointer" onclick="viewdetail('middle', ${id}, 'Param:key5');">&nbsp;&nbsp;url&nbsp;&nbsp;</span>
 	      				<@s.if test="%{#operationLog.key2 == 'false'}">
-	      					<span class="label label-warning pointer" onclick="viewdetail('big', ${id}, 'Exception:key5');">error</span>
+	      					<span class="label label-warning pointer" onclick="viewdetail('big', ${id}, 'Exception:key6');">error</span>
 	      				</@s.if>
 	      			</@s.if>
+	      			<@s.elseif test="%{#operationLog.opTypeEnum == @com.dianping.lion.entity.OperationTypeEnum@API_SetConfig}">
+	      				${content} &nbsp;&nbsp;
+	      				<@s.if test="%{#operationLog.key1 == 'true'}">
+	      					<span class="label label-info pointer" onclick="viewdetail('middle', ${id}, 'Param:key5');">&nbsp;&nbsp;url&nbsp;&nbsp;</span>
+	      				</@s.if>
+	      				<@s.if test="%{#operationLog.key2 == 'false'}">
+	      					<span class="label label-warning pointer" onclick="viewdetail('big', ${id}, 'Exception:key6');">error</span>
+	      				</@s.if>
+	      			</@s.elseif>
 	      			<@s.elseif test="%{#operationLog.opTypeEnum == @com.dianping.lion.entity.OperationTypeEnum@Config_Edit}">
 		      			${content}&nbsp;&nbsp;
 		      			<@s.if test="%{#operationLog.key5 == 'true'}">

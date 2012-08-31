@@ -67,15 +67,15 @@ public class RollbackConfigsServlet extends AbstractLionServlet {
             			hasRollbacked = true;
             			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_Rollback, project.getId(), environment.getId(),
             			        "成功: " + logcontent + (!notRemovedKeys.isEmpty() ? ", 未清除key: " + StringUtils.join(notRemovedKeys, ",") : ""))
-            			        .key(null, "true", null, querystr));
+            			        .key(null, "true", null, null, querystr));
             		} else {
             		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_Rollback, project.getId(), environment.getId(), 
             		            "成功: " + logcontent + ", 无镜像需要回滚")
-            		            .key(null, "true", null, querystr));
+            		            .key(null, "true", null, null, querystr));
             		}
 		    } catch (Exception e) {
 		        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_Rollback, project.getId(), environment.getId(),
-		                "失败: " + logcontent).key(null, "false", null, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
+		                "失败: " + logcontent).key(null, "false", null, null, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
 		        throw e;
 		    }
 		}

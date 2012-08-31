@@ -52,4 +52,6 @@ public interface ServiceConstants {
 	String CACHE_PROJECT_OWNER_PREFIX = "cache_project_owner_";
 	String CACHE_PROJECT_OPERATOR_PREFIX = "cache_project_operator_";
 	
+	String CACHE_USER_PREFIX = "cache_user_";
+	
 }
