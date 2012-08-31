@@ -51,6 +51,10 @@
 		<property name="ldapUrl" value="ldap://192.168.50.11:389/DC=dianpingoa,DC=com"></property>
 		<property name="ldapBaseDN" value="OU=Technolog Department,OU=shoffice,DC=dianpingoa,DC=com"></property>
 		<property name="ldapFactory" value="com.sun.jndi.ldap.LdapCtxFactory"></property>
+		<property name="solidDN" value="cn=Users,DC=dianpingoa,DC=com"></property>
+		<property name="solidUsername" value="lionauth"></property>
+		<property name="solidPwd" value="bxHxXopGJOy78Jze3LWi"></property>
+		
 	</bean>
 	
 	<bean id="registerServiceRepository" class="com.dianping.lion.register.ConfigRegisterServiceRepository">

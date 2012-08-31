@@ -17,6 +17,8 @@ package com.dianping.lion.service.impl;
 
 import static org.junit.Assert.*;
 
+import javax.naming.NamingException;
+
 import org.junit.Test;
 
 import com.dianping.lion.entity.User;
@@ -28,15 +30,18 @@ import com.dianping.lion.entity.User;
  */
 public class LDAPAuthenticationServiceImplTest {
 	@Test
-	public void testAuthenticate() {
+	public void testAuthenticate() throws NamingException {
 		LDAPAuthenticationServiceImpl ldapAuthenticationServiceImpl = new LDAPAuthenticationServiceImpl();
 		ldapAuthenticationServiceImpl.setLdapBaseDN("OU=Technolog Department,OU=shoffice,DC=dianpingoa,DC=com");
 		ldapAuthenticationServiceImpl.setLdapFactory("com.sun.jndi.ldap.LdapCtxFactory");
 		ldapAuthenticationServiceImpl.setLdapUrl("ldap://192.168.50.11:389/DC=dianpingoa,DC=com");
+		ldapAuthenticationServiceImpl.setSolidDN("cn=Users,DC=dianpingoa,DC=com");
+		ldapAuthenticationServiceImpl.setSolidUsername("lionauth");
+		ldapAuthenticationServiceImpl.setSolidPwd("bxHxXopGJOy78Jze3LWi");
 		User user = ldapAuthenticationServiceImpl.authenticate("xx", "xx");
 		assertTrue(user==null);
 		//replace with the real password for test
-		user = ldapAuthenticationServiceImpl.authenticate("youngphy.yang", "xxx");
+		user = ldapAuthenticationServiceImpl.authenticate("youngphy.yang", "XXX");
 		assertTrue(user != null && "杨飞".equals(user.getName()));
 	}
 }

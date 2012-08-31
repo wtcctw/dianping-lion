@@ -20,6 +20,7 @@ import java.util.Hashtable;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
@@ -33,12 +34,14 @@ import com.dianping.lion.entity.User;
 import com.dianping.lion.service.LDAPAuthenticationService;
 
 /**
- * TODO Comment of LDAPAuthenticationServiceImpl
+ * LDAPAuthenticationServiceImpl
  * @author youngphy.yang
  *
  */
 public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService {
 	private static Logger logger = Logger.getLogger(LDAPAuthenticationServiceImpl.class);
+	private static String loginAttribute = "sAMAccountName";
+	
 	private String ldapUrl = null;
 	private String ldapBaseDN = null;
 	private String ldapFactory = null; 
@@ -46,32 +49,46 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	private Hashtable<String, String> env = null;
 	private Control[] connCtls = null;
 	
+	private String solidDN = null;
+	private String solidUsername = null;
+	private String solidPwd = null;
+	
 	/**
+	 * @throws NamingException 
 	 * @return if authentication succeeded, return user info; otherwise, return null;
+	 * @throws  
 	 */
 	@Override
 	public User authenticate(String userName, String password) {
 		User user = null;
-		env = new Hashtable<String, String>();
-        env.put(Context.INITIAL_CONTEXT_FACTORY,ldapFactory);
-        env.put(Context.PROVIDER_URL, ldapUrl);//LDAP server
-        env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, "cn="+userName+","+ldapBaseDN);
-        env.put(Context.SECURITY_CREDENTIALS, password);
-        try{
-            ctx = new InitialLdapContext(env,connCtls);
-        }catch(javax.naming.AuthenticationException e){
-            logger.error("Authentication faild: "+e.toString());
-        }catch(Exception e){
-        	logger.error("Something wrong while authenticating: "+e.toString());
-        }
-        if(ctx != null) {
-        	user = getUserInfo(userName);
-        }
+		String shortName = null;
+		try {
+			shortName = getShortName(userName);
+		} catch (NamingException e1) {
+			logger.error(userName+" doesn't exist.");
+		}
+		if(shortName != null) {
+			env = new Hashtable<String, String>();
+	        env.put(Context.INITIAL_CONTEXT_FACTORY,ldapFactory);
+	        env.put(Context.PROVIDER_URL, ldapUrl);//LDAP server
+	        env.put(Context.SECURITY_AUTHENTICATION, "simple");
+	        env.put(Context.SECURITY_PRINCIPAL, "cn="+shortName+","+ldapBaseDN);
+	        env.put(Context.SECURITY_CREDENTIALS, password);
+	        try{
+	            ctx = new InitialLdapContext(env,connCtls);
+	        }catch(javax.naming.AuthenticationException e){
+	            logger.error("Authentication faild: "+e.toString());
+	        }catch(Exception e){
+	        	logger.error("Something wrong while authenticating: "+e.toString());
+	        }
+	        if(ctx != null) {
+	        	user = getUserInfo(userName);
+	        }
+		}
 		return user;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"unchecked" })
     @Override
 	public User getUserInfo(String cn) {
 		User user = new User();
@@ -79,11 +96,8 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 			SearchControls constraints = new SearchControls();
 			constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
 			NamingEnumeration en = ctx.search("", "cn=" + cn, constraints);
-			if (en == null) {
+			if (en == null || !en.hasMoreElements()) {
 				logger.warn("Have no NamingEnumeration.");
-			}
-			if (!en.hasMoreElements()) {
-				logger.warn("Have no element.");
 			}
 			while (en != null && en.hasMoreElements()) {
 				Object obj = en.nextElement();
@@ -102,33 +116,65 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 		} catch (Exception e) {
 			logger.error("Exception in search():" + e);
 		}
-
 		return user;
 	}
-
-	public String getLdapUrl() {
-		return ldapUrl;
+	
+	@SuppressWarnings("unchecked")
+	private String getShortName(String sAMAccountName) throws NamingException {
+		String shortName = null;
+		
+		Hashtable<String, String> solidEnv = new Hashtable<String, String>();
+		solidEnv.put(Context.INITIAL_CONTEXT_FACTORY, ldapFactory);
+		solidEnv.put(Context.PROVIDER_URL, ldapUrl);// LDAP server
+		solidEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
+		solidEnv.put(Context.SECURITY_PRINCIPAL, "cn=" + solidUsername + ","+ solidDN);
+		solidEnv.put(Context.SECURITY_CREDENTIALS, solidPwd);
+		LdapContext solidContext = new InitialLdapContext(solidEnv,connCtls);
+		SearchControls constraints = new SearchControls();
+		constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+		NamingEnumeration en = solidContext.search("", loginAttribute+"=" + sAMAccountName, constraints);
+		if (en == null) {
+			logger.warn("Have no NamingEnumeration.");
+			return shortName;
+		}
+		if (!en.hasMoreElements()) {
+			logger.warn("Have no element.");
+			return shortName;
+		}
+		while (en != null && en.hasMoreElements()) {
+			Object obj = en.nextElement();
+			if (obj instanceof SearchResult) {
+				SearchResult sr = (SearchResult) obj;
+				logger.debug(sr);
+				Attributes attrs = sr.getAttributes();
+				shortName = (String)attrs.get("cn").get();
+			}
+		}
+		return shortName;
 	}
 
 	public void setLdapUrl(String ldapUrl) {
 		this.ldapUrl = ldapUrl;
 	}
 
-	public String getLdapBaseDN() {
-		return ldapBaseDN;
-	}
-
 	public void setLdapBaseDN(String ldapBaseDN) {
 		this.ldapBaseDN = ldapBaseDN;
-	}
-
-	public String getLdapFactory() {
-		return ldapFactory;
 	}
 
 	public void setLdapFactory(String ldapFactory) {
 		this.ldapFactory = ldapFactory;
 	}
 
-	
+	public void setSolidDN(String solidDN) {
+		this.solidDN = solidDN;
+	}
+
+	public void setSolidUsername(String solidUsername) {
+		this.solidUsername = solidUsername;
+	}
+
+	public void setSolidPwd(String solidPwd) {
+		this.solidPwd = solidPwd;
+	}
+
 }
