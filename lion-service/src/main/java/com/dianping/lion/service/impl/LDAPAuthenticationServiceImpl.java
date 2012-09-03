@@ -45,8 +45,7 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	private String ldapUrl = null;
 	private String ldapBaseDN = null;
 	private String ldapFactory = null; 
-	private LdapContext ctx = null;
-	private Hashtable<String, String> env = null;
+
 	private Control[] connCtls = null;
 	
 	private String solidDN = null;
@@ -61,6 +60,8 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	@Override
 	public User authenticate(String userName, String password) {
 		User user = null;
+		LdapContext ctx = null;
+		Hashtable<String, String> env = null;
 		String shortName = null;
 		try {
 			shortName = getShortName(userName);
@@ -77,20 +78,19 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	        try{
 	            ctx = new InitialLdapContext(env,connCtls);
 	        }catch(javax.naming.AuthenticationException e){
-	            logger.error("Authentication faild: "+e.toString());
+	            logger.info("Authentication faild: "+e.toString());
 	        }catch(Exception e){
 	        	logger.error("Something wrong while authenticating: "+e.toString());
 	        }
 	        if(ctx != null) {
-	        	user = getUserInfo(userName);
+	        	user = getUserInfo(shortName, ctx);
 	        }
 		}
 		return user;
 	}
 
 	@SuppressWarnings({"unchecked" })
-    @Override
-	public User getUserInfo(String cn) {
+	public User getUserInfo(String cn, LdapContext ctx) {
 		User user = new User();
 		try {
 			SearchControls constraints = new SearchControls();
