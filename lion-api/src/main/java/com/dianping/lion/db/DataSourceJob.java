@@ -18,6 +18,7 @@ package com.dianping.lion.db;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -90,8 +91,7 @@ public class DataSourceJob extends SyncJob{
 		Calendar can = Calendar.getInstance();
 		can.setTime(jobExecTime.getLastFetchTime());
 		String dsContent = dataSourceFetcher.fetchDS(can.getTimeInMillis() / 1000);
-		if(dsContent == null) {
-			logger.warn("No DBconfig changes since "+jobExecTime.getLastFetchTime());
+		if(StringUtils.isBlank(dsContent)) {
 			return;
 		}
 		try {
