@@ -18,6 +18,8 @@ package com.dianping.lion.dao;
 import java.util.List;
 
 import com.dianping.lion.entity.User;
+import com.dianping.lion.vo.Paginater;
+import com.dianping.lion.vo.UserCriteria;
 
 public interface UserDao {
 
@@ -32,5 +34,11 @@ public interface UserDao {
 	void insertUser(User user);
 	
 	void updatePassword(User user);
+
+	long getUserCount(UserCriteria userCriteria, Paginater<User> paginater);
+
+	List<User> getUserList(UserCriteria userCriteria, Paginater<User> paginater);
+
+	int update(User user);
 	
 }

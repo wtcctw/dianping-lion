@@ -118,6 +118,7 @@ $(function(){
 					for (var envId in result.privilege) {
 						$("#edit-config-env-" + envId).attr("disabled", !result.privilege[envId]);
 					}
+					$("[name='edit-config-env'][value='" + $("[name='envId']").val() + "']:enabled").attr("checked", true);
 					var config_type = parseInt($("#edit-config-type-selector").val());
 					if (config_type == Type_Bool) {
 						$("[name='edit-config-value'][value='" + result.value + "']").attr("checked", true);
@@ -154,6 +155,7 @@ $(function(){
 					var config = $.parseJSON(result.result);
 					if (config != null) {
 						$("[name='config-public'][value='" + !config.privatee + "']").attr("checked", true);
+						$("#attr-config-desc").val(config.desc);
 					} else {
 						loadConfigAttrFailed("配置不存在.");
 					}
@@ -247,6 +249,7 @@ $(function(){
 		$.ajax("/config/editConfigAttrAjax.vhtml".prependcontext(), {
 			data : $.param({
 				"configId" : config_id,
+				"config.desc" : $("#attr-config-desc").val(),
 				"configAttr.public" : $(":radio[name='config-public']:checked").val()
 			}, true),
 			dataType: "json",
@@ -503,7 +506,6 @@ $(function(){
 			$("#edit-config-modal .config-key").text(getConfigKey($(this)));
 			var config_type = getConfigType($(this));
 			$("#edit-config-type-selector").val(config_type);
-			$("[name='edit-config-env'][value='" + $("[name='envId']").val() + "']:enabled").attr("checked", true);
 			$("#edit-config-value-container").html(generateValueComponent(parseInt(config_type), "edit-config-value"));
 			$("#edit-config-modal").modal({
 				backdrop : "static", 

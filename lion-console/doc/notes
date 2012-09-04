@@ -28,7 +28,7 @@
 25.配置环境beta的名称改为qa，并通知到萧俊
 26.lion的下拉框提醒需要改为ajax的方式获取数据源，而不是一次性的存储在页面
 27.ServiceConstants中的初始数据常量调整为从1开始
-
+28.添加system_setting表中关于是否开启cache的记录
 
 
 

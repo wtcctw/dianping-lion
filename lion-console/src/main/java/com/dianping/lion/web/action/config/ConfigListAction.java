@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.xwork.StringUtils;
+
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
@@ -89,14 +91,26 @@ public class ConfigListAction extends AbstractConfigAction {
 	
 	public String editConfigAttr() {
 	    try {
-        	    Config config = configService.getConfig(configId);
-        	    if (config != null && hasLockPrivilege()) {
-        	        config.setPrivatee(!configAttr.isPublic());
-        	        configService.updateConfig(config);
-        	        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_EditAttr, config.getProjectId(), 
-        	                "设置配置属性: " + config.getKey() + ", [公开: " + configAttr.isPublic() + "]").key(config.getKey()));
-        	    }
-        	    createSuccessStreamResponse();
+    	    Config config = configService.getConfig(configId);
+    	    if (config != null) {
+    	    	if (hasLockPrivilege()) {
+    	    		config.setPrivatee(!configAttr.isPublic());
+    	    	}
+    	    	String desclog = null;
+    	    	if (hasEditAttrPrivilege(config.getProjectId())) {
+    	    		String oldDesc = config.getDesc();
+    	    		config.setDesc(this.config.getDesc());
+    	    		if (!StringUtils.equals(oldDesc, config.getDesc())) {
+    	    			desclog = ", desc: " + config.getDesc();
+    	    		}
+    	    	}
+    	        configService.updateConfig(config);
+    	        String logcontent = "设置配置属性: " + config.getKey() + ", [公开: " + configAttr.isPublic() 
+    	        	+ (desclog != null ? desclog : "") + "]";
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_EditAttr, config.getProjectId(), logcontent)
+					.key(config.getKey()));
+    	    }
+    	    createSuccessStreamResponse();
 	    } catch (RuntimeException e) {
 	        createErrorStreamResponse();
 	    }
@@ -178,13 +192,13 @@ public class ConfigListAction extends AbstractConfigAction {
 	}
     
     private List<ConfigVo> enrichWithPrivilege(int projectId, int envId, User user, List<ConfigVo> configVos) {
-        boolean hasLockPrivilege = user != null && configPrivilegeDecider.hasLockConfigPrivilege(user.getId());
+        boolean hasLockPrivilege = user != null && privilegeDecider.hasLockConfigPrivilege(user.getId());
         Integer userId = user != null ? user.getId() : null;
         for (ConfigVo configVo : configVos) {
             Config config = configVo.getConfig();
-            boolean hasReadPrivilege = configPrivilegeDecider.hasReadConfigPrivilege(projectId, envId, config.getId(), userId);
+            boolean hasReadPrivilege = privilegeDecider.hasReadConfigPrivilege(projectId, envId, config.getId(), userId);
             configVo.setHasReadPrivilege(hasReadPrivilege);
-            boolean hasEditPrivilege = configPrivilegeDecider.hasEditConfigPrivilege(projectId, envId, config.getId(), userId);
+            boolean hasEditPrivilege = privilegeDecider.hasEditConfigPrivilege(projectId, envId, config.getId(), userId);
             configVo.setHasEditPrivilege(hasEditPrivilege);
             configVo.setHasLockPrivilege(hasLockPrivilege);
         }

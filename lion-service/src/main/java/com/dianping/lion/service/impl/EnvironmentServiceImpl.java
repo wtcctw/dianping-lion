@@ -15,15 +15,13 @@
  */
 package com.dianping.lion.service.impl;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +37,7 @@ import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.register.ConfigRegisterServiceRepository;
+import com.dianping.lion.service.CacheClient;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.util.SecurityUtils;
@@ -60,24 +59,22 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	@Autowired
 	private ConfigRegisterServiceRepository registerServiceRepository;
 	
-	private Ehcache ehcache;
+	private CacheClient cacheClient;
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Environment> findAll() {
-		Element element = ehcache.get(ServiceConstants.CACHE_KEY_ENVLIST);
-		if (element == null) {
+		List<Environment> environments = cacheClient.get(ServiceConstants.CACHE_KEY_ENVLIST);
+		if (environments == null) {
 			synchronized (this) {
-				element = ehcache.get(ServiceConstants.CACHE_KEY_ENVLIST);
-				if (element == null) {
-					List<Environment> allEnvs = environmentDao.findAll();
-					element = new Element(ServiceConstants.CACHE_KEY_ENVLIST, allEnvs, true, null, null);
-					ehcache.put(element);
-					refreshRegisterServiceRepository(allEnvs);
+				environments = cacheClient.get(ServiceConstants.CACHE_KEY_ENVLIST);
+				if (environments == null) {
+					environments = environmentDao.findAll();
+					cacheClient.set(ServiceConstants.CACHE_KEY_ENVLIST, (Serializable) environments, 0);
+					refreshRegisterServiceRepository(environments);
 				}
 			}
 		}
-		return (List<Environment>) element.getObjectValue();
+		return environments;
 	}
 
 	@Override
@@ -92,43 +89,43 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 	public void delete(int id) {
 	    try {
-        	    Environment environment = findEnvByID(id);
-        		environmentDao.delete(id);
-        		if (environment != null) {
-        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Delete, "删除" + environment.getLabel() + "环境"));
-        		}
+    	    Environment environment = findEnvByID(id);
+    		environmentDao.delete(id);
+    		if (environment != null) {
+    		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Delete, "删除" + environment.getLabel() + "环境"));
+    		}
 	    } finally {
-	        ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+	        cacheClient.remove(ServiceConstants.CACHE_KEY_ENVLIST);
 	    }
 	}
 
 	@Override
 	public int create(Environment env) {
 	    try {
-        		Integer currentUserId = SecurityUtils.getCurrentUserId();
-        		env.setCreateUserId(currentUserId);
-        		env.setModifyUserId(currentUserId);
-        		int envId = environmentDao.create(env);
-        		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Add, "创建" + env.getLabel() + "环境, ip: " + env.getIps()
-        		        + ", 线上: " + env.isOnline()));
-        		return envId;
+    		Integer currentUserId = SecurityUtils.getCurrentUserId();
+    		env.setCreateUserId(currentUserId);
+    		env.setModifyUserId(currentUserId);
+    		int envId = environmentDao.create(env);
+    		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Add, "创建" + env.getLabel() + "环境, ip: " + env.getIps()
+    		        + ", 线上: " + env.isOnline()));
+        	return envId;
 	    } finally {
-	        ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+	    	cacheClient.remove(ServiceConstants.CACHE_KEY_ENVLIST);
 	    }
 	}
 
 	@Override
 	public void update(Environment env) {
 	    try {
-        	    Environment existEnv = findEnvByID(env.getId());
-        		env.setModifyUserId(SecurityUtils.getCurrentUserId());
-        		environmentDao.update(env);
-        		if (existEnv != null) {
-                		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Edit, "编辑" + env.getLabel() + "环境, before[ip: " 
-                		        + existEnv.getIps() + ", 线上: " + existEnv.isOnline() + "], after[ip: " + env.getIps() + ", 线上: " + env.isOnline() + "]"));
-        		}
+    	    Environment existEnv = findEnvByID(env.getId());
+    		env.setModifyUserId(SecurityUtils.getCurrentUserId());
+    		environmentDao.update(env);
+    		if (existEnv != null) {
+            		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Env_Edit, "编辑" + env.getLabel() + "环境, before[ip: " 
+            		        + existEnv.getIps() + ", 线上: " + existEnv.isOnline() + "], after[ip: " + env.getIps() + ", 线上: " + env.isOnline() + "]"));
+    		}
 	    } finally {
-	        ehcache.remove(ServiceConstants.CACHE_KEY_ENVLIST);
+	    	cacheClient.remove(ServiceConstants.CACHE_KEY_ENVLIST);
 	    }
 	}
 	
@@ -177,12 +174,12 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	}
 
 	/**
-	 * @param allEnvs
+	 * @param environments
 	 */
 	@SuppressWarnings("unchecked")
-	private void refreshRegisterServiceRepository(List<Environment> allEnvs) {
-		Set<Integer> allEnvIds = new HashSet<Integer>(allEnvs.size());
-		for (Environment env : allEnvs) {
+	private void refreshRegisterServiceRepository(List<Environment> environments) {
+		Set<Integer> allEnvIds = new HashSet<Integer>(environments.size());
+		for (Environment env : environments) {
 			allEnvIds.add(env.getId());
 			ConfigRegisterService registerService = registerServiceRepository.getRegisterService(env.getId());
 			if (registerService != null && !StringUtils.equals(registerService.getAddresses(), env.getIps())) {
@@ -225,8 +222,8 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         this.operationLogService = operationLogService;
     }
 
-    public void setEhcache(Ehcache ehcache) {
-		this.ehcache = ehcache;
+	public void setCacheClient(CacheClient cacheClient) {
+		this.cacheClient = cacheClient;
 	}
 
 }

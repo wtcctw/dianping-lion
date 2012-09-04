@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
+
 import com.dianping.lion.ServiceConstants;
 
 /**
@@ -28,7 +30,7 @@ import com.dianping.lion.ServiceConstants;
  * @author youngphy.yang
  * 
  */
-public class User implements Serializable {
+public class User implements Serializable, Cloneable {
 	
 	private static final long serialVersionUID = 641998304419235573L;
 	
@@ -190,4 +192,12 @@ public class User implements Serializable {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
+    
+    @Override
+    public Object clone() {
+		User cloned = new User();
+		BeanUtils.copyProperties(this, cloned);
+		return cloned;
+    }
+    
 }

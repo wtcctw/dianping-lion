@@ -70,7 +70,7 @@
 		<![CDATA[
 		SELECT id, name, createTime, modifyTime, seq
 		FROM team
-		ORDER BY seq
+		ORDER BY seq, id
 		]]>
     </select>
     
@@ -79,7 +79,7 @@
     	SELECT id, name, teamId, createTime, modifyTime, seq
     	FROM product
     	WHERE teamId = #teamId#
-    	ORDER BY seq
+    	ORDER BY seq, id
     	]]>
     </select>
     
@@ -88,7 +88,7 @@
     	SELECT id, name, productId, createTime, modifyTime, seq
     	FROM project
     	WHERE productId = #productId#
-    	ORDER BY seq
+    	ORDER BY seq, id
     	]]>
     </select>
     
@@ -115,7 +115,7 @@
              pj.productId = #productId#
         </isGreaterThan>
         </dynamic>
-		ORDER BY t.seq,pd.seq,pj.seq,pj.id
+		ORDER BY t.seq, t.id, pd.seq, pd.id, pj.seq, pj.id
 		
     </select>
     

@@ -23,6 +23,9 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.dianping.lion.dao.UserDao;
 import com.dianping.lion.entity.User;
+import com.dianping.lion.util.Maps;
+import com.dianping.lion.vo.Paginater;
+import com.dianping.lion.vo.UserCriteria;
 
 /**
  * @author danson.liu
@@ -34,6 +37,20 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
 	@Override
 	public List<User> findAll() {
 		return getSqlMapClientTemplate().queryForList("User.findAll");
+	}
+
+	@Override
+	public long getUserCount(UserCriteria userCriteria, Paginater<User> paginater) {
+		Long userCount = (Long) getSqlMapClientTemplate().queryForObject("User.getUserCount", Maps.entry("criteria", userCriteria)
+				.entry("paginater", paginater).get());
+		return userCount != null ? userCount : 0;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getUserList(UserCriteria userCriteria, Paginater<User> paginater) {
+		return getSqlMapClientTemplate().queryForList("User.getUserList", Maps.entry("criteria", userCriteria)
+				.entry("paginater", paginater).get());
 	}
 	
 	public User findById(int id) {
@@ -62,5 +79,10 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
 	@Override
 	public void updatePassword(User user) {
 		getSqlMapClientTemplate().update("User.updateMD5Password", user);
+	}
+
+	@Override
+	public int update(User user) {
+		return getSqlMapClientTemplate().update("User.updateUser", user);
 	}
 }

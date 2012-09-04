@@ -24,10 +24,13 @@
 	<group label="系统选项">
 		<menu name="envsetting" label="环境管理" url="/system/envSetting.vhtml"/>
 		<menu name="projectconfig" label="项目管理" url="/system/projectList.vhtml"/>
-		<menu name="usersetting" label="用户管理" url="/"/>
+		<menu name="usersetting" label="用户管理" url="/system/userList.vhtml"/>
+		<!-- 
 		<menu name="security" label="权限管理" url="/"/>
+		 -->
 		<menu name="oplog" label="操作日志" url="/system/oplog.vhtml"/>
 		<menu name="jobmanagement" label="任务管理" url="/system/jobManagement.vhtml"/>
+		<menu name="cachemanagement" label="缓存管理" url="/system/cacheManage.vhtml"/>
 		<menu name="syssetting" label="系统设置" url="/"/>
 		<!-- 
 		<menu sperator="true"/>

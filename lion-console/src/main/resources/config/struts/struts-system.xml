@@ -74,6 +74,18 @@
 		<action name="getUsersAjax" class="com.dianping.lion.web.action.system.UserAction" method="ajaxGetUsers">
 			<result name="success" type="stream"/>
 		</action>
+		<action name="getUserAjax" class="com.dianping.lion.web.action.system.UserAction" method="ajaxGetUser">
+			<result name="success" type="stream"/>
+		</action>
+		<action name="userList" class="com.dianping.lion.web.action.system.UserAction" method="list">
+			<result name="success">/WEB-INF/pages/system/user-list.ftl</result>
+		</action>
+		<action name="userListAjax" class="com.dianping.lion.web.action.system.UserAction" method="ajaxList">
+			<result name="success">/WEB-INF/pages/system/user-list-table.ftl</result>
+		</action>
+		<action name="updateUserAjax" class="com.dianping.lion.web.action.system.UserAction" method="editUser">
+			<result name="success" type="stream"/>
+		</action>
 		
 		<!-- 操作日志 -->
 		<action name="oplog" class="com.dianping.lion.web.action.system.OperationLogAction" method="getOpLogs">
@@ -126,6 +138,14 @@
 			<result name="success">/WEB-INF/pages/system/jobmanagement-list.ftl</result>
 			<result name="error">/WEB-INF/pages/system/error.ftl</result>
 		</action>
+		
+		<action name="cacheManage" class="com.dianping.lion.web.action.system.CacheManageAction">
+			<result name="success">/WEB-INF/pages/system/cache-manage.ftl</result>
+		</action>
+		<action name="clearCacheAjax" class="com.dianping.lion.web.action.system.CacheManageAction" method="clearCache">
+			<result name="success" type="stream"/>
+		</action>
+		
 	</package>
 
 </struts>

@@ -22,7 +22,7 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ConsoleConstants;
-import com.dianping.lion.service.ProjectPrivilegeDecider;
+import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.tag.MenuManager.Menu;
 import com.dianping.lion.web.tag.MenuManager.MenuGroup;
@@ -41,7 +41,7 @@ public class SubNavigator extends StrutsTagSupport {
 	private String query;	//include menu if exists
 	
 	@Autowired
-	private ProjectPrivilegeDecider projectPrivilegeDecider;
+	private PrivilegeDecider privilegeDecider;
 	
 	public SubNavigator() {
 		setTemplateName("sub-nav.ftl");
@@ -123,7 +123,7 @@ public class SubNavigator extends StrutsTagSupport {
 			String pid = getRequest().getParameter("pid");
 			Integer projectId = pid != null ? Integer.parseInt(pid) : null;
 			if (projectId != null) {
-				boolean hasReadLogPrivilege = projectPrivilegeDecider.hasReadLogPrivilege(projectId, SecurityUtils.getCurrentUserId());
+				boolean hasReadLogPrivilege = privilegeDecider.hasReadLogPrivilege(projectId, SecurityUtils.getCurrentUserId());
 				return hasReadLogPrivilege ? 1 : -1;
 			}
 			return -1;
@@ -153,8 +153,8 @@ public class SubNavigator extends StrutsTagSupport {
 		this.query = query;
 	}
 
-	public void setProjectPrivilegeDecider(ProjectPrivilegeDecider projectPrivilegeDecider) {
-		this.projectPrivilegeDecider = projectPrivilegeDecider;
+	public void setPrivilegeDecider(PrivilegeDecider projectPrivilegeDecider) {
+		this.privilegeDecider = projectPrivilegeDecider;
 	}
 
 }

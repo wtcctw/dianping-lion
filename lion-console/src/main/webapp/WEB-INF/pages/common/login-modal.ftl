@@ -8,16 +8,16 @@
     		<form class="form-horizontal">
 		  <fieldset>
 		    <div class="control-group">
-		      <label class="control-label" for="loginName">域账号:</label>
+		      <label class="control-label" for="login-name">域账号:</label>
 		      <div class="controls">
-		        <input type="text" class="input-xlarge" id="loginName">
+		        <input type="text" class="input-xlarge" id="login-name">
 		        <span class="help-inline hide message">必填!</span>
 		      </div>
 		    </div>
 		    <div class="control-group">
-		      <label class="control-label" for="loginPasswd">密码:</label>
+		      <label class="control-label" for="login-passwd">密码:</label>
 		      <div class="controls">
-		        <input type="password" class="input-xlarge" id="loginPasswd">
+		        <input type="password" class="input-xlarge" id="login-passwd">
 		        <span class="help-inline hide message">必填!</span>
 		      </div>
 		    </div>

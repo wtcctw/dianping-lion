@@ -24,7 +24,7 @@ import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
-public class EnvironmentAction extends AbstractLionAction{
+public class EnvironmentAction extends AbstractLionAction {
 	
 	@Autowired
 	private EnvironmentService environmentService;

@@ -43,7 +43,7 @@ function contain(value, itemsStr) {
 	return false;
 }
 
-function editOpen(projectId, projectName, productId, manager, techLeader, oper) {
+function editOpen(projectId, projectName, productId) {
 	var productS = "option[value='" + productId + "']"
 	$("#productSelectEdit").find(productS).attr("selected", "true");
 	$("#projectNameEdit").attr("value", projectName);

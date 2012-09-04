@@ -88,8 +88,8 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 		return user;
 	}
 
-	@SuppressWarnings({"unchecked" })
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
 	public User getUserInfo(String cn) {
 		User user = new User();
 		try {
@@ -119,7 +119,7 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 		return user;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private String getShortName(String sAMAccountName) throws NamingException {
 		String shortName = null;
 		

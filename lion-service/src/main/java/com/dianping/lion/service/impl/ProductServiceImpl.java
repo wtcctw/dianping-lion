@@ -17,8 +17,6 @@ package com.dianping.lion.service.impl;
 
 import java.util.List;
 
-import net.sf.ehcache.Ehcache;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ServiceConstants;
@@ -26,6 +24,7 @@ import com.dianping.lion.dao.ProductDao;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Product;
+import com.dianping.lion.service.CacheClient;
 import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.ProductService;
 
@@ -37,8 +36,8 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
     private OperationLogService operationLogService;
 	
-	private Ehcache ehcache;
-	private Ehcache projectEhcache;
+	private CacheClient cacheClient;
+	private CacheClient projectCacheClient;
 
 	@Override
 	public List<Product> findAll() {
@@ -48,13 +47,13 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void delete(int id) {
 	    try {
-        	    Product product = findProductByID(id);
-        		productDao.delete(id);
-        		if (product != null) {
-        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Delete, "删除产品线: " + product.getName()));
-        		}
+    	    Product product = findProductByID(id);
+    		productDao.delete(id);
+    		if (product != null) {
+    		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Delete, "删除产品线: " + product.getName()));
+    		}
 	    } finally {
-	        ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    	cacheClient.remove(ServiceConstants.CACHE_KEY_TEAMS);
 	    }
 	}
 
@@ -71,27 +70,27 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public int create(Product product) {
 	    try {
-        		productDao.create(product);
-        		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Add, "创建产品线: " + product.getName()));
-        		return product.getId();
+    		productDao.create(product);
+    		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Add, "创建产品线: " + product.getName()));
+    		return product.getId();
 	    } finally {
-	        ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    	cacheClient.remove(ServiceConstants.CACHE_KEY_TEAMS);
 	    }
 	}
 
 	@Override
 	public void update(Product product) {
 	    try {
-        	    Product existProduct = findProductByID(product.getId());
-        		productDao.update(product);
-        		if (existProduct != null) {
-        		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Edit, "编辑产品线, before[名称: " 
-                            + existProduct.getName() + "], after[名称: " + product.getName() + "]"));
-        		}
+    	    Product existProduct = findProductByID(product.getId());
+    		productDao.update(product);
+    		if (existProduct != null) {
+    		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Product_Edit, "编辑产品线, before[名称: " 
+                        + existProduct.getName() + "], after[名称: " + product.getName() + "]"));
+    		}
 	    } finally {
-        		ehcache.remove(ServiceConstants.CACHE_KEY_TEAMS);
-        		ehcache.remove(ServiceConstants.CACHE_KEY_PROJECTS);
-        		projectEhcache.removeAll();
+	    	cacheClient.remove(ServiceConstants.CACHE_KEY_TEAMS);
+	    	cacheClient.remove(ServiceConstants.CACHE_KEY_PROJECTS);
+        	projectCacheClient.removeAll();
 	    }
 	}
 
@@ -106,18 +105,12 @@ public class ProductServiceImpl implements ProductService {
         this.operationLogService = operationLogService;
     }
 
-    /**
-     * @param ehcache the ehcache to set
-     */
-    public void setEhcache(Ehcache ehcache) {
-        this.ehcache = ehcache;
-    }
+	public void setCacheClient(CacheClient cacheClient) {
+		this.cacheClient = cacheClient;
+	}
 
-    /**
-     * @param projectEhcache the projectEhcache to set
-     */
-    public void setProjectEhcache(Ehcache projectEhcache) {
-        this.projectEhcache = projectEhcache;
-    }
+	public void setProjectCacheClient(CacheClient cacheClient) {
+		this.projectCacheClient = cacheClient;
+	}
 
 }

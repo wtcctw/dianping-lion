@@ -22,6 +22,8 @@ package com.dianping.lion.service;
 import java.util.List;
 
 import com.dianping.lion.entity.User;
+import com.dianping.lion.vo.Paginater;
+import com.dianping.lion.vo.UserCriteria;
 
 public interface UserService {
 
@@ -29,10 +31,18 @@ public interface UserService {
 	
 	User findById(int id);
 	
+	User findNoPasswdById(int id);
+	
 	User loadById(int id);
+	
+	User loadNoPasswdById(int id);
 
     User login(String loginName, String passwd);
 
     List<User> findByNameOrLoginNameLike(String name);
+
+	Paginater<User> getUsers(UserCriteria userCriteria, Paginater<User> paginater);
+
+	int update(User user);
 
 }

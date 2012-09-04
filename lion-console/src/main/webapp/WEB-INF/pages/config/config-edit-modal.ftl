@@ -6,7 +6,7 @@
     </div>
     <div class="modal-body">
     	<input type="hidden" name="config-id">
-    	<form class="form-horizontal">
+    	<form class="form-horizontal" onSubmit="return false;">
     		<fieldset>
 			    <div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label" for="edit-config-type-selector">
@@ -27,9 +27,7 @@
 			      		<input type="checkbox" id="edit-select-all-env"/><label for="edit-select-all-env" class="help-inline">全选</label>
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
-			      		<@s.set name="hasEditPrivilege" value="%{hasEditPrivilege(pid, id)}"/>
 			      		<input type="checkbox" name="edit-config-env" id="edit-config-env-${id}" value="${id}"
-			      		<@s.if test="%{!#hasEditPrivilege}"> disabled="disabled"</@s.if>
 			      		><label for="edit-config-env-${id}" class="help-inline">${label}</label>
 			      		&nbsp;&nbsp;
 			      	</@s.iterator>

@@ -23,9 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +50,7 @@ import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.register.ConfigRegisterServiceRepository;
+import com.dianping.lion.service.CacheClient;
 import com.dianping.lion.service.ConfigDeleteResult;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
@@ -85,7 +83,7 @@ public class ConfigServiceImpl implements ConfigService {
 	
 	private TransactionTemplate transactionTemplate;
 	
-	private Ehcache ehcache;
+	private CacheClient cacheClient;
 	
 	public ConfigServiceImpl(PlatformTransactionManager transactionManager) {
 		this.transactionTemplate = new TransactionTemplate(transactionManager);
@@ -136,10 +134,10 @@ public class ConfigServiceImpl implements ConfigService {
         			configDao.update(config);
         			configDao.update(nextConfig);
 		    } finally {
-		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
-		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
-		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + nextConfig.getId());
-		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + nextConfig.getKey());
+		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
+		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
+		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + nextConfig.getId());
+		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + nextConfig.getKey());
 		    }
 		}
 	}
@@ -160,10 +158,10 @@ public class ConfigServiceImpl implements ConfigService {
         			configDao.update(config);
         			configDao.update(prevConfig);
 		    } finally {
-		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
-		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
-		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + prevConfig.getId());
-		        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + prevConfig.getKey());
+		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
+		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
+		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + prevConfig.getId());
+		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + prevConfig.getKey());
 		    }
 		}
 	}
@@ -206,8 +204,8 @@ public class ConfigServiceImpl implements ConfigService {
 			}
 			if (result.isSucceed()) {
 				configDao.delete(configId);
-				ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + configId);
-				ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
+				cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + configId);
+				cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
 			}
 		}
 		return result;
@@ -380,15 +378,14 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public Config findConfigByKey(String key) {
-	    Element element = ehcache.get(ServiceConstants.CACHE_CONFIG_PREFIX + key);
-        if (element == null) {
-            Config config = configDao.findConfigByKey(key);
+	    Config config = cacheClient.get(ServiceConstants.CACHE_CONFIG_PREFIX + key);
+        if (config == null) {
+            config = configDao.findConfigByKey(key);
             if (config != null) {
-                element = new Element(ServiceConstants.CACHE_CONFIG_PREFIX + key, config);
-                ehcache.put(element);
+            	cacheClient.set(ServiceConstants.CACHE_CONFIG_PREFIX + key, config);
             }
         }
-        return element != null ? (Config) element.getObjectValue(): null;
+        return config;
 	}
 
 	@Override
@@ -398,15 +395,14 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public Config getConfig(int configId) {
-	    Element element = ehcache.get(ServiceConstants.CACHE_CONFIG_PREFIX + configId);
-	    if (element == null) {
-            Config config = configDao.getConfig(configId);
+	    Config config = cacheClient.get(ServiceConstants.CACHE_CONFIG_PREFIX + configId);
+	    if (config == null) {
+            config = configDao.getConfig(configId);
             if (config != null) {
-                element = new Element(ServiceConstants.CACHE_CONFIG_PREFIX + configId, config);
-                ehcache.put(element);
+            	cacheClient.set(ServiceConstants.CACHE_CONFIG_PREFIX + configId, config);
             }
         }
-        return element != null ? (Config) element.getObjectValue(): null;
+        return config;
 	}
 	
 	public int updateConfig(Config config) {
@@ -414,8 +410,8 @@ public class ConfigServiceImpl implements ConfigService {
         	    config.setModifyUserId(SecurityUtils.getCurrentUserId());
         	    return configDao.update(config);
 	    } finally {
-	        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
-	        ehcache.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
+	        cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
+	        cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
 	    }
 	}
 
@@ -510,11 +506,11 @@ public class ConfigServiceImpl implements ConfigService {
 		this.projectDao = projectDao;
 	}
 
-	public void setEhcache(Ehcache ehcache) {
-        this.ehcache = ehcache;
-    }
+    public void setCacheClient(CacheClient cacheClient) {
+		this.cacheClient = cacheClient;
+	}
 
-    /**
+	/**
 	 * @param registerServiceRepository the mediumServiceRepository to set
 	 */
 	public void setRegisterServiceRepository(ConfigRegisterServiceRepository registerServiceRepository) {

@@ -5,7 +5,7 @@
       <#include "/WEB-INF/pages/common/form-alert.ftl">
     </div>
     <div class="modal-body">
-    	<form class="form-horizontal">
+    	<form class="form-horizontal" onSubmit="return false;">
     		<fieldset>
         		<div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label" for="config-key">Key:</label>

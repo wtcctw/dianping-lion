@@ -22,9 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
-import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.util.UrlUtils;
@@ -51,7 +51,7 @@ public class AbstractConfigAction extends AbstractLionAction {
 	protected ConfigService configService;
 	
 	@Autowired
-	protected ProjectPrivilegeDecider configPrivilegeDecider;
+	protected PrivilegeDecider privilegeDecider;
 	
 	@Autowired
 	protected ProjectService projectService;
@@ -69,17 +69,12 @@ public class AbstractConfigAction extends AbstractLionAction {
 		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId", "criteria.key", "criteria.status");
 	}
 	
-//	public boolean hasEditPrivilege() {
-//	    Boolean hasPrivilege = getEditPrivileges().get(envId);
-//	    return hasPrivilege != null ? hasPrivilege : false;
-//	}
-	
 	public boolean hasAddPrivilege(int projectId, int envId) {
-	    return configPrivilegeDecider.hasAddConfigPrivilege(projectId, envId, SecurityUtils.getCurrentUserId());
+	    return privilegeDecider.hasAddConfigPrivilege(projectId, envId, SecurityUtils.getCurrentUserId());
 	}
 	
 	public boolean hasEditPrivilege(int projectId, int envId, int configId) {
-	    return configPrivilegeDecider.hasEditConfigPrivilege(projectId, envId, configId, SecurityUtils.getCurrentUserId());
+	    return privilegeDecider.hasEditConfigPrivilege(projectId, envId, configId, SecurityUtils.getCurrentUserId());
 	}
 	
 	public Map<Integer, Boolean> getEditPrivileges(int projectId, int configId) {
@@ -91,7 +86,11 @@ public class AbstractConfigAction extends AbstractLionAction {
 	}
 	
 	public boolean hasLockPrivilege() {
-        return configPrivilegeDecider.hasLockConfigPrivilege(SecurityUtils.getCurrentUserId());
+        return privilegeDecider.hasLockConfigPrivilege(SecurityUtils.getCurrentUserId());
+	}
+	
+	public boolean hasEditAttrPrivilege(int projectId) {
+		return privilegeDecider.hasEditAttrPrivilege(projectId, SecurityUtils.getCurrentUserId());
 	}
 
 	/**
@@ -168,8 +167,8 @@ public class AbstractConfigAction extends AbstractLionAction {
         this.configService = configService;
     }
 
-    public void setConfigPrivilegeDecider(ProjectPrivilegeDecider configPrivilegeDecider) {
-        this.configPrivilegeDecider = configPrivilegeDecider;
+    public void setPrivilegeDecider(PrivilegeDecider configPrivilegeDecider) {
+        this.privilegeDecider = configPrivilegeDecider;
     }
 
     public void setProjectService(ProjectService projectService) {

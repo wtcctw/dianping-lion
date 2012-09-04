@@ -10,7 +10,7 @@ import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
-import com.dianping.lion.service.ProjectPrivilegeDecider;
+import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.UserService;
 
@@ -18,7 +18,7 @@ import com.dianping.lion.service.UserService;
  * @author danson.liu
  *
  */
-public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
+public class PrivilegeDeciderImpl implements PrivilegeDecider {
     
     @Autowired
     private EnvironmentService environmentService;
@@ -44,8 +44,8 @@ public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
                 if (user != null) {
                     Config config = configService.getConfig(configId);
                     if (config != null && !config.isPrivatee()) {
-                        return true/*user.isOnlineConfigView() || projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId)
-                                        || projectService.isOperator(projectId, userId)*/;
+                        return user.isOnlineConfigView() || projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId)
+                                || projectService.isOperator(projectId, userId);
                     }
                     return false;
                 }
@@ -68,10 +68,10 @@ public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
         }
         if (environment != null) {
             if (environment.isOnline()) {
-                return true/*projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId)*/;
+                return projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId);
             } else {
-                return true/*projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
-                            || projectService.isOperator(projectId, userId)*/;
+                return projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
+                            || projectService.isOperator(projectId, userId);
             }
         }
         return false;
@@ -91,12 +91,12 @@ public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
             if (environment.isOnline()) {
                 Config config = configService.getConfig(configId);
                 if (config != null && !config.isPrivatee()) {
-                    return true/*projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId)*/;
+                    return projectService.isOwner(projectId, userId) || projectService.isOperator(projectId, userId);
                 }
                 return false;
             } else {
-                return true/*projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
-                            || projectService.isOperator(projectId, userId)*/;
+                return projectService.isMember(projectId, userId) || projectService.isOwner(projectId, userId) 
+                            || projectService.isOperator(projectId, userId);
             }
         }
         return false;
@@ -119,6 +119,25 @@ public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
 		User user = userService.loadById(userId);
 		return user.isAdmin() || user.isSA() || projectService.isOwner(projectId, userId) || projectService.isMember(projectId, userId)
 			|| projectService.isOperator(projectId, userId);
+	}
+
+	@Override
+	public boolean hasEditAttrPrivilege(int projectId, Integer userId) {
+		if (userId == null) {
+			return false;
+		}
+		User user = userService.loadById(userId);
+		return user.isAdmin() || user.isSA() || projectService.isOwner(projectId, userId) || projectService.isMember(projectId, userId)
+			|| projectService.isOperator(projectId, userId);
+	}
+
+	@Override
+	public boolean hasClearCachePrivilege(Integer userId) {
+		if (userId == null) {
+			return false;
+		}
+		User user = userService.loadById(userId);
+		return user.isAdmin() || user.isSA();
 	}
 
     /**

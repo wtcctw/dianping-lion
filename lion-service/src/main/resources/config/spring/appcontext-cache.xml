@@ -12,7 +12,22 @@
 		<property name="configLocation" value="classpath:/config/ehcache.xml"/>
 	</bean>
 	
-	<bean id="clusteredCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+	<bean id="clusteredCache" class="com.dianping.lion.service.impl.EhcacheClientImpl">
+		<constructor-arg ref="clusteredCache_"/>
+		<property name="cacheEntities" value="environments, teams, projects, user, systemsetting"/>
+	</bean>
+	
+	<bean id="clusteredShortCache" class="com.dianping.lion.service.impl.EhcacheClientImpl">
+		<constructor-arg ref="clusteredShortCache_"/>
+		<property name="cacheEntities" value="config"/>
+	</bean>
+	
+	<bean id="clusteredProjectCache" class="com.dianping.lion.service.impl.EhcacheClientImpl">
+		<constructor-arg ref="clusteredProjectCache_"/>
+		<property name="cacheEntities" value="project"/>
+	</bean>
+	
+	<bean id="clusteredCache_" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
 		<property name="cacheManager" ref="cacheManager"/>
 		<!-- 暂不使用blocking cache，容易产生死锁
 		<property name="blocking" value="true"/>
@@ -20,12 +35,12 @@
 		<property name="cacheName" value="clusteredCache"/>
 	</bean>
 	
-	<bean id="clusteredShortCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+	<bean id="clusteredShortCache_" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
 		<property name="cacheManager" ref="cacheManager"/>
 		<property name="cacheName" value="clusteredShortCache"/>
 	</bean>
 	
-	<bean id="clusteredProjectCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+	<bean id="clusteredProjectCache_" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
 		<property name="cacheManager" ref="cacheManager"/>
 		<property name="cacheName" value="clusteredProjectCache"/>
 	</bean>

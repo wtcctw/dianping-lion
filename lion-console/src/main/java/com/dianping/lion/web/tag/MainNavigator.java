@@ -101,7 +101,7 @@ public class MainNavigator extends StrutsTagSupport {
 			|| "jobmanagement".equals(menuName) || "syssetting".equals(menuName)) {
 			return (currentUser != null && currentUser.isAdmin()) ? 1 : -1;
 		}
-		if ("oplog".equals(menuName)) {
+		if ("oplog".equals(menuName) || "cachemanagement".equals(menuName)) {
 			return (currentUser != null && (currentUser.isAdmin() || currentUser.isSA())) ? 1 : -1;
 		}
 		return -1;

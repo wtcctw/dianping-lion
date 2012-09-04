@@ -27,7 +27,7 @@ import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.User;
-import com.dianping.lion.service.ProjectPrivilegeDecider;
+import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.util.SecurityUtils;
@@ -46,7 +46,7 @@ public class OperationLogServiceImpl implements OperationLogService {
 	private ConfigService configService;
 	
 	@Autowired
-	private ProjectPrivilegeDecider configPrivilegeDecider;
+	private PrivilegeDecider privilegeDecider;
 
     @Override
     public Paginater<OperationLog> getLogList(OperationLogCriteria logCriteria, Paginater<OperationLog> paginater) {
@@ -65,7 +65,7 @@ public class OperationLogServiceImpl implements OperationLogService {
                 Config config = configService.findConfigByKey(log.getKey1());
                 boolean hasLookPrivilege = false;
                 if (config != null) {
-                    hasLookPrivilege = configPrivilegeDecider.hasReadConfigPrivilege(log.getProjectId(), log.getEnvId(), config.getId(), 
+                    hasLookPrivilege = privilegeDecider.hasReadConfigPrivilege(log.getProjectId(), log.getEnvId(), config.getId(), 
                             currentUser != null ? currentUser.getId() : null);
                 } else {
                     hasLookPrivilege = currentUser != null && (currentUser.isAdmin() || currentUser.isSA());
@@ -116,8 +116,8 @@ public class OperationLogServiceImpl implements OperationLogService {
         this.configService = configService;
     }
 
-    public void setConfigPrivilegeDecider(ProjectPrivilegeDecider configPrivilegeDecider) {
-        this.configPrivilegeDecider = configPrivilegeDecider;
+    public void setPrivilegeDecider(PrivilegeDecider configPrivilegeDecider) {
+        this.privilegeDecider = configPrivilegeDecider;
     }
     
 }

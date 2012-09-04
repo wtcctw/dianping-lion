@@ -56,7 +56,7 @@
 				<td style="text-align:center;">
 					<a href="#" id="edit_project_btn" productId="${project.productId}" 
 					projectName="${project.name}" rel="tooltip" title="修改项目" 
-					onclick="editOpen(${project.id},'${project.name}',${project.productId},'<#list userList as user><#if user.id==project.managerId>${user.name}@${user.loginName}@${user.id}</#if></#list>','<#list userList as user><#if user.id==project.techLeaderId>${user.name}@${user.loginName}@${user.id}</#if></#list>','<#list userList as user><#if user.id==project.operId>${user.name}@${user.loginName}@${user.id}</#if></#list>');return false;"
+					onclick="editOpen(${project.id},'${project.name}',${project.productId});return false;"
 					><i class="icon-edit"></i></a>&nbsp;&nbsp;&nbsp;
 					<a href="#"class="edit-member-btn"><i rel="tooltip" title="成员管理" class="icon-user"></i></a>&nbsp;&nbsp;&nbsp;
 	      		    <a class="deletelink" href="<@s.url action='projectDel' namespace='/system'/>?projectId=${project.id}" rel="tooltip" title="删除项目"

@@ -6,7 +6,7 @@ $(function(){
 	});
 	
 	$("#login-modal").on("shown", function() {
-		$("#loginName").focus();
+		$("#login-name").focus();
 	});
 	
 	$("#login_link").click(function() {
@@ -22,8 +22,8 @@ $(function(){
 		if (validateLoginForm()) {
 			$.ajax("/loginAjax.vhtml".prependcontext(), {
 				data : $.param({
-					"loginName" : $("#loginName").val().trim(),
-					"passwd" : $("#loginPasswd").val()
+					"loginName" : $("#login-name").val().trim(),
+					"passwd" : $("#login-passwd").val()
 				}, true),
 				dataType : "json",
 				success : function(result) {
@@ -52,7 +52,7 @@ $(function(){
 		var checkPass = true;
 		var firstErrorEle;
 		resetLoginFormValidation();
-		$("#loginName, #loginPasswd").each(function() {
+		$("#login-name, #login-passwd").each(function() {
 			if ($(this).val().isBlank()) {
 				setValidateError($(this));
 				if (firstErrorEle == null) {

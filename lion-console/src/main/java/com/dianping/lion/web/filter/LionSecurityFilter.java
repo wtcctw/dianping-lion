@@ -38,6 +38,8 @@ public class LionSecurityFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
         throws IOException, ServletException {
+    	//TODO remove me!
+    	long begin = System.currentTimeMillis();
         Object securityChecked = request.getAttribute(SECURITY_CHECKED);
         boolean authEntry = false;
         if (securityChecked == null) {
@@ -63,6 +65,7 @@ public class LionSecurityFilter implements Filter {
                 request.removeAttribute(SECURITY_CHECKED);
             }
         }
+        System.out.println("Cost " + (System.currentTimeMillis() - begin) + "ms.");
     }
 
     @Override

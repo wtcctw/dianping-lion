@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.UserService;
+import com.dianping.lion.vo.Paginater;
+import com.dianping.lion.vo.UserCriteria;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 /**
@@ -25,12 +27,40 @@ public class UserAction extends AbstractLionAction {
     @Autowired
     private UserService userService;
     
+    private UserCriteria userCriteria = new UserCriteria();
+	private Paginater<User> paginater = new Paginater<User>();
+    
+	private int id;
+	
+	private User user;
+	
     private String name;
     
     private String callback;
     
+    public String list() {
+    	paginater.setMaxResults(20);
+    	this.paginater = userService.getUsers(userCriteria, paginater);
+    	return SUCCESS;
+    }
+    
+    public String ajaxList() {
+    	paginater.setMaxResults(20);
+    	this.paginater = userService.getUsers(userCriteria, paginater);
+    	return SUCCESS;
+    }
+    
+    public String ajaxGetUser() {
+    	try {
+	    	User user = userService.loadNoPasswdById(id);
+	    	createSuccessStreamResponse(user);
+    	} catch (RuntimeException e) {
+    		createErrorStreamResponse("load user failed");
+    	}
+    	return SUCCESS;
+    }
+    
     public String ajaxGetUsers() throws JSONException {
-        //TODO refactor me!
         if (name.contains("/")) {
             name = StringUtils.substringBefore(name, "/");
         }
@@ -48,6 +78,22 @@ public class UserAction extends AbstractLionAction {
         content.append("})");
         createStreamResponse(content.toString());
         return SUCCESS;
+    }
+    
+    public String editUser() {
+    	try {
+	    	User user = userService.findById(this.user.getId());
+	    	if (user != null) {
+	    		user.setLocked(this.user.isLocked());
+	    		user.setOnlineConfigView(this.user.isOnlineConfigView());
+	    		userService.update(user);
+	    	}
+	    	createSuccessStreamResponse();
+    	} catch (Exception e) {
+    		logger.error("Edit user failed.", e);
+    		createErrorStreamResponse(e.getMessage());
+    	}
+    	return SUCCESS;
     }
 
     /**
@@ -68,7 +114,23 @@ public class UserAction extends AbstractLionAction {
         this.name = query;
     }
 
-    /**
+	public UserCriteria getUserCriteria() {
+		return userCriteria;
+	}
+
+	public void setUserCriteria(UserCriteria userCriteria) {
+		this.userCriteria = userCriteria;
+	}
+
+	public Paginater<User> getPaginater() {
+		return paginater;
+	}
+
+	public void setPaginater(Paginater<User> paginater) {
+		this.paginater = paginater;
+	}
+
+	/**
      * @return the callback
      */
     public String getCallback() {
@@ -81,5 +143,21 @@ public class UserAction extends AbstractLionAction {
     public void setCallback(String callback) {
         this.callback = callback;
     }
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 
 }

@@ -54,4 +54,8 @@ public interface ServiceConstants {
 	
 	String CACHE_USER_PREFIX = "cache_user_";
 	
+	String CACHE_SETTING_PREFIX = "cache_setting_";
+	
+	String SETTING_CACHE_ENABLED = "cache_enabled";
+	
 }

@@ -1,5 +1,6 @@
 <#--内容栏-->
 <div class="pagination">
+	<input type="hidden" name="pageNo" value="${paginater.pageNumber}"/>
 	<ul>
 		<li><a href="javascript: jump2Page(1);">首页</a></li>
 		<li><a href="javascript: jump2Page(${paginater.prevPage});">前一页</a></li>

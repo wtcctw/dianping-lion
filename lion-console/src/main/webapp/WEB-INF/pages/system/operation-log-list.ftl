@@ -1,5 +1,5 @@
 <#--内容栏-->
-<#include "/WEB-INF/pages/system/operation-log-paginater.ftl">
+<#include "/WEB-INF/pages/common/paginater.ftl">
 <table id="table-oplog-list" class="table table-bordered table-striped table-condensed table-page">
 	  <thead>
 	    <tr>
@@ -54,7 +54,7 @@
 	    </@s.iterator>
 	  </tbody>
 </table>
-<#include "/WEB-INF/pages/system/operation-log-paginater.ftl">
+<#include "/WEB-INF/pages/common/paginater.ftl">
 <div id="big-log-modal" class="modal hide modal-big">
     <div class="modal-body" style="min-height:480px;max-height: 540px;overflow-y: auto;">
     </div>

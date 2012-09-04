@@ -34,7 +34,7 @@
     
     <select id="findById" resultMap="UserResultBasic">
 		<![CDATA[
-		SELECT * FROM user WHERE id=#id# ORDER BY id
+		SELECT * FROM user WHERE id = #id# ORDER BY id
 		]]>
     </select>
     
@@ -44,8 +44,44 @@
     
     <select id="findByName" resultMap="UserResultBasic">
 		<![CDATA[
-		SELECT * FROM user WHERE loginName=#userName# ORDER BY id
+		SELECT * FROM user WHERE loginName = #userName# ORDER BY id
 		]]>
+    </select>
+    
+    <sql id="getUser_Fragment">
+    	<dynamic>
+    		<isNotNull prepend="AND" property="criteria.name">
+    			u.name LIKE CONCAT('%', #criteria.name#, '%')
+    		</isNotNull>
+    		<isNotNull prepend="AND" property="criteria.loginName">
+    			u.loginName LIKE CONCAT('%', #criteria.loginName#, '%')
+    		</isNotNull>
+    		<isNotNull prepend="AND" property="criteria.system">
+    			u.system = #criteria.system#
+    		</isNotNull>
+    		<isNotNull prepend="AND" property="criteria.locked">
+    			u.locked = #criteria.locked#
+    		</isNotNull>
+    		<isNotNull prepend="AND" property="criteria.onlineConfigView">
+    			u.onlineConfigView = #criteria.onlineConfigView#
+    		</isNotNull>
+    	</dynamic>
+    </sql>
+    
+    <select id="getUserCount" resultClass="long" parameterClass="map">
+    	SELECT COUNT(*)
+    	FROM user u
+    	WHERE 1 = 1
+    	<include refid="getUser_Fragment"/>
+    </select>
+    
+    <select id="getUserList" resultMap="UserNoPasswordResult" parameterClass="map">
+    	SELECT *
+    	FROM user u
+    	WHERE 1 = 1
+    	<include refid="getUser_Fragment"/>
+    	ORDER BY u.name
+    	LIMIT #paginater.firstResult#, #paginater.maxResults#
     </select>
     
     <insert id="insertUser" parameterClass="User">
@@ -58,10 +94,17 @@
         </selectKey>
     </insert>
     
-    <insert id="updateMD5Password" parameterClass="User">
+    <update id="updateUser" parameterClass="User">
+    	UPDATE user 
+    	SET loginName = #loginName#, name = #name#, email = #email#, system = #system#, locked = #locked#, password = #password#,
+    		onlineConfigView = #onlineConfigView#
+    	WHERE id = #id#
+    </update>
+    
+    <update id="updateMD5Password" parameterClass="User">
 		<![CDATA[
 		update user set password = #password# where id = #id#
 		]]>
-    </insert>
+    </update>
     
 </sqlMap>

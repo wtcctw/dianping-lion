@@ -9,33 +9,33 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	
 	<bean id="environmentService" class="com.dianping.lion.service.impl.EnvironmentServiceImpl" init-method="init">
-		<property name="ehcache" ref="clusteredCache"/>
+		<property name="cacheClient" ref="clusteredCache"/>
 	</bean>
 	
 	<bean id="teamService" class="com.dianping.lion.service.impl.TeamServiceImpl">
-		<property name="ehcache" ref="clusteredCache"/>
-		<property name="projectEhcache" ref="clusteredProjectCache"/>
+		<property name="cacheClient" ref="clusteredCache"/>
+		<property name="projectCacheClient" ref="clusteredProjectCache"/>
 	</bean>
 	
 	<bean id="productService" class="com.dianping.lion.service.impl.ProductServiceImpl">
-		<property name="ehcache" ref="clusteredCache"/>
-		<property name="projectEhcache" ref="clusteredProjectCache"/>
+		<property name="cacheClient" ref="clusteredCache"/>
+		<property name="projectCacheClient" ref="clusteredProjectCache"/>
 	</bean>
 	
 	<bean id="projectService" class="com.dianping.lion.service.impl.ProjectServiceImpl">
-		<property name="ehcache" ref="clusteredCache"/>
-		<property name="projectEhcache" ref="clusteredProjectCache"/>
+		<property name="cacheClient" ref="clusteredCache"/>
+		<property name="projectCacheClient" ref="clusteredProjectCache"/>
 	</bean>
 	
 	<bean id="jobExecTimeService" class="com.dianping.lion.service.impl.JobExecTimeServiceImpl"/>
 	
 	<bean id="configService" class="com.dianping.lion.service.impl.ConfigServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
-		<property name="ehcache" ref="clusteredShortCache"/>
+		<property name="cacheClient" ref="clusteredShortCache"/>
 		<property name="registerServiceRepository" ref="registerServiceRepository"/>
 	</bean>
 	
-	<bean id="configPrivilegeDecider" class="com.dianping.lion.service.impl.ProjectPrivilegeDeciderImpl"/>
+	<bean id="privilegeDecider" class="com.dianping.lion.service.impl.PrivilegeDeciderImpl"/>
 	
 	<bean id="configReleaseService" class="com.dianping.lion.service.impl.ConfigReleaseServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
@@ -44,7 +44,11 @@
 	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
 	
 	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl">
-		<property name="ehcache" ref="clusteredCache"/>
+		<property name="cacheClient" ref="clusteredCache"/>
+	</bean>
+	
+	<bean id="systemSettingService" class="com.dianping.lion.service.impl.SystemSettingServiceImpl">
+		<property name="ehcache" ref="clusteredCache_"/>
 	</bean>
 	
 	<bean id="ldapAuthenticationService" class="com.dianping.lion.service.impl.LDAPAuthenticationServiceImpl">
