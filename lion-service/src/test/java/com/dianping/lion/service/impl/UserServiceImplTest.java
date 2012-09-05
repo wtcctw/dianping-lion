@@ -82,7 +82,7 @@ public class UserServiceImplTest {
 	@Test
 	public void testLoginRejectedDueWrongPwd() {
 		try{
-			User user = userService.login("yong.you", "xxx");
+			User user = userService.login("yong.yo", "xxx");
 		} catch(Exception e) {
 			assertTrue(e instanceof IncorrectPasswdException);
 		}
@@ -119,7 +119,5 @@ public class UserServiceImplTest {
 		assertNotNull(user);
 		User userTmp2 = userDao.findByName(rightUserNameForTest);
 		assertTrue(DigestUtils.md5Hex(rightPwdForTest).toUpperCase().equals(userTmp2.getPassword()));
-		User user3 = userService.login(rightUserNameForTest, "xxxx");
-		assertNull(user3);
 	}
 }
