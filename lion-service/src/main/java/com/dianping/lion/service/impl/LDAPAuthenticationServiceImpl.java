@@ -18,6 +18,7 @@ package com.dianping.lion.service.impl;
 import java.util.Date;
 import java.util.Hashtable;
 
+import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -53,12 +54,14 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	private String solidPwd = null;
 	
 	/**
+	 * @throws Exception 
+	 * @throws AuthenticationException 
 	 * @throws NamingException 
 	 * @return if authentication succeeded, return user info; otherwise, return null;
 	 * @throws  
 	 */
 	@Override
-	public User authenticate(String userName, String password) {
+	public User authenticate(String userName, String password) throws Exception {
 		User user = null;
 		LdapContext ctx = null;
 		Hashtable<String, String> env = null;
@@ -79,8 +82,10 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	            ctx = new InitialLdapContext(env,connCtls);
 	        }catch(javax.naming.AuthenticationException e){
 	            logger.info("Authentication faild: "+e.toString());
+	            throw e;
 	        }catch(Exception e){
 	        	logger.error("Something wrong while authenticating: "+e.toString());
+	        	throw e;
 	        }
 	        if(ctx != null) {
 	        	user = getUserInfo(shortName, ctx);

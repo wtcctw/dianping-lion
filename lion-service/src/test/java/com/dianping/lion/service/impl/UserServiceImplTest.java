@@ -26,6 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.dianping.lion.dao.UserDao;
 import com.dianping.lion.entity.User;
+import com.dianping.lion.exception.IncorrectPasswdException;
 import com.dianping.lion.exception.SystemUserForbidLoginException;
 import com.dianping.lion.exception.UserLockedException;
 import com.dianping.lion.exception.UserNotFoundException;
@@ -49,7 +50,7 @@ public class UserServiceImplTest {
 	
 	//change the username and pwd to the proper one for test
 	private String rightUserNameForTest = "youngphy.yang";
-	private String rightPwdForTest = "BPmgJn%01";
+	private String rightPwdForTest = "XXX";
 	
 	@Test
 	public void testLoginRejectedDueLock() {
@@ -70,14 +71,23 @@ public class UserServiceImplTest {
 	}
 	
 	@Test
-	public void testLoginRejectedDueWrongUserNameOrPwd() {
+	public void testLoginRejectedDueWrongUserName() {
 		try{
 			User user = userService.login("youngphy.yan", "xxx");
 		} catch(Exception e) {
 			assertTrue(e instanceof UserNotFoundException);
 		}
 	}
-
+	
+	@Test
+	public void testLoginRejectedDueWrongPwd() {
+		try{
+			User user = userService.login("yong.you", "xxx");
+		} catch(Exception e) {
+			assertTrue(e instanceof IncorrectPasswdException);
+		}
+	}
+	
 	@Test
 	public void testLoginSucceedAt1stTime() {
 		try{
@@ -109,7 +119,5 @@ public class UserServiceImplTest {
 		assertNotNull(user);
 		User userTmp2 = userDao.findByName(rightUserNameForTest);
 		assertTrue(DigestUtils.md5Hex(rightPwdForTest).toUpperCase().equals(userTmp2.getPassword()));
-		User user3 = userService.login(rightUserNameForTest, "xxxx");
-		assertNull(user3);
 	}
 }

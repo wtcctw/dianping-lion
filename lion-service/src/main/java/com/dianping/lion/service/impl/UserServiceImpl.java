@@ -129,7 +129,12 @@ public class UserServiceImpl implements UserService {
 	    	}
     	}
     	//
-    	User user = ldapAuthenticationService.authenticate(loginName, passwd);
+    	User user = null;
+		try {
+			user = ldapAuthenticationService.authenticate(loginName, passwd);
+		} catch (Exception e) {
+			throw new IncorrectPasswdException();
+		}
     	if(user != null) {
     		user.setPassword(DigestUtils.md5Hex(passwd).toUpperCase());
     		if(dbUser == null) {
@@ -141,9 +146,7 @@ public class UserServiceImpl implements UserService {
     			cacheClient.remove(ServiceConstants.CACHE_USER_PREFIX + dbUser.getId());
     		}
     		return user;
-    	} else if(isUpdateNeeded) {
-    		throw new IncorrectPasswdException();
-    	} else {
+    	}else {
     		throw new UserNotFoundException(loginName);
     	}
     }

@@ -15,6 +15,8 @@
  */
 package com.dianping.lion.service;
 
+import javax.naming.AuthenticationException;
+
 import com.dianping.lion.entity.User;
 
 /**
@@ -23,5 +25,5 @@ import com.dianping.lion.entity.User;
  *
  */
 public interface LDAPAuthenticationService {
-	public User authenticate(String userName, String password);
+	public User authenticate(String userName, String password) throws Exception;
 }
