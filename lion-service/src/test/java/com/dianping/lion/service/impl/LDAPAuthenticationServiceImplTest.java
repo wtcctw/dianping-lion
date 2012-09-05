@@ -17,8 +17,6 @@ package com.dianping.lion.service.impl;
 
 import static org.junit.Assert.*;
 
-import javax.naming.NamingException;
-
 import org.junit.Test;
 
 import com.dianping.lion.entity.User;
@@ -30,7 +28,7 @@ import com.dianping.lion.entity.User;
  */
 public class LDAPAuthenticationServiceImplTest {
 	@Test
-	public void testAuthenticate() throws NamingException {
+	public void testAuthenticate() throws Exception {
 		LDAPAuthenticationServiceImpl ldapAuthenticationServiceImpl = new LDAPAuthenticationServiceImpl();
 		ldapAuthenticationServiceImpl.setLdapBaseDN("OU=Technolog Department,OU=shoffice,DC=dianpingoa,DC=com");
 		ldapAuthenticationServiceImpl.setLdapFactory("com.sun.jndi.ldap.LdapCtxFactory");
