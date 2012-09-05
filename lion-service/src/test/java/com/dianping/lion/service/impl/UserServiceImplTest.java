@@ -26,6 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.dianping.lion.dao.UserDao;
 import com.dianping.lion.entity.User;
+import com.dianping.lion.exception.IncorrectPasswdException;
 import com.dianping.lion.exception.SystemUserForbidLoginException;
 import com.dianping.lion.exception.UserLockedException;
 import com.dianping.lion.exception.UserNotFoundException;
@@ -70,14 +71,23 @@ public class UserServiceImplTest {
 	}
 	
 	@Test
-	public void testLoginRejectedDueWrongUserNameOrPwd() {
+	public void testLoginRejectedDueWrongUserName() {
 		try{
 			User user = userService.login("youngphy.yan", "xxx");
 		} catch(Exception e) {
 			assertTrue(e instanceof UserNotFoundException);
 		}
 	}
-
+	
+	@Test
+	public void testLoginRejectedDueWrongPwd() {
+		try{
+			User user = userService.login("yong.you", "xxx");
+		} catch(Exception e) {
+			assertTrue(e instanceof IncorrectPasswdException);
+		}
+	}
+	
 	@Test
 	public void testLoginSucceedAt1stTime() {
 		try{
