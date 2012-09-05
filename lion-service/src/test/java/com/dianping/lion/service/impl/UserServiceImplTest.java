@@ -50,7 +50,7 @@ public class UserServiceImplTest {
 	
 	//change the username and pwd to the proper one for test
 	private String rightUserNameForTest = "youngphy.yang";
-	private String rightPwdForTest = "BPmgJn%01";
+	private String rightPwdForTest = "XXX";
 	
 	@Test
 	public void testLoginRejectedDueLock() {
@@ -82,7 +82,7 @@ public class UserServiceImplTest {
 	@Test
 	public void testLoginRejectedDueWrongPwd() {
 		try{
-			User user = userService.login("yong.yo", "xxx");
+			User user = userService.login("yong.you", "xxx");
 		} catch(Exception e) {
 			assertTrue(e instanceof IncorrectPasswdException);
 		}
