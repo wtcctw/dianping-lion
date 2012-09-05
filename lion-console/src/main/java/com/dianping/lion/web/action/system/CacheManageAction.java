@@ -18,12 +18,12 @@ package com.dianping.lion.web.action.system;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import com.dianping.lion.ServiceConstants;
+import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.service.CacheClient;
-import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
@@ -40,9 +40,13 @@ public class CacheManageAction extends AbstractLionAction implements Application
 	
 	private String cache;
 	
-	@Autowired
-	private PrivilegeDecider privilegeDecider;
-
+	@Override
+	protected void checkModulePrivilege() {
+		if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_CACHE, SecurityUtils.getCurrentUserId())) {
+			throw NoPrivilegeException.INSTANCE;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public String execute() throws Exception {
@@ -59,10 +63,6 @@ public class CacheManageAction extends AbstractLionAction implements Application
 		return SUCCESS;
 	}
 	
-	public boolean hasPrivilege() {
-		return privilegeDecider.hasClearCachePrivilege(SecurityUtils.getCurrentUserId());
-	}
-	
 	public Map<String, CacheClient> getCaches() {
 		return caches;
 	}
@@ -75,10 +75,6 @@ public class CacheManageAction extends AbstractLionAction implements Application
 	public void setApplicationContext(ApplicationContext applicationContext)
 		throws BeansException {
 		this.applicationContext = applicationContext;
-	}
-
-	public void setPrivilegeDecider(PrivilegeDecider privilegeDecider) {
-		this.privilegeDecider = privilegeDecider;
 	}
 
 }

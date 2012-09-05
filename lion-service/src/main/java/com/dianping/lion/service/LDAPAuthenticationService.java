@@ -24,5 +24,4 @@ import com.dianping.lion.entity.User;
  */
 public interface LDAPAuthenticationService {
 	public User authenticate(String userName, String password);
-	User getUserInfo(String cn);
 }

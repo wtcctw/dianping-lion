@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.json.JSONException;
 import org.apache.struts2.json.JSONUtil;
@@ -31,14 +32,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.OperationLogService;
+import com.dianping.lion.service.PrivilegeDecider;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * @author danson.liu
  *
  */
 @SuppressWarnings("serial")
-public class AbstractLionAction extends ActionSupport implements ServletRequestAware {
+public class AbstractLionAction extends ActionSupport implements ServletRequestAware, Preparable {
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -56,6 +60,24 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 	
 	@Autowired
 	protected OperationLogService operationLogService;
+	
+	@Autowired
+	protected PrivilegeDecider privilegeDecider;
+	
+	@Override
+	public void prepare() throws Exception {
+		if (!isAjaxRequest()) {
+			checkModulePrivilege();
+		}
+	}
+	
+	protected void checkModulePrivilege() {
+	}
+
+	protected boolean isAjaxRequest() {
+		String actionName = ActionContext.getContext().getName();
+		return StringUtils.endsWith(actionName, "Ajax");
+	}
 
 	/**
 	 * @return the menu
@@ -185,5 +207,9 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
     public void setOperationLogService(OperationLogService operationLogService) {
         this.operationLogService = operationLogService;
     }
+
+	public void setPrivilegeDecider(PrivilegeDecider privilegeDecider) {
+		this.privilegeDecider = privilegeDecider;
+	}
 	
 }

@@ -18,7 +18,6 @@ package com.dianping.lion.entity;
 import java.io.Serializable;
 
 /**
- * TODO Comment of SystemSetting
  * @author danson.liu
  *
  */

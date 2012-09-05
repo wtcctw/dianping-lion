@@ -19,8 +19,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.JobExecTime;
+import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.service.JobExecTimeService;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
@@ -38,6 +41,13 @@ public class JobManagementAction extends AbstractLionAction{
 	private String jobName;
 	private boolean switcher;
 	private String failMail;
+	
+	@Override
+	protected void checkModulePrivilege() {
+		if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_JOB, SecurityUtils.getCurrentUserId())) {
+			throw NoPrivilegeException.INSTANCE;
+		}
+	}
 	
 	public String getJobLists() {
 		jobExecTimeList = jobExecTimeService.findAll();

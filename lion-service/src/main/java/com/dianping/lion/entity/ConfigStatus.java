@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * TODO Comment of ConfigStatus
  * @author danson.liu
  *
  */

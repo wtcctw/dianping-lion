@@ -5,7 +5,7 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
-	<constant name="struts.devMode" value="true" />
+	<constant name="struts.devMode" value="false" />
 	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
 	<constant name="struts.ognl.allowStaticMethodAccess" value="false" />
 	<constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
@@ -22,7 +22,7 @@
 	
 	<constant name="struts.action.excludePattern" value="/static/img/.*" />
 	<!-- TODO 上线改为true -->
-	<constant name="struts.freemarker.templatesCache" value="false" />
+	<constant name="struts.freemarker.templatesCache" value="true" />
 	<constant name="struts.ui.theme" value="simple" />
 	
 	<bean type="org.apache.struts2.components.template.TemplateEngine" name="cftl" class="com.dianping.lion.web.tag.FreemarkerTemplateEngineExt" />
@@ -59,13 +59,12 @@
 		
 		<default-interceptor-ref name="lionStack" />
 		
-		<!-- <global-results>		
-			<result name="error"  type="freemarker">/WEB-INF/pages/error.ftl</result>		
+		<global-results>		
+			<result name="403"  type="freemarker">/WEB-INF/pages/common/403.ftl</result>		
 		</global-results>
 		<global-exception-mappings>			
-			<exception-mapping result="error"
-				exception="com.dianping.shoppicweb.exception.PicProjectException" />
-		</global-exception-mappings> -->
+			<exception-mapping result="403" exception="com.dianping.lion.exception.NoPrivilegeException" />
+		</global-exception-mappings>
 		<action name="navigate" class="com.dianping.lion.web.action.common.NavigationAction">
 			<result name="success" type="redirect">${redirectUrl}</result>
 		</action>

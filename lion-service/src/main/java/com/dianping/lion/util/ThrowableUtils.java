@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * TODO Comment of ThrowableUtils
  * 
  * @author danson.liu
  * 

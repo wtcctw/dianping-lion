@@ -58,4 +58,15 @@ public interface ServiceConstants {
 	
 	String SETTING_CACHE_ENABLED = "cache_enabled";
 	
+	
+	//TODO 切换到统一功能权限(user-role-resource)
+	String MODULE_ENV = "module_env";
+	String MODULE_PROJECT = "module_project";
+	String MODULE_OPLOG = "module_oplog";
+	String MODULE_CACHE = "module_cache";
+	String MODULE_USER = "module_user";
+	String MODULE_SETTING = "module_setting";
+	String MODULE_JOB = "module_job";
+	String MODULE_SECURITY = "module_security";
+	
 }

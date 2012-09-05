@@ -19,7 +19,6 @@ import com.dianping.lion.entity.ConfigSetTask;
 import com.dianping.lion.entity.ConfigSnapshotSet;
 
 /**
- * TODO Comment of ConfigRelaseService
  * @author danson.liu
  *
  */

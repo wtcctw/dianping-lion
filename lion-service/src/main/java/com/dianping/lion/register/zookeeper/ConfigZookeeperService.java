@@ -38,7 +38,6 @@ import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.util.EncodeUtils;
 
 /**
- * TODO Comment of ConfigZookeeperService
  * @author danson.liu
  *
  */

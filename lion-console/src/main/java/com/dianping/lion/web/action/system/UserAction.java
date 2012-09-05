@@ -10,8 +10,11 @@ import org.apache.struts2.json.JSONException;
 import org.apache.struts2.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.User;
+import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.service.UserService;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.Paginater;
 import com.dianping.lion.vo.UserCriteria;
 import com.dianping.lion.web.action.common.AbstractLionAction;
@@ -37,6 +40,13 @@ public class UserAction extends AbstractLionAction {
     private String name;
     
     private String callback;
+    
+    @Override
+    protected void checkModulePrivilege() {
+    	if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_USER, SecurityUtils.getCurrentUserId())) {
+			throw NoPrivilegeException.INSTANCE;
+		}
+    }
     
     public String list() {
     	paginater.setMaxResults(20);

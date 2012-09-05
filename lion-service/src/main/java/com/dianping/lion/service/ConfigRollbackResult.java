@@ -18,7 +18,6 @@ package com.dianping.lion.service;
 import java.util.Set;
 
 /**
- * TODO Comment of ConfigRollbackResult
  * @author danson.liu
  *
  */

@@ -113,6 +113,9 @@ public class ConfigVo implements Serializable {
 
     public void setHasReadPrivilege(boolean hasReadPrivilege) {
         this.hasReadPrivilege = hasReadPrivilege;
+        if (!hasReadPrivilege && defaultInstance != null) {
+        	defaultInstance.setValue(null);
+        }
     }
 
     public boolean isHasEditPrivilege() {

@@ -21,7 +21,6 @@ import com.dianping.lion.dao.SystemSettingDao;
 import com.dianping.lion.util.Maps;
 
 /**
- * TODO Comment of SystemSettingIbatisDao
  * @author danson.liu
  *
  */

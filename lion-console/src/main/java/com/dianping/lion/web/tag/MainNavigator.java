@@ -23,8 +23,9 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ConsoleConstants;
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Team;
-import com.dianping.lion.entity.User;
+import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.tag.MenuManager.Menu;
@@ -40,6 +41,9 @@ public class MainNavigator extends StrutsTagSupport {
 	
 	@Autowired
 	private ProjectService projectService;
+	
+	@Autowired
+	private PrivilegeDecider privilegeDecider;
 	
 	private List<Team> teams;
 	
@@ -94,15 +98,31 @@ public class MainNavigator extends StrutsTagSupport {
 		if (ConsoleConstants.MENU_PROJECT.equals(menuName)) {
 			return 1;
 		}
-		User currentUser = SecurityUtils.getCurrentUser();
+		Integer currentUserId = SecurityUtils.getCurrentUserId();
 		// TODO 需要调整为功能级别的权限，暂时交由admin管理
-		if ("envsetting".equals(menuName) || "projectconfig".equals(menuName)
-			|| "usersetting".equals(menuName) || "security".equals(menuName)
-			|| "jobmanagement".equals(menuName) || "syssetting".equals(menuName)) {
-			return (currentUser != null && currentUser.isAdmin()) ? 1 : -1;
+		if ("envsetting".equals(menuName)) {
+			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_ENV, currentUserId) ? 1 : -1;
+		} 
+		if ("security".equals(menuName)) {
+			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_SECURITY, currentUserId) ? 1 : -1;
 		}
-		if ("oplog".equals(menuName) || "cachemanagement".equals(menuName)) {
-			return (currentUser != null && (currentUser.isAdmin() || currentUser.isSA())) ? 1 : -1;
+		if ("jobmanagement".equals(menuName)) {
+			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_JOB, currentUserId) ? 1 : -1;
+		} 
+		if ("syssetting".equals(menuName)) {
+			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_SETTING, currentUserId) ? 1 : -1;
+		}
+		if ("oplog".equals(menuName)) {
+			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_OPLOG, currentUserId) ? 1 : -1;
+		} 
+		if ("cachemanagement".equals(menuName)) {
+			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_CACHE, currentUserId) ? 1 : -1;
+		} 
+		if ("projectconfig".equals(menuName)) {
+			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_PROJECT, currentUserId) ? 1 : -1;
+		}
+		if ("usersetting".equals(menuName)) {
+			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_USER, currentUserId) ? 1 : -1;
 		}
 		return -1;
 	}
@@ -150,6 +170,10 @@ public class MainNavigator extends StrutsTagSupport {
 
 	public void setProjectService(ProjectService projectService) {
 		this.projectService = projectService;
+	}
+
+	public void setPrivilegeDecider(PrivilegeDecider privilegeDecider) {
+		this.privilegeDecider = privilegeDecider;
 	}
 
 }

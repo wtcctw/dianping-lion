@@ -25,12 +25,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.dianping.lion.ConsoleConstants;
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.ProjectMember;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.entity.User;
+import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.UserService;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 /**
@@ -63,6 +66,13 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
     private List<ProjectMember> owners;
     private List<ProjectMember> members;
     private List<ProjectMember> operators;
+    
+    @Override
+    public void checkModulePrivilege() {
+    	if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_PROJECT, SecurityUtils.getCurrentUserId())) {
+			throw NoPrivilegeException.INSTANCE;
+		}
+    }
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
     public String execute() {

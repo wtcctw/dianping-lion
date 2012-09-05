@@ -25,7 +25,6 @@ import com.dianping.lion.dao.SystemSettingDao;
 import com.dianping.lion.service.SystemSettingService;
 
 /**
- * TODO Comment of SystemSettingServiceImpl
  * @author danson.liu
  *
  */

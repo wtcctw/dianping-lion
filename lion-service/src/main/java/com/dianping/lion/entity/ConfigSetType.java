@@ -16,7 +16,6 @@
 package com.dianping.lion.entity;
 
 /**
- * TODO Comment of ConfigUpdateType
  * @author danson.liu
  *
  */

@@ -30,7 +30,6 @@ import com.dianping.lion.service.CacheClient;
 import com.dianping.lion.service.SystemSettingService;
 
 /**
- * TODO Comment of CacheClientSupport
  * @author danson.liu
  *
  */

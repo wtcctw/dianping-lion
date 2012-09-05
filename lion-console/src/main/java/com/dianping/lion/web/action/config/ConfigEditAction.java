@@ -31,7 +31,9 @@ import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.exception.RuntimeBusinessException;
+import com.dianping.lion.util.SecurityUtils;
 
 /**
  * @author danson.liu
@@ -67,15 +69,22 @@ public class ConfigEditAction extends AbstractConfigAction {
 		}
 		List<String> failedEnvs = new ArrayList<String>();
 		Map<Integer, Environment> envMap = environmentService.findEnvMap();
+		Integer currentUserId = SecurityUtils.getCurrentUserId();
 		for (Integer envId : envIds) {
 			ConfigInstance instance = new ConfigInstance();
 			instance.setConfigId(configId);
 			instance.setEnvId(envId);
 			instance.setValue(value);
 			try {
+				if (!privilegeDecider.hasAddConfigPrivilege(config.getProjectId(), envId, currentUserId)) {
+					throw NoPrivilegeException.INSTANCE;
+				}
 				configService.createInstance(instance);
 				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId, 
 				        "设置配置项[" + config.getKey() + "]").key(config.getKey(), ConfigInstance.NO_CONTEXT, null, instance.getValue()));
+			} catch (NoPrivilegeException e) {
+				String env = envMap.get(envId).getLabel();
+				failedEnvs.add(env + "(无权限)");
 			} catch (RuntimeException e) {
 				String env = envMap.get(envId).getLabel();
 				logger.error("创建配置[key=" + config.getKey() + ", env=" + env + "]失败.", e);
@@ -98,13 +107,20 @@ public class ConfigEditAction extends AbstractConfigAction {
 		}
 		List<String> failedEnvs = new ArrayList<String>();
 		Map<Integer, Environment> envMap = environmentService.findEnvMap();
+		Integer currentUserId = SecurityUtils.getCurrentUserId();
 		for (Integer envId : envIds) {
 			try {
+				if (!privilegeDecider.hasEditConfigPrivilege(configFound.getProjectId(), envId, configFound.getId(), currentUserId)) {
+					throw NoPrivilegeException.INSTANCE;
+				}
 			    ConfigInstance existInstance = configService.findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
 				configService.setConfigValue(configId, envId, ConfigInstance.NO_CONTEXT, value);
 				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, configFound.getProjectId(), envId,
 				        "设置配置项: " + configFound.getKey())
 				        .key(configFound.getKey(), ConfigInstance.NO_CONTEXT, existInstance != null ? existInstance.getValue() : null, value));
+			} catch (NoPrivilegeException e) {
+				String env = envMap.get(envId).getLabel();
+				failedEnvs.add(env + "(无权限)");
 			} catch (Exception e) {
 				String env = envMap.get(envId).getLabel();
 				logger.error("保存配置[key=" + configFound.getKey() + ", env=" + env + "]失败.", e);
@@ -126,14 +142,23 @@ public class ConfigEditAction extends AbstractConfigAction {
 			return SUCCESS;
 		}
 		ConfigInstance instanceFound = configService.findDefaultInstance(configId, envId);
+		Integer currentUserId = SecurityUtils.getCurrentUserId();
 		String message = null;
 		if (instanceFound == null) {
 			Environment prevEnv = environmentService.findPrevEnv(envId);
 			if (prevEnv != null) {
 				instanceFound = configService.findDefaultInstance(configId, prevEnv.getId());
 				if (instanceFound != null) {
-					message = "Value预填[" + prevEnv.getLabel() + "]环境的值.";
+					if (privilegeDecider.hasReadConfigPrivilege(configFound.getProjectId(), prevEnv.getId(), configId, currentUserId)) {
+						message = "Value预填[" + prevEnv.getLabel() + "]环境的值.";
+					} else {
+						instanceFound = null;
+					}
 				}
+			}
+		} else {
+			if (!privilegeDecider.hasReadConfigPrivilege(configFound.getProjectId(), envId, configId, currentUserId)) {
+				instanceFound = null;
 			}
 		}
 		try {

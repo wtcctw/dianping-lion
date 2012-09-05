@@ -16,7 +16,6 @@
 package com.dianping.lion.service;
 
 /**
- * TODO Comment of SystemSettingService
  * @author danson.liu
  *
  */

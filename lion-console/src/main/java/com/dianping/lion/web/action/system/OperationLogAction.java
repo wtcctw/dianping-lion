@@ -26,13 +26,16 @@ import org.apache.commons.lang.xwork.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Project;
+import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.ProjectService;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.OperationLogCriteria;
 import com.dianping.lion.vo.Paginater;
 import com.dianping.lion.web.action.common.AbstractLionAction;
@@ -61,6 +64,9 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 	private EnvironmentService environmentService;
 	
 	public String getOpLogs() {
+		if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_OPLOG, SecurityUtils.getCurrentUserId())) {
+			throw NoPrivilegeException.INSTANCE; 
+		}
 		initializePage();
 		paginater.setMaxResults(20);
 		paginater = operationLogService.getLogList(logCriteria, paginater);
@@ -68,6 +74,9 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 	}
 	
 	public String getOpLogsByProject() {
+		if (!privilegeDecider.hasReadLogPrivilege(projectId, SecurityUtils.getCurrentUserId())) {
+			throw NoPrivilegeException.INSTANCE; 
+		}
 		initializePage();
 		logCriteria.setProjectId(projectId);
 		if (logCriteria.getOpType() == null) {

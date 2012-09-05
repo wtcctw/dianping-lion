@@ -24,5 +24,8 @@ public interface PrivilegeDecider {
 	boolean hasEditAttrPrivilege(int projectId, Integer userId);
 	
 	boolean hasClearCachePrivilege(Integer userId);
-    
+	
+	//TODO 切换到功能权限模块(user-role-resource)
+	boolean hasModulePrivilege(String module, Integer userId);
+	
 }

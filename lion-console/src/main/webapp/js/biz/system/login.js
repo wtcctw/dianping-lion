@@ -1,7 +1,7 @@
 $(function(){
 	$("#login-modal").on("hidden", function() {
 		$("input[type='text'],input[type='password']").val("");
-		$("#login-error-msg").html("");
+		$("#login-msg").html("");
 		resetLoginFormValidation();
 	});
 	
@@ -18,7 +18,7 @@ $(function(){
 	});	
 	
 	var formSubmitHandler = function(event) {
-		$("#login-error-msg").html("");
+		$("#login-msg").html("");
 		if (validateLoginForm()) {
 			$.ajax("/loginAjax.vhtml".prependcontext(), {
 				data : $.param({

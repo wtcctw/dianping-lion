@@ -2,7 +2,7 @@
 var Res_Code_Success = 0;
 var Res_Code_Error = -1;
 var Res_Code_Warn = 1;
-
+//alert($.browser.msie);
 /**************************对String对象的扩展*********************************/
 /**
  * 在字符串前拼接contextpath 

@@ -24,7 +24,6 @@ import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
-import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.util.UrlUtils;
@@ -49,9 +48,6 @@ public class AbstractConfigAction extends AbstractLionAction {
 	
 	@Autowired
 	protected ConfigService configService;
-	
-	@Autowired
-	protected PrivilegeDecider privilegeDecider;
 	
 	@Autowired
 	protected ProjectService projectService;
@@ -165,10 +161,6 @@ public class AbstractConfigAction extends AbstractLionAction {
 
     public void setConfigService(ConfigService configService) {
         this.configService = configService;
-    }
-
-    public void setPrivilegeDecider(PrivilegeDecider configPrivilegeDecider) {
-        this.privilegeDecider = configPrivilegeDecider;
     }
 
     public void setProjectService(ProjectService projectService) {

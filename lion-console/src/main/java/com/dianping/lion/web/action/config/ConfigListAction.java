@@ -30,6 +30,7 @@ import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.exception.EntityNotFoundException;
+import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.ConfigDeleteResult;
 import com.dianping.lion.util.SecurityUtils;
@@ -119,11 +120,16 @@ public class ConfigListAction extends AbstractConfigAction {
 	
 	public String clearInstance() {
 		try {
-			configService.deleteInstance(configId, envId);
 			Config configFound = configService.getConfig(configId);
 			if (configFound != null) {
-			    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Clear, configFound.getProjectId(), envId, 
-			            "清除配置项值[" + configFound.getKey() + "]").key(configFound.getKey()));
+				if (!privilegeDecider.hasEditConfigPrivilege(configFound.getProjectId(), envId, configId, SecurityUtils.getCurrentUserId())) {
+					throw NoPrivilegeException.INSTANCE;
+				}
+			}
+			configService.deleteInstance(configId, envId);
+			if (configFound != null) {
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Clear, configFound.getProjectId(), envId, 
+						"清除配置项值[" + configFound.getKey() + "]").key(configFound.getKey()));
 			}
 			createSuccessStreamResponse();
 		} catch (RuntimeException e) {
@@ -133,6 +139,10 @@ public class ConfigListAction extends AbstractConfigAction {
 	}
 	
 	public String delete() {
+		if (!checkDeletePrivilege(configId)) {
+			createErrorStreamResponse("删除失败: 线上环境无权限，且已设置值.");
+			return SUCCESS;
+		}
 		try {
 			ConfigDeleteResult deleteResult = configService.delete(configId);
 			if (deleteResult.isSucceed()) {
@@ -156,6 +166,23 @@ public class ConfigListAction extends AbstractConfigAction {
 		return SUCCESS;
 	}
 	
+	private boolean checkDeletePrivilege(int configId) {
+		Config config = configService.getConfig(configId);
+		if (config != null) {
+			List<Environment> environments = environmentService.findAll();
+			Integer currentUserId = SecurityUtils.getCurrentUserId();
+			for (Environment environment : environments) {
+				if (!privilegeDecider.hasEditConfigPrivilege(config.getProjectId(), environment.getId(), configId, currentUserId)) {
+					ConfigInstance instance = configService.findInstance(configId, environment.getId(), ConfigInstance.NO_CONTEXT);
+					if (instance != null) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 	public String moveUp() {
 		try {
 			configService.moveUp(projectId, configId);

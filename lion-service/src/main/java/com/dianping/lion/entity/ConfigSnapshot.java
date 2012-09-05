@@ -19,7 +19,6 @@ import java.util.Date;
 
 
 /**
- * TODO Comment of ConfigSnapshot
  * @author danson.liu
  *
  */

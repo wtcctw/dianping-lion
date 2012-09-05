@@ -18,7 +18,6 @@ package com.dianping.lion.register;
 import com.dianping.lion.entity.Environment;
 
 /**
- * TODO Comment of ConfigMediumServiceFactory
  * @author danson.liu
  *
  */

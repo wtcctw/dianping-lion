@@ -133,6 +133,9 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		if (user == null) {
 			throw new RuntimeBusinessException("User with identity[" + userId + "] not found.");
 		}
+		if (!user.isSystem()) {
+			throw new RuntimeBusinessException("Only support user with system level.");
+		}
 		return user;
 	}
 	

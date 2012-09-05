@@ -16,7 +16,6 @@
 package com.dianping.lion.dao;
 
 /**
- * TODO Comment of SystemSettingDao
  * @author danson.liu
  *
  */

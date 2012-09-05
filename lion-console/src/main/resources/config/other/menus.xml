@@ -31,8 +31,8 @@
 		<menu name="oplog" label="操作日志" url="/system/oplog.vhtml"/>
 		<menu name="jobmanagement" label="任务管理" url="/system/jobManagement.vhtml"/>
 		<menu name="cachemanagement" label="缓存管理" url="/system/cacheManage.vhtml"/>
-		<menu name="syssetting" label="系统设置" url="/"/>
 		<!-- 
+		<menu name="syssetting" label="系统设置" url="/"/>
 		<menu sperator="true"/>
 		<menu name="aboutlion" label="关于lion" url="/"/>
 		 -->

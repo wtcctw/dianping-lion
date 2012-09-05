@@ -21,7 +21,6 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 /**
- * TODO Comment of EhcacheClientImpl
  * @author danson.liu
  *
  */

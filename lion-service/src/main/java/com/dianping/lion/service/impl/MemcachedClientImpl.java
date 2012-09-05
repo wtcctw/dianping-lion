@@ -18,7 +18,6 @@ package com.dianping.lion.service.impl;
 import java.io.Serializable;
 
 /**
- * TODO Comment of MemcachedClientImpl
  * @author danson.liu
  *
  */
@@ -26,25 +25,21 @@ public class MemcachedClientImpl extends CacheClientSupport {
 
 	@Override
 	protected <T> T doGet(String key) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	protected void doSet(String key, Serializable value) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	protected void doSet(String key, Serializable value, int expiration) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void internalRemove(String key) {
-		// TODO Auto-generated method stub
 		
 	}
 	

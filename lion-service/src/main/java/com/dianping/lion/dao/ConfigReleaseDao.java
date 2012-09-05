@@ -23,7 +23,6 @@ import com.dianping.lion.entity.ConfigSnapshot;
 import com.dianping.lion.entity.ConfigSnapshotSet;
 
 /**
- * TODO Comment of ConfigReleaseDao
  * @author danson.liu
  *
  */

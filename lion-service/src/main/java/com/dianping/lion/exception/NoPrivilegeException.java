@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-service-0.0.1
  * 
- * File Created at 2012-7-27
+ * File Created at 2012-9-4
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -16,22 +16,28 @@
 package com.dianping.lion.exception;
 
 /**
+ * 无权限异常
  * @author danson.liu
  *
  */
-public class RegisterRelatedException extends RuntimeBusinessException {
+@SuppressWarnings("serial")
+public class NoPrivilegeException extends RuntimeBusinessException {
+	
+	public static NoPrivilegeException INSTANCE = new NoPrivilegeException();
 
-	private static final long serialVersionUID = -5395984247726266861L;
-
-	public RegisterRelatedException(String message) {
+	public NoPrivilegeException() {
+		super("Has no privilege.");
+	}
+	
+	public NoPrivilegeException(String message) {
 		super(message);
 	}
 
-	public RegisterRelatedException(String message, Throwable cause) {
+	public NoPrivilegeException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public RegisterRelatedException(Throwable cause) {
+	public NoPrivilegeException(Throwable cause) {
 		super(cause);
 	}
 	

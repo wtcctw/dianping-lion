@@ -28,7 +28,6 @@ import com.dianping.lion.entity.ConfigSnapshotSet;
 import com.dianping.lion.util.Maps;
 
 /**
- * TODO Comment of ConfigReleaseIbatisDao
  * @author danson.liu
  *
  */

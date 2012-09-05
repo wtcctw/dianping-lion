@@ -52,7 +52,6 @@ import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.util.SecurityUtils;
 
 /**
- * TODO Comment of ConfigReleaseServiceImpl
  * @author danson.liu
  *
  */

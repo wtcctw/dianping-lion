@@ -19,9 +19,7 @@
 		<td>${key}</td>
 		<td>${value.cacheEntities}</td>
 		<td>
-			<@s.if test="%{hasPrivilege()}">
 			<a href="#" onClick="clearcache('${key}');" class="clear-btn no-dec">清除</a>
-			</@s.if>
 		</td>
 	</tr>
 	</@s.iterator>

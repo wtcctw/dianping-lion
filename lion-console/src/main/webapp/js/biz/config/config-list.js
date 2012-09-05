@@ -50,7 +50,7 @@ $(function(){
 			}
 		});
 		
-	$deleteAlert = $("<div>确认删除该配置项? [<font color='green'>不可恢复</font>]</div>")
+	$deleteAlert = $("<div>确认删除该配置项? [<font color='green'>不可恢复</font>]<br/>将清除所有环境的配置值.</div>")
 		.dialog({
 			autoOpen : false,
 			resizable : false,

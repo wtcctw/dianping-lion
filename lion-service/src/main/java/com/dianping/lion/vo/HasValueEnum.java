@@ -16,7 +16,6 @@
 package com.dianping.lion.vo;
 
 /**
- * TODO Comment of HasValueEnum
  * @author danson.liu
  *
  */

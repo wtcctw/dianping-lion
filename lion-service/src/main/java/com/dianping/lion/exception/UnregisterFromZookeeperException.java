@@ -16,7 +16,6 @@
 package com.dianping.lion.exception;
 
 /**
- * TODO Comment of UnregisterFromZookeeperException
  * @author danson.liu
  *
  */
