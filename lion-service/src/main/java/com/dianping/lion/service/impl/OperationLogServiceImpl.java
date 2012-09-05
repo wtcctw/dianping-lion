@@ -27,9 +27,9 @@ import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.User;
-import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.OperationLogService;
+import com.dianping.lion.service.PrivilegeDecider;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.util.StringUtils;
 import com.dianping.lion.vo.OperationLogCriteria;
@@ -63,12 +63,12 @@ public class OperationLogServiceImpl implements OperationLogService {
             OperationTypeEnum opType = log.getOpTypeEnum();
             if (opType == OperationTypeEnum.Config_Edit || opType == OperationTypeEnum.API_SetConfig) {
                 Config config = configService.findConfigByKey(log.getKey1());
-                boolean hasLookPrivilege = false;
+                boolean hasReadPrivilege = false;
                 if (config != null) {
-                    hasLookPrivilege = privilegeDecider.hasReadConfigPrivilege(log.getProjectId(), log.getEnvId(), config.getId(), 
+                	hasReadPrivilege = privilegeDecider.hasReadConfigPrivilege(log.getProjectId(), log.getEnvId(), config.getId(), 
                             currentUser != null ? currentUser.getId() : null);
                 } else {
-                    hasLookPrivilege = currentUser != null && (currentUser.isAdmin() || currentUser.isSA());
+                	hasReadPrivilege = currentUser != null && (currentUser.isAdmin() || currentUser.isSA());
                 }
                 //TODO 这里进行性能优化, 一次获取
                 String oldValue = (String) ObjectUtils.defaultIfNull(getLogKey(log.getId(), "key3"), "");
@@ -76,13 +76,13 @@ public class OperationLogServiceImpl implements OperationLogService {
                 	String newValue = (String) ObjectUtils.defaultIfNull(getLogKey(log.getId(), "key4"), "");
 	                String oldCutValue = StringUtils.cutString(oldValue, 80);
 	                String newCutValue = StringUtils.cutString(newValue, 80);
-	                log.setContent("设置配置项: " + log.getKey1() + ", before[" + (hasLookPrivilege ? oldCutValue : "***") 
-	                        + "], after[" + (hasLookPrivilege ? newCutValue : "***") + "]");
-	                if (hasLookPrivilege && (oldCutValue.length() != oldValue.length() || newCutValue.length() != newValue.length())) {
+	                log.setContent("设置配置项: " + log.getKey1() + ", before[" + (hasReadPrivilege ? oldCutValue : "***") 
+	                        + "], after[" + (hasReadPrivilege ? newCutValue : "***") + "]");
+	                if (hasReadPrivilege && (oldCutValue.length() != oldValue.length() || newCutValue.length() != newValue.length())) {
 	                    log.setKey5("true");
 	                }
                 } else if (opType == OperationTypeEnum.API_SetConfig) {
-                	if (!hasLookPrivilege) {
+                	if (!hasReadPrivilege) {
                 		log.setContent("设置配置项: " + log.getKey1() + ", value: ***");
                 		log.setKey1("false");
                 	} else {
@@ -90,6 +90,9 @@ public class OperationLogServiceImpl implements OperationLogService {
                 		log.setKey1("true");
                 	}
                 }
+            } else if (opType == OperationTypeEnum.Job_DSFetcher) {
+            	boolean hasReadPrivilege = privilegeDecider.hasReadDSFetchLogPrivilege(currentUser != null ? currentUser.getId() : null);
+            	log.setKey1(hasReadPrivilege ? "true" : "false");
             }
         }
         return logList;

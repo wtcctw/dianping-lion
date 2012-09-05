@@ -123,7 +123,7 @@ public class SubNavigator extends StrutsTagSupport {
 			String pid = getRequest().getParameter("pid");
 			Integer projectId = pid != null ? Integer.parseInt(pid) : null;
 			if (projectId != null) {
-				boolean hasReadLogPrivilege = privilegeDecider.hasReadLogPrivilege(projectId, SecurityUtils.getCurrentUserId());
+				boolean hasReadLogPrivilege = privilegeDecider.hasReadApplogPrivilege(projectId, SecurityUtils.getCurrentUserId());
 				return hasReadLogPrivilege ? 1 : -1;
 			}
 			return -1;

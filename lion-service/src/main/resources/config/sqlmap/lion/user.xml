@@ -38,8 +38,11 @@
 		]]>
     </select>
     
-    <select id="findByNameOrLoginNameLike" resultMap="UserNoPasswordResult" parameterClass="string">
-    		SELECT * FROM user WHERE (loginName LIKE CONCAT('%', #value#, '%') OR name LIKE CONCAT('%', #value#, '%')) AND system = 0
+    <select id="findByNameOrLoginNameLike" resultMap="UserNoPasswordResult" parameterClass="map">
+   		SELECT * FROM user WHERE (loginName LIKE CONCAT('%', #name#, '%') OR name LIKE CONCAT('%', #name#, '%'))
+    	<isEqual property="includeSystem" compareValue="false">
+    		AND system = 0
+    	</isEqual>	
     </select>
     
     <select id="findByName" resultMap="UserResultBasic">

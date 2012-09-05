@@ -74,7 +74,7 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 	}
 	
 	public String getOpLogsByProject() {
-		if (!privilegeDecider.hasReadLogPrivilege(projectId, SecurityUtils.getCurrentUserId())) {
+		if (!privilegeDecider.hasReadApplogPrivilege(projectId, SecurityUtils.getCurrentUserId())) {
 			throw NoPrivilegeException.INSTANCE; 
 		}
 		initializePage();

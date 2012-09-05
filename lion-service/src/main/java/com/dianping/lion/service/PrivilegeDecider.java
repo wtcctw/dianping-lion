@@ -19,11 +19,13 @@ public interface PrivilegeDecider {
     
     boolean hasLockConfigPrivilege(Integer userId);
     
-    boolean hasReadLogPrivilege(int projectId, Integer userId);
+    boolean hasReadApplogPrivilege(int projectId, Integer userId);
 
 	boolean hasEditAttrPrivilege(int projectId, Integer userId);
 	
 	boolean hasClearCachePrivilege(Integer userId);
+	
+	boolean hasReadDSFetchLogPrivilege(Integer userId);
 	
 	//TODO 切换到功能权限模块(user-role-resource)
 	boolean hasModulePrivilege(String module, Integer userId);

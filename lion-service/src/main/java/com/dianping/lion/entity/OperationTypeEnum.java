@@ -41,7 +41,7 @@ public enum OperationTypeEnum {
     API_TakeEffect("API-takeeffect", 106, true),
     API_Rollback("API-rollback", 107, true),
     
-    Job_DSFetcher("Job-DS-Fetcher", 660, false),
+    Job_DSFetcher("Job-DS-Fetcher", 660, false, true),
     Env_All("环境管理", 701, 720, false),
     Env_Add("环境-新增", 705, false),
     Env_Delete("环境-删除", 706, false),
@@ -75,12 +75,16 @@ public enum OperationTypeEnum {
     private static volatile List<OperationTypeEnum> projectPageSelectTypes;
     
     OperationTypeEnum(String label, int value, boolean projectRelated) {
-        this.label = label;
+        this(label, value, projectRelated, false);
+    }
+    
+    OperationTypeEnum(String label, int value, boolean projectRelated, boolean forPageSelect) {
+    	this.label = label;
         this.value = value;
         this.begin = value;
         this.end = value;
         this.projectRelated = projectRelated;
-        this.forPageSelect = false;
+        this.forPageSelect = forPageSelect;
     }
     
     OperationTypeEnum(String label, int begin, int end, boolean projectRelated) {

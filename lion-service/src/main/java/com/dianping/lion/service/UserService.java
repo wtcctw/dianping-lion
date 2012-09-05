@@ -39,7 +39,7 @@ public interface UserService {
 
     User login(String loginName, String passwd);
 
-    List<User> findByNameOrLoginNameLike(String name);
+    List<User> findByNameOrLoginNameLike(String name, boolean includeSystem);
 
 	Paginater<User> getUsers(UserCriteria userCriteria, Paginater<User> paginater);
 

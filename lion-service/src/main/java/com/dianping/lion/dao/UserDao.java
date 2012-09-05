@@ -27,7 +27,7 @@ public interface UserDao {
 	
 	User findById(int id);
 
-    List<User> findByNameOrLoginNameLike(String name);
+    List<User> findByNameOrLoginNameLike(String name, boolean includeSystem);
 	
 	User findByName(String userName);
 	

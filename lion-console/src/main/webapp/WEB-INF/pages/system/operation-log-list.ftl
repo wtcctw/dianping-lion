@@ -46,6 +46,12 @@
 		      				<span class="label label-success pointer" onclick="viewdetail('middle', ${id}, 'Before:key3,After:key4');">&nbsp;&nbsp;b/a&nbsp;&nbsp;</span>
 		      			</@s.if>
 	      			</@s.elseif>
+	      			<@s.elseif test="%{#operationLog.opTypeEnum == @com.dianping.lion.entity.OperationTypeEnum@Job_DSFetcher}">
+	      				${content}&nbsp;&nbsp;
+	      				<@s.if test="%{#operationLog.key1 == 'true'}">
+		      				<span class="label label-info pointer" onclick="viewdetail('big', ${id}, 'Content:key3');">content</span>
+		      			</@s.if>
+	      			</@s.elseif>
 	      			<@s.else>
 		      			${content}
 	      			</@s.else>

@@ -121,7 +121,7 @@ public class PrivilegeDeciderImpl implements PrivilegeDecider {
     }
 
 	@Override
-	public boolean hasReadLogPrivilege(int projectId, Integer userId) {
+	public boolean hasReadApplogPrivilege(int projectId, Integer userId) {
 		if (userId == null) {
 			return false;
 		}
@@ -142,6 +142,15 @@ public class PrivilegeDeciderImpl implements PrivilegeDecider {
 
 	@Override
 	public boolean hasClearCachePrivilege(Integer userId) {
+		if (userId == null) {
+			return false;
+		}
+		User user = userService.loadById(userId);
+		return user.isAdmin() || user.isSA();
+	}
+
+	@Override
+	public boolean hasReadDSFetchLogPrivilege(Integer userId) {
 		if (userId == null) {
 			return false;
 		}

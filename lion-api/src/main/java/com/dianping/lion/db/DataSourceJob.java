@@ -24,9 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.JobExecTime;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.job.SyncJob;
 import com.dianping.lion.service.HttpMailService;
+import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.UserService;
 import com.dianping.lion.util.JsonParser;
 import com.dianping.lion.util.SecurityUtils;
@@ -41,6 +44,9 @@ public class DataSourceJob extends SyncJob{
 	
 	@Autowired
 	private HttpMailService httpMailService;
+	
+	@Autowired
+	private OperationLogService operationLogService;
 	
 	@Autowired
 	private DataSourceFetcher dataSourceFetcher;
@@ -99,11 +105,12 @@ public class DataSourceJob extends SyncJob{
 				User user = userService.findById(ServiceConstants.USER_SA_ID);
 				SecurityUtils.setCurrentUser(user);
 				storager.store(dsContent);
+				jobExecTime.setLastFetchTime(new Date(Long.parseLong(jsonParser.getLastFetchTime(dsContent)) * 1000));
+				jobExecTimeDao.updateLastFetchTime(jobExecTime);
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Job_DSFetcher, "数据源有变更.").key(null, null, dsContent));
 			} finally {
 				SecurityUtils.clearCurrentUser();
 			}
-			jobExecTime.setLastFetchTime(new Date(Long.parseLong(jsonParser.getLastFetchTime(dsContent)) * 1000));
-			jobExecTimeDao.updateLastFetchTime(jobExecTime);
 		} catch (Exception e) {
 			logger.debug("Failed to store the config.",e);
 			if(jobExecTime.getFailMail() != null && (count % alarmthreshold == 0)) {
@@ -121,6 +128,10 @@ public class DataSourceJob extends SyncJob{
 			count++;
 		}
 		logger.debug("running");
+	}
+
+	public void setOperationLogService(OperationLogService operationLogService) {
+		this.operationLogService = operationLogService;
 	}
 	
 }

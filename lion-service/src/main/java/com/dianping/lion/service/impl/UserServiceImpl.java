@@ -161,8 +161,8 @@ public class UserServiceImpl implements UserService {
 	}
 
     @Override
-    public List<User> findByNameOrLoginNameLike(String name) {
-        return userDao.findByNameOrLoginNameLike(name);
+    public List<User> findByNameOrLoginNameLike(String name, boolean includeSystem) {
+        return userDao.findByNameOrLoginNameLike(name, includeSystem);
     }
 
 	public void setCacheClient(CacheClient cacheClient) {

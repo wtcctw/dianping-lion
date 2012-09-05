@@ -32,6 +32,7 @@ $(document).ready(function() {
 		delay : 300,
 		matchContains : false,
 		hidden : "op-user-id",
+		extraParams : {"includeSystem" : true},
 		formatItem: function(data, i, n, value) {
 			return data.loginName + " -- " + data.name;
 		},

@@ -39,6 +39,8 @@ public class UserAction extends AbstractLionAction {
 	
     private String name;
     
+    private boolean includeSystem;
+    
     private String callback;
     
     @Override
@@ -74,7 +76,7 @@ public class UserAction extends AbstractLionAction {
         if (name.contains("/")) {
             name = StringUtils.substringBefore(name, "/");
         }
-        List<User> users = userService.findByNameOrLoginNameLike(name);
+        List<User> users = userService.findByNameOrLoginNameLike(name, includeSystem);
         StringBuilder content = new StringBuilder();
         if (callback != null) {
             content.append(callback);
@@ -168,6 +170,14 @@ public class UserAction extends AbstractLionAction {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public boolean isIncludeSystem() {
+		return includeSystem;
+	}
+
+	public void setIncludeSystem(boolean includeSystem) {
+		this.includeSystem = includeSystem;
 	}
 
 }

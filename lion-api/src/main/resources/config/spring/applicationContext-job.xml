@@ -7,23 +7,17 @@
 		<property name="jobDownTime" value="20"></property>
 	</bean>
 	
-	<bean id="dataSourceFetchJobTask"
-		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject">
-			<ref bean="DataSourceJob" />
-		</property>
-		<property name="targetMethod">
-			<value>work</value>
-		</property>
+	<bean id="dataSourceFetchJobTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="DataSourceJob"/>
+		<property name="targetMethod" value="work"/>
 	</bean>
 	
 	<bean id="dataSourceFetchCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="dataSourceFetchJobTask" />
-		<property name="cronExpression" value="0 0/1 * * * ?" />
+		<property name="cronExpression" value="${lion-api.dsfetcher.cronexpr}" />
 	</bean>
 	
-	<bean id="startQuertz" lazy-init="false" autowire="no"
-		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<bean id="startQuertz" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false" autowire="no">
 		<property name="triggers">
 			<list>
 				<ref bean="dataSourceFetchCronTrigger" /> 

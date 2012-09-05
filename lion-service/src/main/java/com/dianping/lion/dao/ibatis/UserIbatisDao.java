@@ -59,11 +59,12 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<User> findByNameOrLoginNameLike(String name) {
+    public List<User> findByNameOrLoginNameLike(String name, boolean includeSystem) {
         if (StringUtils.isBlank(name)) {
             return Collections.emptyList();
         }
-        return getSqlMapClientTemplate().queryForList("User.findByNameOrLoginNameLike", name);
+        return getSqlMapClientTemplate().queryForList("User.findByNameOrLoginNameLike", Maps.entry("name", name)
+        		.entry("includeSystem", includeSystem).get());
     }
 
 	@Override
