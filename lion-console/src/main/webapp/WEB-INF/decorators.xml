@@ -16,6 +16,7 @@
         <pattern>/slide/*</pattern>
         <pattern>/albumframe/*</pattern>
         <pattern>*Ajax*</pattern>
+        <pattern>/noie.ftl</pattern>
     </excludes>
     
     <decorator name="main" page="main.ftl">
