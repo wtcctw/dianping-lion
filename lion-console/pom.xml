@@ -86,6 +86,11 @@
 			<artifactId>lion-service</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.dianping.lion</groupId>
+			<artifactId>lion-${env}</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>lion-console-${env}</finalName>

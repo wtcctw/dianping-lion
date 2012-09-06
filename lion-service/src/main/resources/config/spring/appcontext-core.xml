@@ -10,7 +10,8 @@
 
 	<context:annotation-config/>
 	
-	<!-- TODO, 后续转移到lion placeholder -->
-	<context:property-placeholder location="classpath:config/appcontext.properties"/>
+	<bean name="placeholder" lazy-init="false" class="com.dianping.lion.client.SpringConfig">
+		<property name="propertiesPath" value="config/appcontext.properties" />
+	</bean>
 	
 </beans>
