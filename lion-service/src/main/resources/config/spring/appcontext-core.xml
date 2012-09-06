@@ -12,6 +12,7 @@
 	
 	<bean name="placeholder" lazy-init="false" class="com.dianping.lion.client.SpringConfig">
 		<property name="propertiesPath" value="config/appcontext.properties" />
+		<property name="includeLocalProps" value="true"/>
 	</bean>
 	
 </beans>

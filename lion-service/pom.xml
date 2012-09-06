@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>com.dianping.dpsf</groupId>
 			<artifactId>dpsf-net</artifactId>
-			<version>1.6.3</version>
+			<version>1.5.1</version>
 		</dependency>
 	</dependencies>
 </project>

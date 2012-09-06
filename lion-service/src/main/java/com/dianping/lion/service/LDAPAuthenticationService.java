@@ -15,8 +15,6 @@
  */
 package com.dianping.lion.service;
 
-import javax.naming.AuthenticationException;
-
 import com.dianping.lion.entity.User;
 
 /**

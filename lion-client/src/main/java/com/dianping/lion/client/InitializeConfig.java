@@ -61,6 +61,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 	protected String address;
 	private String environment;	
 	private String propertiesPath;
+	private boolean includeLocalProps;	//是否使用本地的propertiesPath指定的配置文件中的配置
 	private Properties pts;
 	private Map<String,BeanData> propertyMap = new HashMap<String,BeanData>();
 	private String getProjectEnv(){
@@ -132,7 +133,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 		try {
 			ConfigCache cache = ConfigCache.getInstance(this.address);
 			List<String> keyList=new ArrayList<String>();
-			if(!this.environment.equalsIgnoreCase("dev")){
+			if(!this.environment.equalsIgnoreCase("dev") && !includeLocalProps){
 				for(Object key:pts.keySet()){
 					String value=pts.getProperty((String)key);
 					if(!(value.startsWith(DEFAULT_PLACEHOLDER_PREFIX)&&value.endsWith(DEFAULT_PLACEHOLDER_SUFFIX))){
@@ -210,7 +211,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 	    throws BeanDefinitionStoreException {
 		StringBuffer buf = new StringBuffer(strVal);
 		int startIndex = strVal.indexOf(this.placeholderPrefix);
-		while (startIndex != -1) 	{
+		while (startIndex != -1) {
 			int endIndex = findPlaceholderEndIndex(buf, startIndex);
 			if (endIndex != -1) {
 				String placeholder = buf.substring(startIndex + this.placeholderPrefix.length(), endIndex);
@@ -338,6 +339,10 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 	 */
 	public void setPropertiesPath(String propertiesPath) {
 		this.propertiesPath = propertiesPath;
+	}
+
+	public void setIncludeLocalProps(boolean includeLocalProps) {
+		this.includeLocalProps = includeLocalProps;
 	}
 
 	private class BeanConfigChange implements ConfigChange{

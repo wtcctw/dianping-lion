@@ -83,8 +83,6 @@
         <property name="callMethod" value="sync"/>
         <property name="timeout" value="5000"/>
         <property name="isTest" value="true"/>
-        <property name="hosts" value="${lion-console.mailservice.hosts}"/>
-        <property name="weight" value="${lion-console.mailservice.weights}"/>
     </bean>
 	
 </beans>
