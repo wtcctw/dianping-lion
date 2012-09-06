@@ -15,6 +15,8 @@
  */
 package com.dianping.lion.db;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -97,9 +99,9 @@ public class DataSourceJob extends SyncJob{
 		Calendar can = Calendar.getInstance();
 		can.setTime(jobExecTime.getLastFetchTime());
 		String dsContent = dataSourceFetcher.fetchDS(can.getTimeInMillis() / 1000);
-/*		if(StringUtils.isBlank(dsContent)) {
+		if(StringUtils.isBlank(dsContent)) {
 			return;
-		}*/
+		}
 		try {
 			try {
 				User user = userService.findById(ServiceConstants.USER_SA_ID);
@@ -115,10 +117,12 @@ public class DataSourceJob extends SyncJob{
 			logger.debug("Failed to store the config.",e);
 			if(jobExecTime.getFailMail() != null && (count % alarmthreshold == 0)) {
 				String[] mails = jobExecTime.getFailMail().split(",");
+				StringWriter out = new StringWriter();
+				e.printStackTrace(new PrintWriter(out));
 				for(String email : mails) {
 					StringBuffer body = new StringBuffer();
 					body.append("从"+jobExecTime.getLastFetchTime()+"开始增量DB信息:\n"+dsContent);
-					body.append("\n         异常信息->"+e.getMessage());
+					body.append("\n异常信息->\n"+out.toString());
 					boolean emailSendResult = mailService.send(mailCode, email, title, body.toString());
 					if (!emailSendResult) {
 						logger.warn("Send mail Fail!Email Address:" + email);
