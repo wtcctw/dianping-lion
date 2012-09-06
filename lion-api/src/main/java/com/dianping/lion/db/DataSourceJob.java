@@ -28,11 +28,11 @@ import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.job.SyncJob;
-import com.dianping.lion.service.HttpMailService;
 import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.service.UserService;
 import com.dianping.lion.util.JsonParser;
 import com.dianping.lion.util.SecurityUtils;
+import com.dianping.mailremote.remote.MailService;
 
 /**
  * Scheduler
@@ -42,8 +42,11 @@ import com.dianping.lion.util.SecurityUtils;
 public class DataSourceJob extends SyncJob{
 	private static Logger logger = Logger.getLogger(DataSourceJob.class);
 	
+/*	@Autowired
+	private HttpMailService httpMailService;*/
+	
 	@Autowired
-	private HttpMailService httpMailService;
+	private MailService mailService;
 	
 	@Autowired
 	private OperationLogService operationLogService;
@@ -117,11 +120,11 @@ public class DataSourceJob extends SyncJob{
 				String[] mails = jobExecTime.getFailMail().split(",");
 				for(String email : mails) {
 					StringBuffer body = new StringBuffer();
-					body.append("从"+jobExecTime.getLastFetchTime()+"开始增量DB信息"+dsContent);
-					body.append("         异常信息->"+e.getMessage());
-					boolean emailSendResult = httpMailService.sendMail(mailCode, email, title, body.toString().replace("{", "brackets").replace(":", "-"));
+					body.append("从"+jobExecTime.getLastFetchTime()+"开始增量DB信息:\n"+dsContent);
+					body.append("\n         异常信息->"+e.getMessage());
+					boolean emailSendResult = mailService.send(mailCode, email, title, body.toString());
+//					boolean emailSendResult = httpMailService.sendMail(mailCode, email, title, body.toString().replace("{", "brackets").replace(":", "-"));
 					if (!emailSendResult) {
-						logger.error("Send mail Fail!Email Address:" + email);
 					}
 				}
 			}

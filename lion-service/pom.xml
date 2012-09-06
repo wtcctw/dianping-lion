@@ -115,5 +115,15 @@
 			<artifactId>asm</artifactId>
 			<version>3.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.dianping</groupId>
+			<artifactId>mail-remote</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dianping.dpsf</groupId>
+			<artifactId>dpsf-net</artifactId>
+			<version>1.6.3</version>
+		</dependency>
 	</dependencies>
 </project>
