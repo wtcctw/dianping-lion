@@ -42,9 +42,6 @@ import com.dianping.mailremote.remote.MailService;
 public class DataSourceJob extends SyncJob{
 	private static Logger logger = Logger.getLogger(DataSourceJob.class);
 	
-/*	@Autowired
-	private HttpMailService httpMailService;*/
-	
 	@Autowired
 	private MailService mailService;
 	
@@ -100,9 +97,9 @@ public class DataSourceJob extends SyncJob{
 		Calendar can = Calendar.getInstance();
 		can.setTime(jobExecTime.getLastFetchTime());
 		String dsContent = dataSourceFetcher.fetchDS(can.getTimeInMillis() / 1000);
-		if(StringUtils.isBlank(dsContent)) {
+/*		if(StringUtils.isBlank(dsContent)) {
 			return;
-		}
+		}*/
 		try {
 			try {
 				User user = userService.findById(ServiceConstants.USER_SA_ID);
@@ -123,8 +120,8 @@ public class DataSourceJob extends SyncJob{
 					body.append("从"+jobExecTime.getLastFetchTime()+"开始增量DB信息:\n"+dsContent);
 					body.append("\n         异常信息->"+e.getMessage());
 					boolean emailSendResult = mailService.send(mailCode, email, title, body.toString());
-//					boolean emailSendResult = httpMailService.sendMail(mailCode, email, title, body.toString().replace("{", "brackets").replace(":", "-"));
 					if (!emailSendResult) {
+						logger.warn("Send mail Fail!Email Address:" + email);
 					}
 				}
 			}

@@ -67,18 +67,24 @@
 	
 	<bean id="registerServiceFactory" class="com.dianping.lion.register.zookeeper.ConfigZookeeperServiceFactory"/>
 	
+	<!-- 
 	<bean id="httpMailService" class="com.dianping.lion.service.impl.HttpMailServiceImpl" init-method="init">
 		<property name="host" value="${lion-console.mailserver.host}"></property>
 		<property name="port" value="${lion-console.mailserver.port}"></property>
 		<property name="protocal" value="http"></property>
 		<property name="path" value="/jsonmail.v"></property>
 	</bean>
+	 -->
+	 
 	<bean id="mailService" class="com.dianping.dpsf.spring.ProxyBeanFactory" init-method="init">
         <property name="serviceName" value="http://service.dianping.com/mailService/mailService_1.0.0"/>                                            
         <property name="iface" value="com.dianping.mailremote.remote.MailService"/>
         <property name="serialize" value="hessian"/>
         <property name="callMethod" value="sync"/>
         <property name="timeout" value="5000"/>
+        <property name="isTest" value="true"/>
+        <property name="hosts" value="${lion-console.mailservice.hosts}"/>
+        <property name="weight" value="${lion-console.mailservice.weights}"/>
     </bean>
 	
 </beans>
