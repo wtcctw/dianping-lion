@@ -69,7 +69,7 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 		try {
 			shortName = getShortName(userName);
 		} catch (NamingException e1) {
-			logger.error(userName+" doesn't exist.");
+			logger.error(userName+" doesn't exist.", e1);
 		}
 		if(shortName != null) {
 			env = new Hashtable<String, String>();
@@ -88,14 +88,14 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	        	throw e;
 	        }
 	        if(ctx != null) {
-	        	user = getUserInfo(shortName, ctx);
+	        	user = getUserInfo(shortName, ctx, userName);
 	        }
 		}
 		return user;
 	}
 
 	@SuppressWarnings("rawtypes")
-	public User getUserInfo(String cn, LdapContext ctx) {
+	public User getUserInfo(String cn, LdapContext ctx, String userName) {
 		User user = new User();
 		try {
 			SearchControls constraints = new SearchControls();
@@ -110,7 +110,7 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 					SearchResult sr = (SearchResult) obj;
 					logger.debug(sr);
 					Attributes attrs = sr.getAttributes();
-					user.setLoginName((String)attrs.get("cn").get());
+					user.setLoginName(userName);
 					user.setName((String)attrs.get("displayName").get());
 					user.setEmail((String)attrs.get("mail").get());
 					user.setSystem(false);
