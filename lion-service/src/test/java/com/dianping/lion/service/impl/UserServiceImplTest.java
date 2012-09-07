@@ -17,6 +17,12 @@ package com.dianping.lion.service.impl;
 
 import static org.junit.Assert.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,4 +126,14 @@ public class UserServiceImplTest {
 		User userTmp2 = userDao.findByName(rightUserNameForTest);
 		assertTrue(DigestUtils.md5Hex(rightPwdForTest).toUpperCase().equals(userTmp2.getPassword()));
 	}
+	
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		System.out.println(DigestUtils.md5Hex("123qweasd").toUpperCase());
+		Properties properties = new Properties();
+		properties.load(new FileInputStream("/Users/liujian/personal/workspace-lion/lion/lion-api/src/main/filters/config-dev.properties"));
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			System.out.println(entry.getKey() + ": " + entry.getValue());
+		}
+	}
+	
 }

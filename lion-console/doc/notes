@@ -1,18 +1,18 @@
-1. 给数据库表添加必要的索引，提高性能
-2. project, environment数据加缓存，避免每次生成菜单的性能问题
-3. 创建初始化表数据SQL脚本
-4. environment添加软删除列isDel, 页面添加删除功能(软删除)
-5. 要求各系统带上必要的menu=xxx参数，提供导航条使用
-6. 所有ajax的请求，后台发生错误需要有日志
+1. 给数据库表添加必要的索引，提高性能(done)
+2. project, environment数据加缓存，避免每次生成菜单的性能问题(done)
+3. 创建初始化表数据SQL脚本(done)
+4. environment添加软删除列isDel, 页面添加删除功能(X)
+5. 要求各系统带上必要的menu=xxx参数，提供导航条使用(待定)
+6. 所有ajax的请求，后台发生错误需要有日志(done)
 7. 处理textarea, input中显示单，双引号的问题，需要转换为&#39;和&#34;(done)
-8. json->object转换，可以使用json obj方式，也可以使用ognl的方式
-9. 将出错堆栈信息保存到DB或其他地方，通过页面查看
-10.后台操作失败如何展示，如config-list页面的部署或推送ajax请求，是大的modal框展示所有错误信息，还是存储数据库，然后展示链接?
-11.删除一条context-config-instance时，是否实时推送到zk?
-12.将ServiceConstants.MAX_AVAIL_CONFIG_INST做成数据库中系统配置项，可以临时调整其大小，应对特殊情况(UI上必须控制config instance的条数不能超过这个设定的最大值)
-13.老版本中对于avatar-biz中配置的特殊处理，在新版本中如何处理
-14.有创建基础数据的sql脚本，创建默认的"公用资源--公用资源--数据库|通用配置", Team(公用资源)的seq最大
-15.config的描述(desc)可修改
+8. json->object转换，可以使用json obj方式，也可以使用ognl的方式(hang)
+9. 将出错堆栈信息保存到DB或其他地方，通过页面查看(X)
+10.后台操作失败如何展示，如config-list页面的部署或推送ajax请求，是大的modal框展示所有错误信息，还是存储数据库，然后展示链接?(X)
+11.删除一条context-config-instance时，是否实时推送到zk?(hang)
+12.将ServiceConstants.MAX_AVAIL_CONFIG_INST做成数据库中系统配置项，可以临时调整其大小，应对特殊情况(UI上必须控制config instance的条数不能超过这个设定的最大值)(X)
+13.老版本中对于avatar-biz中配置的特殊处理，在新版本中如何处理(hang)
+14.有创建基础数据的sql脚本，创建默认的"公用资源--公用资源--数据库|通用配置", Team(公用资源)的seq最大(X)
+15.config的描述(desc)可修改(done)
 16.创建内建的用户数据(如：redmine, sa, dba, lion[admin])，且这几个用户都是超户权限，除了lion，其他都不能登陆，另外保留20之前的userid，作为内建用户(除了lion，其他都是system)
 	 创建内建的角色数据(Role: SCM, SA...)
 	 创建sa名称的用户，用于feature1的sa账号，feature2修改
