@@ -2,10 +2,10 @@
 	<thead>
     <tr>
       <th width="30">序号</th>
-      <th width="290">KEY</th>
+      <th width="280">KEY</th>
       <th width="230">DESC</th>
       <th>VALUE</th>
-      <th width="55">线上公开</th>
+      <th width="65">线上公开</th>
       <th width="65">Status</th>
       <th width="110">
       	操作 &nbsp;&nbsp;<input type="checkbox" id="display-all-btn" rel="tooltip" data-original-title="显示全部操作">

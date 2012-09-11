@@ -168,11 +168,30 @@ public class PrivilegeDeciderImpl implements PrivilegeDecider {
 				|| MODULE_SETTING.equals(module)) {
 			return user.isAdmin() ? true : false;
 		}
-		if (MODULE_OPLOG.equals(module) || MODULE_CACHE.equals(module) || MODULE_PROJECT.equals(module)
-				|| MODULE_USER.equals(module)) {
+		if (MODULE_OPLOG.equals(module) || MODULE_CACHE.equals(module) || MODULE_USER.equals(module)) {
 			return (user.isAdmin() || user.isSA()) ? true : false;
 		}
+		if (MODULE_PROJECT.equals(module)) {
+			return true;
+		}
 		return false;
+	}
+
+	@Override
+	public boolean hasEditProjectPrivilege(Integer userId) {
+		if (userId == null) {
+			return false;
+		}
+		User user = userService.loadById(userId);
+		return user.isAdmin() || user.isSA();
+	}
+
+	@Override
+	public boolean hasManageProjectMemberPrivilege(int projectId, User user) {
+		if (user == null) {
+			return false;
+		}
+		return user.isAdmin() || user.isSA() || projectService.isOwner(projectId, user.getId());
 	}
 
     /**

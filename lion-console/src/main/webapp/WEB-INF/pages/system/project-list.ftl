@@ -31,6 +31,7 @@
 </form>
 <div class="row">
 <div class="span12">
+<@s.set name="hasEditPrivilege" value="%{hasEditPrivilege()}"/>
 <table class="table table-bordered table-striped table-condensed">
 	  <thead>
 	    <tr>
@@ -40,30 +41,40 @@
 	      <th>项目名</th>
 	      <th width="230">创建时间</th>
 	      <th width="230">更新时间</th>
-	      <th width="100">操作<a href="#" id="add_project_btn"><i class="icon-plus pull-right" rel="tooltip" title="添加项目"/>&nbsp&nbsp</a></th>
+	      <th width="100">操作
+	      	<@s.if test="%{#hasEditPrivilege}">
+	      	<a href="#" id="add_project_btn"><i class="icon-plus pull-right" rel="tooltip" title="添加项目"></i></a>
+	      	</@s.if>
+	      </th>
 	    </tr>
 	  </thead>
 	  <tbody>
-	  	<#list projectList as project>
+	  	<@s.iterator value="projectList" var="project" status="projectStatus">
 	  		<tr class="project_row">
-	  			<input name="projectId" type="hidden" value="${project.id}" />
-	      		<td>${project_index + 1}</td>
-	      		<td>${project.teamName}</td>
-	      		<td>${project.productName}</td>
-	      		<td>${project.name}</td>
-	      		<td>${project.createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
-	      		<td>${project.modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
-				<td style="text-align:center;">
-					<a href="#" id="edit_project_btn" productId="${project.productId}" 
-					projectName="${project.name}" rel="tooltip" title="修改项目" 
-					onclick="editOpen(${project.id},'${project.name}',${project.productId});return false;"
+	  			<input name="projectId" type="hidden" value="${id}" />
+	      		<td>${projectStatus.index}</td>
+	      		<td>${teamName}</td>
+	      		<td>${productName}</td>
+	      		<td>${name}</td>
+	      		<td>${createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
+	      		<td>${modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
+				<td>
+					<@s.if test="%{#hasEditPrivilege}">
+					<a href="#" id="edit_project_btn" productId="${productId}" 
+					projectName="${name}" rel="tooltip" title="修改项目" 
+					onclick="editOpen(${id},'${name}',${productId});return false;"
 					><i class="icon-edit"></i></a>&nbsp;&nbsp;&nbsp;
+					</@s.if>
+					<@s.if test="%{hasEditMemberPrivilege(id)}">
 					<a href="#"class="edit-member-btn"><i rel="tooltip" title="成员管理" class="icon-user"></i></a>&nbsp;&nbsp;&nbsp;
-	      		    <a class="deletelink" href="<@s.url action='projectDel' namespace='/system'/>?projectId=${project.id}" rel="tooltip" title="删除项目"
+					</@s.if>
+					<@s.if test="%{#hasEditPrivilege}">
+	      		    <a class="deletelink" href="<@s.url action='projectDel' namespace='/system'/>?projectId=${id}" rel="tooltip" title="删除项目"
 	      		    ><i class="icon-remove"></i></a>&nbsp;&nbsp;&nbsp;
+	      		    </@s.if>
 			     </td>
 	      	</tr>
-	  	</#list>
+	  	</@s.iterator>
 	  </tbody>
 </table>
 </div>

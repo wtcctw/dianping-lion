@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.dianping.lion.ConsoleConstants;
-import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.ProjectMember;
 import com.dianping.lion.entity.Team;
@@ -66,13 +65,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
     private List<ProjectMember> owners;
     private List<ProjectMember> members;
     private List<ProjectMember> operators;
-    
-    @Override
-    public void checkModulePrivilege() {
-    	if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_PROJECT, SecurityUtils.getCurrentUserId())) {
-			throw NoPrivilegeException.INSTANCE;
-		}
-    }
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
     public String execute() {
@@ -87,6 +79,9 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String projectAdd(){
+		if (!hasEditPrivilege()) {
+			throw NoPrivilegeException.INSTANCE;
+		}
 		Project project = new Project();
 		project.setName(this.projectName);
 		project.setProductId(this.productId);
@@ -98,6 +93,9 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String projectEdit(){
+		if (!hasEditPrivilege()) {
+			throw NoPrivilegeException.INSTANCE;
+		}
 		Project project = new Project();
 		project.setId(this.projectId);
 		project.setName(this.projectName);
@@ -110,8 +108,19 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String projectDel(){
+		if (!hasEditPrivilege()) {
+			throw NoPrivilegeException.INSTANCE;
+		}
 		this.projectService.delProject(this.projectId);
 		return SUCCESS;
+	}
+	
+	public boolean hasEditPrivilege() {
+		return this.privilegeDecider.hasEditProjectPrivilege(SecurityUtils.getCurrentUserId());
+	}
+	
+	public boolean hasEditMemberPrivilege(int projectId) {
+		return this.privilegeDecider.hasManageProjectMemberPrivilege(projectId, SecurityUtils.getCurrentUser());
 	}
 	
 	public String productList(){
@@ -132,12 +141,18 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String addMember() {
+		if (!hasEditMemberPrivilege(projectId)) {
+			throw NoPrivilegeException.INSTANCE;
+		}
 	    projectService.addMember(projectId, memberType, userId);
 	    createSuccessStreamResponse();
 	    return SUCCESS;
 	}
 	
 	public String deleteMember() {
+		if (!hasEditMemberPrivilege(projectId)) {
+			throw NoPrivilegeException.INSTANCE;
+		}
 	    projectService.deleteMember(projectId, memberType, userId);
 	    createSuccessStreamResponse();
 	    return SUCCESS;

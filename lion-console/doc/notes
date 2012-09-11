@@ -17,20 +17,27 @@
 	 创建内建的角色数据(Role: SCM, SA...)
 	 创建sa名称的用户，用于feature1的sa账号，feature2修改
 17.创建context config value时需要先创建默认配置值(如果清除了默认配置，然后点击编辑复杂配置，保存复杂配置时需要检查是否有默认配置)
-18.初始导入config脚本中，需要全量的创建一个初始registerpoint
-19.注意发布接口必须调用，即使本次没有config走redmine，因为可能存在lion上配置的config，设置为发布生效
-20.registerpoint和snapshot表里面的数据需要定期清除，避免太多影响查询性能
-21.User中标注了是否是系统用户(如redmine, sa, dba)，在人工操作lion-console界面时给于提醒(比如由系统用户设置的config最好不要去手动修改或推送，应由系统来操作)
+18.初始导入config脚本中，需要全量的创建一个初始registerpoint(X)
+19.注意发布接口必须调用，即使本次没有config走redmine，因为可能存在lion上配置的config，设置为发布生效(X)
+20.registerpoint和snapshot表里面的数据需要定期清除，避免太多影响查询性能(X)
+21.User中标注了是否是系统用户(如redmine, sa, dba)，在人工操作lion-console界面时给于提醒(比如由系统用户设置的config最好不要去手动修改或推送，应由系统来操作)(X)
 22.lion-client中的cache存在问题，如果以非法的key访问ConfigCache时都会缓存一个StringValue(null)值，这样非法的key太多之后会导致Map无限放大，采用LRU策略剔除
-     StringValue(null)的值
-23.lion-console与lion-api分开部署，如果在变更环境配置时通知到两边应用(变更zk的地址)
-24.lion-client中的watcher需要判斷event是否有path，有的event沒有path，造成NullPointerException異常
-25.配置环境beta的名称改为qa，并通知到萧俊
-26.lion的下拉框提醒需要改为ajax的方式获取数据源，而不是一次性的存储在页面
-27.ServiceConstants中的初始数据常量调整为从1开始
-28.添加system_setting表中关于是否开启cache的记录
+     StringValue(null)的值(hang)
+23.lion-console与lion-api分开部署，如果在变更环境配置时通知到两边应用(变更zk的地址)(done)
+24.lion-client中的watcher需要判斷event是否有path，有的event沒有path，造成NullPointerException異常(hang)
+25.配置环境beta的名称改为qa，并通知到萧俊(done)
+26.lion的下拉框提醒需要改为ajax的方式获取数据源，而不是一次性的存储在页面(done)
+27.ServiceConstants中的初始数据常量调整为从1开始(done)
+28.添加system_setting表中关于是否开启cache的记录(done)
 29.上线时修改dev_mode和templateCache(struts.xml中)
+30.处理log4j.xml关于线上线下不通的问题
+31.lion关于dpsf-net管理时，如果console中添加一个新的service和地址，应该要通知到应用客户端
 
+
+40.上线注意事项
+	a. 线上hosts中添加dba.dp的域名解析，打通到ldap的线路
+	b. 调整socket buffer size到600k，使用jgroups的包大小, echo 'net.core.rmem_max=600000' >> /etc/sysctl.conf, sysctl -p
+		使用cat /proc/sys/net/core/rmem_max验证
 
 
 

@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dianping.lion.ConsoleConstants;
 import com.dianping.lion.entity.Product;
 import com.dianping.lion.entity.Team;
+import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.service.ProductService;
 import com.dianping.lion.service.TeamService;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
@@ -42,6 +44,9 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 	}
 	
 	public String teamAddSubmit(){
+		if (!hasEditPrivilege()) {
+			throw NoPrivilegeException.INSTANCE;
+		}
 		Team team = new Team();
 		team.setName(name);
 		team.setCreateTime(new Date(System.currentTimeMillis()));
@@ -57,6 +62,9 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 	}
 	
 	public String teamEditSubmit(){
+		if (!hasEditPrivilege()) {
+			throw NoPrivilegeException.INSTANCE;
+		}
 		Team team = new Team();
 		team.setId(id);
 		team.setName(name);
@@ -68,10 +76,13 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 	}
 	
 	public String deleteTeamAjax() {
-		List<Product>  teamProducts =productService.findProductByTeamID(id);
+		if (!hasEditPrivilege()) {
+			throw NoPrivilegeException.INSTANCE;
+		}
+		List<Product>  teamProducts = productService.findProductByTeamID(id);
 		Team team = teamService.findTeamByID(id);
 		if(teamProducts.size() > 0) {
-			errorMessage = team.getName()+errorMessage;
+			errorMessage = team.getName() + errorMessage;
 			return ERROR;
 		} else {
 			teamService.delete(id);
@@ -83,6 +94,10 @@ public class TeamAction extends AbstractLionAction implements ServletRequestAwar
 	private void reInitiate() {
 		this.active = ConsoleConstants.TEAM_NAME;
 		teamList = teamService.findAll();
+	}
+	
+	public boolean hasEditPrivilege() {
+		return this.privilegeDecider.hasEditProjectPrivilege(SecurityUtils.getCurrentUserId());
 	}
 
 	public String getActive() {

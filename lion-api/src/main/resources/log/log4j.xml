@@ -92,14 +92,11 @@
 		<appender-ref ref="illegalParameterAppender" />
 	</logger>
 	
-	<logger name="com.dianping.lion" additivity="false">
-		<level value="INFO" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	
 	<root>
 		<level value="INFO" />
+		<!-- 
 		<appender-ref ref="CONSOLE" />
+		 -->
 		<appender-ref ref="appInfoAppender" />
 		<appender-ref ref="appWarnAppender" />
 		<appender-ref ref="appErrorAppender" />

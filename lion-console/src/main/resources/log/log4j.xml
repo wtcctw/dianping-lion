@@ -103,6 +103,8 @@
 	
 	<root>
 		<level value="INFO" />
+		<!-- 
+		 -->
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="appInfoAppender" />
 		<appender-ref ref="appWarnAppender" />

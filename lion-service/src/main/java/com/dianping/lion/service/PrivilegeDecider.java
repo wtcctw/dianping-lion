@@ -3,6 +3,8 @@
  */
 package com.dianping.lion.service;
 
+import com.dianping.lion.entity.User;
+
 
 
 /**
@@ -29,5 +31,9 @@ public interface PrivilegeDecider {
 	
 	//TODO 切换到功能权限模块(user-role-resource)
 	boolean hasModulePrivilege(String module, Integer userId);
+	
+	boolean hasEditProjectPrivilege(Integer userId);
+	
+	boolean hasManageProjectMemberPrivilege(int projectId, User user);
 	
 }

@@ -128,12 +128,12 @@ public class UserServiceImplTest {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-		System.out.println(DigestUtils.md5Hex("123qweasd").toUpperCase());
-		Properties properties = new Properties();
-		properties.load(new FileInputStream("/Users/liujian/personal/workspace-lion/lion/lion-api/src/main/filters/config-dev.properties"));
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			System.out.println(entry.getKey() + ": " + entry.getValue());
-		}
+		System.out.println(DigestUtils.md5Hex("!QAZxsw2").toUpperCase());
+//		Properties properties = new Properties();
+//		properties.load(new FileInputStream("/Users/liujian/personal/workspace-lion/lion/lion-api/src/main/filters/config-dev.properties"));
+//		for (Entry<Object, Object> entry : properties.entrySet()) {
+//			System.out.println(entry.getKey() + ": " + entry.getValue());
+//		}
 	}
 	
 }
