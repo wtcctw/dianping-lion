@@ -933,6 +933,7 @@
         eventOut = this.options.trigger == 'hover' ? 'mouseleave' : 'blur'
         this.$element.on(eventIn, this.options.selector, $.proxy(this.enter, this))
         this.$element.on(eventOut, this.options.selector, $.proxy(this.leave, this))
+        this.$element.on("click", this.options.selector, $.proxy(this.leave, this))
       }
 
       this.options.selector ?
@@ -964,7 +965,7 @@
         if (self.hoverState == 'in') self.show()
       }, self.options.delay.show)
     }
-
+    
   , leave: function (e) {
       var self = $(e.currentTarget)[this.type](this._options).data(this.type)
 
