@@ -182,6 +182,64 @@ $.fn.extend({
 	}
 });
 
+$.extend({
+	isJSonStrList : function(value) {
+		value = value.trim();
+		if (value.isEmpty()) {
+			return true;
+		}
+		if (!value.startsWith("[")) {
+			return false;
+		}
+		try {
+			var json = $.parseJSON(value);
+			for (var i = 0; i < json.length; i++) {
+				if (typeof json[i] != "string") {
+					return false;
+				}
+			}
+			return true;
+		} catch (err) {
+			return false;
+		}
+	},
+	isJSonNumList : function(value) {
+		value = value.trim();
+		if (value.isEmpty()) {
+			return true;
+		}
+		if (!value.startsWith("[")) {
+			return false;
+		}
+		try {
+			var json = $.parseJSON(value);
+			for (var i = 0; i < json.length; i++) {
+				if (!json[i].isNumber()) {
+					return false;
+				}
+			}
+			return true;
+		} catch (err) {
+			return false;
+		}
+	},
+	isJSonObj : function(value) {
+		value = value.trim();
+		if (value.isEmpty()) {
+			return true;
+		}
+		if (!value.startsWith("{")) {
+			return false;
+		}
+		try {
+			$.parseJSON(value);
+			return true;
+		} catch (err) {
+			return false;
+		}
+	}
+});
+
 if ($.browser.msie) {
 	$(location).attr("href", "/noie.ftl".prependcontext());
 }

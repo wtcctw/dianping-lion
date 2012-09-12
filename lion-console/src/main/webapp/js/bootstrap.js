@@ -933,6 +933,7 @@
         eventOut = this.options.trigger == 'hover' ? 'mouseleave' : 'blur'
         this.$element.on(eventIn, this.options.selector, $.proxy(this.enter, this))
         this.$element.on(eventOut, this.options.selector, $.proxy(this.leave, this))
+        //Add by Danson.liu
         this.$element.on("click", this.options.selector, $.proxy(this.leave, this))
       }
 

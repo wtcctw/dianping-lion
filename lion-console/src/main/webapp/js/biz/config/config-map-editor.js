@@ -40,10 +40,11 @@
 							editorHtml += $.mapeditor.buildNewItem(prop, json[prop]);
 						}
 					} catch (err) {
-						editorHtml = "<div class='form-alert alert-warn'>非法的数据格式，该编辑器只支持简单的key/value数据!</div>";
+						editorHtml = "<div class='form-alert alert-warn'>不支持的数据格式，该编辑器只支持简单的key/value数据，复杂类型请手工编辑!</div>";
 					}
 				} else {
-					editorHtml = "<a class='new-item-btn' href='#' onclick='$.mapeditor.addItem(this, event);'><i class='icon-plus'></i></a>";
+//					editorHtml = "<a class='new-item-btn' href='#' onclick='$.mapeditor.addItem(this, event);'><i class='icon-plus'></i></a>";
+					editorHtml = $.mapeditor.buildNewItem("", "");
 				}
 				this.find(".modal-body").html(editorHtml);
 			},

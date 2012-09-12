@@ -18,16 +18,17 @@
 			        		<option value="${value}">${label?html}</option>
 			        	</@s.iterator>
 			        </select>
-			        <input type="checkbox" id="edit-trim-checkbox" checked="checked"><label for="edit-trim-checkbox" class="help-inline">trim while string</label>
+			        ( 仅作输入校验 )&nbsp;
+			        <input type="checkbox" id="edit-trim-checkbox" checked="checked"><label for="edit-trim-checkbox" class="help-inline">trim</label>
 			      </div>
 			    </div>
 			    <div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label">环境:</label>
-			      <div class="controls lion-controls">
-			      		<input type="checkbox" id="edit-select-all-env"/><label for="edit-select-all-env" class="help-inline">全选</label>
+			      <div class="controls lion-controls2">
+			      		<input type="checkbox" id="edit-select-all-env"/><label for="edit-select-all-env" class="help-inline">全选线下</label>
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
-			      		<input type="checkbox" name="edit-config-env" id="edit-config-env-${id}" value="${id}"
+			      		<input type="checkbox" name="edit-config-env" online="${online?string("true","false")}" id="edit-config-env-${id}" value="${id}"
 			      		><label for="edit-config-env-${id}" class="help-inline">${label}</label>
 			      		&nbsp;&nbsp;
 			      	</@s.iterator>

@@ -279,11 +279,11 @@ $(function(){
 	}
 	
 	$("#select-all-env").click(function() {
-		$(":checkbox[name='config-env']:enabled").attr("checked", $(this).is(":checked"));
+		$(":checkbox[name='config-env'][online='false']:enabled").attr("checked", $(this).is(":checked"));
 	});
 	
 	$("#edit-select-all-env").click(function() {
-		$(":checkbox[name='edit-config-env']:enabled").attr("checked", $(this).is(":checked"));
+		$(":checkbox[name='edit-config-env'][online='false']:enabled").attr("checked", $(this).is(":checked"));
 	});
 	
 	$("#config-type-selector").change(function() {
@@ -320,13 +320,15 @@ $(function(){
 	}
 	
 	function generateListComponent(inputId, numberlist) {
-		return "<textarea id='" + inputId + "' rows='7' style='width:350px;' readonly='readonly' onclick='openListEditor(\"" + inputId + "\", " + numberlist + ", event);'></textarea>"
-			+ "<a href='#' onclick='openListEditor(\"" + inputId + "\", " + numberlist + ", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>";
+		return "<textarea id='" + inputId + "' rows='7' style='width:350px;'></textarea>"
+			+ "<a href='#' onclick='openListEditor(\"" + inputId + "\", " + numberlist + ", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>"
+			+ "<br/><span class='help-inline hide message'>非法的数据格式, 例: " + (numberlist ? "[\"3\", \"5.5\", \"7\"]" : "[\"hello\", \"world\"]") + "!</span>";
 	}
 	
 	function generateMapComponent(inputId) {
-		return "<textarea id='" + inputId + "' rows='7' style='width:350px;' readonly='readonly' onclick='openMapEditor(\"" + inputId + "\", event);'></textarea>"
-			+ "<a href='#' onclick='openMapEditor(\"" + inputId + "\", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>";
+		return "<textarea id='" + inputId + "' rows='7' style='width:350px;'></textarea>"
+			+ "<a href='#' onclick='openMapEditor(\"" + inputId + "\", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>"
+			+ "<br/><span class='help-inline hide message'>非法的数据格式, 例: {\"url\":\"xx\", \"con\":{\"min\":\"3\",\"max\":\"6\"}}</span>";
 	}
 	
 	function validateConfigForm() {
@@ -338,10 +340,27 @@ $(function(){
 				checkPass = false;
 			}
 		});
-		if (parseInt($("#config-type-selector").val()) == Type_Number
-				&& !$("#config-value").val().isNumber()) {
+		var configType = parseInt($("#config-type-selector").val());
+		var configVal = null; 
+		try {configVal = $("#config-value").val().trim()} catch(err) {};
+		if (configType == Type_Number && !configVal.isNumber()) {
 			setValidateError($("#config-value"));
 			checkPass = false;
+		} else if (configType == Type_List_Str) {
+			if (!$.isJSonStrList(configVal)) {
+				setValidateError($("#config-value"));
+				checkPass = false;
+			}
+		} else if (configType == Type_List_Num) {
+			if (!$.isJSonNumList(configVal)) {
+				setValidateError($("#config-value"));
+				checkPass = false;
+			}
+		} else if (configType == Type_Map) {
+			if (!$.isJSonObj(configVal)) {
+				setValidateError($("#config-value"));
+				checkPass = false;
+			}
 		}
 		var envselected = false;
 		$(":checkbox[name='config-env']").each(function() {
@@ -360,10 +379,27 @@ $(function(){
 	function validateEditConfigForm() {
 		var checkPass = true;
 		resetConfigFormValidation();
-		if (parseInt($("#edit-config-type-selector").val()) == Type_Number
-				&& !$("#edit-config-value").val().isNumber()) {
+		var configType = parseInt($("#edit-config-type-selector").val());
+		var configVal = null;
+		try {configVal = $("#edit-config-value").val().trim()} catch(err) {};
+		if (configType == Type_Number && !configVal.isNumber()) {
 			setValidateError($("#edit-config-value"));
 			checkPass = false;
+		} else if (configType == Type_List_Str) {
+			if (!$.isJSonStrList(configVal)) {
+				setValidateError($("#edit-config-value"));
+				checkPass = false;
+			}
+		} else if (configType == Type_List_Num) {
+			if (!$.isJSonNumList(configVal)) {
+				setValidateError($("#edit-config-value"));
+				checkPass = false;
+			}
+		} else if (configType == Type_Map) {
+			if (!$.isJSonObj(configVal)) {
+				setValidateError($("#edit-config-value"));
+				checkPass = false;
+			}
 		}
 		var envselected = false;
 		$(":checkbox[name='edit-config-env']").each(function() {
@@ -381,12 +417,12 @@ $(function(){
 	
 	function setValidateError($element) {
 		$element.parents(".control-group").addClass("error");
-		$element.next(".message").show();
+		$element.nextAll(".message").show();
 	}
 	
 	function clearValidateError($element) {
 		$element.parents(".control-group").removeClass("error");
-		$element.next(".message").hide();
+		$element.nextAll(".message").hide();
 	}
 	
 	function resetConfigForm(excepts) {

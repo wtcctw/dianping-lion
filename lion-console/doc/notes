@@ -38,7 +38,11 @@
 	a. 线上hosts中添加dba.dp的域名解析，打通到ldap的线路
 	b. 调整socket buffer size到600k，使用jgroups的包大小, echo 'net.core.rmem_max=600000' >> /etc/sysctl.conf, sysctl -p
 		使用cat /proc/sys/net/core/rmem_max验证
+		
+	lion/123qweasd
+	sa/!QAZxsw2
 
-
+41.老的配置数据迁移
+java -Xbootclasspath/a:/Users/liujian/personal/workspace-lion/lion/lion-console/doc/mysql-connector-java-5.1.17.jar:/Users/liujian/personal/workspace-lion/lion/lion-console/doc -jar TransferConfig_New.jar tuangou-wap dev online
 
 

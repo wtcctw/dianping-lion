@@ -251,6 +251,11 @@ a.no-dec {
 	margin-left : 120px;
 }
 
+.form-horizontal .lion-controls2 {
+	margin-left : 120px;
+	padding-top : 4px;
+}
+
 .pagination {
 	margin : 0 0;
 }

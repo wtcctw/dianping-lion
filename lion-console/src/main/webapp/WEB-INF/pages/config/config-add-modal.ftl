@@ -31,17 +31,18 @@
 			        		<option value="${value}">${label?html}</option>
 			        	</@s.iterator>
 			        </select>
-			        <input type="checkbox" id="trim-checkbox" checked="checked"><label for="trim-checkbox" class="help-inline">trim while string</label>
+			        ( 仅作输入校验 )&nbsp;
+			        <input type="checkbox" id="trim-checkbox" checked="checked"><label for="trim-checkbox" class="help-inline">trim</label>
 			      </div>
 			    </div>
 			    <div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label">环境:</label>
-			      <div class="controls lion-controls">
-			      		<input type="checkbox" id="select-all-env"/><label for="select-all-env" class="help-inline">全选</label>
+			      <div class="controls lion-controls2">
+			      		<input type="checkbox" id="select-all-env"/><label for="select-all-env" class="help-inline">全选线下</label>
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
 			      		<@s.set name="hasAddPrivilege" value="%{hasAddPrivilege(pid, id)}"/>
-			      		<input type="checkbox" name="config-env" id="config-env-${envStatus.index}" value="${id}"
+			      		<input type="checkbox" name="config-env" online="${online?string("true","false")}" id="config-env-${envStatus.index}" value="${id}"
 			      		<@s.if test="%{#envStatus.index == 0 && #hasAddPrivilege}"> checked="checked"</@s.if>
 			      		<@s.if test="%{#envStatus.first || !#hasAddPrivilege}"> disabled="disabled"</@s.if>
 			      		><label for="config-env-${envStatus.index}" class="help-inline">${label}</label>

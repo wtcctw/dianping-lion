@@ -105,6 +105,10 @@ public class ConfigEditAction extends AbstractConfigAction {
 			createErrorStreamResponse("该配置已不存在!");
 			return SUCCESS;
 		}
+		boolean isStringType = configFound.getType() == ConfigTypeEnum.String.getValue();
+		if ((isStringType && trim) || !isStringType) {
+			value = value.trim();
+		}
 		List<String> failedEnvs = new ArrayList<String>();
 		Map<Integer, Environment> envMap = environmentService.findEnvMap();
 		Integer currentUserId = SecurityUtils.getCurrentUserId();
