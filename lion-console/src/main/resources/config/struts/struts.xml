@@ -5,7 +5,7 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
-	<constant name="struts.devMode" value="false" />
+	<constant name="struts.devMode" value="${lion-console.struts.devMode}" />
 	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
 	<constant name="struts.ognl.allowStaticMethodAccess" value="false" />
 	<constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />

@@ -14,6 +14,8 @@ public class Role implements Serializable {
     private static final long serialVersionUID = -6883653252780235581L;
     
     private int id;
+    
+    private String name;
 
     /**
      * @return the id
@@ -28,5 +30,13 @@ public class Role implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }
