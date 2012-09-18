@@ -14,7 +14,7 @@
 	
 	<bean id="clusteredCache" class="com.dianping.lion.service.impl.EhcacheClientImpl">
 		<constructor-arg ref="clusteredCache_"/>
-		<property name="cacheEntities" value="environments, teams, projects, user, systemsetting"/>
+		<property name="cacheEntities" value="environments, teams, projects, systemsetting"/>
 	</bean>
 	
 	<bean id="clusteredShortCache" class="com.dianping.lion.service.impl.EhcacheClientImpl">
@@ -25,6 +25,16 @@
 	<bean id="clusteredProjectCache" class="com.dianping.lion.service.impl.EhcacheClientImpl">
 		<constructor-arg ref="clusteredProjectCache_"/>
 		<property name="cacheEntities" value="project"/>
+	</bean>
+	
+	<bean id="clusteredPrivilegeCache" class="com.dianping.lion.service.impl.EhcacheClientImpl">
+		<constructor-arg ref="clusteredPrivilegeCache_"/>
+		<property name="cacheEntities" value="role, privilege, resource"/>
+	</bean>
+	
+	<bean id="clusteredUserCache" class="com.dianping.lion.service.impl.EhcacheClientImpl">
+		<constructor-arg ref="clusteredUserCache_"/>
+		<property name="cacheEntities" value="user"/>
 	</bean>
 	
 	<bean id="clusteredCache_" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
@@ -43,6 +53,16 @@
 	<bean id="clusteredProjectCache_" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
 		<property name="cacheManager" ref="cacheManager"/>
 		<property name="cacheName" value="clusteredProjectCache"/>
+	</bean>
+	
+	<bean id="clusteredPrivilegeCache_" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager" ref="cacheManager"/>
+		<property name="cacheName" value="clusteredPrivilegeCache"/>
+	</bean>
+	
+	<bean id="clusteredUserCache_" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager" ref="cacheManager"/>
+		<property name="cacheName" value="clusteredUserCache"/>
 	</bean>
 	
 </beans>

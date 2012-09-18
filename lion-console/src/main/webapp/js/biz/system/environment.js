@@ -25,24 +25,38 @@ function bind() {
 				});
 			}
 		});
-});
-	var $deleteAlert = $("<div>确认删除该配置项? [<font color='green'>不可恢复</font>]</div>")
-	.dialog({
-		autoOpen : false,
-		resizable : false,
-		modal : true,
-		title : "提示框",
-		height : 140,
-		buttons : {
-			"是" : function() {
-				$(location).attr("href", $(this).data("location"));
-			},
-			"否" : function() {$(this).dialog("close");}
-		}
 	});
+	var $deleteAlert = $("<div>确认删除该环境[<span class='del_env_name' style='color:green;'></span>]?</div>")
+		.dialog({
+			autoOpen : false,
+			resizable : false,
+			modal : true,
+			title : "提示框",
+			height : 140,
+			buttons : {
+				"是" : function() {
+					$(this).dialog("close");
+					$.ajax("/system/deleteEnvAjax.vhtml".prependcontext(), {
+						data: $.param({
+							"envId" : $(this).data("envId")
+						}, true),
+						dataType: "html",
+						success: function(result) {
+							var temp = result.replace(/&quot;/g, '\"');
+							document.getElementById('table-env-list').innerHTML = temp;
+							bind();
+						}
+					});
+				},
+				"否" : function() {$(this).dialog("close");}
+			}
+		}
+	);
 	$(".deletelink").click(function() {
-		$deleteAlert.dialog("open");
-		$deleteAlert.data("location", $(this).attr("href"));
+		var envId = $(this).parents(".env-row").find("[name='env-id']").val();
+		var envName = $(this).parents(".env-row").find(".env-name").text();
+		$deleteAlert.find(".del_env_name").text(envName);
+		$deleteAlert.dialog("open").data("envId", envId);
 		return false;
 	});
 }
@@ -57,18 +71,15 @@ function saveEnv() {
     	if (validateConfigForm()) {
 	    	var clientdata = {
 	    			envName : envName,
-	//    			envLabel : encodeURI(encodeURI(envLabel)),
 	    			envLabel : envLabel,
 	    			envIps : envIps,
 	    			online : online,
 	    			seq : seq
 	    	};
-	//    	clientdata = encodeURIComponent(encodeURIComponent(clientdata));
 	    	href = "/system/addEnvSubmitAjax.vhtml";
 			$.ajax( {
 				type : "GET",
 				contentType : "application/json;",
-	//			contentType: "application/x-www-form-urlencoded; charset=utf-8",
 				url : href.prependcontext(),
 				data : clientdata,
 				dataType : 'html',

@@ -26,7 +26,6 @@ import org.apache.commons.lang.xwork.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
@@ -64,9 +63,6 @@ public class OperationLogAction extends AbstractLionAction implements ServletReq
 	private EnvironmentService environmentService;
 	
 	public String getOpLogs() {
-		if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_OPLOG, SecurityUtils.getCurrentUserId())) {
-			throw NoPrivilegeException.INSTANCE; 
-		}
 		initializePage();
 		paginater.setMaxResults(20);
 		paginater = operationLogService.getLogList(logCriteria, paginater);

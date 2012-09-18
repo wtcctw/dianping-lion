@@ -172,6 +172,11 @@
 	</error-page>
 	
 	<error-page>
+		<exception-type>com.dianping.lion.exception.NoPrivilegeException</exception-type>
+		<location>/WEB-INF/pages/common/403.ftl</location>
+	</error-page>
+	
+	<error-page>
 		<exception-type>java.lang.Throwable</exception-type>
 		<location>/WEB-INF/pages/common/500.ftl</location>
 	</error-page>

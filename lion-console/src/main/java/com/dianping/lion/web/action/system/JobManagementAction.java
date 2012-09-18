@@ -44,7 +44,7 @@ public class JobManagementAction extends AbstractLionAction{
 	
 	@Override
 	protected void checkModulePrivilege() {
-		if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_JOB, SecurityUtils.getCurrentUserId())) {
+		if (!privilegeService.isUserHasResourcePrivilege(SecurityUtils.getCurrentUserId(), ServiceConstants.RES_CODE_JOB)) {
 			throw NoPrivilegeException.INSTANCE;
 		}
 	}

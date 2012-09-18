@@ -21,4 +21,18 @@
 		<tag-class>com.dianping.lion.web.tag.UserLoginTag</tag-class>
 		<body-content>empty</body-content>
 	</tag>
+	<tag>
+		<name>Security</name>
+		<tag-class>com.dianping.lion.web.tag.SecurityTag</tag-class>
+		<attribute>
+			<name>resource</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
 </taglib>

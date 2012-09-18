@@ -36,6 +36,9 @@ public interface ServiceConstants {
 	
 	int ROLE_SCM_ID = 1;
 	int ROLE_SA_ID = 2;
+	int ROLE_DBA_ID = 3;
+	int ROLE_QA_ID = 4;
+	int ROLE_DEV_ID = 5;
 	
 	String PROJECT_OWNER = "owner";
 	String PROJECT_MEMBER = "member";
@@ -56,17 +59,36 @@ public interface ServiceConstants {
 	
 	String CACHE_SETTING_PREFIX = "cache_setting_";
 	
+	String CACHE_PRIV_URL_PREFIX = "cache_priv_url_";
+	String CACHE_USER_RES_PREFIX = "cache_user_resource_";
+	
 	String SETTING_CACHE_ENABLED = "cache_enabled";
 	
 	
 	//TODO 切换到统一功能权限(user-role-resource)
-	String MODULE_ENV = "module_env";
-	String MODULE_PROJECT = "module_project";
-	String MODULE_OPLOG = "module_oplog";
-	String MODULE_CACHE = "module_cache";
-	String MODULE_USER = "module_user";
-	String MODULE_SETTING = "module_setting";
-	String MODULE_JOB = "module_job";
-	String MODULE_SECURITY = "module_security";
+	String RES_CODE_CACHE = "res_cache";
+	String RES_CODE_USER = "res_user";
+	String RES_CODE_SETTING = "res_setting";
+	String RES_CODE_JOB = "res_job";
+	String RES_CODE_SECURITY = "res_security";
+	
+	String RES_CODE_ENVLIST = "res_env_list";
+	String RES_CODE_ENVADD = "res_env_add";
+	String RES_CODE_ENVEDIT = "res_env_edit";
+	String RES_CODE_ENVDEL = "res_env_delete";
+	
+	String RES_CODE_PROJADD = "res_project_add";
+	String RES_CODE_PROJEDIT = "res_project_edit";
+	String RES_CODE_PROJDEL = "res_project_delete";
+	
+	String RES_CODE_PRODADD = "res_product_add";
+	String RES_CODE_PRODEDIT = "res_product_edit";
+	String RES_CODE_PRODDEL = "res_product_delete";
+	
+	String RES_CODE_TEAMADD = "res_team_add";
+	String RES_CODE_TEAMEDIT = "res_team_edit";
+	String RES_CODE_TEAMDEL = "res_team_delete";
+	
+	String RES_CODE_OPLOGVIEW = "res_oplog_view";
 	
 }

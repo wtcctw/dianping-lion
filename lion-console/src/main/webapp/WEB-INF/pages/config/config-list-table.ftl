@@ -21,7 +21,7 @@
   	<@s.iterator value="configVos" var="configVo" status="configStatus">
   	<tr class="config_row">
   		<td>
-  			${configStatus.index}
+  			${configStatus.index + 1}
   			<input type="hidden" value="${config.type}" name="config_type">
   			<input type="hidden" value="${config.key}" name="config_key">
   			<input type="hidden" value="${config.id}" name="config_id">

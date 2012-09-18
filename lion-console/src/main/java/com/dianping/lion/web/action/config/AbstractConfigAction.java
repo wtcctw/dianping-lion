@@ -86,7 +86,7 @@ public class AbstractConfigAction extends AbstractLionAction {
 	}
 	
 	public boolean hasEditAttrPrivilege(int projectId) {
-		return privilegeDecider.hasEditAttrPrivilege(projectId, SecurityUtils.getCurrentUserId());
+		return privilegeDecider.hasEditConfigAttrPrivilege(projectId, SecurityUtils.getCurrentUserId());
 	}
 
 	/**

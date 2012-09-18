@@ -1,4 +1,4 @@
-
+<#assign lion=JspTaglibs["/WEB-INF/tld/lion-tags.tld"]>
 <head>
 	<title>项目设置</title>
 	<script type="text/javascript" src="<@s.url value="/js/biz/system/project-list.js"/>"></script>
@@ -31,7 +31,6 @@
 </form>
 <div class="row">
 <div class="span12">
-<@s.set name="hasEditPrivilege" value="%{hasEditPrivilege()}"/>
 <table class="table table-bordered table-striped table-condensed">
 	  <thead>
 	    <tr>
@@ -42,17 +41,19 @@
 	      <th width="230">创建时间</th>
 	      <th width="230">更新时间</th>
 	      <th width="100">操作
-	      	<@s.if test="%{#hasEditPrivilege}">
+	      	<@lion.Security resource="res_project_add">
 	      	<a href="#" id="add_project_btn"><i class="icon-plus pull-right" rel="tooltip" title="添加项目"></i></a>
-	      	</@s.if>
+	      	</@lion.Security>
 	      </th>
 	    </tr>
 	  </thead>
 	  <tbody>
+	  	<@lion.Security resource="res_project_edit" var="hasEditPrivilege"/>
+	  	<@lion.Security resource="res_project_delete" var="hasDeletePrivilege"/>
 	  	<@s.iterator value="projectList" var="project" status="projectStatus">
 	  		<tr class="project_row">
 	  			<input name="projectId" type="hidden" value="${id}" />
-	      		<td>${projectStatus.index}</td>
+	      		<td>${projectStatus.index + 1}</td>
 	      		<td>${teamName}</td>
 	      		<td>${productName}</td>
 	      		<td>${name}</td>
@@ -60,17 +61,17 @@
 	      		<td>${modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 				<td>
 					<@s.if test="%{#hasEditPrivilege}">
-					<a href="#" id="edit_project_btn" productId="${productId}" 
-					projectName="${name}" rel="tooltip" title="修改项目" 
-					onclick="editOpen(${id},'${name}',${productId});return false;"
-					><i class="icon-edit"></i></a>&nbsp;&nbsp;&nbsp;
+						<a href="#" id="edit_project_btn" productId="${productId}" projectName="${name}" rel="tooltip" title="修改项目" 
+						onclick="editOpen(${id},'${name}',${productId});return false;"
+						><i class="icon-edit"></i></a>&nbsp;&nbsp;&nbsp;
 					</@s.if>
 					<@s.if test="%{hasEditMemberPrivilege(id)}">
-					<a href="#"class="edit-member-btn"><i rel="tooltip" title="成员管理" class="icon-user"></i></a>&nbsp;&nbsp;&nbsp;
+						<a href="#"class="edit-member-btn"><i rel="tooltip" title="成员管理" class="icon-user"></i></a>&nbsp;&nbsp;&nbsp;
 					</@s.if>
-					<@s.if test="%{#hasEditPrivilege}">
-	      		    <a class="deletelink" href="<@s.url action='projectDel' namespace='/system'/>?projectId=${id}" rel="tooltip" title="删除项目"
-	      		    ><i class="icon-remove"></i></a>&nbsp;&nbsp;&nbsp;
+					<@s.else><i class="icon-user icon-white"></i>&nbsp;&nbsp;&nbsp;</@s.else>
+					<@s.if test="%{#hasDeletePrivilege}">
+		      		    <a class="deletelink" href="<@s.url action='projectDel' namespace='/system'/>?projectId=${id}" rel="tooltip" title="删除项目"
+		      		    ><i class="icon-remove"></i></a>&nbsp;&nbsp;&nbsp;
 	      		    </@s.if>
 			     </td>
 	      	</tr>

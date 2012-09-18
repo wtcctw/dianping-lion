@@ -1,3 +1,4 @@
+<#assign s=JspTaglibs["/WEB-INF/tld/struts-tags.tld"]>
 <head>
 	<title>403-无权限</title>
 </head>

@@ -9,7 +9,7 @@
 			    &nbsp;
 				<input type="text" id="user-search" style="margin-bottom:1px;">
 	    			<input type="hidden" id="user-search-id">&nbsp;
-	    			<a href="#" id="add-member">添加</a>
+	    			<a href="#" class="no-dec" id="add-member">添加</a>
 				<a class="close" data-dismiss="modal" >&times;</a>
 			</ul>
 			<div class="tab-content" id="member-container">

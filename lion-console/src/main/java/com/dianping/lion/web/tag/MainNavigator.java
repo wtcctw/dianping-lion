@@ -20,12 +20,12 @@ import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ConsoleConstants;
-import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Team;
-import com.dianping.lion.service.PrivilegeDecider;
+import com.dianping.lion.service.PrivilegeService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.tag.MenuManager.Menu;
@@ -43,7 +43,7 @@ public class MainNavigator extends StrutsTagSupport {
 	private ProjectService projectService;
 	
 	@Autowired
-	private PrivilegeDecider privilegeDecider;
+	private PrivilegeService privilegeService;
 	
 	private List<Team> teams;
 	
@@ -98,33 +98,12 @@ public class MainNavigator extends StrutsTagSupport {
 		if (ConsoleConstants.MENU_PROJECT.equals(menuName)) {
 			return 1;
 		}
-		Integer currentUserId = SecurityUtils.getCurrentUserId();
-		// TODO 需要调整为功能级别的权限，暂时交由admin管理
-		if ("envsetting".equals(menuName)) {
-			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_ENV, currentUserId) ? 1 : -1;
-		} 
-		if ("security".equals(menuName)) {
-			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_SECURITY, currentUserId) ? 1 : -1;
+		String resource = menu.resource;
+		if (StringUtils.isNotBlank(resource)) {
+			boolean hasResourcePrivilege = privilegeService.isUserHasResourcePrivilege(SecurityUtils.getCurrentUserId(), resource);
+			return hasResourcePrivilege ? 1 : -1;
 		}
-		if ("jobmanagement".equals(menuName)) {
-			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_JOB, currentUserId) ? 1 : -1;
-		} 
-		if ("syssetting".equals(menuName)) {
-			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_SETTING, currentUserId) ? 1 : -1;
-		}
-		if ("oplog".equals(menuName)) {
-			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_OPLOG, currentUserId) ? 1 : -1;
-		} 
-		if ("cachemanagement".equals(menuName)) {
-			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_CACHE, currentUserId) ? 1 : -1;
-		} 
-		if ("projectconfig".equals(menuName)) {
-			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_PROJECT, currentUserId) ? 1 : -1;
-		}
-		if ("usersetting".equals(menuName)) {
-			return privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_USER, currentUserId) ? 1 : -1;
-		}
-		return -1;
+		return 1;
 	}
 
 	private int hasPrivilege(MenuGroup menuGroup) {
@@ -172,8 +151,8 @@ public class MainNavigator extends StrutsTagSupport {
 		this.projectService = projectService;
 	}
 
-	public void setPrivilegeDecider(PrivilegeDecider privilegeDecider) {
-		this.privilegeDecider = privilegeDecider;
+	public void setPrivilegeService(PrivilegeService privilegeService) {
+		this.privilegeService = privilegeService;
 	}
 
 }

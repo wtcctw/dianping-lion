@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Privilege">
+
+	<typeAlias alias="Role" type="com.dianping.lion.entity.Role" />
+	<typeAlias alias="PrivilegeCategory" type="com.dianping.lion.entity.PrivilegeCategory" />
+	<typeAlias alias="Privilege" type="com.dianping.lion.entity.Privilege" />
+	<typeAlias alias="Resource" type="com.dianping.lion.entity.Resource" />
+	
+	<resultMap id="PrivilegeCategoryResult" class="PrivilegeCategory">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="seq" column="seq"/>
+		<result property="privileges" column="id" select="Privilege.selectPrivilegeByCategory"/>
+	</resultMap>
+	
+	<resultMap id="PrivilegeResult" class="Privilege">
+		<result property="id" column="id"/>
+		<result property="categoryId" column="categoryId"/>
+		<result property="name" column="name"/>
+	</resultMap>
+	
+	<resultMap id="RoleResult" class="Role">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="remark" column="remark"/>
+		<result property="internal" column="internal"/>
+		<result property="createUserId" column="createUserId"/>
+		<result property="createUserName" column="userName"/>
+		<result property="createTime" column="createTime"/>
+	</resultMap>
+	
+	<resultMap id="ResourceResult" class="Resource">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="code" column="code"/>
+		<result property="url" column="url"/>
+	</resultMap>
+	
+	<select id="getRoles" resultMap="RoleResult">
+		SELECT r.*, u.name AS userName FROM role r LEFT JOIN user u ON r.createUserId = u.id
+	</select>
+	
+	<select id="getRole" resultMap="RoleResult" parameterClass="int">
+		SELECT r.*, u.name AS userName FROM role r LEFT JOIN user u ON r.createUserId = u.id WHERE r.id = #value#
+	</select>
+	
+	<select id="getPrivilegeCategories" resultMap="PrivilegeCategoryResult">
+		SELECT * FROM privilege_category ORDER BY seq
+	</select>
+
+	<select id="selectPrivilegeByCategory" resultMap="PrivilegeResult" parameterClass="int">
+		<![CDATA[
+			SELECT * FROM privilege WHERE categoryId = #value#
+		]]>
+    </select>
+    
+    <select id="getRolePrivileges" resultMap="PrivilegeResult" parameterClass="int">
+    	<![CDATA[
+			SELECT p.* FROM privilege p, role_privilege rp WHERE p.id = rp.privilegeId AND rp.roleId = #value#
+		]]>
+    </select>
+    
+    <select id="getUserCount" resultClass="long" parameterClass="map">
+    	SELECT COUNT(*)
+    	FROM user_role ur INNER JOIN user u ON ur.userId = u.id
+    	WHERE ur.roleId = #criteria.roleId#
+    	<isNotEmpty property="criteria.userName">
+    		AND u.loginName LIKE CONCAT('%', #criteria.userName#, '%')
+    	</isNotEmpty>
+    </select>
+    
+    <select id="getUserList" resultMap="User.UserNoPasswordResult" parameterClass="map">
+    	SELECT u.*
+    	FROM user_role ur INNER JOIN user u ON ur.userId = u.id
+    	WHERE ur.roleId = #criteria.roleId#
+    	<isNotEmpty property="criteria.userName">
+    		AND u.loginName LIKE CONCAT('%', #criteria.userName#, '%')
+    	</isNotEmpty>
+    	ORDER BY convert(u.name using gb2312)
+		LIMIT #paginater.firstResult#, #paginater.maxResults#
+    </select>
+    
+    <insert id="addRole2User" parameterClass="map">
+    	INSERT IGNORE INTO user_role(userId, roleId) VALUES(#userId#, #roleId#)
+    </insert>
+    
+    <delete id="deleteRoleFromUser" parameterClass="map">
+    	DELETE FROM user_role WHERE roleId = #roleId# AND userId = #userId#
+    </delete>
+    
+    <select id="getAllResource" resultMap="ResourceResult">
+    	SELECT * FROM resource
+    </select>
+    
+    <select id="findResourceByCode" resultMap="ResourceResult" parameterClass="string">
+    	SELECT * FROM resource WHERE code = #code#
+    </select>
+    
+    <select id="getUserResources" resultMap="ResourceResult" parameterClass="int">
+    	SELECT r.*
+    	FROM user_role ur INNER JOIN role_privilege rp ON ur.roleId = rp.roleId 
+    		INNER JOIN privilege_resource pr ON rp.privilegeId = pr.privilegeId
+    		INNER JOIN resource r ON pr.resourceId = r.id
+    	WHERE ur.userId = #userId#
+    </select>
+    
+    <select id="getUserRoles" resultMap="RoleResult" parameterClass="int">
+    	SELECT r.*, "" AS userName
+    	FROM user_role ur INNER JOIN role r ON ur.roleId = r.id
+    	WHERE ur.userId = #userId#
+    </select>
+    
+    <delete id="deleteRolePrivileges" parameterClass="int">
+    	DELETE FROM role_privilege WHERE roleId = #roleId#
+    </delete>
+    
+    <insert id="insertRolePrivileges" parameterClass="map">
+    	INSERT IGNORE INTO role_privilege(roleId, privilegeId)
+    	VALUES
+    	<iterate property="privilegeIds" conjunction=",">
+    		(#roleId#, #privilegeIds[]#)
+    	</iterate>
+    </insert>
+    
+    <insert id="insertRole" parameterClass="Role">
+    	INSERT INTO role(name, createUserId, createTime, remark, internal) VALUES(#name#, #createUserId#, NOW(), #remark#, #internal#)
+    	<selectKey resultClass="int">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey> 
+    </insert>
+    
+    <update id="updateRole" parameterClass="Role">
+    	UPDATE role SET name = #name#, remark = #remark# WHERE id = #id#
+    </update>
+    
+    <delete id="deleteRole" parameterClass="int">
+    	DELETE FROM role WHERE id = #roleId#
+    </delete>
+    
+    <delete id="deleteUserRoleRelation" parameterClass="int">
+    	DELETE FROM user_role WHERE roleId = #roleId#
+    </delete>
+    
+    <delete id="deleteRolePrivilegeRelation" parameterClass="int">
+    	DELETE FROM role_privilege WHERE roleId = #roleId#
+    </delete>
+	
+</sqlMap>

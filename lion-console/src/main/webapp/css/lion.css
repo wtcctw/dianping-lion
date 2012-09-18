@@ -79,9 +79,14 @@ body {
 	padding-bottom : 8px !important;
 }
 
+.modal-small {
+	width: 450px !important;
+  	margin: -250px 0 0 -225px !important;
+}
+
 .modal-middle {
-	width: 660px;
-  	margin: -250px 0 0 -330px;
+	width: 660px !important;
+  	margin: -250px 0 0 -330px !important;
 }
 
 .modal-big {

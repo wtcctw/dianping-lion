@@ -79,9 +79,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String projectAdd(){
-		if (!hasEditPrivilege()) {
-			throw NoPrivilegeException.INSTANCE;
-		}
 		Project project = new Project();
 		project.setName(this.projectName);
 		project.setProductId(this.productId);
@@ -93,9 +90,6 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String projectEdit(){
-		if (!hasEditPrivilege()) {
-			throw NoPrivilegeException.INSTANCE;
-		}
 		Project project = new Project();
 		project.setId(this.projectId);
 		project.setName(this.projectName);
@@ -108,15 +102,8 @@ public class ProjectAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String projectDel(){
-		if (!hasEditPrivilege()) {
-			throw NoPrivilegeException.INSTANCE;
-		}
 		this.projectService.delProject(this.projectId);
 		return SUCCESS;
-	}
-	
-	public boolean hasEditPrivilege() {
-		return this.privilegeDecider.hasEditProjectPrivilege(SecurityUtils.getCurrentUserId());
 	}
 	
 	public boolean hasEditMemberPrivilege(int projectId) {

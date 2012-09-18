@@ -3,15 +3,6 @@
  */
 package com.dianping.lion.service.impl;
 
-import static com.dianping.lion.ServiceConstants.MODULE_CACHE;
-import static com.dianping.lion.ServiceConstants.MODULE_ENV;
-import static com.dianping.lion.ServiceConstants.MODULE_JOB;
-import static com.dianping.lion.ServiceConstants.MODULE_OPLOG;
-import static com.dianping.lion.ServiceConstants.MODULE_PROJECT;
-import static com.dianping.lion.ServiceConstants.MODULE_SECURITY;
-import static com.dianping.lion.ServiceConstants.MODULE_SETTING;
-import static com.dianping.lion.ServiceConstants.MODULE_USER;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Config;
@@ -19,7 +10,7 @@ import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
-import com.dianping.lion.service.PrivilegeDecider;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.UserService;
 
@@ -27,7 +18,7 @@ import com.dianping.lion.service.UserService;
  * @author danson.liu
  *
  */
-public class PrivilegeDeciderImpl implements PrivilegeDecider {
+public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
     
     @Autowired
     private EnvironmentService environmentService;
@@ -131,7 +122,7 @@ public class PrivilegeDeciderImpl implements PrivilegeDecider {
 	}
 
 	@Override
-	public boolean hasEditAttrPrivilege(int projectId, Integer userId) {
+	public boolean hasEditConfigAttrPrivilege(int projectId, Integer userId) {
 		if (userId == null) {
 			return false;
 		}
@@ -141,44 +132,7 @@ public class PrivilegeDeciderImpl implements PrivilegeDecider {
 	}
 
 	@Override
-	public boolean hasClearCachePrivilege(Integer userId) {
-		if (userId == null) {
-			return false;
-		}
-		User user = userService.loadById(userId);
-		return user.isAdmin() || user.isSA();
-	}
-
-	@Override
 	public boolean hasReadDSFetchLogPrivilege(Integer userId) {
-		if (userId == null) {
-			return false;
-		}
-		User user = userService.loadById(userId);
-		return user.isAdmin() || user.isSA();
-	}
-
-	@Override
-	public boolean hasModulePrivilege(String module, Integer userId) {
-		if (userId == null) {
-			return false;
-		}
-		User user = userService.loadById(userId);
-		if (MODULE_ENV.equals(module) || MODULE_SECURITY.equals(module) || MODULE_JOB.equals(module) 
-				|| MODULE_SETTING.equals(module)) {
-			return user.isAdmin() ? true : false;
-		}
-		if (MODULE_OPLOG.equals(module) || MODULE_CACHE.equals(module) || MODULE_USER.equals(module)) {
-			return (user.isAdmin() || user.isSA()) ? true : false;
-		}
-		if (MODULE_PROJECT.equals(module)) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean hasEditProjectPrivilege(Integer userId) {
 		if (userId == null) {
 			return false;
 		}

@@ -28,6 +28,13 @@ public class Paginater<T> implements Serializable {
     
     private int maxPageNumbers = 7;
     
+    public Paginater() {
+    }
+    
+    public Paginater(int objectsPerPage) {
+    	this.objectsPerPage = objectsPerPage;
+    }
+    
     public int getFirstResult() {
         int pageIndex = getPageNumber() - 1;
         if (pageIndex < 0) {

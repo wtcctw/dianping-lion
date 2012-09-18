@@ -29,7 +29,7 @@ import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.OperationLogService;
-import com.dianping.lion.service.PrivilegeDecider;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.util.StringUtils;
 import com.dianping.lion.vo.OperationLogCriteria;
@@ -46,7 +46,7 @@ public class OperationLogServiceImpl implements OperationLogService {
 	private ConfigService configService;
 	
 	@Autowired
-	private PrivilegeDecider privilegeDecider;
+	private ProjectPrivilegeDecider privilegeDecider;
 
     @Override
     public Paginater<OperationLog> getLogList(OperationLogCriteria logCriteria, Paginater<OperationLog> paginater) {
@@ -119,7 +119,7 @@ public class OperationLogServiceImpl implements OperationLogService {
         this.configService = configService;
     }
 
-    public void setPrivilegeDecider(PrivilegeDecider configPrivilegeDecider) {
+    public void setPrivilegeDecider(ProjectPrivilegeDecider configPrivilegeDecider) {
         this.privilegeDecider = configPrivilegeDecider;
     }
     

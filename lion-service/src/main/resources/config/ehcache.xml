@@ -21,7 +21,19 @@
 			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true " />
 	</Cache>
 	
-	<Cache name="clusteredProjectCache" maxElementsInMemory="10000" memoryStoreEvictionPolicy="LRU" eternal="false"
+	<Cache name="clusteredProjectCache" maxElementsInMemory="1000" memoryStoreEvictionPolicy="LRU" eternal="false"
+		timeToIdleSeconds="1800" timeToLiveSeconds="3600" overflowToDisk="false" diskPersistent="false">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true " />
+	</Cache>
+	
+	<Cache name="clusteredPrivilegeCache" maxElementsInMemory="5000" memoryStoreEvictionPolicy="LRU" eternal="false"
+		timeToIdleSeconds="1800" timeToLiveSeconds="3600" overflowToDisk="false" diskPersistent="false">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true " />
+	</Cache>
+	
+	<Cache name="clusteredUserCache" maxElementsInMemory="2000" memoryStoreEvictionPolicy="LRU" eternal="false"
 		timeToIdleSeconds="1800" timeToLiveSeconds="3600" overflowToDisk="false" diskPersistent="false">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.jgroups.JGroupsCacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true " />

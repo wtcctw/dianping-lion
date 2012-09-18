@@ -45,7 +45,7 @@ public class UserAction extends AbstractLionAction {
     
     @Override
     protected void checkModulePrivilege() {
-    	if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_USER, SecurityUtils.getCurrentUserId())) {
+    	if (!privilegeService.isUserHasResourcePrivilege(SecurityUtils.getCurrentUserId(), ServiceConstants.RES_CODE_USER)) {
 			throw NoPrivilegeException.INSTANCE;
 		}
     }

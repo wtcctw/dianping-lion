@@ -27,12 +27,10 @@ import com.dianping.lion.entity.Product;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Team;
 import com.dianping.lion.entity.User;
-import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.service.ProductService;
 import com.dianping.lion.service.ProjectService;
 import com.dianping.lion.service.TeamService;
 import com.dianping.lion.service.UserService;
-import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
@@ -68,9 +66,6 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String productAddSubmit(){
-		if (!hasEditPrivilege()) {
-			throw NoPrivilegeException.INSTANCE;
-		}
 		Product product = new Product();
 		product.setName(name);
 		product.setProductLeaderId(productLeaderId);
@@ -93,9 +88,6 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String productEditSubmit(){
-		if (!hasEditPrivilege()) {
-			throw NoPrivilegeException.INSTANCE;
-		}
 		Product product = new Product();
 		product.setId(id);
 		product.setName(name);
@@ -109,9 +101,6 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 	}
 	
 	public String deleteProductAjax() {
-		if (!hasEditPrivilege()) {
-			throw NoPrivilegeException.INSTANCE;
-		}
 		List<Project>  productProjects = projectService.getProjectsByProduct(id);
 		if(productProjects.size() > 0) {
 			Product product = productService.findProductByID(id);
@@ -122,10 +111,6 @@ public class ProductAction extends AbstractLionAction implements ServletRequestA
 			reInitiate();
 			return SUCCESS;
 		}
-	}
-	
-	public boolean hasEditPrivilege() {
-		return this.privilegeDecider.hasEditProjectPrivilege(SecurityUtils.getCurrentUserId());
 	}
 	
 	public String productList(){

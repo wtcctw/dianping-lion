@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<package name="privilege" namespace="/privilege" extends="default">
+		
+		<action name="privilegeList" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="list">
+			<result name="success">/WEB-INF/pages/privilege/privilege-list.ftl</result>
+		</action>
+		
+		<action name="roleListAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="roleList">
+			<result name="success">/WEB-INF/pages/privilege/role-list-table.ftl</result>
+		</action>
+		
+		<action name="rolePrivilegeListAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="rolePrivilegeList">
+			<result name="success">/WEB-INF/pages/privilege/role-privilege-list.ftl</result>
+		</action>
+		
+		<action name="roleUserListAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="roleUserList">
+			<result name="success">/WEB-INF/pages/privilege/role-user-list.ftl</result>
+		</action>
+		
+		<action name="addRoleUserAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="addRoleUser">
+			<result name="success">/WEB-INF/pages/privilege/role-user-list.ftl</result>
+		</action>
+		
+		<action name="deleteRoleUserAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="deleteRoleUser">
+			<result name="success">/WEB-INF/pages/privilege/role-user-list.ftl</result>
+		</action>
+		
+		<action name="saveRolePrivilegesAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="saveRolePrivileges">
+			<result name="success" type="stream"/>
+		</action>
+		
+		<action name="createRoleAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="createRole">
+			<result name="success" type="stream"/>
+		</action>
+		
+		<action name="updateRoleAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="updateRole">
+			<result name="success" type="stream"/>
+		</action>
+		
+		<action name="deleteRoleAjax" class="com.dianping.lion.web.action.privilege.PrivilegeAction" method="deleteRole">
+			<result name="success" type="stream"/>
+		</action>
+		
+	</package>
+
+</struts>

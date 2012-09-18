@@ -35,7 +35,12 @@
 		<property name="registerServiceRepository" ref="registerServiceRepository"/>
 	</bean>
 	
-	<bean id="privilegeDecider" class="com.dianping.lion.service.impl.PrivilegeDeciderImpl"/>
+	<bean id="projectPrivilegeDecider" class="com.dianping.lion.service.impl.ProjectPrivilegeDeciderImpl"/>
+	
+	<bean id="privilegeService" class="com.dianping.lion.service.impl.PrivilegeServiceImpl">
+		<property name="cacheClient" ref="clusteredPrivilegeCache"/>
+		<property name="userCacheClient" ref="clusteredUserCache"/>
+	</bean>
 	
 	<bean id="configReleaseService" class="com.dianping.lion.service.impl.ConfigReleaseServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
@@ -44,7 +49,7 @@
 	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
 	
 	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl">
-		<property name="cacheClient" ref="clusteredCache"/>
+		<property name="cacheClient" ref="clusteredUserCache"/>
 	</bean>
 	
 	<bean id="systemSettingService" class="com.dianping.lion.service.impl.SystemSettingServiceImpl">

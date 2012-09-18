@@ -5,6 +5,12 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
+				<ul class="noborder smallpadding smallbottommargin breadcrumb">
+					<li>
+					    系统设置 <span class="divider">></span>
+					</li>
+					<li>操作日志</li>
+				</ul>
 				<#--搜索栏-->
 				<@s.form id="searchForm" action="/system/oplog.vhtml" method="get">
 				<input type="hidden" name="paginater.pageNumber" value="1"/>

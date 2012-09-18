@@ -5,10 +5,12 @@
 	<div class="row">
 		<div class="span12">
 			<ul class="noborder smallpadding smallbottommargin breadcrumb">
-			  <li>
-			 	  环境设置 <span class="divider"></span>
-			  </li>
+				<li>
+				    系统设置 <span class="divider">></span>
+				</li>
+				<li>环境设置</li>
 			</ul>
+			<br/>
 			<#include "/WEB-INF/pages/system/environment-list.ftl"> 
 		</div>
 	</div>

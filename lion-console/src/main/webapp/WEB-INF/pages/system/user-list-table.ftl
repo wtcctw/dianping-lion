@@ -15,7 +15,7 @@
 	<@s.iterator value="paginater.results" var="user" status="userStatus">
 	<tr class="user_row">
 		<td>
-			${userStatus.index}
+			${userStatus.index + 1}
 			<input type="hidden" value="${id}" name="user_id">
 		</td>
 		<td>${name}</td>

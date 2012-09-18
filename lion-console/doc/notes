@@ -34,6 +34,7 @@
 31.lion关于dpsf-net管理时，如果console中添加一个新的service和地址，应该要通知到应用客户端
 
 
+39.加入内建的role角色数据，resource数据，还有privilege以及他们之间的关联关系!!!
 40.上线注意事项
 	a. 线上hosts中添加dba.dp的域名解析，打通到ldap的线路
 	b. 调整socket buffer size到600k，使用jgroups的包大小, echo 'net.core.rmem_max=600000' >> /etc/sysctl.conf, sysctl -p

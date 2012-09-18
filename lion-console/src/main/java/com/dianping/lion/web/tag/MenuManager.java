@@ -105,6 +105,7 @@ public class MenuManager {
 		menu.name = element.getAttribute("name");
 		menu.label = element.getAttribute("label");
 		menu.url = element.getAttribute("url");
+		menu.resource = element.getAttribute("resource");
 		menu.seprator = "true".equals(element.getAttribute("sperator"));
 		NodeList childNodes = element.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++) {
@@ -126,6 +127,7 @@ public class MenuManager {
 		subMenu.name = element.getAttribute("name");
 		subMenu.label = element.getAttribute("label");
 		subMenu.url = element.getAttribute("url");
+		subMenu.resource = element.getAttribute("resource");
 		subMenu.seprator = "true".equals(element.getAttribute("sperator"));
 		return subMenu;
 	}
@@ -259,6 +261,7 @@ public class MenuManager {
 		public String name;
 		public String label;
 		public String url;
+		public String resource;
 		public boolean seprator;
 		public List<Object> subMenuOrGroups = new ArrayList<Object>();	//maybe group, submenu
 		public void addGroup(MenuGroup group) {
@@ -290,6 +293,7 @@ public class MenuManager {
 			cloned.name = this.name;
 			cloned.label = this.label;
 			cloned.url = this.url;
+			cloned.resource = this.resource;
 			cloned.seprator = this.seprator;
 			List<Object> subMenuOrGroups = new ArrayList<Object>();
 			if (this.subMenuOrGroups != null) {
@@ -310,6 +314,7 @@ public class MenuManager {
 		public String name;
 		public String label;
 		public String url;
+		public String resource;
 		public boolean seprator;
 	}
 	

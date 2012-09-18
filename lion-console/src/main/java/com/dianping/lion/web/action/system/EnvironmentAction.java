@@ -19,11 +19,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Environment;
-import com.dianping.lion.exception.NoPrivilegeException;
 import com.dianping.lion.service.EnvironmentService;
-import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.action.common.AbstractLionAction;
 
 @SuppressWarnings("serial")
@@ -42,13 +39,6 @@ public class EnvironmentAction extends AbstractLionAction {
 	private String envIps;
 	private boolean online;
 	private int seq;
-	
-	@Override
-	public void checkModulePrivilege() {
-		if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_ENV, SecurityUtils.getCurrentUserId())) {
-			throw NoPrivilegeException.INSTANCE;
-		}
-	}
 	
 	public String getEnvLists() {
 		environmentList = environmentService.findAll();

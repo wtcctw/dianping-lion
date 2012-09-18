@@ -42,7 +42,7 @@ public class CacheManageAction extends AbstractLionAction implements Application
 	
 	@Override
 	protected void checkModulePrivilege() {
-		if (!privilegeDecider.hasModulePrivilege(ServiceConstants.MODULE_CACHE, SecurityUtils.getCurrentUserId())) {
+		if (!privilegeService.isUserHasResourcePrivilege(SecurityUtils.getCurrentUserId(), ServiceConstants.RES_CODE_CACHE)) {
 			throw NoPrivilegeException.INSTANCE;
 		}
 	}

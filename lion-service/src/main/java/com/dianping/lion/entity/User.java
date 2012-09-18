@@ -145,10 +145,6 @@ public class User implements Serializable, Cloneable {
     }
     
     public boolean isSA() {
-    	//TODO remove me!
-    	if ("sa".equals(loginName)) {
-    		return true;
-    	}
         if (isSA == null) {
             for (Role role : roles) {
                 if (role.getId() == ServiceConstants.ROLE_SA_ID) {

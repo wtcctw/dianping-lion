@@ -17,5 +17,6 @@
     <sqlMap resource="config/sqlmap/lion/team.xml"/>
     <sqlMap resource="config/sqlmap/lion/jobexectime.xml"/>
     <sqlMap resource="config/sqlmap/lion/systemsetting.xml"/>
+    <sqlMap resource="config/sqlmap/lion/privilege.xml"/>
     
 </sqlMapConfig>

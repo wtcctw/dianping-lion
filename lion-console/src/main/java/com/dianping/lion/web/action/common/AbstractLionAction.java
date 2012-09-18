@@ -32,7 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.OperationLogService;
-import com.dianping.lion.service.PrivilegeDecider;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
+import com.dianping.lion.service.PrivilegeService;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
@@ -62,7 +63,10 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 	protected OperationLogService operationLogService;
 	
 	@Autowired
-	protected PrivilegeDecider privilegeDecider;
+	protected ProjectPrivilegeDecider privilegeDecider;
+	
+	@Autowired
+	protected PrivilegeService privilegeService;
 	
 	@Override
 	public void prepare() throws Exception {
@@ -208,8 +212,12 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
         this.operationLogService = operationLogService;
     }
 
-	public void setPrivilegeDecider(PrivilegeDecider privilegeDecider) {
+	public void setPrivilegeDecider(ProjectPrivilegeDecider privilegeDecider) {
 		this.privilegeDecider = privilegeDecider;
+	}
+
+	public void setPrivilegeService(PrivilegeService privilegeService) {
+		this.privilegeService = privilegeService;
 	}
 	
 }

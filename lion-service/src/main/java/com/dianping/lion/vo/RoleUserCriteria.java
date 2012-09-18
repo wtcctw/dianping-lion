@@ -1,7 +1,7 @@
 /**
  * Project: com.dianping.lion.lion-service-0.0.1
  * 
- * File Created at 2012-9-12
+ * File Created at 2012-9-17
  * $Id$
  * 
  * Copyright 2010 dianping.com.
@@ -13,46 +13,36 @@
  * accordance with the terms of the license agreement you entered into
  * with dianping.com.
  */
-package com.dianping.lion.entity;
+package com.dianping.lion.vo;
 
 import java.io.Serializable;
 
 /**
- * TODO Comment of Privilege
+ * TODO Comment of RoleUserCriteria
  * @author danson.liu
  *
  */
 @SuppressWarnings("serial")
-public class Privilege implements Serializable {
-
-	private int id;
+public class RoleUserCriteria implements Serializable {
 	
-	private int categoryId;
+	private int roleId;
 	
-	private String name;
-	
-	public int getId() {
-		return id;
+	private String userName;
+
+	public int getRoleId() {
+		return roleId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setRoleId(int roleId) {
+		this.roleId = roleId;
 	}
 
-	public int getCategoryId() {
-		return categoryId;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setCategoryId(int categoryId) {
-		this.categoryId = categoryId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 }

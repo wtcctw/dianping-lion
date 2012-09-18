@@ -16,7 +16,7 @@
 	  <tbody>
 	  	<@s.iterator value="paginater.results" var="operationLog" status="logStatus">
 	  		<tr>
-	      		<td>${logStatus.index}</td>
+	      		<td>${logStatus.index + 1}</td>
 	      		<td><@s.if test="%{#operationLog.opTypeEnum != null}">${opTypeEnum.label}</@s.if></td>
 	      		<td>${opUserName}</td>
 	      		<td>${envName}</td>

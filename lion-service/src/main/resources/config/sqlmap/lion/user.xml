@@ -17,6 +17,10 @@
 		<result column="password" property="password"/>
 		<result column="id" property="id"/>
 	</resultMap>
+	
+	<resultMap id="UserWithRoleResult" class="User" extends="UserResultBasic">
+		<result property="roles" column="id" select="Privilege.getUserRoles"/>
+	</resultMap>
 
 	<resultMap id="UserNoPasswordResult" class="User" extends="UserResultBasic_">
 		<result column="id" property="id"/>
@@ -32,7 +36,7 @@
 		]]>
     </select>
     
-    <select id="findById" resultMap="UserResultBasic">
+    <select id="findById" resultMap="UserWithRoleResult">
 		<![CDATA[
 		SELECT * FROM user WHERE id = #id# ORDER BY id
 		]]>
@@ -83,7 +87,7 @@
     	FROM user u
     	WHERE 1 = 1
     	<include refid="getUser_Fragment"/>
-    	ORDER BY u.name
+    	ORDER BY convert(u.name using gb2312)
     	LIMIT #paginater.firstResult#, #paginater.maxResults#
     </select>
     

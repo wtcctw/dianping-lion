@@ -29,6 +29,8 @@ public class Resource implements Serializable {
 	
 	private String name;
 	
+	private String code;
+	
 	private String url;
 
 	public int getId() {
@@ -45,6 +47,14 @@ public class Resource implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getUrl() {

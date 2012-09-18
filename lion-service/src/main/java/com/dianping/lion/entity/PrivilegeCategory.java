@@ -16,6 +16,7 @@
 package com.dianping.lion.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * TODO Comment of PrivilegeCategory
@@ -28,6 +29,10 @@ public class PrivilegeCategory implements Serializable {
 	private int id;
 	
 	private String name;
+	
+	private int seq;
+	
+	private List<Privilege> privileges;
 
 	public int getId() {
 		return id;
@@ -43,6 +48,22 @@ public class PrivilegeCategory implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<Privilege> getPrivileges() {
+		return privileges;
+	}
+
+	public void setPrivileges(List<Privilege> privileges) {
+		this.privileges = privileges;
+	}
+
+	public int getSeq() {
+		return seq;
+	}
+
+	public void setSeq(int seq) {
+		this.seq = seq;
 	}
 	
 }

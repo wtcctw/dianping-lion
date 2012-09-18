@@ -12,7 +12,7 @@
 	  	<tr>
 	  		<td>${user.loginName}</td>
 			<td>${user.name}</td>
-			<td><a href="#" onclick="deleteMember(${projectId}, 'owner', ${userId});">删除</a></td>
+			<td><a href="#" class="no-dec" onclick="deleteMember(${projectId}, 'owner', ${userId});">删除</a></td>
 	  	</tr>
 	  	</@s.iterator>
 	  </tbody>
@@ -32,7 +32,7 @@
 	  	<tr>
 	  		<td>${user.loginName}</td>
 			<td>${user.name}</td>
-			<td><a href="#" onclick="deleteMember(${projectId}, 'member', ${userId});">删除</a></td>
+			<td><a href="#" class="no-dec" onclick="deleteMember(${projectId}, 'member', ${userId});">删除</a></td>
 	  	</tr>
 	  	</@s.iterator>
 	  </tbody>
@@ -52,7 +52,7 @@
 	  	<tr>
 	  		<td>${user.loginName}</td>
 			<td>${user.name}</td>
-			<td><a href="#" onclick="deleteMember(${projectId}, 'operator', ${userId});">删除</a></td>
+			<td><a href="#" class="no-dec" onclick="deleteMember(${projectId}, 'operator', ${userId});">删除</a></td>
 	  	</tr>
 	  	</@s.iterator>
 	  </tbody>

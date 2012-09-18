@@ -6,6 +6,13 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
+				<ul class="noborder smallpadding smallbottommargin breadcrumb">
+					<li>
+					    系统设置 <span class="divider">></span>
+					</li>
+					<li>用户管理</li>
+				</ul>
+				<br/>
 				<@s.form id="searchForm" cssClass="form-inline lion" action="/system/userList.vhtml" method="get">
 					<input type="hidden" id="search-pageNo" name="paginater.pageNumber" value="1"/>
 					<label class="control-label" for="name">Name：</label>
