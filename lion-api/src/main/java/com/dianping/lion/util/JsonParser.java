@@ -51,18 +51,20 @@ public class JsonParser {
 		String[] names = JSONObject.getNames(jsonObj);
 		dbAliases = new HashMap<String,Boolean>();
 		a: for(int i = 0; i < names.length; i++) {
-			if(TIMESTAMP.equals(names[i])) {
+			String dsName = names[i];
+			if(TIMESTAMP.equals(dsName)) {
 				continue;
 			} else {
-				JSONObject envDSContent = jsonObj.getJSONObject(names[i]);
+				JSONObject envDSContent = jsonObj.getJSONObject(dsName);
+				dsName = "data-source." + dsName;
 				String[] envs = JSONObject.getNames(envDSContent);
 				for (int j = 0; j < envs.length; j++) {
 					if(REMOVED.equals(envs[j])) {
-						dbAliases.put(names[i], true);
+						dbAliases.put(dsName, true);
 						continue a;
 					}
 				}
-				dbAliases.put(names[i], false);
+				dbAliases.put(dsName, false);
 			}
 		}
 		return dbAliases;
@@ -92,7 +94,7 @@ public class JsonParser {
 					continue;
 				}
 				ConfigInstance ci = new ConfigInstance();
-				Config config = getConfigService().findConfigByKey(dbAliases.get(i));
+				Config config = getConfigService().findConfigByKey("data-source." + dbAliases.get(i));
 				ci.setConfigId(config.getId());
 				Environment env = getEnvService().findEnvByName(envs[j].toLowerCase());
 				ci.setEnvId(env.getId());
