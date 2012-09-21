@@ -111,8 +111,16 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 					logger.debug(sr);
 					Attributes attrs = sr.getAttributes();
 					user.setLoginName(userName);
-					user.setName((String)attrs.get("displayName").get());
-					user.setEmail((String)attrs.get("mail").get());
+					if(attrs.get("displayName")!=null) {
+						user.setName((String)attrs.get("displayName").get());
+					} else {
+						user.setName(userName);
+					}
+					if(attrs.get("mail") != null) {
+						user.setEmail((String)attrs.get("mail").get());
+					} else {
+						user.setEmail(userName+"@dianping.com");
+					}
 					user.setSystem(false);
 					user.setCreateTime(new Date(System.currentTimeMillis()));
 					user.setLocked(false);
