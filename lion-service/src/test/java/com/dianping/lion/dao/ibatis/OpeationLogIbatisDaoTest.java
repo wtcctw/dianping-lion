@@ -17,15 +17,13 @@ package com.dianping.lion.dao.ibatis;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dianping.lion.dao.OperationLogDao;
 import com.dianping.lion.support.AbstractDaoTestSupport;
 
 public class OpeationLogIbatisDaoTest extends AbstractDaoTestSupport {
 	
-	@Autowired
-	private OperationLogDao operationLogDao;
+//	@Autowired
+//	private OperationLogDao operationLogDao;
 
 	@Test
 	@Ignore

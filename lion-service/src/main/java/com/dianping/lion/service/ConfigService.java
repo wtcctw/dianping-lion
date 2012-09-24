@@ -24,6 +24,7 @@ import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigSetType;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
+import com.dianping.lion.vo.Paginater;
 
 /**
  * @author danson.liu
@@ -187,5 +188,7 @@ public interface ConfigService {
 	 * @param envId
 	 */
 	void registerAndPush(int configId, int envId);
+
+	Paginater<Config> paginateConfigs(ConfigCriteria criteria, Paginater<Config> paginater);
 
 }

@@ -26,7 +26,6 @@ import com.dianping.lion.vo.Paginater;
 import com.dianping.lion.vo.RoleUserCriteria;
 
 /**
- * TODO Comment of PrivilegeService
  * @author danson.liu
  *
  */

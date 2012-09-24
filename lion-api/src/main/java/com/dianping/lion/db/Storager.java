@@ -25,8 +25,12 @@ import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigTypeEnum;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
+import com.dianping.lion.exception.ReferencedConfigForbidDeleteException;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
+import com.dianping.lion.service.OperationLogService;
 import com.dianping.lion.util.JsonParser;
 
 /**
@@ -35,12 +39,18 @@ import com.dianping.lion.util.JsonParser;
  *
  */
 public class Storager {
+	
 	@Autowired
 	private JsonParser jsonParser;
+	
 	@Autowired
 	private ConfigService configService;
+	
 	@Autowired
 	private EnvironmentService envService;
+	
+	@Autowired
+	private OperationLogService operationLogService;
 	
 	public void init() {
 		jsonParser.setConfigService(configService);
@@ -96,7 +106,11 @@ public class Storager {
 			ConfigInstance ci = entry.getKey();
 			if(entry.getValue()) {
 				//delete the instance
-				configService.deleteInstance(ci.getConfigId(), ci.getEnvId());
+				try {
+					configService.deleteInstance(ci.getConfigId(), ci.getEnvId());
+				} catch (ReferencedConfigForbidDeleteException e) {
+					operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Job_DSFetcher, "移除数据源失败，存在对它的引用配置.").key(null, null, dsContent));
+				}
 			} else {
 				ConfigInstance result = configService.findInstance(ci.getConfigId(), ci.getEnvId(), ConfigInstance.NO_CONTEXT);
 				if(result ==  null) {
@@ -123,7 +137,11 @@ public class Storager {
 				List<ConfigInstance> configs = configService.findInstancesByConfig(configId, null);
 				if(configs == null || configs.size() == 0) {
 					//no instance related, considering to the remove the config
-					configService.delete(configId);
+					try {
+						configService.delete(configId);
+					} catch (ReferencedConfigForbidDeleteException e) {
+						operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Job_DSFetcher, "移除数据源失败，存在对它的引用配置.").key(null, null, dsContent));
+					}
 					continue;
 				}
 			}
@@ -152,6 +170,10 @@ public class Storager {
 
 	public void setEnvService(EnvironmentService envService) {
 		this.envService = envService;
+	}
+
+	public void setOperationLogService(OperationLogService operationLogService) {
+		this.operationLogService = operationLogService;
 	}
 	
 }

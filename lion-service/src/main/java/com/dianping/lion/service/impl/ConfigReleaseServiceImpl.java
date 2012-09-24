@@ -105,7 +105,7 @@ public class ConfigReleaseServiceImpl implements ConfigRelaseService {
 			} catch (RuntimeException e) {
 				logger.error("Failed to execute configSet tasks while set config[" + configSetTask.getKey() + "], interrupt this execution.", e);
 				throw new RuntimeBusinessException("Error happend when set config[" + configSetTask.getKey() + "], retry or contact lion " 
-						+ "administrator.");
+						+ "administrator.", e);
 			}
 		}
 	}
@@ -141,8 +141,8 @@ public class ConfigReleaseServiceImpl implements ConfigRelaseService {
 	}
 
 	@Override
-	public ConfigSnapshotSet findFirstSnapshotSet(int projectId, int envId, String task) {
-		return configReleaseDao.findFirstSnapshotSet(projectId, envId, task);
+	public ConfigSnapshotSet findSnapshotSetToRollback(int projectId, int envId, String task) {
+		return configReleaseDao.findSnapshotSetToRollback(projectId, envId, task);
 	}
 
 	@SuppressWarnings("unchecked")

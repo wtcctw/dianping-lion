@@ -15,18 +15,10 @@
  */
 package com.dianping.lion.service.impl;
 
-import java.util.List;
-
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.dianping.lion.entity.Team;
-import com.dianping.lion.service.ProjectService;
 
 /**
  * @author danson.liu
@@ -38,8 +30,8 @@ import com.dianping.lion.service.ProjectService;
 })
 public class ProjectServiceImplTest {
 	
-	@Autowired
-	private ProjectService projectService;
+//	@Autowired
+//	private ProjectService projectService;
 	
 	@Test
 	public void testGetTeams() {

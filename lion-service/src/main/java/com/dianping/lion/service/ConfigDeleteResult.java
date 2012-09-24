@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dianping.lion.entity.Config;
-import com.dianping.lion.entity.Environment;
 
 /**
  * @author danson.liu
@@ -27,12 +26,13 @@ import com.dianping.lion.entity.Environment;
  */
 public class ConfigDeleteResult {
 
-	private List<Environment> failedEnvs;
+	private List<String> failedEnvs;
     private Config config;
+	private boolean hasReference;
 	
-	public void addFailedEnv(Environment env) {
+	public void addFailedEnv(String env) {
 		if (failedEnvs == null) {
-			failedEnvs = new ArrayList<Environment>();
+			failedEnvs = new ArrayList<String>();
 		}
 		failedEnvs.add(env);
 	}
@@ -44,7 +44,7 @@ public class ConfigDeleteResult {
 	/**
 	 * @return the failedEnvs
 	 */
-	public List<Environment> getFailedEnvs() {
+	public List<String> getFailedEnvs() {
 		return failedEnvs;
 	}
 
@@ -55,5 +55,13 @@ public class ConfigDeleteResult {
     public Config getConfig() {
         return config;
     }
+
+	public void setHasReference(boolean hasReference) {
+		this.hasReference = hasReference;
+	}
+
+	public boolean isHasReference() {
+		return hasReference;
+	}
 	
 }

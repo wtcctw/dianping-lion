@@ -8,6 +8,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
+				<input type="hidden" id="projectName" name="projectName" value="${project.name}"/>
 				<ul class="noborder smallpadding smallbottommargin breadcrumb">
 				  <li>
 				    ${project.product.team.name}<span class="divider">></span>
@@ -80,4 +81,6 @@
 	<#include "/WEB-INF/pages/config/config-attr-modal.ftl">
 	<#include "/WEB-INF/pages/config/config-list-editor.ftl">
 	<#include "/WEB-INF/pages/config/config-map-editor.ftl">
+	<#include "/WEB-INF/pages/config/config-refdb-editor.ftl">
+	<#include "/WEB-INF/pages/config/config-refshared-editor.ftl">
 </body>

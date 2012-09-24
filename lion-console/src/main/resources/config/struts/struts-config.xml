@@ -14,6 +14,10 @@
 			<result name="success">/WEB-INF/pages/config/config-list-table.ftl</result>
 		</action>
 		
+		<action name="configList2Ajax" class="com.dianping.lion.web.action.config.ConfigListAction" method="ajaxSimpleList">
+			<result name="success">/WEB-INF/pages/config/config-list-table2.ftl</result>
+		</action>
+		
 		<action name="moveUpConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveUp">
 			<result name="success" type="stream"/>
 		</action>

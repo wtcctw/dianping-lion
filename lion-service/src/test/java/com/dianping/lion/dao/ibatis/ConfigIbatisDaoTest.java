@@ -18,17 +18,12 @@ package com.dianping.lion.dao.ibatis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.entity.Config;
-import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigTypeEnum;
 import com.dianping.lion.support.AbstractDaoTestSupport;
 

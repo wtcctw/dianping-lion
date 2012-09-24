@@ -29,6 +29,8 @@ import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigStatus;
 import com.dianping.lion.util.Maps;
 import com.dianping.lion.util.SecurityUtils;
+import com.dianping.lion.vo.ConfigCriteria;
+import com.dianping.lion.vo.Paginater;
 
 /**
  * @author danson.liu
@@ -209,6 +211,28 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 	@Override
 	public List<ConfigStatus> findModifyTime(int projectId, int envId) {
 		return getSqlMapClientTemplate().queryForList("Config.findModifyTime", Maps.entry("projectId", projectId).entry("envId", envId).get());
+	}
+
+	@Override
+	public long getConfigCount(ConfigCriteria criteria) {
+		return (Long) getSqlMapClientTemplate().queryForObject("Config.getConfigCount", Maps.entry("criteria", criteria).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Config> getConfigList(ConfigCriteria criteria, Paginater<Config> paginater) {
+		return getSqlMapClientTemplate().queryForList("Config.getConfigList", Maps.entry("criteria", criteria).entry("paginater", paginater).get());
+	}
+
+	@Override
+	public boolean hasConfigReferencedTo(String configKey, int envId) {
+		return getSqlMapClientTemplate().queryForObject("Config.hasConfigReferencedTo", Maps.entry("configKey", configKey).entry("envId", envId).get()) != null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId) {
+		return getSqlMapClientTemplate().queryForList("Config.getInstanceReferencedTo", Maps.entry("configKey", configKey).entry("envId", envId).get());
 	}
 
 }

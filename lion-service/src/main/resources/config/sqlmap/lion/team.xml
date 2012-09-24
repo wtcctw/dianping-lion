@@ -12,21 +12,14 @@
 	
 	<select id="findAll" resultMap="TeamResult">
 		<![CDATA[
-			SELECT
-			  id,
-			  name,
-			  createTime,
-			  modifyTime
+			SELECT id, name, createTime, modifyTime
 			FROM team
+			ORDER BY seq
 		]]>
     </select>
     <select id="findByID" resultMap="TeamResult">
 		<![CDATA[
-			SELECT
-			  id,
-			  name,
-			  createTime,
-			  modifyTime
+			SELECT id, name, createTime, modifyTime
 			FROM team
 			WHERE id=#id#
 		]]>

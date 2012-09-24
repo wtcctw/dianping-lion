@@ -43,12 +43,13 @@ public interface ConfigRelaseService {
 	int createSnapshotSet(int projectId, int envId, String task);
 
 	/**
+	 * 获取指定项目对应指定task所使用的配置镜像
 	 * @param id
 	 * @param id2
 	 * @param task
 	 * @return
 	 */
-	ConfigSnapshotSet findFirstSnapshotSet(int projectId, int envId, String task);
+	ConfigSnapshotSet findSnapshotSetToRollback(int projectId, int envId, String task);
 
 	/**
 	 * @param snapshotSet

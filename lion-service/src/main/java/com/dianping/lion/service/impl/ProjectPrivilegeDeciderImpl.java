@@ -34,7 +34,7 @@ public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
 
     @Override
     public boolean hasReadConfigPrivilege(int projectId, int envId, int configId, Integer userId) {
-        Environment environment = environmentService.loadEnvByID(envId);
+        Environment environment = environmentService.findEnvByID(envId);
         User user = userId != null ? userService.loadById(userId) : null;
         if (user != null && (user.isAdmin() || user.isSystem() || user.isSA())) {
             return true;
@@ -61,7 +61,7 @@ public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
         if (userId == null) {
             return false;
         }
-        Environment environment = environmentService.loadEnvByID(envId);
+        Environment environment = environmentService.findEnvByID(envId);
         User user = userService.loadById(userId);
         if (user != null && (user.isAdmin() || user.isSystem() || user.isSA())) {
             return true;
@@ -82,7 +82,7 @@ public class ProjectPrivilegeDeciderImpl implements ProjectPrivilegeDecider {
         if (userId == null) {
             return false;
         }
-        Environment environment = environmentService.loadEnvByID(envId);
+        Environment environment = environmentService.findEnvByID(envId);
         User user = userService.loadById(userId);
         if (user != null && (user.isAdmin() || user.isSystem() || user.isSA())) {
             return true;

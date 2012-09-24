@@ -4,6 +4,8 @@ var Type_Bool = 30;
 var Type_List_Str = 40;
 var Type_List_Num = 45;
 var Type_Map = 50;
+var Type_Ref_Shared = 60;
+var Type_Ref_DB = 70;
 
 /**是否在新打开的模态窗口中创建过新的config*/
 var modal_config_created = false;
@@ -15,7 +17,11 @@ var $clearAlert;
 var $deleteAlert;
 var $commonAlert;
 
+var projectName;
+var jump2Page;
+
 $(function(){
+	projectName = $("#projectName").val();
 	$(".icon-intro").popover();
 	bindConfigTableEvents();
 	$config_list_editor = $("#list-editor").listeditor();
@@ -48,7 +54,8 @@ $(function(){
 				},
 				"否" : function() {$(this).dialog("close");}
 			}
-		});
+		}
+	);
 		
 	$deleteAlert = $("<div>确认删除该配置项? [<font color='green'>不可恢复</font>]<br/>将清除所有环境的配置值.</div>")
 		.dialog({
@@ -76,7 +83,8 @@ $(function(){
 				},
 				"否" : function() {$(this).dialog("close");}
 			}
-		});
+		}
+	);
 		
 	$commonAlert = $("<div class='alert-body'></div>")
 		.dialog({
@@ -88,7 +96,8 @@ $(function(){
 			buttons : {
 				"确定" : function() {$(this).dialog("close");}
 			}
-		});
+		}
+	);
 		
 	$("#add-config-modal").on("hidden", function() {
 		resetConfigForm();
@@ -170,6 +179,46 @@ $(function(){
 	$("#edit-config-attr-modal").on("hidden", function() {
 		$("#edit-config-attr-modal").hideAlerts();
 	});
+	
+	$("#refshared-editor").on("show", function() {
+		$("[name='ref-config-key']").val("");
+		loadSelectableConfigs(sharedProjectId, 0, $(this));
+	});
+	
+	$("#refdb-editor").on("show", function() {
+		$("[name='ref-config-key']").val("");
+		loadSelectableConfigs(dsProjectId, 0, $(this));
+	});
+	
+	function loadSelectableConfigs(projectId, pageNo, $container) {
+		$.ajax("/config/configList2Ajax.vhtml".prependcontext(), {
+			data : $.param({
+				"criteria.projectId" : projectId,
+				"criteria.key" : $container.find("[name='ref-config-key']").val().trim(),
+				"paginater.pageNumber" : pageNo
+			}, true),
+			dataType: "html",
+			success : function(result) {
+				$container.find(".modal-body").html(result);
+				$container.find(".modal-body .config_row").click(function() {
+					$(this).find("[name='configkey']").attr("checked", true);
+				});
+			}
+		});
+	}
+	
+	jump2Page = function(pageNo, this_) {
+		var elements = $(this_).parents("#refdb-editor");
+		if (elements.length > 0) {
+			loadSelectableConfigs(dsProjectId, pageNo, $("#refdb-editor"));
+			return;
+		}
+		elements = $(this_).parents("#refshared-editor");
+		if (elements.length > 0) {
+			loadSelectableConfigs(sharedProjectId, pageNo, $("#refshared-editor"));
+			return;
+		}
+	};
 	
 	function loadConfigAttrFailed(error) {
 		$("#edit-config-attr-modal .form-error").showAlert(error);
@@ -265,6 +314,39 @@ $(function(){
 		});
 	});
 	
+	$("#refshared-ok-btn,#refdb-ok-btn").click(function() {
+		var $modal = $(this).parents(".modal");
+		var configKey = $modal.find("[name='configkey']:checked").val();
+		var backfill = $modal.data("backfill");
+		if ($(this).attr("id") == "refdb-ok-btn") {
+			$("#" + backfill).val("$ref{" + configKey + "?i=15&m=5&M=30}");
+		} else {
+			$("#" + backfill).val("$ref{" + configKey + "}");
+		}
+		$modal.modal("hide");
+		return false;
+	});
+	
+	$("#refshared-search").click(function() {
+		var $modal = $(this).parents(".modal");
+		loadSelectableConfigs(sharedProjectId, 0, $modal);
+		return false;
+	});
+	
+	$("#refdb-search").click(function() {
+		var $modal = $(this).parents(".modal");
+		loadSelectableConfigs(dsProjectId, 0, $modal);
+		return false;
+	});
+	
+	$("#refshared-clear-btn,#refdb-clear-btn").click(function() {
+		var $modal = $(this).parents(".modal");
+		var backfill = $modal.data("backfill");
+		$("#" + backfill).val("");
+		$modal.modal("hide");
+		return false;
+	});
+	
 	function reloadConfigListTable() {
 		$("#config-list-container").load("/config/configListAjax.vhtml".prependcontext(), $.param({
 			"pid" : $("[name='pid']").val(),
@@ -300,6 +382,8 @@ $(function(){
 			case Type_List_Num : return generateListComponent(inputId, true);
 			case Type_List_Str : return generateListComponent(inputId, false);
 			case Type_Map : return generateMapComponent(inputId);
+			case Type_Ref_Shared : return generateRefSimpleComponent(inputId);
+			case Type_Ref_DB : return generateRefDBComponent(inputId);
 		}
 	}
 	
@@ -331,9 +415,34 @@ $(function(){
 			+ "<br/><span class='help-inline hide message'>非法的数据格式, 例: {\"url\":\"xx\", \"con\":{\"min\":\"3\",\"max\":\"6\"}}</span>";
 	}
 	
+	function generateRefSimpleComponent(inputId) {
+		return "<input type='text' id='" + inputId + "' style='width:350px;' readonly='readonly'>"
+			+ "<a href='#' onclick='openSharedSelector(\"" + inputId + "\", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>"
+			+ "<span class='help-inline hide message'>必选!</span>";
+	}
+	
+	function generateRefDBComponent(inputId) {
+		return "<input type='text' id='" + inputId + "' style='width:350px;' readonly='readonly'>"
+			+ "<a href='#' onclick='openDBSelector(\"" + inputId + "\", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>"
+			+ "<span class='help-inline hide message'>必选!</span><br/>"
+			+ "连接数(初始/最小/最大，默认15/5/30): <br/>" 
+			+ "<input type='radio' id='cs1' name='db-conn' value='1/1/5' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:0px;margin-top:0px;'>" 
+			+ "<label class='help-inline' for='cs1'>1/1/5</label>"
+			+ "<input type='radio' id='cs2' name='db-conn' value='5/3/15' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>" 
+			+ "<label class='help-inline' for='cs2'>5/3/15</label>"
+			+ "<input type='radio' id='cs3' name='db-conn' value='15/5/30' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>" 
+			+ "<label class='help-inline' for='cs3'>15/5/30</label>"
+			+ "<input type='radio' id='cs4' name='db-conn' value='15/10/50' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>" 
+			+ "<label class='help-inline' for='cs4'>15/10/50</label>";
+	}
+	
 	function validateConfigForm() {
 		var checkPass = true;
 		resetConfigFormValidation();
+		if (!$("#config-key").val().startsWith(projectName + ".")) {
+			setValidateError($("#config-key"));
+			checkPass = false;
+		}
 		$("#config-key,#config-desc").each(function() {
 			if ($(this).val().isBlank()) {
 				setValidateError($(this));
@@ -358,6 +467,11 @@ $(function(){
 			}
 		} else if (configType == Type_Map) {
 			if (!$.isJSonObj(configVal)) {
+				setValidateError($("#config-value"));
+				checkPass = false;
+			}
+		} else if (configType == Type_Ref_Shared || configType == Type_Ref_DB) {
+			if (configVal.isBlank()) {
 				setValidateError($("#config-value"));
 				checkPass = false;
 			}
@@ -398,6 +512,11 @@ $(function(){
 		} else if (configType == Type_Map) {
 			if (!$.isJSonObj(configVal)) {
 				setValidateError($("#edit-config-value"));
+				checkPass = false;
+			}
+		} else if (configType == Type_Ref_Shared || configType == Type_Ref_DB) {
+			if (configVal.isBlank()) {
+				setValidateError($("#config-value"));
 				checkPass = false;
 			}
 		}
@@ -625,3 +744,34 @@ function openListEditor(inputId, numberlist, event) {
 	});
 	event.preventDefault();
 }
+
+function openSharedSelector(inputId, event) {
+	$("#refshared-editor").data("backfill", inputId);
+	$("#refshared-editor").modal({backdrop : "static", keyboard : false});
+	event.preventDefault();
+}
+
+function openDBSelector(inputId, event) {
+	$("#refdb-editor").data("backfill", inputId);
+	$("#refdb-editor").modal({backdrop : "static", keyboard : false});
+	event.preventDefault();
+}
+
+function changeDbParam(inputId, radio) {
+	var refexpr = $("#" + inputId).val();
+	if (!refexpr.isBlank()) {
+		var paramstr = $(radio).val();
+		var newRefExpr = refexpr.replaceAll("\\?.*}", "?" + generateDbParam(paramstr) + "}");
+		$("#" + inputId).val(newRefExpr);
+	}
+}
+	
+function generateDbParam(paramstr) {
+	var frags = paramstr.split("/");
+	return "i=" + frags[0] + "&m=" + frags[1] + "&M=" + frags[2];
+}
+
+
+
+
+

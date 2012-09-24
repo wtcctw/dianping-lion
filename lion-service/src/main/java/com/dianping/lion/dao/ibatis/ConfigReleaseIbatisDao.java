@@ -75,8 +75,8 @@ public class ConfigReleaseIbatisDao extends SqlMapClientDaoSupport implements Co
 	}
 
 	@Override
-	public ConfigSnapshotSet findFirstSnapshotSet(int projectId, int envId, String task) {
-		return (ConfigSnapshotSet) getSqlMapClientTemplate().queryForObject("ConfigRelease.findFirstSnapshotSet", 
+	public ConfigSnapshotSet findSnapshotSetToRollback(int projectId, int envId, String task) {
+		return (ConfigSnapshotSet) getSqlMapClientTemplate().queryForObject("ConfigRelease.findSnapshotSetWithTask", 
 				Maps.entry("projectId", projectId).entry("envId", envId).entry("task", task).get());
 	}
 	

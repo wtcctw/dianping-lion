@@ -37,10 +37,11 @@ public class ConfigInstance implements Serializable {
 	protected int envId;
 	protected String desc;
 	protected String value;
+	protected String refkey;
 	protected String context = NO_CONTEXT;
 	protected String contextmd5;
-	protected Integer createUserId = -1;
-	protected Integer modifyUserId = -1;
+	protected Integer createUserId;
+	protected Integer modifyUserId;
 	protected Date createTime;
 	protected Date modifyTime;
 	protected int seq;
@@ -236,6 +237,14 @@ public class ConfigInstance implements Serializable {
 	 */
 	public void setSeq(int seq) {
 		this.seq = seq;
+	}
+
+	public String getRefkey() {
+		return refkey;
+	}
+
+	public void setRefkey(String refkey) {
+		this.refkey = refkey;
 	}
 	
 }

@@ -60,7 +60,7 @@ public interface ConfigReleaseDao {
 	 * @param task
 	 * @return
 	 */
-	ConfigSnapshotSet findFirstSnapshotSet(int projectId, int envId, String task);
+	ConfigSnapshotSet findSnapshotSetToRollback(int projectId, int envId, String task);
 
 	/**
 	 * @param id

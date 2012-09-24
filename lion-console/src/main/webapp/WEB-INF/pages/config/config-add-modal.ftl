@@ -11,7 +11,7 @@
 			      <label class="control-label control-lion-label" for="config-key">Key:</label>
 			      <div class="controls lion-controls">
 			        <input type="text" style="width:350px;" id="config-key" value="${project.name}." maxlength="60">
-			        <span class="help-inline hide message">必填!</span>
+			        <span class="help-inline hide message">必填,项目名打头!</span>
 			      </div>
 			    </div>
         		<div class="control-group control-lion-group">
@@ -37,7 +37,7 @@
 			    </div>
 			    <div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label">环境:</label>
-			      <div class="controls lion-controls2">
+			      <div class="controls lion-controls2" style="width:390px;">
 			      		<input type="checkbox" id="select-all-env"/><label for="select-all-env" class="help-inline">全选线下</label>
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
@@ -57,6 +57,15 @@
 			      </div>
 			    </div>
 			    <!--
+			    <div class="control-group control-lion-group">
+			      <label class="control-label control-lion-label" for="config-value2"></label>
+			      <div class="controls lion-controls2" id="config-value2-container">
+			      	连接数(Init/Min/Max): &nbsp;
+			      	<input type="radio" id="low" name="conn"><label for="low" class="help-inline">1/1/5</label>
+			      	<input type="radio" id="middle" name="conn"><label for="middle" class="help-inline">5/3/15</label>
+			      	<input type="radio" id="high" name="conn"><label for="high" class="help-inline">15/5/30</label>
+			      </div>
+			    </div>
 			    <div class="control-group control-lion-group">
 			    	<label class="control-label control-lion-label">&nbsp;</label>
 			    	<div class="controls lion-controls">

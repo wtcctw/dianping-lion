@@ -56,7 +56,7 @@ public class RollbackConfigsServlet extends AbstractLionServlet {
 		if (project != null) {
 		    String logcontent = "回滚task: " + task;
 		    try {
-            		ConfigSnapshotSet snapshotSet = configReleaseService.findFirstSnapshotSet(project.getId(), environment.getId(), task);
+            		ConfigSnapshotSet snapshotSet = configReleaseService.findSnapshotSetToRollback(project.getId(), environment.getId(), task);
             		
             		if (snapshotSet != null) {
             			ConfigRollbackResult rollbackResult = configReleaseService.rollbackSnapshotSet(snapshotSet);

@@ -21,6 +21,8 @@ import java.util.Map;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.ConfigStatus;
+import com.dianping.lion.vo.ConfigCriteria;
+import com.dianping.lion.vo.Paginater;
 
 /**
  * @author danson.liu
@@ -186,5 +188,13 @@ public interface ConfigDao {
 	 * @return
 	 */
 	List<ConfigStatus> findModifyTime(int projectId, int envId);
+
+	long getConfigCount(ConfigCriteria criteria);
+
+	List<Config> getConfigList(ConfigCriteria criteria, Paginater<Config> paginater);
+
+	boolean hasConfigReferencedTo(String configKey, int envId);
+
+	List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId);
 
 }

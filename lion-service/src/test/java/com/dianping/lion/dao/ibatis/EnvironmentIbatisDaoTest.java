@@ -15,22 +15,17 @@
  */
 package com.dianping.lion.dao.ibatis;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.EnvironmentDao;
-import com.dianping.lion.entity.Environment;
 import com.dianping.lion.support.AbstractDaoTestSupport;
 
 public class EnvironmentIbatisDaoTest extends AbstractDaoTestSupport {
 	
 	@Autowired
 	private EnvironmentDao environmentDao;
-	static private int id;
+//	static private int id;
 	
 /*	@Test
 	public void testInsert() {

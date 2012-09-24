@@ -31,11 +31,13 @@ import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.exception.NoPrivilegeException;
+import com.dianping.lion.exception.ReferencedConfigForbidDeleteException;
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.ConfigDeleteResult;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.ConfigCriteria;
 import com.dianping.lion.vo.ConfigVo;
+import com.dianping.lion.vo.Paginater;
 import com.dianping.lion.web.vo.ConfigAttribute;
 
 /**
@@ -52,6 +54,8 @@ public class ConfigListAction extends AbstractConfigAction {
 	private List<Environment> environments;
 	
 	private List<ConfigVo> configVos;
+	
+	private Paginater<Config> paginater = new Paginater<Config>();
 	
 	private Config config;
 	
@@ -83,6 +87,12 @@ public class ConfigListAction extends AbstractConfigAction {
 		configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), configService.findConfigVos(criteria));
 		return SUCCESS;
 	}
+    
+    public String ajaxSimpleList() {
+    	paginater.setMaxResults(13);
+    	paginater = configService.paginateConfigs(criteria, paginater);
+    	return SUCCESS;
+    }
 	
 	public String ajaxLoad() {
 	    Config config = configService.getConfig(configId);
@@ -132,6 +142,8 @@ public class ConfigListAction extends AbstractConfigAction {
 						"清除配置项值[" + configFound.getKey() + "]").key(configFound.getKey()));
 			}
 			createSuccessStreamResponse();
+		} catch (ReferencedConfigForbidDeleteException e) {
+			createErrorStreamResponse("清除失败[存在对该配置的引用].");
 		} catch (RuntimeException e) {
 			createErrorStreamResponse("清除失败[" + e.getMessage() + "].");
 		}
@@ -153,12 +165,13 @@ public class ConfigListAction extends AbstractConfigAction {
 			    }
 				createSuccessStreamResponse();
 			} else {
-				List<Environment> failedEnvs = deleteResult.getFailedEnvs();
+				List<String> failedEnvs = deleteResult.getFailedEnvs();
 				String failedEnvStr = "";
 				for (int i = 0; i < failedEnvs.size(); i++) {
-					failedEnvStr += (i > 0 ? "," : "") + failedEnvs.get(i).getLabel();
+					failedEnvStr += (i > 0 ? "," : "") + failedEnvs.get(i);
 				}
-				createErrorStreamResponse("[" + failedEnvStr + "]配置清除失败，其他环境成功.");
+				createErrorStreamResponse("[" + failedEnvStr + "]配置清除失败" + (deleteResult.isHasReference() ? "[存在对该配置的引用]" : "") 
+						+ "，其他环境成功.");
 			}
 		} catch (RuntimeException e) {
 			createErrorStreamResponse("删除失败.");
@@ -237,6 +250,14 @@ public class ConfigListAction extends AbstractConfigAction {
 	 */
 	public List<ConfigVo> getConfigVos() {
 		return configVos;
+	}
+
+	public Paginater<Config> getPaginater() {
+		return paginater;
+	}
+
+	public void setPaginater(Paginater<Config> paginater) {
+		this.paginater = paginater;
 	}
 
 	/**

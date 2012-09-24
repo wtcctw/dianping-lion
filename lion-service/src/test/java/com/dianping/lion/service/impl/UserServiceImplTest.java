@@ -15,13 +15,11 @@
  */
 package com.dianping.lion.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
@@ -61,7 +59,7 @@ public class UserServiceImplTest {
 	@Test
 	public void testLoginRejectedDueLock() {
 		try{
-			User user = userService.login("lucy", "lucy");
+			userService.login("lucy", "lucy");
 		} catch(Exception e) {
 			assertTrue(e instanceof UserLockedException);
 		}
@@ -70,7 +68,7 @@ public class UserServiceImplTest {
 	@Test
 	public void testLoginRejectedDueSystem() {
 		try{
-			User user = userService.login("dbasys", "dbasys");
+			userService.login("dbasys", "dbasys");
 		} catch(Exception e) {
 			assertTrue(e instanceof SystemUserForbidLoginException);
 		}
@@ -79,7 +77,7 @@ public class UserServiceImplTest {
 	@Test
 	public void testLoginRejectedDueWrongUserName() {
 		try{
-			User user = userService.login("youngphy.yan", "xxx");
+			userService.login("youngphy.yan", "xxx");
 		} catch(Exception e) {
 			assertTrue(e instanceof UserNotFoundException);
 		}
@@ -88,7 +86,7 @@ public class UserServiceImplTest {
 	@Test
 	public void testLoginRejectedDueWrongPwd() {
 		try{
-			User user = userService.login("yong.you", "xxx");
+			userService.login("yong.you", "xxx");
 		} catch(Exception e) {
 			assertTrue(e instanceof IncorrectPasswdException);
 		}

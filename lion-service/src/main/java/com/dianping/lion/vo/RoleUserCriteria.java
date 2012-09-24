@@ -18,7 +18,6 @@ package com.dianping.lion.vo;
 import java.io.Serializable;
 
 /**
- * TODO Comment of RoleUserCriteria
  * @author danson.liu
  *
  */

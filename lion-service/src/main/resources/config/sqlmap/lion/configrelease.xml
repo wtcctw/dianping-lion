@@ -89,8 +89,18 @@
         </selectKey> 
 	</insert>
 	
-	<select id="findFirstSnapshotSet" resultMap="ConfigSnapshotSetResult">
-		SELECT * FROM config_snapshot_set WHERE projectId = #projectId# AND envId = #envId# AND task = #task# ORDER BY id LIMIT 1
+	<select id="findSnapshotSetWithTask" resultMap="ConfigSnapshotSetResult">
+		SELECT c.* 
+		FROM config_snapshot_set c
+		WHERE c.projectId = #projectId# AND c.envId = #envId# AND c.id > (
+				SELECT c2.id 
+				FROM config_snapshot_set c2
+				WHERE c2.projectId = #projectId# AND c2.envId = #envId# AND c2.task = #task#
+				ORDER BY c2.id DESC
+				LIMIT 1
+		)
+		ORDER BY c.id
+		LIMIT 1
 	</select>
 	
 	<insert id="insertConfigSnapshots" parameterClass="list">

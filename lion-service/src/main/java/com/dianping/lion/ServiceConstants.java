@@ -15,6 +15,8 @@
  */
 package com.dianping.lion;
 
+import java.util.regex.Pattern;
+
 /**
  * @author danson.liu
  *
@@ -27,7 +29,10 @@ public interface ServiceConstants {
 	int TEAM_PUBLIC_ID = 1;
 	int PRODUCT_PUBLIC_ID = 1;
 	int PROJECT_DB_ID = 100;
-	int PROJECT_PUBLIC_ID = 101;
+	int PROJECT_SHARED_ID = 101;
+	
+	String PROJECT_DB_NAME = "data-source";
+	String PROJECT_SHARED_NAME = "shared-config";
 	
 	int USER_LION_ID = 1;
 	int USER_REDMINE_ID = 2;
@@ -39,6 +44,9 @@ public interface ServiceConstants {
 	int ROLE_DBA_ID = 3;
 	int ROLE_QA_ID = 4;
 	int ROLE_DEV_ID = 5;
+	
+	String REF_CONFIG_PREFIX = "$ref{";
+	Pattern REF_EXPR_PATTERN = Pattern.compile("\\$ref\\{([^\\?]+?)(\\?(.*?))?\\}");
 	
 	String PROJECT_OWNER = "owner";
 	String PROJECT_MEMBER = "member";
@@ -65,7 +73,6 @@ public interface ServiceConstants {
 	String SETTING_CACHE_ENABLED = "cache_enabled";
 	
 	
-	//TODO 切换到统一功能权限(user-role-resource)
 	String RES_CODE_CACHE = "res_cache";
 	String RES_CODE_USER = "res_user";
 	String RES_CODE_SETTING = "res_setting";

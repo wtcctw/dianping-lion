@@ -117,6 +117,10 @@ public class AbstractConfigAction extends AbstractLionAction {
 		this.projectId = projectId;
 	}
 
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
+	}
+
 	/**
 	 * @return the project
 	 */

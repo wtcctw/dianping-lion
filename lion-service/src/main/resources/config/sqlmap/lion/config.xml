@@ -24,6 +24,7 @@
 		<result column="configId" property="configId"/>
 		<result column="envId" property="envId"/>
 		<result column="value" property="value"/>
+		<result column="refkey" property="refkey"/>
 		<result column="context" property="context"/>
 		<result column="contextmd5" property="contextmd5"/>
 		<result column="createUserId" property="createUserId"/>
@@ -137,6 +138,32 @@
     	]]>
     </select>
     
+    <sql id="getConfig_Fragment">
+    	<dynamic>
+    		<isNotNull prepend="AND" property="criteria.projectId">
+    			projectId = #criteria.projectId#
+    		</isNotNull>
+    		<isNotEmpty prepend="AND" property="criteria.key">
+    			`key` LIKE CONCAT('%', #criteria.key#, '%')
+    		</isNotEmpty>
+    	</dynamic>
+    </sql>
+    
+    <select id="getConfigCount" parameterClass="map" resultClass="long">
+    	SELECT COUNT(*) 
+    	FROM config 
+    	WHERE 1 = 1
+    	<include refid="getConfig_Fragment"/>
+    </select>
+    
+    <select id="getConfigList" parameterClass="map" resultMap="ConfigResult">
+    	SELECT *
+    	FROM config
+    	WHERE 1 = 1
+    	<include refid="getConfig_Fragment"/>
+    	LIMIT #paginater.firstResult#, #paginater.maxResults#
+    </select>
+    
     <update id="updateConfig" parameterClass="Config">
     	UPDATE config
     	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = NOW(), private = #privatee#, seq = #seq#
@@ -158,8 +185,8 @@
     </delete>
     
     <insert id="insertInstance" parameterClass="ConfigInstance">
-    	INSERT INTO config_instance(configId, envId, value, context, contextmd5, createUserId, modifyUserId, createTime, modifyTime, `desc`, seq)
-    	VALUES(#configId#, #envId#, #value#, #context#, #contextmd5#, #createUserId#, #modifyUserId#, 
+    	INSERT INTO config_instance(configId, envId, value, refkey, context, contextmd5, createUserId, modifyUserId, createTime, modifyTime, `desc`, seq)
+    	VALUES(#configId#, #envId#, #value#, #refkey#, #context#, #contextmd5#, #createUserId#, #modifyUserId#, 
     	<isNotNull property="createTime">#createTime#</isNotNull><isNull property="createTime">NOW()</isNull>, 
     	<isNotNull property="modifyTime">#modifyTime#</isNotNull><isNull property="modifyTime">NOW()</isNull>, #desc#, #seq#)
     	<selectKey resultClass="int">    
@@ -169,7 +196,8 @@
     
     <update id="updateInstance" parameterClass="ConfigInstance">
     	UPDATE config_instance
-    	SET value = #value#, context = #context#, contextmd5 = #contextmd5#, modifyUserId = #modifyUserId#, modifyTime = NOW(), `desc` = #desc#, seq = #seq#
+    	SET value = #value#, refkey = #refkey#, context = #context#, contextmd5 = #contextmd5#, 
+    		modifyUserId = #modifyUserId#, modifyTime = NOW(), `desc` = #desc#, seq = #seq#
     	WHERE id = #id#
     </update>
     
@@ -203,6 +231,14 @@
     	SELECT s.configId, s.modifyTime
     	FROM config c INNER JOIN config_status s ON c.id = s.configId
     	WHERE c.projectId = #projectId# AND s.envId = #envId#
+    </select>
+    
+    <select id="hasConfigReferencedTo" parameterClass="map" resultMap="ConfigInstanceResult">
+    	SELECT * FROM config_instance WHERE refkey = #configKey# AND envId = #envId# LIMIT 1
+    </select>
+    
+    <select id="getInstanceReferencedTo" parameterClass="map" resultMap="ConfigInstanceResult">
+    	SELECT * FROM config_instance WHERE refkey = #configKey# AND envId = #envId#
     </select>
     
 </sqlMap>

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
@@ -195,7 +196,11 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	}
 	
 	private void set(String path, String value) throws UnsupportedEncodingException, KeeperException, InterruptedException, IOException {
-		set(path, value.getBytes(charset));
+		if (value != null) {
+			set(path, value.getBytes(charset));
+		} else {
+			logger.warn("Set null config value to zk[" + StringUtils.substringBefore(this.serverIps, ",") + "] with path[" + path + "].");
+		}
 	}
 	
 	private void set(String path, long value) throws KeeperException, InterruptedException, IOException {

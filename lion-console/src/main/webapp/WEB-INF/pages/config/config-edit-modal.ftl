@@ -24,7 +24,7 @@
 			    </div>
 			    <div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label">环境:</label>
-			      <div class="controls lion-controls2">
+			      <div class="controls lion-controls2" style="width:390px;">
 			      		<input type="checkbox" id="edit-select-all-env"/><label for="edit-select-all-env" class="help-inline">全选线下</label>
 			      		&nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
