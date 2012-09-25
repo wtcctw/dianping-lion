@@ -190,6 +190,10 @@ $(function(){
 		loadSelectableConfigs(dsProjectId, 0, $(this));
 	});
 	
+	$("#ref-list-modal").on("show", function() {
+		
+	});
+	
 	function loadSelectableConfigs(projectId, pageNo, $container) {
 		$.ajax("/config/configList2Ajax.vhtml".prependcontext(), {
 			data : $.param({
@@ -674,6 +678,24 @@ $(function(){
 			$("#edit-config-attr-modal").modal({
 				backdrop : "static", 
 				keyboard : false
+			});
+			return false;
+		});
+		
+		$(".view-ref-link").click(function() {
+			var configKey = getConfigKey($(this));
+			$modal = $("#ref-list-modal");
+			$.ajax("/config/configRefListAjax.vhtml".prependcontext(), {
+				data : $.param({
+					"config.key" : configKey
+				}, true),
+				dataType: "html",
+				success : function(result) {
+					$modal.find(".modal-body").html(result);
+				}
+			});
+			$modal.modal({
+				backdrop : "static"
 			});
 			return false;
 		});

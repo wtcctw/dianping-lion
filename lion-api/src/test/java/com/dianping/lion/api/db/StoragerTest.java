@@ -33,6 +33,7 @@ import com.dianping.lion.util.JsonParser;
  */
 public class StoragerTest {
     
+	@SuppressWarnings("unused")
 	private static String content = null;
 	
 	@BeforeClass

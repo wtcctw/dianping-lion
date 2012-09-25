@@ -29,6 +29,9 @@
   		<td>
   			<@s.if test="%{#configVo.hasInstance}">${config.key}</@s.if>
   			<@s.else><font color="#D14836"><s>${config.key}</s></font></@s.else>
+  			<@s.if test="%{#configVo.isHasReference()}">
+  				<a href="#" class="view-ref-link no-dec" rel="tooltip" data-original-title="谁引用了该配置">引</a>
+  			</@s.if>
   		</td>
   		<td><span<@s.if test="%{#configVo.config.isLongDesc()}"> rel="tooltip" data-original-title="${config.desc?html}"</@s.if>>${config.abbrevDesc?html}</span></td>
   		<td>

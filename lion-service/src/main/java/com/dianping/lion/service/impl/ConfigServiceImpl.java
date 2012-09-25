@@ -113,6 +113,7 @@ public class ConfigServiceImpl implements ConfigService {
 			List<Integer> hasInstanceConfigs = configDao.findHasInstanceConfigs(projectId, envId);
 			List<Integer> hasContextInstConfigs = configDao.findHasContextInstConfigs(projectId, envId);
 			Map<Integer, ConfigInstance> defaultInsts = configDao.findDefaultInstance(projectId, envId);
+			List<Integer> hasReferencedConfigs = isSharedProject(projectId) ? configDao.getProjectHasReferencedConfigs(projectId) : Collections.<Integer>emptyList();
 			for (Config config : configs) {
 				//配置不会太多，使用内存过滤，无分页，如果配置太多影响到性能则考虑数据库过滤和分页
 				String key = StringUtils.trim(criteria.getKey());
@@ -123,11 +124,15 @@ public class ConfigServiceImpl implements ConfigService {
 								|| (hasValue == HasValueEnum.No && defaultInst == null))
 						&& (StringUtils.isEmpty(value) || (defaultInst != null && defaultInst.getValue().contains(value)))) {
 					configVos.add(new ConfigVo(config, hasInstanceConfigs.contains(config.getId()), 
-							hasContextInstConfigs.contains(config.getId()), defaultInst));
+							hasContextInstConfigs.contains(config.getId()), hasReferencedConfigs.contains(config.getId()), defaultInst));
 				}
 			}
 		}
 		return configVos;
+	}
+	
+	public boolean isSharedProject(int projectId) {
+		return projectId == ServiceConstants.PROJECT_SHARED_ID || projectId == ServiceConstants.PROJECT_DB_ID;
 	}
 
 	@Override
@@ -253,6 +258,9 @@ public class ConfigServiceImpl implements ConfigService {
 			config.setModifyUserId(currentUserId);
 		}
 		projectDao.lockProject(projectId);
+		if (!config.isPrivatee()) {
+			config.setPrivatee(isSharedProject(projectId));
+		}
 		config.setSeq(configDao.getMaxSeq(projectId) + 1);
 		return configDao.create(config);
 	}

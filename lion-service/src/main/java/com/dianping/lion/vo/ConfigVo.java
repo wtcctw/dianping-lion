@@ -40,14 +40,17 @@ public class ConfigVo implements Serializable {
 	private boolean hasEditPrivilege;
 	private boolean hasLockPrivilege;
 
+	private boolean hasReference;
+
 	/**
 	 * @param config
 	 * @param instance
 	 */
-	public ConfigVo(Config config, boolean hasInstance, boolean hasContextInst, ConfigInstance instance) {
+	public ConfigVo(Config config, boolean hasInstance, boolean hasContextInst, boolean hasReference, ConfigInstance instance) {
 		this.config = config;
 		this.hasInstance = hasInstance;
 		this.hasContextInst = hasContextInst;
+		this.hasReference = hasReference;
 		this.defaultInstance = instance;
 	}
 
@@ -134,4 +137,12 @@ public class ConfigVo implements Serializable {
         this.hasLockPrivilege = hasLockPrivilege;
     }
 
+	public boolean isHasReference() {
+		return hasReference;
+	}
+
+	public void setHasReference(boolean hasReference) {
+		this.hasReference = hasReference;
+	}
+    
 }

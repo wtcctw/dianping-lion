@@ -62,6 +62,8 @@ public class ConfigListAction extends AbstractConfigAction {
 	private ConfigAttribute configAttr;
 	
 	private Map<Integer, List<ConfigInstance>> instanceMap;
+	
+	private Map<Environment, List<ConfigInstance>> refList = new HashMap<Environment, List<ConfigInstance>>();
 
 	public String list() {
 		this.environments = environmentService.findAll();
@@ -214,6 +216,18 @@ public class ConfigListAction extends AbstractConfigAction {
 		return SUCCESS;
 	}
 	
+	public String refList() {
+		this.environments = environmentService.findAll();
+		for (Environment environment : environments) {
+			List<ConfigInstance> refInstances = configService.getInstanceReferencedTo(config.getKey(), environment.getId());
+			for (ConfigInstance refInstance : refInstances) {
+				refInstance.setConfig(configService.getConfig(refInstance.getConfigId()));
+			}
+			refList.put(environment, refInstances);
+		}
+		return SUCCESS;
+	}
+	
 	public String editMore() {
 		this.project = projectService.getProject(projectId);
 		this.environments = environmentService.findAll();
@@ -323,7 +337,11 @@ public class ConfigListAction extends AbstractConfigAction {
 		this.instanceMap = instanceMap;
 	}
 
-    /**
+    public Map<Environment, List<ConfigInstance>> getRefList() {
+		return refList;
+	}
+
+	/**
      * @return the configAttrs
      */
     public ConfigAttribute getConfigAttr() {

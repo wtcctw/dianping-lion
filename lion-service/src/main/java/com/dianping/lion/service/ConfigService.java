@@ -191,4 +191,6 @@ public interface ConfigService {
 
 	Paginater<Config> paginateConfigs(ConfigCriteria criteria, Paginater<Config> paginater);
 
+	List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId);
+
 }

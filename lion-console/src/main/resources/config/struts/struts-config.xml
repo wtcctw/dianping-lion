@@ -26,6 +26,10 @@
 			<result name="success" type="stream"/>
 		</action>
 		
+		<action name="configRefListAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="refList">
+			<result name="success">/WEB-INF/pages/config/config-reflist-table.ftl</result>
+		</action>
+		<!-- 
 		<action name="deployConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="deploy">
 			<result name="success" type="stream"/>
 		</action>
@@ -33,6 +37,7 @@
 		<action name="pushConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="push">
 			<result name="success" type="stream"/>
 		</action>
+		 -->
 		
 		<action name="clearInstanceAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="clearInstance">
 			<result name="success" type="stream"/>

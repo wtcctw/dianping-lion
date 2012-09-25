@@ -241,4 +241,8 @@
     	SELECT * FROM config_instance WHERE refkey = #configKey# AND envId = #envId#
     </select>
     
+    <select id="getProjectHasReferencedConfigs" parameterClass="map" resultClass="int">
+    	SELECT DISTINCT c.id FROM config c, config_instance i WHERE c.projectId = #projectId# AND c.key = i.refkey
+    </select>
+    
 </sqlMap>

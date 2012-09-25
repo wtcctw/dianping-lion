@@ -235,4 +235,10 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return getSqlMapClientTemplate().queryForList("Config.getInstanceReferencedTo", Maps.entry("configKey", configKey).entry("envId", envId).get());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> getProjectHasReferencedConfigs(int projectId) {
+		return getSqlMapClientTemplate().queryForList("Config.getProjectHasReferencedConfigs", Maps.entry("projectId", projectId).get());
+	}
+
 }

@@ -194,6 +194,8 @@ public interface ConfigDao {
 	List<Config> getConfigList(ConfigCriteria criteria, Paginater<Config> paginater);
 
 	boolean hasConfigReferencedTo(String configKey, int envId);
+	
+	List<Integer> getProjectHasReferencedConfigs(int projectId);
 
 	List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId);
 

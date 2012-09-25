@@ -83,4 +83,5 @@
 	<#include "/WEB-INF/pages/config/config-map-editor.ftl">
 	<#include "/WEB-INF/pages/config/config-refdb-editor.ftl">
 	<#include "/WEB-INF/pages/config/config-refshared-editor.ftl">
+	<#include "/WEB-INF/pages/config/config-ref-list.ftl">
 </body>
