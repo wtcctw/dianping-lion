@@ -27,7 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-	"classpath*:config/spring/appcontext-*.xml"	
+	"classpath:config/spring/appcontext-core.xml",	
+	"classpath:config/spring/appcontext-db.xml",	
+	"classpath:config/spring/appcontext-ibatis.xml",	
+	"classpath:config/spring/appcontext-dao.xml"	
 })
 @TransactionConfiguration(transactionManager = "Lion.TransactionManager", defaultRollback = true)
 @Transactional

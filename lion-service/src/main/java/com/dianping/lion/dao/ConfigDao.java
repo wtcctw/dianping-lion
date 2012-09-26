@@ -47,6 +47,13 @@ public interface ConfigDao {
 	Config getNextConfig(int configId);
 	
 	/**
+	 * 获取上一个Config(按seq排序)
+	 * @param configId
+	 * @return
+	 */
+	Config getPrevConfig(int configId);
+	
+	/**
 	 * 获取指定项目下所有配置的最大seq值
 	 * @param projectId
 	 * @return
@@ -59,13 +66,6 @@ public interface ConfigDao {
 	 * @return
 	 */
 	int getMaxInstSeq(int configId, int envId);
-	
-	/**
-	 * 获取上一个Config(按seq排序)
-	 * @param configId
-	 * @return
-	 */
-	Config getPrevConfig(int configId);
 
 	/**
 	 * @param config
