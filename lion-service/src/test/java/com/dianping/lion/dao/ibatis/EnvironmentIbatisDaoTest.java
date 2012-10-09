@@ -15,51 +15,61 @@
  */
 package com.dianping.lion.dao.ibatis;
 
+import static org.junit.Assert.*;
+
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.dao.EnvironmentDao;
+import com.dianping.lion.entity.Environment;
 import com.dianping.lion.support.AbstractDaoTestSupport;
 
 public class EnvironmentIbatisDaoTest extends AbstractDaoTestSupport {
 	
 	@Autowired
 	private EnvironmentDao environmentDao;
-//	static private int id;
+	static private int id;
 	
-/*	@Test
-	public void testInsert() {
-		int oriSize = environmentDao.findAll().size();
+	@Test
+	/**
+	 * process: select(not exist)->create->select->update->select->delete->select
+	 */
+	public void testAllDBOperations() {
+//		insert();
+		update();
+		delete();
+	}
+	
+/*	public void insert() {
 		Environment environment = new Environment();
 		environment.setIps("192.168.7.45");
 		environment.setLabel("其它");
 		environment.setName("other");
 		environment.setSeq(1);
-		id = environmentDao.save(environment);
-		int nowSize = environmentDao.findAll().size();
-		assertTrue(nowSize > oriSize);
-	}
+		id = environmentDao.create(environment);
+		Environment envQueried = environmentDao.findEnvByID(id);
+		assertTrue("other".equals(envQueried.getName()));
+	}*/
 	
-	@Test
-	public void testUpdate() {
+	private void update() {
 		Environment environment = new Environment();
 		environment.setIps("dev.lion.dp:2182");
 		environment.setLabel("开发");
 		environment.setName("dev");
 		environment.setSeq(1);
-		environment.setId(1);
+		environment.setId(id);
 		environmentDao.update(environment);
-	}*/
-	
-	@Test
-	public void testDelete() {
-		environmentDao.delete(5);
+		Environment envQueried = environmentDao.findEnvByName("dev");
+		assertNotNull(envQueried);
+		assertEquals("dev.lion.dp:2182", envQueried.getIps());
 	}
 	
-/*	@Test
-	public void testFindAll() {
-		List<Environment> envs = environmentDao.findAll();
-		assertTrue(envs.size() > 0);
-	}*/
+	private void delete() {
+		environmentDao.delete(id);
+		List<Environment> envsQueried = environmentDao.findAll();
+		assertEquals(0, envsQueried.size());
+	}
 
 }
