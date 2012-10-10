@@ -15,6 +15,7 @@
  */
 package com.dianping.lion.service.impl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,6 +29,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {
 	"classpath*:config/spring/appcontext-*.xml"	
 })
+@Ignore
 public class ProjectServiceImplTest {
 	
 //	@Autowired

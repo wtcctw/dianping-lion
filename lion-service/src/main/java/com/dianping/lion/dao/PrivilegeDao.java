@@ -57,6 +57,12 @@ public interface PrivilegeDao {
 
 	List<Resource> getUserResources(int userId);
 
+    int insertResource(Resource resource);
+
+    int insertPrivilege(Privilege privilege);
+
+    int insertPrivilegeCategory(PrivilegeCategory category);
+
 	Resource findResourceByCode(String resourceCode);
 
 	long getUserCount(RoleUserCriteria criteria);

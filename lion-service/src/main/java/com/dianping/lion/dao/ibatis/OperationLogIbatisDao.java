@@ -42,9 +42,9 @@ public class OperationLogIbatisDao extends SqlMapClientDaoSupport implements Ope
     }
 
 	@Override
-	public void insertOpLog(OperationLog oplog) {
-		getSqlMapClientTemplate().insert("OperationLog.insertOpLog", oplog);
-	}
+	public int insertOpLog(OperationLog oplog) {
+		return (Integer) getSqlMapClientTemplate().insert("OperationLog.insertOpLog", oplog);
+    }
 
     @Override
     public String getLogKey(int logId, String key) {

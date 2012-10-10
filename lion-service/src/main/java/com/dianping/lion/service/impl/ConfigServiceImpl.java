@@ -285,12 +285,19 @@ public class ConfigServiceImpl implements ConfigService {
 				instance.setSeq(configDao.getMaxInstSeq(instance.getConfigId(), instance.getEnvId()) + 1);
 				int instId = configDao.createInstance(instance);
 				updateConfigModifyStatus(instance.getConfigId(), instance.getEnvId());
+
+                Config config = getConfig(instance.getConfigId());
+                List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
+
 				//确保注册操作是在最后一步
 				if (setType == ConfigSetType.RegisterAndPush) {
 					registerAndPush(instance.getConfigId(), instance.getEnvId());
 				} else if (setType == ConfigSetType.Register) {
 					register(instance.getConfigId(), instance.getEnvId());
 				}
+
+                updateReferencedInstances(config, refInstances, setType);
+
 				return instId;
 			} catch (RuntimeException e) {
 				if (DBUtils.isDuplicateKeyError(e)) {
@@ -331,7 +338,7 @@ public class ConfigServiceImpl implements ConfigService {
 		
 		Config config = getConfig(instance.getConfigId());
 		List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
-		
+
 		//确保注册操作是在最后一步(后续的都需要try-catch掉所有error)
 		if (setType == ConfigSetType.RegisterAndPush) {
 			registerAndPush(instance.getConfigId(), instance.getEnvId());

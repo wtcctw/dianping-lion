@@ -63,13 +63,11 @@ public interface ConfigReleaseDao {
 	ConfigSnapshotSet findSnapshotSetToRollback(int projectId, int envId, String task);
 
 	/**
-	 * @param id
 	 * @return
 	 */
 	List<ConfigSnapshot> findConfigSnapshots(int snapshotSetId);
 
 	/**
-	 * @param id
 	 * @return
 	 */
 	List<ConfigInstanceSnapshot> findConfigInstSnapshots(int snapshotSetId);

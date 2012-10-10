@@ -104,6 +104,24 @@
     		INNER JOIN resource r ON pr.resourceId = r.id
     	WHERE ur.userId = #userId#
     </select>
+
+    <insert id="insertResource" parameterClass="Resource">
+        INSERT INTO resource(name, code, url)
+        VALUES(#name#, #code#, #url#)
+        <selectKey resultClass="int">
+            SELECT LAST_INSERT_ID() AS ID
+        </selectKey>
+    </insert>
+
+    <insert id="insertPrivilege" parameterClass="Privilege">
+        INSERT INTO privilege(categoryId, name)
+        VALUES(#categoryId#, #name#)
+    </insert>
+
+    <insert id="insertPrivilegeCategory" parameterClass="PrivilegeCategory">
+        INSERT INTO privilege_category(name, seq)
+        VALUES(#name#, #seq#)
+    </insert>
     
     <select id="getUserRoles" resultMap="RoleResult" parameterClass="int">
     	SELECT r.*, "" AS userName

@@ -109,7 +109,22 @@ public class PrivilegeIbatisDao extends SqlMapClientDaoSupport implements Privil
 		return getSqlMapClientTemplate().queryForList("Privilege.getUserResources", userId);
 	}
 
-	@Override
+    @Override
+    public int insertResource(Resource resource) {
+        return (Integer) getSqlMapClientTemplate().insert("Privilege.insertResource", resource);
+    }
+
+    @Override
+    public int insertPrivilege(Privilege privilege) {
+        return (Integer) getSqlMapClientTemplate().insert("Privilege.insertPrivilege", privilege);
+    }
+
+    @Override
+    public int insertPrivilegeCategory(PrivilegeCategory category) {
+        return (Integer) getSqlMapClientTemplate().insert("Privilege.insertPrivilegeCategory", category);
+    }
+
+    @Override
 	public Resource findResourceByCode(String resourceCode) {
 		return (Resource) getSqlMapClientTemplate().queryForObject("Privilege.findResourceByCode", resourceCode);
 	}

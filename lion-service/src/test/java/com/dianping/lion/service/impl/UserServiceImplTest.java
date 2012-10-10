@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,7 @@ import com.dianping.lion.service.UserService;
 @ContextConfiguration(locations = {
 	"classpath*:config/spring/appcontext-*.xml"	
 })
+@Ignore
 public class UserServiceImplTest {
 	
 	@Autowired

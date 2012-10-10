@@ -23,7 +23,7 @@ import com.dianping.lion.vo.Paginater;
 
 public interface OperationLogDao {
 
-	void insertOpLog(OperationLog oplog);
+	int insertOpLog(OperationLog oplog);
 	
     long getLogCount(OperationLogCriteria logCriteria, Paginater<OperationLog> paginater);
 

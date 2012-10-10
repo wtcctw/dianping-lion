@@ -29,8 +29,16 @@ public class Privilege implements Serializable {
 	private int categoryId;
 	
 	private String name;
-	
-	public int getId() {
+
+    public Privilege() {
+    }
+
+    public Privilege(int categoryId, String name) {
+        this.categoryId = categoryId;
+        this.name = name;
+    }
+
+    public int getId() {
 		return id;
 	}
 

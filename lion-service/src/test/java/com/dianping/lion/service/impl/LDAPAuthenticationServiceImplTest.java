@@ -17,6 +17,7 @@ package com.dianping.lion.service.impl;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.dianping.lion.entity.User;
@@ -26,6 +27,7 @@ import com.dianping.lion.entity.User;
  * @author youngphy.yang
  *
  */
+@Ignore
 public class LDAPAuthenticationServiceImplTest {
 	@Test
 	public void testAuthenticate() throws Exception {

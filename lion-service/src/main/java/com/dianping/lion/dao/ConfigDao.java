@@ -75,7 +75,6 @@ public interface ConfigDao {
 	/**
 	 * @param projectId
 	 * @param envId
-	 * @param b
 	 * @return
 	 */
 	Map<Integer, ConfigInstance> findDefaultInstance(int projectId, int envId);
@@ -83,7 +82,6 @@ public interface ConfigDao {
 	/**
 	 * 获取存在configInstance的Config
 	 * @param projectId
-	 * @param e
 	 */
 	List<Integer> findHasInstanceConfigs(int projectId, int envId);
 
@@ -149,7 +147,6 @@ public interface ConfigDao {
 
 	/**
 	 * 获取指定配置在各环境下至多maxPerEnv个配置实例
-	 * @param id
 	 * @return
 	 */
 	List<ConfigInstance> findInstanceByConfig(int configId, Integer maxPerEnv);

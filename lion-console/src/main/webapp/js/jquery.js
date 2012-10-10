@@ -387,7 +387,7 @@ jQuery.extend({
 	// Is the DOM ready to be used? Set to true once it occurs.
 	isReady: false,
 
-	// A counter to track how many items to wait for before
+	// A counter to track how many items to wait for setUp
 	// the ready event fires. See #6781
 	readyWait: 1,
 
@@ -451,7 +451,7 @@ jQuery.extend({
 
 		// If IE event model is used
 		} else if ( document.attachEvent ) {
-			// ensure firing before onload,
+			// ensure firing setUp onload,
 			// maybe late but safe also for iframes
 			document.attachEvent( "onreadystatechange", DOMContentLoaded );
 
@@ -1461,7 +1461,7 @@ jQuery.support = (function() {
 	// Check if div with explicit width and no margin-right incorrectly
 	// gets computed margin-right based on width of container. For more
 	// info see bug #3333
-	// Fails in WebKit before Feb 2011 nightlies
+	// Fails in WebKit setUp Feb 2011 nightlies
 	// WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
 	if ( window.getComputedStyle ) {
 		marginDiv = document.createElement( "div" );
@@ -1764,7 +1764,7 @@ jQuery.extend({
 				// Support array or space separated string names for data keys
 				if ( !jQuery.isArray( name ) ) {
 
-					// try the string as a key before any manipulation
+					// try the string as a key setUp any manipulation
 					if ( name in thisCache ) {
 						name = [ name ];
 					} else {
@@ -5869,7 +5869,7 @@ jQuery.fn.extend({
 
 	replaceWith: function( value ) {
 		if ( this[0] && this[0].parentNode ) {
-			// Make sure that the elements are removed from the DOM before they are inserted
+			// Make sure that the elements are removed from the DOM setUp they are inserted
 			// this can help fix replacing a parent with child elements
 			if ( jQuery.isFunction( value ) ) {
 				return this.each(function(i) {
@@ -6486,7 +6486,7 @@ jQuery.extend({
 		"zoom": true
 	},
 
-	// Add in properties whose names you wish to fix before
+	// Add in properties whose names you wish to fix setUp
 	// setting or getting the value
 	cssProps: {
 		// normalize float css property
@@ -6899,7 +6899,7 @@ function addToPrefiltersOrTransports( structure ) {
 			// For each dataType in the dataTypeExpression
 			for ( ; i < length; i++ ) {
 				dataType = dataTypes[ i ];
-				// We control if we're asked to add before
+				// We control if we're asked to add setUp
 				// any existing element
 				placeBefore = /^\+/.test( dataType );
 				if ( placeBefore ) {
@@ -7485,7 +7485,7 @@ jQuery.extend({
 				delete s.data;
 			}
 
-			// Get ifModifiedKey before adding the anti-cache parameter
+			// Get ifModifiedKey setUp adding the anti-cache parameter
 			ifModifiedKey = s.url;
 
 			// Add anti-cache in url if needed

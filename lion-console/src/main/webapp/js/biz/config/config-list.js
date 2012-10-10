@@ -321,13 +321,15 @@ $(function(){
 	$("#refshared-ok-btn,#refdb-ok-btn").click(function() {
 		var $modal = $(this).parents(".modal");
 		var configKey = $modal.find("[name='configkey']:checked").val();
-		var backfill = $modal.data("backfill");
-		if ($(this).attr("id") == "refdb-ok-btn") {
-			$("#" + backfill).val("$ref{" + configKey + "?i=15&m=5&M=30}");
-		} else {
-			$("#" + backfill).val("$ref{" + configKey + "}");
-		}
-		$modal.modal("hide");
+        if (configKey != void 0) {
+            var backfill = $modal.data("backfill");
+            if ($(this).attr("id") == "refdb-ok-btn") {
+                $("#" + backfill).val("$ref{" + configKey + "?i=15&m=5&M=30}");
+            } else {
+                $("#" + backfill).val("$ref{" + configKey + "}");
+            }
+            $modal.modal("hide");
+        }
 		return false;
 	});
 	

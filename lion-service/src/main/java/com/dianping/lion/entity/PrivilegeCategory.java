@@ -33,7 +33,15 @@ public class PrivilegeCategory implements Serializable {
 	
 	private List<Privilege> privileges;
 
-	public int getId() {
+    public PrivilegeCategory() {
+    }
+
+    public PrivilegeCategory(String name, int seq) {
+        this.name = name;
+        this.seq = seq;
+    }
+
+    public int getId() {
 		return id;
 	}
 
