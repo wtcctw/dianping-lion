@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-9
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -15,22 +15,22 @@
  */
 package com.dianping.lion.dao.ibatis;
 
+import com.dianping.lion.dao.EnvironmentDao;
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.support.AbstractDaoTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.dianping.lion.dao.EnvironmentDao;
-import com.dianping.lion.support.AbstractDaoTestSupport;
 
 import java.util.List;
 
 import static org.junit.Assert.*;
 
+
 public class EnvironmentIbatisDaoTest extends AbstractDaoTestSupport {
-	
-	@Autowired
-	private EnvironmentDao environmentDao;
+
+    @Autowired
+    private EnvironmentDao environmentDao;
     private static final String Env1_Name = "env1_name";
     private static final String Env2_Name = "env2_name";
     private static final String Env1_Label = "env1_label";
