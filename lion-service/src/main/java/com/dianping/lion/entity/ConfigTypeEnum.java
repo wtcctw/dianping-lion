@@ -15,6 +15,9 @@
  */
 package com.dianping.lion.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 配置类型
  * @author danson.liu
@@ -25,15 +28,17 @@ public enum ConfigTypeEnum {
 	//这里添加配置类型时需要在config-*.js中相应添加Type_*常量
 	String(10, "string"), Number(20, "number"), Boolean(30, "boolean"), List_Str(40, "list<string>"), List_Num(45, "list<number>"), Map(50, "map/pojo"),
 	Ref_Shared(60, "ref_shared"), Ref_DB(70, "ref_db");
-	
+
+    private static volatile List<ConfigTypeEnum> Non_Ref_Types;
+
 	private int value;
 	
 	private String label;
 
-	private ConfigTypeEnum(int value, String label) {
+    private ConfigTypeEnum(int value, String label) {
 		this.value = value;
 		this.label = label;
-	}
+    }
 
 	/**
 	 * @return the value
@@ -62,5 +67,22 @@ public enum ConfigTypeEnum {
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
+    public static List<ConfigTypeEnum> nonRefs() {
+        if (Non_Ref_Types == null) {
+            synchronized (ConfigTypeEnum.class) {
+                if (Non_Ref_Types == null) {
+                    Non_Ref_Types = new ArrayList<ConfigTypeEnum>();
+                    for (ConfigTypeEnum typeEnum : values()) {
+                        if (typeEnum != ConfigTypeEnum.Ref_DB && typeEnum != ConfigTypeEnum.Ref_Shared) {
+                            Non_Ref_Types.add(typeEnum);
+                        }
+                    }
+                }
+            }
+        }
+        return Non_Ref_Types;
+    }
+
 
 }

@@ -27,9 +27,17 @@
 			      </label>
 			      <div class="controls lion-controls">
 			        <select id="config-type-selector">
-			        	<@s.iterator value="%{@com.dianping.lion.entity.ConfigTypeEnum@values()}">
-			        		<option value="${value}">${label?html}</option>
-			        	</@s.iterator>
+                        <@s.if test="%{pid == @com.dianping.lion.ServiceConstants@PROJECT_DB_ID
+                            || pid == @com.dianping.lion.ServiceConstants@PROJECT_SHARED_ID}">
+                            <@s.iterator value="%{@com.dianping.lion.entity.ConfigTypeEnum@nonRefs()}">
+                                <option value="${value}">${label?html}</option>
+                            </@s.iterator>
+                        </@s.if>
+                        <@s.else>
+                            <@s.iterator value="%{@com.dianping.lion.entity.ConfigTypeEnum@values()}">
+                                <option value="${value}">${label?html}</option>
+                            </@s.iterator>
+                        </@s.else>
 			        </select>
 			        ( 仅作输入校验 )&nbsp;
 			        <input type="checkbox" id="trim-checkbox" checked="checked"><label for="trim-checkbox" class="help-inline">trim</label>

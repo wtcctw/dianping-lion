@@ -7,7 +7,7 @@
 <struts>
 	<constant name="struts.devMode" value="${lion-console.struts.devMode}" />
 	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
-	<constant name="struts.ognl.allowStaticMethodAccess" value="false" />
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true" />
 	<constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
 	<constant name="struts.action.extension" value="vhtml" />
 
