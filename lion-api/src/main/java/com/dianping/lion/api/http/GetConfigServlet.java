@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-api-0.0.1
- * 
+ *
  * File Created at 2012-8-1
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -15,60 +15,72 @@
  */
 package com.dianping.lion.api.http;
 
-import java.io.PrintWriter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONObject;
-
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
-import com.dianping.lion.exception.RegisterRelatedException;
 import com.dianping.lion.exception.RuntimeBusinessException;
+import com.dianping.lion.util.IPUtils;
+import org.apache.commons.lang.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
 
 /**
  * TODO Comment of GetConfigServlet
- * @author danson.liu
  *
+ * @author danson.liu
  */
 public class GetConfigServlet extends AbstractLionServlet {
 
-	private static final long serialVersionUID = 1512883947325409564L;
-	
-	private static final String PROP_DB = "db";
-	private static final String PROP_ZK = "zk";
+    private static final long serialVersionUID = 1512883947325409564L;
 
-	@Override
-	protected void doService(HttpServletRequest req, HttpServletResponse resp, String querystr) throws Exception {
-		PrintWriter writer = resp.getWriter();
-		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
-		String env = getNotBlankParameter(req, PARAM_ENV);
-		String key = getNotBlankParameter(req, PARAM_KEY);
-		String configKey = checkConfigKey(projectName, key);
-		
-		Config config = configService.findConfigByKey(configKey);
-		if (config == null) {
-			throw new RuntimeBusinessException("config[" + configKey + "] not found.");
-		}
-		Environment environment = getRequiredEnv(env);
-		
-		JSONObject resultJson = new JSONObject();
-		ConfigInstance configInst = configService.findInstance(config.getId(), environment.getId(), ConfigInstance.NO_CONTEXT);
-		if (configInst != null) {
-			resultJson.put(PROP_DB, configInst.getValue());
-		}
-		try {
-			String registeredValue = configService.getConfigFromRegisterServer(environment.getId(), configKey);
-			if (registeredValue != null) {
-				resultJson.put(PROP_ZK, registeredValue);
-			}
-		} catch (RegisterRelatedException e) {
-			throw new RuntimeBusinessException("get config value from zk failed.");
-		}
-		writer.print(SUCCESS_CODE + resultJson.toString());
-	}
+    public GetConfigServlet() {
+        this.requestIdentityRequired = false;
+    }
+
+    @Override
+    protected void doService(HttpServletRequest req, HttpServletResponse resp, String querystr) throws Exception {
+        String env = getNotBlankParameter(req, PARAM_ENV);
+        Environment environment = getRequiredEnv(env);
+        if (environment.isOnline()) {
+            checkAccessibility(req);
+        }
+        PrintWriter writer = resp.getWriter();
+        String key = getNotBlankParameter(req, PARAM_KEY);
+        Config config = configService.findConfigByKey(key);
+        if (config != null) {
+            String configVal = configService.getConfigValue(config.getId(), environment.getId(), ConfigInstance.NO_CONTEXT);
+            if (configVal != null) {
+                writer.print(configVal);
+                return;
+            }
+        }
+        writer.print("<null>");
+    }
+
+    private void checkAccessibility(HttpServletRequest req) {
+        String userIP = IPUtils.getUserIP(req);
+        String whiteList = systemSettingService.getSetting(ServiceConstants.SETTING_GETCONFIG_WHITELIST);
+        if (StringUtils.isBlank(whiteList)) {
+            return;
+        }
+        if (whiteList.contains(userIP) || whiteList.contains("*.*.*.*")) {
+            return;
+        }
+        String[] ipSegments = StringUtils.split(userIP, '.');
+        if (ipSegments.length == 4) {
+            for (int i = 3; i >= 1; i--) {
+                String left = StringUtils.join(ipSegments, '.', 0, i);
+                String pattern = left + StringUtils.repeat(".*", 4 - i);
+                if (whiteList.contains(pattern)) {
+                    return;
+                }
+            }
+        }
+        throw new RuntimeBusinessException("You have no privilege.");
+    }
 
 }

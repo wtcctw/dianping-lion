@@ -127,10 +127,19 @@ public interface ConfigService {
 	/**
 	 * @param configId
 	 * @param envId
-	 * @param object
+	 * @param context
 	 * @return
 	 */
 	ConfigInstance findInstance(int configId, int envId, String context);
+
+    /**
+     *
+     * @param configId
+     * @param envId
+     * @param context
+     * @return
+     */
+    String getConfigValue(int configId, int envId, String context);
 	
 	/**
 	 * 查询配置项默认实例

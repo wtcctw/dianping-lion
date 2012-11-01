@@ -71,7 +71,8 @@ public interface ServiceConstants {
 	String CACHE_USER_RES_PREFIX = "cache_user_resource_";
 	
 	String SETTING_CACHE_ENABLED = "cache_enabled";
-	
+	String SETTING_GETCONFIG_WHITELIST = "http-getconfig-whitelist";
+
 	
 	String RES_CODE_CACHE = "res_cache";
 	String RES_CODE_USER = "res_user";

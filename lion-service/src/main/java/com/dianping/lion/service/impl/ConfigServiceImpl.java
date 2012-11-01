@@ -513,7 +513,16 @@ public class ConfigServiceImpl implements ConfigService {
 		return configDao.findInstance(configId, envId, context);
 	}
 
-	@Override
+    @Override
+    public String getConfigValue(int configId, int envId, String context) {
+        ConfigInstance instance = findInstance(configId, envId, context);
+        if (instance != null) {
+            return resolveConfigFinalValue(instance.getValue(), envId);
+        }
+        return null;
+    }
+
+    @Override
 	public ConfigInstance findDefaultInstance(int configId, int envId) {
 		return findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
 	}

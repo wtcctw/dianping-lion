@@ -24,6 +24,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dianping.lion.ServiceConstants;
+import com.dianping.lion.service.*;
+import com.dianping.lion.util.IPUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +38,6 @@ import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.exception.RuntimeBusinessException;
-import com.dianping.lion.service.ConfigRelaseService;
-import com.dianping.lion.service.ConfigService;
-import com.dianping.lion.service.EnvironmentService;
-import com.dianping.lion.service.OperationLogService;
-import com.dianping.lion.service.ProjectService;
-import com.dianping.lion.service.UserService;
 import com.dianping.lion.util.SecurityUtils;
 
 /**
@@ -63,7 +60,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	public static final String 		PARAM_TASK 		= "t";		//项目任务id
 	public static final String 		PARAM_EFFECT 	= "ef";		//配置是否立即生效
 	public static final String 		PARAM_PUSH 		= "pu";		//配置变更是否实时推送到app
-	public static final String 		PARAM_SNAPSHOT = "sn";		//生效时是否生成snapshot，用于后续的回滚
+	public static final String 		PARAM_SNAPSHOT  = "sn";		//生效时是否生成snapshot，用于后续的回滚
 	public static final String 		PARAM_CORRECT 	= "c";		//设置registerpoint是否正确
 	
 	public static final String 		SUCCESS_CODE 	= "0|";		//正确返回码
@@ -74,7 +71,9 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	protected EnvironmentService 	environmentService;
 	protected ConfigService 		configService;
 	protected ConfigRelaseService	configReleaseService;
-	protected OperationLogService operationLogService;
+	protected OperationLogService   operationLogService;
+    protected SystemSettingService  systemSettingService;
+    protected boolean               requestIdentityRequired = true;
 	
 	@Override
 	public void init() throws ServletException {
@@ -84,6 +83,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		configService = getBean(ConfigService.class);
 		configReleaseService = getBean(ConfigRelaseService.class);
 		operationLogService = getBean(OperationLogService.class);
+        systemSettingService = getBean(SystemSettingService.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -184,11 +184,13 @@ public abstract class AbstractLionServlet extends HttpServlet {
     }
 	
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("text/html;charset=utf-8");
+		resp.setContentType("text/plain;charset=utf-8");
 		PrintWriter writer = resp.getWriter();
 		try {
-			User user = getRequiredIdentity(req);
-			SecurityUtils.setCurrentUser(user);
+            if (requestIdentityRequired) {
+                User user = getRequiredIdentity(req);
+                SecurityUtils.setCurrentUser(user);
+            }
 			doService(req, resp, getParameterString(req));
 		} catch (Exception e) {
 			logger.warn("Error happend in [" + getClass().getSimpleName() + "], detail: ", e);
@@ -199,12 +201,11 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		}
 	}
 
-	/**
+    /**
 	 * @param req
 	 * @param resp
 	 * @param querystr 
-	 * @param user
-	 * @throws IOException 
+	 * @throws IOException
 	 * @throws ServletException 
 	 */
 	protected void doService(HttpServletRequest req, HttpServletResponse resp, String querystr) throws Exception {
