@@ -46,6 +46,7 @@
 
 41.老的配置数据迁移
 java -Xbootclasspath/a:/Users/liujian/personal/workspace-lion/lion/lion-console/doc/configtransfer/mysql-connector-java-5.1.17.jar:/Users/liujian/personal/workspace-lion/lion/lion-console/doc/configtransfer -jar TransferConfig_New.jar tuangou-wap dev online
+java -Xbootclasspath/a:D:\work\workspace-phoenix\lion-new\lion-console\doc\configtransfer\mysql-connector-java-5.1.17.jar;D:\work\workspace-phoenix\lion-new\lion-console\doc\configtransfer -jar TransferConfig_New.jar bc-tuangou-biz dev online
 dev|alpha|qa|prelease|product|all
 
 
