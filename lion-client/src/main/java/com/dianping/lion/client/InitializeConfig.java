@@ -133,7 +133,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 		try {
 			ConfigCache cache = ConfigCache.getInstance(this.address);
 			List<String> keyList=new ArrayList<String>();
-			if(!this.environment.equalsIgnoreCase("dev") && !includeLocalProps){
+			if(!this.environment.equalsIgnoreCase("dev") && !this.environment.equalsIgnoreCase("alpha") && !includeLocalProps){
 				for(Object key:pts.keySet()){
 					String value=pts.getProperty((String)key);
 					if(!(value.startsWith(DEFAULT_PLACEHOLDER_PREFIX)&&value.endsWith(DEFAULT_PLACEHOLDER_SUFFIX))){
@@ -238,7 +238,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 							throw new BeanDefinitionStoreException("get config error",e);
 						}
 					}else{
-						if(this.environment.equalsIgnoreCase("dev")){
+						if(this.environment.equalsIgnoreCase("dev") || this.environment.equalsIgnoreCase("alpha")){
 							propVal = placeholder_;
 							logger.info(">>>>>>>>>>>>getProperty key from applicationContext: "+placeholder_+"  value:"+propVal);
 						}
