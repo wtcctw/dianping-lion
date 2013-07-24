@@ -10,6 +10,7 @@
 	<artifactId>lion-client</artifactId>
 	<version>0.3.1-SNAPSHOT</version>
 	<name>lion-client</name>
+    <packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>
