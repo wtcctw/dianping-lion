@@ -9,7 +9,6 @@ import org.apache.zookeeper.Watcher.Event.EventType;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.client.LionException;
-import com.sun.tools.javac.util.Pair;
 
 /**
  * Comment of PigeonServiceWatcher
@@ -31,25 +30,28 @@ public class PigeonServiceWatcher implements Watcher {
 		return temp.replace(Constants.PLACEHOLD, "/");
 	}
 
-	private Pair<String, String> parseKey(String path) {
-		String key = path.substring(Constants.SERVICE_PATH.length() + 1);
+	private ServiceNameInfo parseKey(String path) {
+		ServiceNameInfo info = new ServiceNameInfo();
+		String serviceName = path.substring(Constants.SERVICE_PATH.length() + 1);
 		String group = "";
-		int index = key.indexOf("/");
+		int index = serviceName.indexOf("/");
 
 		if (index > -1) {
-			group = key.substring(index + 1);
-			key = key.substring(0, index);
+			group = serviceName.substring(index + 1);
+			serviceName = serviceName.substring(0, index);
 		}
-		return new Pair<String, String>(key, group);
+		info.setGroup(group);
+		info.setServiceName(serviceName);
+		return info;
 	}
 
 	@Override
 	public void process(WatchedEvent event) {
 		String keyPath = event.getPath();
 		EventType type = event.getType();
-		Pair<String, String> pair = parseKey(keyPath);
-		String key = pair.fst;
-		String group = pair.snd;
+		ServiceNameInfo info = parseKey(keyPath);
+		String key = info.getServiceName();
+		String group =info.getGroup();
 
 		if (type == EventType.NodeDataChanged || type == EventType.NodeCreated) {
 			String value = "";
@@ -63,7 +65,7 @@ public class PigeonServiceWatcher implements Watcher {
 			List<String[]> hostDetail = pigeonCache.buildServiceAdress(value);
 			ServiceChange serviceChange = pigeonCache.getServiceChange();
 
-			if (group.length() > 0 ) {
+			if (group.length() > 0) {
 				serviceChange.onServiceHostChange(this.replaceServiceName(key), group, hostDetail);
 			} else if (group.length() == 0) {
 				serviceChange.onServiceHostChange(this.replaceServiceName(key), hostDetail);
@@ -77,6 +79,28 @@ public class PigeonServiceWatcher implements Watcher {
 			} catch (LionException e) {
 				logger.error(e.getMessage(), e);
 			}
+		}
+	}
+
+	public static class ServiceNameInfo {
+		private String m_serviceName;
+
+		private String m_group;
+
+		public String getServiceName() {
+			return m_serviceName;
+		}
+
+		public void setServiceName(String serviceName) {
+			m_serviceName = serviceName;
+		}
+
+		public String getGroup() {
+			return m_group;
+		}
+
+		public void setGroup(String group) {
+			m_group = group;
 		}
 	}
 }
