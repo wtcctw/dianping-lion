@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.client.ConfigCache;
+import com.dianping.lion.client.ConfigChange;
 import com.dianping.lion.console.ZKClient;
 
 public class PigeonGroupTest {
@@ -78,7 +79,7 @@ public class PigeonGroupTest {
 		ServiceChange serviceChange = new DefaultServiceChange();
 		pigeonCache.setServiceChange(serviceChange);
 		@SuppressWarnings("unused")
-      PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
+		PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
 
 		m_client.setAndPush(key, DEFALUT_NEW_SEVICE);
 		Thread.sleep(1000);
@@ -120,7 +121,7 @@ public class PigeonGroupTest {
 		ServiceChange serviceChange = new DefaultServiceChange();
 		pigeonCache.setServiceChange(serviceChange);
 		@SuppressWarnings("unused")
-      PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
+		PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
 
 		m_client.setAndPush(groupKey, DEFALUT_MOBILE_NEW_SEVICE);
 		Thread.sleep(2000);
@@ -144,7 +145,7 @@ public class PigeonGroupTest {
 		ServiceChange serviceChange = new DefaultServiceChange();
 		pigeonCache.setServiceChange(serviceChange);
 		@SuppressWarnings("unused")
-      PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
+		PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
 
 		m_client.setAndPush(serviceName, DEFALUT_NEW_SEVICE);
 		Thread.sleep(1000);
@@ -168,12 +169,66 @@ public class PigeonGroupTest {
 		ServiceChange serviceChange = new DefaultServiceChange();
 		pigeonCache.setServiceChange(serviceChange);
 		@SuppressWarnings("unused")
-      PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
+		PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
 
 		m_client.creatAndPush(groupKey, DEFALUT_TUAN_NEW_SEVICE);
 		Thread.sleep(1000);
 		Assert.assertEquals(DEFALUT_TUAN_NEW_SEVICE, pigeonCache.queryServiceAddress(serviceName, m_tuangou));
 		Assert.assertEquals(RESULT, 3);
+	}
+
+	@Test
+	public void test() throws Exception {
+		m_client = ZKClient.getInstance(m_address, Constants.CONFIG_PATH);
+		ConfigCache.getInstance(m_address);
+
+		String key = "ttt";
+		if (!m_client.exists(key)) {
+			m_client.create(key, "123");
+		} else {
+			m_client.set(key, "123");
+		}
+		Bean bean = new Bean();
+		bean.setIndex(ConfigCache.getInstance().getIntProperty(key));
+		bean.setName(ConfigCache.getInstance().getProperty(key));
+		System.out.println(bean.index);
+		System.out.println(bean.name);
+		
+		m_client.setAndPush(key, "1234");
+		
+		ConfigCache.getInstance().addChange(new ConfigChange() {
+			
+			@Override
+			public void onChange(String key, String value) {
+				System.out.println(key+":"+value);
+			}
+		});
+		Thread.sleep(1000*5);
+		System.out.println(bean.index);
+		System.out.println(bean.name);
+	}
+
+	public static class Bean {
+		public int index;
+
+		public String name;
+
+		public int getIndex() {
+			return index;
+		}
+
+		public void setIndex(int index) {
+			this.index = index;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
 	}
 
 }
