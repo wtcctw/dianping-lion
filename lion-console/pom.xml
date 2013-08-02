@@ -3,19 +3,22 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<artifactId>lion-all</artifactId>
 		<groupId>com.dianping.lion</groupId>
-		<version>2.0.0</version>
+		<version>0.3.1-SNAPSHOT</version>
 	</parent>
-	<groupId>com.dianping.lion</groupId>
+
 	<artifactId>lion-console</artifactId>
-	<version>0.0.1</version>
 	<packaging>war</packaging>
+
 	<name>lion-console</name>
+
 	<properties>
 		<env>dev</env>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -84,7 +87,7 @@
 		<dependency>
 			<groupId>com.dianping.lion</groupId>
 			<artifactId>lion-service</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.dianping.lion</groupId>
@@ -92,6 +95,7 @@
 			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
+
 	<build>
 		<finalName>lion-console-${env}</finalName>
 		<filters>
@@ -103,5 +107,15 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <ajdtVersion>none</ajdtVersion>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 </project>

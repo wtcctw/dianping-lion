@@ -7,55 +7,58 @@
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
-	
+
 	<bean id="environmentService" class="com.dianping.lion.service.impl.EnvironmentServiceImpl" init-method="init">
 		<property name="cacheClient" ref="clusteredCache"/>
 	</bean>
-	
+
 	<bean id="teamService" class="com.dianping.lion.service.impl.TeamServiceImpl">
 		<property name="cacheClient" ref="clusteredCache"/>
 		<property name="projectCacheClient" ref="clusteredProjectCache"/>
 	</bean>
-	
+
 	<bean id="productService" class="com.dianping.lion.service.impl.ProductServiceImpl">
 		<property name="cacheClient" ref="clusteredCache"/>
 		<property name="projectCacheClient" ref="clusteredProjectCache"/>
 	</bean>
-	
+
 	<bean id="projectService" class="com.dianping.lion.service.impl.ProjectServiceImpl">
 		<property name="cacheClient" ref="clusteredCache"/>
 		<property name="projectCacheClient" ref="clusteredProjectCache"/>
 	</bean>
-	
+
 	<bean id="jobExecTimeService" class="com.dianping.lion.service.impl.JobExecTimeServiceImpl"/>
-	
+
 	<bean id="configService" class="com.dianping.lion.service.impl.ConfigServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
 		<property name="cacheClient" ref="clusteredShortCache"/>
 		<property name="registerServiceRepository" ref="registerServiceRepository"/>
 	</bean>
-	
+
+    <bean id="serviceService" class="com.dianping.lion.service.impl.ServiceServiceImpl">
+    </bean>
+
 	<bean id="projectPrivilegeDecider" class="com.dianping.lion.service.impl.ProjectPrivilegeDeciderImpl"/>
-	
+
 	<bean id="privilegeService" class="com.dianping.lion.service.impl.PrivilegeServiceImpl">
 		<property name="cacheClient" ref="clusteredPrivilegeCache"/>
 		<property name="userCacheClient" ref="clusteredUserCache"/>
 	</bean>
-	
+
 	<bean id="configReleaseService" class="com.dianping.lion.service.impl.ConfigReleaseServiceImpl">
 		<constructor-arg ref="Lion.TransactionManager"/>
 	</bean>
-	
+
 	<bean id="operationLogService" class="com.dianping.lion.service.impl.OperationLogServiceImpl"/>
-	
+
 	<bean id="userService" class="com.dianping.lion.service.impl.UserServiceImpl">
 		<property name="cacheClient" ref="clusteredUserCache"/>
 	</bean>
-	
+
 	<bean id="systemSettingService" class="com.dianping.lion.service.impl.SystemSettingServiceImpl">
 		<property name="ehcache" ref="clusteredCache_"/>
 	</bean>
-	
+
 	<bean id="ldapAuthenticationService" class="com.dianping.lion.service.impl.LDAPAuthenticationServiceImpl">
 		<property name="ldapUrl" value="${lion-console.ldap.url}"></property>
 		<property name="ldapBaseDN" value="${lion-console.ldap.basedn}"></property>
@@ -63,16 +66,16 @@
 		<property name="solidDN" value="cn=Users,DC=dianpingoa,DC=com"></property>
 		<property name="solidUsername" value="${lion-console.ldap.username}"></property>
 		<property name="solidPwd" value="${lion-console.ldap.passwd}"></property>
-		
+
 	</bean>
-	
+
 	<bean id="registerServiceRepository" class="com.dianping.lion.register.ConfigRegisterServiceRepository">
 		<property name="registerServiceFactory" ref="registerServiceFactory"/>
 	</bean>
-	
+
 	<bean id="registerServiceFactory" class="com.dianping.lion.register.zookeeper.ConfigZookeeperServiceFactory"/>
-	
-	<!-- 
+
+	<!--
 	<bean id="httpMailService" class="com.dianping.lion.service.impl.HttpMailServiceImpl" init-method="init">
 		<property name="host" value="${lion-console.mailserver.host}"></property>
 		<property name="port" value="${lion-console.mailserver.port}"></property>
@@ -80,14 +83,14 @@
 		<property name="path" value="/jsonmail.v"></property>
 	</bean>
 	 -->
-	 
+
 	<bean id="mailService" class="com.dianping.dpsf.spring.ProxyBeanFactory" init-method="init">
-        <property name="serviceName" value="http://service.dianping.com/mailService/mailService_1.0.0"/>                                            
+        <property name="serviceName" value="http://service.dianping.com/mailService/mailService_1.0.0"/>
         <property name="iface" value="com.dianping.mailremote.remote.MailService"/>
         <property name="serialize" value="hessian"/>
         <property name="callMethod" value="sync"/>
         <property name="timeout" value="5000"/>
         <property name="isTest" value="true"/>
     </bean>
-	
+
 </beans>

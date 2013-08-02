@@ -49,3 +49,6 @@ work/
 # Idea generated files #
 *.iml
 .idea/
+
+# Maven versions plugin generated files #
+*.versionsBackup

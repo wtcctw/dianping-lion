@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-6
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -28,6 +28,7 @@ import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
+import com.dianping.lion.entity.Service;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.exception.NoPrivilegeException;
@@ -46,23 +47,25 @@ import com.dianping.lion.web.vo.ConfigAttribute;
  */
 @SuppressWarnings("serial")
 public class ConfigListAction extends AbstractConfigAction {
-	
+
 	private Integer configId;
-	
+
 	private ConfigCriteria criteria = new ConfigCriteria();
-	
+
 	private List<Environment> environments;
-	
+
 	private List<ConfigVo> configVos;
-	
+
+	private List<Service> services;
+
 	private Paginater<Config> paginater = new Paginater<Config>();
-	
+
 	private Config config;
-	
+
 	private ConfigAttribute configAttr;
-	
+
 	private Map<Integer, List<ConfigInstance>> instanceMap;
-	
+
 	private Map<Environment, List<ConfigInstance>> refList = new HashMap<Environment, List<ConfigInstance>>();
 
 	public String list() {
@@ -79,6 +82,8 @@ public class ConfigListAction extends AbstractConfigAction {
 			criteria.setProjectId(projectId);
 			criteria.setEnvId(envId);
 			configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), configService.findConfigVos(criteria));
+
+			services = serviceService.getServiceList(projectId, envId);
 		}
 		return SUCCESS;
 	}
@@ -89,19 +94,19 @@ public class ConfigListAction extends AbstractConfigAction {
 		configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), configService.findConfigVos(criteria));
 		return SUCCESS;
 	}
-    
+
     public String ajaxSimpleList() {
     	paginater.setMaxResults(13);
     	paginater = configService.paginateConfigs(criteria, paginater);
     	return SUCCESS;
     }
-	
+
 	public String ajaxLoad() {
 	    Config config = configService.getConfig(configId);
 	    createSuccessStreamResponse(config);
 	    return SUCCESS;
 	}
-	
+
 	public String editConfigAttr() {
 	    try {
     	    Config config = configService.getConfig(configId);
@@ -118,7 +123,7 @@ public class ConfigListAction extends AbstractConfigAction {
     	    		}
     	    	}
     	        configService.updateConfig(config);
-    	        String logcontent = "设置配置属性: " + config.getKey() + ", [公开: " + configAttr.isPublic() 
+    	        String logcontent = "设置配置属性: " + config.getKey() + ", [公开: " + configAttr.isPublic()
     	        	+ (desclog != null ? desclog : "") + "]";
 				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_EditAttr, config.getProjectId(), logcontent)
 					.key(config.getKey()));
@@ -129,7 +134,7 @@ public class ConfigListAction extends AbstractConfigAction {
 	    }
 	    return SUCCESS;
 	}
-	
+
 	public String clearInstance() {
 		try {
 			Config configFound = configService.getConfig(configId);
@@ -140,7 +145,7 @@ public class ConfigListAction extends AbstractConfigAction {
 			}
 			configService.deleteInstance(configId, envId);
 			if (configFound != null) {
-				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Clear, configFound.getProjectId(), envId, 
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Clear, configFound.getProjectId(), envId,
 						"清除配置项值[" + configFound.getKey() + "]").key(configFound.getKey()));
 			}
 			createSuccessStreamResponse();
@@ -151,7 +156,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	public String delete() {
 		if (!checkDeletePrivilege(configId)) {
 			createErrorStreamResponse("删除失败: 线上环境无权限，且已设置值.");
@@ -162,7 +167,7 @@ public class ConfigListAction extends AbstractConfigAction {
 			if (deleteResult.isSucceed()) {
 			    Config configDeleted = deleteResult.getConfig();
 			    if (configDeleted != null) {
-			        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, configDeleted.getProjectId(), 
+			        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, configDeleted.getProjectId(),
 			                "删除配置项[" + configDeleted.getKey() + "]").key(configDeleted.getKey()));
 			    }
 				createSuccessStreamResponse();
@@ -172,7 +177,7 @@ public class ConfigListAction extends AbstractConfigAction {
 				for (int i = 0; i < failedEnvs.size(); i++) {
 					failedEnvStr += (i > 0 ? "," : "") + failedEnvs.get(i);
 				}
-				createErrorStreamResponse("[" + failedEnvStr + "]配置清除失败" + (deleteResult.isHasReference() ? "[存在对该配置的引用]" : "") 
+				createErrorStreamResponse("[" + failedEnvStr + "]配置清除失败" + (deleteResult.isHasReference() ? "[存在对该配置的引用]" : "")
 						+ "，其他环境成功.");
 			}
 		} catch (RuntimeException e) {
@@ -180,7 +185,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	private boolean checkDeletePrivilege(int configId) {
 		Config config = configService.getConfig(configId);
 		if (config != null) {
@@ -206,7 +211,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		createSuccessStreamResponse();
 		return SUCCESS;
 	}
-	
+
 	public String moveDown() {
 		try {
 			configService.moveDown(projectId, configId);
@@ -215,7 +220,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		createSuccessStreamResponse();
 		return SUCCESS;
 	}
-	
+
 	public String refList() {
 		this.environments = environmentService.findAll();
 		for (Environment environment : environments) {
@@ -227,7 +232,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	public String editMore() {
 		this.project = projectService.getProject(projectId);
 		this.environments = environmentService.findAll();
@@ -244,7 +249,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-    
+
     private List<ConfigVo> enrichWithPrivilege(int projectId, int envId, User user, List<ConfigVo> configVos) {
         boolean hasLockPrivilege = user != null && privilegeDecider.hasLockConfigPrivilege(user.getId());
         Integer userId = user != null ? user.getId() : null;
@@ -264,6 +269,10 @@ public class ConfigListAction extends AbstractConfigAction {
 	 */
 	public List<ConfigVo> getConfigVos() {
 		return configVos;
+	}
+
+	public List<Service> getServices() {
+	    return services;
 	}
 
 	public Paginater<Config> getPaginater() {
@@ -354,5 +363,5 @@ public class ConfigListAction extends AbstractConfigAction {
     public void setConfigAttr(ConfigAttribute configAttr) {
         this.configAttr = configAttr;
     }
-	
+
 }

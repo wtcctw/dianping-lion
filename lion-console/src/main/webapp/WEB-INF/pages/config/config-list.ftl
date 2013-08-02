@@ -3,6 +3,7 @@
 	<script type="text/javascript" src="<@s.url value="/js/biz/config/config-list.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/biz/config/config-list-editor.js"/>"></script>
 	<script type="text/javascript" src="<@s.url value="/js/biz/config/config-map-editor.js"/>"></script>
+	<script type="text/javascript" src="<@s.url value="/js/biz/service/service.js"/>"></script>
 </head>
 <body>
 	<div class="container">
@@ -58,7 +59,7 @@
 		</div>
 		<div class="row">
 			<div class="span12" style="padding:1px;">
-				<strong>按钮提示：</strong>
+				<strong>配置属性：</strong>
 				<i class="icon-edit icon-intro" data-original-title="编辑配置值" data-content="编辑配置项在当前环境下的设定值."></i>
 				<i class="icon-list-alt icon-intro" style="margin-left: 10px;" data-original-title="编辑配置属性" data-content="编辑配置项除值以外的其他属性值."></i>
 				<i class="icon-trash icon-intro" style="margin-left: 10px;" data-original-title="清除配置值" data-content="清除配置项在当前环境下的设定值."></i>
@@ -67,7 +68,7 @@
 				<i class="icon-arrow-down icon-intro" style="margin-left: 10px;" data-original-title="下移" data-content="下移配置项的位置，将相关的配置项编排在一起."></i>
 				<label class="pull-right" style="color:orange;"><b>${environment.label}</b></label>
 			</div>
-		</div>			
+		</div>
 		<#include "/WEB-INF/pages/common/message.ftl">
 		<div class="row">
 			<div class="span12" id="config-list-container">
@@ -76,6 +77,8 @@
 		</div>
 	</div>
 	<br/>
+    <#include "/WEB-INF/pages/service/service-config.ftl">
+    <br/>
 	<#include "/WEB-INF/pages/config/config-add-modal.ftl">
 	<#include "/WEB-INF/pages/config/config-edit-modal.ftl">
 	<#include "/WEB-INF/pages/config/config-attr-modal.ftl">
@@ -84,4 +87,5 @@
 	<#include "/WEB-INF/pages/config/config-refdb-editor.ftl">
 	<#include "/WEB-INF/pages/config/config-refshared-editor.ftl">
 	<#include "/WEB-INF/pages/config/config-ref-list.ftl">
+    <#include "/WEB-INF/pages/service/service-edit-modal.ftl">
 </body>

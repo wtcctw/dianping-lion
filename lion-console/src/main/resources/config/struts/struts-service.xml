@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<package name="service" namespace="/service" extends="default">
+
+		<action name="getServiceListAjax" class="com.dianping.lion.web.action.service.ServiceAction" method="getServiceList">
+			<result name="success">/WEB-INF/pages/service/service-list-table.ftl</result>
+		</action>
+
+		<action name="deleteServiceAjax" class="com.dianping.lion.web.action.service.ServiceAction" method="deleteService">
+			<result name="success" type="stream"/>
+		</action>
+
+		<action name="defaultValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="loadDefaultValue">
+			<result name="success" type="stream"/>
+		</action>
+
+		<action name="loadConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="ajaxLoad">
+			<result name="success" type="stream"/>
+		</action>
+
+		<action name="saveServiceAjax" class="com.dianping.lion.web.action.service.ServiceAction" method="updateService">
+			<result name="success" type="stream"/>
+		</action>
+
+		<action name="createConfigAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="create">
+			<result name="success" type="stream"/>
+		</action>
+
+	</package>
+
+</struts>
