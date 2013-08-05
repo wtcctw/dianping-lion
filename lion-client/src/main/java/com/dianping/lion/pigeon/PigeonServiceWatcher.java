@@ -19,43 +19,88 @@ import com.dianping.lion.client.LionException;
 public class PigeonServiceWatcher implements Watcher {
 
 	private static Logger logger = Logger.getLogger(PigeonServiceWatcher.class);
+
 	private PigeonCache pigeonCache;
-	
-	public PigeonServiceWatcher(PigeonCache pigeonCache){
-		this.pigeonCache=pigeonCache;
+
+	public PigeonServiceWatcher(PigeonCache pigeonCache) {
+		this.pigeonCache = pigeonCache;
 	}
-	
-	private String replaceServiceName(String temp){
-		return temp.replace(Constants.PLACEHOLD,"/");
+
+	private String replaceServiceName(String temp) {
+		return temp.replace(Constants.PLACEHOLD, "/");
 	}
+
+	private ServiceNameInfo parseKey(String path) {
+		ServiceNameInfo info = new ServiceNameInfo();
+		String serviceName = path.substring(Constants.SERVICE_PATH.length() + 1);
+		String group = "";
+		int index = serviceName.indexOf("/");
+
+		if (index > -1) {
+			group = serviceName.substring(index + 1);
+			serviceName = serviceName.substring(0, index);
+		}
+		info.setGroup(group);
+		info.setServiceName(serviceName);
+		return info;
+	}
+
 	@Override
 	public void process(WatchedEvent event) {
-		if (event.getType() == EventType.NodeDataChanged) {
-			String keyPath = event.getPath();
-			String key = keyPath.substring(keyPath.lastIndexOf("/") + 1);
+		String keyPath = event.getPath();
+		EventType type = event.getType();
+		ServiceNameInfo info = parseKey(keyPath);
+		String key = info.getServiceName();
+		String group =info.getGroup();
+
+		if (type == EventType.NodeDataChanged || type == EventType.NodeCreated) {
 			String value = "";
 			try {
-				value = pigeonCache.getServiceValue(key);
+				value = pigeonCache.queryServiceAddressFromZK(key, group);
 			} catch (LionException e) {
 				logger.error(e.getMessage(), e);
 			}
-			logger.info("Pigeon Cache Key Change! Key: "+key +" Value: " + value);
-			if (pigeonCache.getService().containsKey(key)) {
-				List<String[]> hostDetail = pigeonCache
-						.getServiceIpPortWeight(value);
-				pigeonCache.getServiceChange().onServiceHostChange(this.replaceServiceName(key), hostDetail);
+			logger.info("Pigeon Cache Key Change! Key: " + key + " Value: " + value);
+
+			List<String[]> hostDetail = pigeonCache.buildServiceAdress(value);
+			ServiceChange serviceChange = pigeonCache.getServiceChange();
+
+			if (group.length() > 0) {
+				serviceChange.onServiceHostChange(this.replaceServiceName(key), group, hostDetail);
+			} else if (group.length() == 0) {
+				serviceChange.onServiceHostChange(this.replaceServiceName(key), hostDetail);
 			}
+
 		} else {
 			// 重新监听节点信息
-			logger.info("Delete The Node " + event.getType() + " "
-					+ event.getPath());
-			String key = event.getPath().substring(
-					event.getPath().lastIndexOf("/") + 1);
+			logger.info("Re Watch The Node " + type + " " + event.getPath());
 			try {
-				pigeonCache.getServiceValue(key);
+				pigeonCache.queryServiceAddressFromZK(key, group);
 			} catch (LionException e) {
 				logger.error(e.getMessage(), e);
 			}
+		}
+	}
+
+	public static class ServiceNameInfo {
+		private String m_serviceName;
+
+		private String m_group;
+
+		public String getServiceName() {
+			return m_serviceName;
+		}
+
+		public void setServiceName(String serviceName) {
+			m_serviceName = serviceName;
+		}
+
+		public String getGroup() {
+			return m_group;
+		}
+
+		public void setGroup(String group) {
+			m_group = group;
 		}
 	}
 }

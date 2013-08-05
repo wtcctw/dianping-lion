@@ -27,7 +27,7 @@ public class PigeonHostWatcher implements Watcher {
 			String key = keyPath.substring(keyPath.lastIndexOf("/") + 1);
 			String weight = null;
 			try {
-				weight = pigeonCache.getWeightValue(key);
+				weight = pigeonCache.queryHostWeightFromZK(key);
 			} catch (LionException e) {
 				logger.error(e.getMessage(), e);
 			}
@@ -38,7 +38,7 @@ public class PigeonHostWatcher implements Watcher {
 			String keyPath = event.getPath();
 			String key = keyPath.substring(keyPath.lastIndexOf("/") + 1);
 			try {
-				pigeonCache.getWeightValue(key);
+				pigeonCache.queryHostWeightFromZK(key);
 			} catch (LionException e) {
 				logger.error(e.getMessage(), e);
 			}

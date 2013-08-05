@@ -1,33 +1,31 @@
 package com.dianping.lion.pigeon;
+
+
 /**
  * Comment of PigeonInit
  * @author yong.you
  *
  */
 public class PigeonClientImpl implements PigeonClient {
-	PigeonCache pigeonCache;
+	private PigeonCache pigeonCache;
 
 	public PigeonClientImpl(ServiceChange serviceChange) throws Exception{
 		pigeonCache = new PigeonCache();
 		pigeonCache.setServiceChange(serviceChange);
 	}	
-	/* (non-Javadoc)
-	 * @see com.dianping.lion.pigeon.PigeonClient#getHostWeigth(java.lang.String)
-	 */
+	
 	@Override
 	public int getHostWeigth(String hostName) throws Exception{
-		return pigeonCache.getPigeonWeight(hostName);
+		return pigeonCache.queryHostWeight(hostName);
 	}
-	/* (non-Javadoc)
-	 * @see com.dianping.lion.pigeon.PigeonClient#getServiceAddress(java.lang.String)
-	 */
+	
 	@Override
 	public String getServiceAddress(String serviceName) throws Exception {
-		return  pigeonCache.getPigeonService(serviceName);
+		return  pigeonCache.queryServiceAddress(serviceName);
 	}
-	//public String 
-/*	@Override
-	public String getPigeonConfig(String key) throws Exception {
-		return pigeonCache.getConfigValue(key);
-	}*/
+	
+	@Override
+   public String getServiceAddress(String serviceName, String group) throws Exception {
+		return  pigeonCache.queryServiceAddress(serviceName,group);
+   }
 }

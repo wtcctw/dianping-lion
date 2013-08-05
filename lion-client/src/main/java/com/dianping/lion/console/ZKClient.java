@@ -93,6 +93,7 @@ public class ZKClient {
 			throw new LionException(e);
 		} 
 	}
+	
 	public void create(String key,String value) throws LionException{
 		try {
 			this.zk.create(this.parentPath+"/"+key, value.getBytes(Constants.CHARSET), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -100,6 +101,7 @@ public class ZKClient {
 			throw new LionException(e);
 		}
 	}
+	
 	public void set(String key,String value) throws LionException{
 		try {
 			this.zk.setData(this.parentPath+"/"+key, value.getBytes(Constants.CHARSET), -1);
@@ -120,6 +122,7 @@ public class ZKClient {
 		}
 
 	}
+	
 	public void setAndPush(String key,String value) throws LionException{
 		try {			
 			String timestampPath = this.parentPath+"/"+key+"/"+Constants.CONFIG_TIMESTAMP;
@@ -142,6 +145,7 @@ public class ZKClient {
 			throw new LionException(e);
 		}
 	}
+	
 	public void delete(String key) throws LionException{
 		try {
 			String path = this.parentPath+"/"+key;
@@ -158,7 +162,6 @@ public class ZKClient {
 	}
 	
 	public List<String> getKeyList() throws LionException{
-		
 		try {
 			return this.zk.getChildren(this.parentPath, false);
 		} catch (Exception e) {
@@ -166,13 +169,8 @@ public class ZKClient {
 		}
 	}
 
-	/**
-	 * @return the address
-	 */
 	public String getAddress() {
 		return address;
 	}
-	
-	
 
 }
