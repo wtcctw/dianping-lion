@@ -1,11 +1,11 @@
-<table class="table table-bordered table-striped table-condensed">
+<table style="table-layout:fixed" class="table table-bordered table-striped table-condensed">
     <thead>
     <tr>
       <th width="30">ID</th>
       <th width="280">Name</th>
       <th width="230">Description</th>
-      <th width="100">Group</th>
-      <th>Hosts</th>
+      <th>Group</th>
+      <th width="450">Hosts</th>
       <th width="60">
         操作 &nbsp;&nbsp;
         <@s.if test="%{hasAddPrivilege(pid, envId)}">
@@ -32,7 +32,7 @@
         <td class="service-group">
             ${service.group}
         </td>
-        <td class="service-hosts">
+        <td style="word-wrap: break-word;" class="service-hosts">
             ${service.hosts}
         </td>
         <td class="config-btn-group">
