@@ -144,7 +144,7 @@ $(function(){
 	}
 
 	function getServiceDesc($element_in_row) {
-		return $element_in_row.parents(".config_row").find(".service_desc").text().trim();
+		return $element_in_row.parents(".config_row").find(".service-desc").text().trim();
 	}
 
 	function getServiceGroup($element_in_row) {
