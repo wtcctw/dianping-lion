@@ -20,4 +20,6 @@ public interface ServiceDao {
 
     public Service getServiceByEnvNameGroup(int envId, String name, String group);
 
+    public List<Service> getServiceListByEnvName(int envId, String name);
+
 }

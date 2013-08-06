@@ -22,6 +22,10 @@
     	SELECT * FROM service WHERE `envId` = #envId# AND `name` = #name# AND `group` = #group#
     </select>
 
+    <select id="getServiceListByEnvName" parameterClass="map" resultMap="ServiceResult">
+    	SELECT * FROM service WHERE `envId` = #envId# AND `name` = #name#
+    </select>
+
     <select id="getServiceList" parameterClass="map" resultMap="ServiceResult">
     	SELECT * FROM service WHERE `projectId` = #projectId# AND `envId` = #envId#
     </select>

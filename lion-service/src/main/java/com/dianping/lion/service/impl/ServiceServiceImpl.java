@@ -58,6 +58,14 @@ public class ServiceServiceImpl implements ServiceService {
     public void deleteService(Service service) throws Exception {
         serviceDao.deleteService(service);
         zkDeleteService(service);
+        if(StringUtils.isNotEmpty(service.getGroup())) {
+            List<Service> services = serviceDao.getServiceListByEnvName(service.getEnvId(), service.getName());
+            if(services.size() == 0) {
+                // Last service for name in env, delete parent node in ZK
+                service.setGroup("");
+                zkDeleteService(service);
+            }
+        }
     }
 
     private void zkDeleteService(Service service) throws Exception {
@@ -73,8 +81,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     private String getPath(Service service) {
         String path = escape(service.getName());
-        if(!(StringUtils.isEmpty(service.getGroup()) ||
-             "default".equalsIgnoreCase(service.getGroup()))) {
+        if(StringUtils.isNotEmpty(service.getGroup())) {
             path = path + '/' + service.getGroup();
         }
         return path;
