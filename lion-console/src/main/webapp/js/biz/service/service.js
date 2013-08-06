@@ -1,12 +1,12 @@
 var modal_service_edited = false;
-var $deleteAlert;
+var $deleteServiceAlert;
 var $commonAlert;
 
 $(function(){
 	$(".icon-intro").popover();
 	bindServiceTableEvents();
 
-	$deleteAlert = $("<div>确认删除服务? [<font color='green'>不可恢复</font>]</div>")
+	$deleteServiceAlert = $("<div>确认删除服务? [<font color='green'>不可恢复</font>]</div>")
 		.dialog({
 			autoOpen : false,
 			resizable : false,
@@ -159,8 +159,8 @@ $(function(){
 		$("[rel=tooltip]").tooltip({delay : {show : 800}});
 
 		$(".delete-service-btn").click(function() {
-			$deleteAlert.dialog("open");
-			$deleteAlert.data("serviceId", getServiceId($(this)));
+			$deleteServiceAlert.dialog("open");
+			$deleteServiceAlert.data("serviceId", getServiceId($(this)));
 			return false;
 		});
 
