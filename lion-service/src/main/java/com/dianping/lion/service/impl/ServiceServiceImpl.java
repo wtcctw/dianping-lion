@@ -71,7 +71,12 @@ public class ServiceServiceImpl implements ServiceService {
     private void zkDeleteService(Service service) throws Exception {
         ZookeeperService zkService = getZkService(service.getEnvId());
         String path = getPath(service);
-        zkService.delete(path);
+        List<String> children = zkService.getChildren(path);
+        if(children!=null && children.size() > 0) {
+            zkService.set(path, "");
+        } else {
+            zkService.delete(path);
+        }
     }
 
     private ZookeeperService getZkService(int envId) throws IOException {

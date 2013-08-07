@@ -1,6 +1,7 @@
 package com.dianping.lion.service.impl;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -78,6 +79,17 @@ public class ZookeeperServiceImpl implements ZookeeperService {
             client.setData().forPath(path, data.getBytes(CHARSET));
         } catch (Exception ex) {
             LOG.error("Failed to set path " + path + ":" + data, ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public List<String> getChildren(String path) throws Exception {
+        try {
+            List<String> children = client.getChildren().forPath(path);
+            return children;
+        } catch (Exception ex) {
+            LOG.error("Failed to get children of " + path, ex);
             throw ex;
         }
     }
