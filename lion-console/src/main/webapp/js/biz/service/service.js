@@ -75,12 +75,11 @@ $(function(){
 					$("#edit-service-modal").hideAlerts();
 					if (result.code == Res_Code_Success) {
 						modal_service_edited = true;
-						$("#edit-config-modal .form-info").flashAlert("保存服务成功。", 1500);
 					} else if (result.code == Res_Code_Error) {
-						$("#edit-config-modal .form-error").showAlert(result.msg);
+						$commonAlert.html(result.msg).dialog("open");
 					} else if (result.code == Res_Code_Warn) {
 						modal_service_edited = true;
-						$("#edit-config-modal .form-warn").showAlert(result.msg);
+						$commonAlert.html(result.msg).dialog("open");
 					}
 					$('#edit-service-modal').modal('hide');
 				}
