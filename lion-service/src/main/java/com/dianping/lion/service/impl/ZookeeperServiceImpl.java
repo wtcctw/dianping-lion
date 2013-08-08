@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.zookeeper.data.Stat;
 
 import com.dianping.lion.service.ZookeeperService;
 import com.netflix.curator.framework.CuratorFramework;
@@ -90,6 +91,17 @@ public class ZookeeperServiceImpl implements ZookeeperService {
             return children;
         } catch (Exception ex) {
             LOG.error("Failed to get children of " + path, ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public boolean exists(String path) throws Exception {
+        try {
+            Stat stat = client.checkExists().forPath(path);
+            return stat != null;
+        } catch (Exception ex) {
+            LOG.error("Failed to check path exists " + path, ex);
             throw ex;
         }
     }

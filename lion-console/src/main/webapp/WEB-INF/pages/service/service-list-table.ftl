@@ -1,11 +1,11 @@
-<table style="table-layout:fixed" class="table table-bordered table-striped table-condensed">
+<table style="table-layout: fixed; width: 100%" class="table table-bordered table-striped table-condensed">
     <thead>
     <tr>
       <th width="30">ID</th>
-      <th width="280">Name</th>
-      <th width="230">Description</th>
-      <th>Group</th>
-      <th width="450">Hosts</th>
+      <th width="30%">Name</th>
+      <th width="15%">Description</th>
+      <th width="60">Group</th>
+      <th width="30%">Hosts</th>
       <th width="60">
         操作 &nbsp;&nbsp;
         <@s.if test="%{hasAddPrivilege(pid, envId)}">

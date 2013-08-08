@@ -14,4 +14,6 @@ public interface ZookeeperService {
 
     public List<String> getChildren(String path) throws Exception;
 
+    public boolean exists(String path) throws Exception;
+
 }

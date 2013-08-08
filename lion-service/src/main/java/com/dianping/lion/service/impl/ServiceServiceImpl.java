@@ -112,7 +112,11 @@ public class ServiceServiceImpl implements ServiceService {
     private void zkCreateService(Service service) throws Exception {
         ZookeeperService zkService = getZkService(service.getEnvId());
         String path = getPath(service);
-        zkService.create(path, service.getHosts());
+        if(zkService.exists(path)) {
+            zkService.set(path, service.getHosts());
+        } else {
+            zkService.create(path, service.getHosts());
+        }
     }
 
     @Override

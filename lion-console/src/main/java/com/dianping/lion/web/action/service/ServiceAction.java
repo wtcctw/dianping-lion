@@ -58,8 +58,7 @@ public class ServiceAction extends AbstractConfigAction {
             createSuccessStreamResponse();
         } catch (Exception ex) {
             logger.error(serviceId > 0 ? "修改服务失败" : "新增服务失败", ex);
-//            createErrorStreamResponse(serviceId > 0 ? "修改服务失败：" : "新增服务失败：" + ex.getMessage());
-            createErrorStreamResponse(serviceId > 0 ? "修改服务失败" : "新增服务失败");
+            createErrorStreamResponse(serviceId > 0 ? "修改服务失败：" : "新增服务失败：" + ex.getMessage());
         }
         return SUCCESS;
     }
