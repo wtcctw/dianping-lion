@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="control-group control-lion-group">
-                    <label class="control-label control-lion-label" for="edit-service-group">Group</label>
+                    <label class="control-label control-lion-label" for="edit-service-group">Swimlane</label>
                     <div class="controls lion-controls">
                         <input type="text" id="edit-service-group"/>
                     </div>

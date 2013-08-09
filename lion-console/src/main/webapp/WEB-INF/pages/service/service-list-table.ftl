@@ -4,7 +4,7 @@
       <th width="30">ID</th>
       <th width="30%">Name</th>
       <th width="15%">Description</th>
-      <th width="60">Group</th>
+      <th width="60">Swimlane</th>
       <th width="30%">Hosts</th>
       <th width="60">
         操作 &nbsp;&nbsp;
