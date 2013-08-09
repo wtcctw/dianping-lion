@@ -23,7 +23,7 @@
             ${status.index + 1}
             <input type="hidden" value="${service.id}" name="service-id">
         </td>
-        <td class="service-name">
+        <td style="word-wrap: break-word;" class="service-name">
             ${service.name}
         </td>
         <td class="service-desc">
