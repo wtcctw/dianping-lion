@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.dianping.lion.client;
 
@@ -31,7 +31,7 @@ import com.dianping.lion.Utils;
  * <p>
  * Description: 描述
  * </p>
- * 
+ *
  * @author saber miao
  * @version 1.0
  * @created 2010-12-30 下午06:12:36
@@ -91,7 +91,7 @@ public class ConfigCache {
 	/**
 	 * 如果已经使用SpringConfig配置为Spring Bean，或者用getInstance(String address)成功调用过一次，
 	 * 则用此方法可以成功返回ConfigCache，否则必须使用getInstance(String address)获取ConfigCache
-	 * 
+	 *
 	 * @return
 	 * @throws LionException
 	 */
@@ -201,7 +201,7 @@ public class ConfigCache {
 					Watcher watcher = new ConfigDataWatcher(path, timestampPath, key);
 					value = new StringValue(new String(this.zk.getData(path, watcher, null), Constants.CHARSET));
 					cache.put(key, value);
-					logger.info(">>>>>>>>>>>>getProperty key:" + key + "  value:" + value.getValue());
+//					logger.info(">>>>>>>>>>>>getProperty key:" + key + "  value:" + value.getValue());
 					if (this.zk.exists(timestampPath, false) != null) {
 						Long timestamp = Utils.getLong(this.zk.getData(timestampPath, false, null));
 						timestampMap.put(path, timestamp);
