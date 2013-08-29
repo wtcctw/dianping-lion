@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.dianping.lion.client;
 
@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import jodd.bean.BeanUtil;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
@@ -33,21 +35,21 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
-/**    
- * <p>    
- * Title: InitializeConfig.java   
- * </p>    
- * <p>    
- * Description: 描述  
- * </p>   
- * @author saber miao   
- * @version 1.0    
- * @created 2010-12-30 下午06:12:13   
+/**
+ * <p>
+ * Title: InitializeConfig.java
+ * </p>
+ * <p>
+ * Description: 描述
+ * </p>
+ * @author saber miao
+ * @version 1.0
+ * @created 2010-12-30 下午06:12:13
  */
 public class InitializeConfig implements BeanFactoryPostProcessor,
 		PriorityOrdered, BeanNameAware, BeanFactoryAware{
-	
-	private static Logger logger = Logger.getLogger(InitializeConfig.class);	
+
+	private static Logger logger = Logger.getLogger(InitializeConfig.class);
 	/** Default placeholder prefix: "${" */
 	public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
 	/** Default placeholder suffix: "}" */
@@ -59,7 +61,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 	private String beanName;
 	private String nullValue = "";
 	protected String address;
-	private String environment;	
+	private String environment;
 	private String propertiesPath;
 	private boolean includeLocalProps;	//是否使用本地的propertiesPath指定的配置文件中的配置
 	private Properties pts;
@@ -71,7 +73,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 			return (String)method.invoke(null);
 		} catch (Exception e) {
 			logger.error("Can't find class com.dianping.lion.EnvZooKeeperConfig",e);
-			throw new RuntimeException(e);			
+			throw new RuntimeException(e);
 		}
 	}
 	private String getZKAdress(){
@@ -81,9 +83,9 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 			return (String)method.invoke(null);
 		} catch (Exception e) {
 			logger.error("Can't find class com.dianping.lion.EnvZooKeeperConfig",e);
-			throw new RuntimeException(e);			
+			throw new RuntimeException(e);
 		}
-	}	
+	}
 	public void init() throws IOException{
 		this.pts = new Properties();
 		if(this.propertiesPath != null){
@@ -121,13 +123,13 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 			init();
 		} catch (IOException e1) {
 			throw new BeansException("init properties error",e1){
-				private static final long serialVersionUID = 6866582836134406673L;				
+				private static final long serialVersionUID = 6866582836134406673L;
 			};
 		}
 		/*if(this.address == null || this.address.startsWith(DEFAULT_PLACEHOLDER_PREFIX)){
 			if(this.pts != null){
 				this.address = this.pts.getProperty("lion.zk.address");
-			}			
+			}
 		}*/
 		StringValueResolver valueResolver;
 		try {
@@ -167,7 +169,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 							Object value = pv.getValue();
 							if(value instanceof TypedStringValue){
 								String value_ = ((TypedStringValue)value).getValue();
-								if(value_.startsWith(this.placeholderPrefix) 
+								if(value_.startsWith(this.placeholderPrefix)
 										&& value_.endsWith(this.placeholderSuffix)){
 									value_ = value_.substring(2);
 									value_ = value_.substring(0,value_.length() - 1);
@@ -249,8 +251,8 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 								logger.info(">>>>>>>>>>>>getProperty key from applicationContext: "+placeholder+"  value:"+propVal);
 							} catch (LionException e) {
 								throw new BeanDefinitionStoreException("get config error",e);
-							}							
-						}							
+							}
+						}
 					}
 				}else{
 					try {
@@ -317,15 +319,15 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 			return (value.equals(nullValue) ? null : value);
 		}
 	}
-	
+
 	/**
 	 * @param address the address to set
 	 */
 	/*public void setAddress(String address) {
 		this.address = address;
 	}*/
-	
-	
+
+
 
 	/**
 	 * @return the propertiesPath
@@ -346,48 +348,16 @@ public class InitializeConfig implements BeanFactoryPostProcessor,
 	}
 
 	private class BeanConfigChange implements ConfigChange{
-		
+
 		@Override
 		public void onChange(String key, String value) {
 			BeanData bd = InitializeConfig.this.propertyMap.get(key);
 			if(bd != null){
 				Object bean = InitializeConfig.this.beanFactory.getBean(bd.getBeanName());
 				if(bean != null){
-					String fieldName = bd.getFieldName();
-					String methodName = "set"+fieldName.substring(0,1).toUpperCase()+fieldName.substring(1,fieldName.length());
-					Method method = null;
-					try {
-						method = bean.getClass().getDeclaredMethod(methodName, new Class[]{String.class});
-					} catch (Exception e) {
-						logger.error(e.getMessage(),e);
-					} 
-					if(method == null){
-						Field field = null;
-						try {
-							field = bean.getClass().getField(fieldName);
-						} catch (Exception e) {
-							logger.error(e.getMessage(),e);
-						}
-						if(field == null){
-							logger.error("no field to set property:"+fieldName);
-						}else{
-							field.setAccessible(true);
-							try {
-								field.set(bean, value);
-							} catch (Exception e) {
-								logger.error(e.getMessage(),e);
-							} 
-						}
-					}else{
-						method.setAccessible(true);
-						try {
-							method.invoke(bean, value);
-						} catch (Exception e) {
-							logger.error(e.getMessage(),e);
-						}
-					}
+				    BeanUtil.setProperty(bean, bd.getFieldName(), value);
 				}
 			}
-		}		
+		}
 	}
 }
