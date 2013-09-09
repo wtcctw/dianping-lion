@@ -1,8 +1,11 @@
 package com.dianping.lion.service.impl;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,9 @@ public class ServiceServiceImpl implements ServiceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceServiceImpl.class);
 
-    private static final String SERVICE_NAMESPACE = "DP/SERVER";
+    private static final String SERVICE_PATH = "/DP/SERVER/";
+    private static final String WEIGHT_PATH = "/DP/WEIGHT/";
+    private static final String DEFAULT_WEIGHT = "1";
 
     @Autowired
     private ServiceDao serviceDao;
@@ -44,14 +49,40 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public void updateService(Service service) throws Exception {
+        Service originalService = serviceDao.getServiceById(service.getId());
         serviceDao.updateService(service);
-        zkUpdateService(service);
+        zkUpdateService(originalService, service);
     }
 
-    private void zkUpdateService(Service service) throws Exception {
+    private void zkUpdateService(Service originalService, Service service) throws Exception {
         ZookeeperService zkService = getZkService(service.getEnvId());
-        String path = getPath(service);
+        String path = getServicePath(service);
         zkService.set(path, service.getHosts());
+        // Update weight node under /DP/WEIGHT
+        Set<String> oriHostSet = new HashSet<String>();
+        for(String host : originalService)
+            oriHostSet.add(host);
+        Set<String> hostSet = new HashSet<String>();
+        for(String host : service)
+            hostSet.add(host);
+
+        Set<String> removeSet = (Set<String>) CollectionUtils.subtract(oriHostSet, hostSet);
+        for(String host : removeSet) {
+            String wp = WEIGHT_PATH + host;
+            if(zkService.exists(wp)) {
+                zkService.delete(wp);
+            }
+        }
+
+        Set<String> addSet = (Set<String>) CollectionUtils.subtract(hostSet, oriHostSet);
+        for(String host : service) {
+            String wp = WEIGHT_PATH + host;
+            if(zkService.exists(wp)) {
+                zkService.set(wp, DEFAULT_WEIGHT);
+            } else {
+                zkService.create(wp, DEFAULT_WEIGHT);
+            }
+        }
     }
 
     @Override
@@ -70,22 +101,29 @@ public class ServiceServiceImpl implements ServiceService {
 
     private void zkDeleteService(Service service) throws Exception {
         ZookeeperService zkService = getZkService(service.getEnvId());
-        String path = getPath(service);
+        String path = getServicePath(service);
         List<String> children = zkService.getChildren(path);
         if(children!=null && children.size() > 0) {
             zkService.set(path, "");
         } else {
             zkService.delete(path);
         }
+        // Delete weight node under /DP/WEIGHT
+        for(String host : service) {
+            String wp = WEIGHT_PATH + host;
+            if(zkService.exists(wp)) {
+                zkService.delete(wp);
+            }
+        }
     }
 
     private ZookeeperService getZkService(int envId) throws IOException {
         Environment environment = environmentService.findEnvByID(envId);
-        return ZookeeperServiceFactory.getZookeeperService(environment.getIps(), SERVICE_NAMESPACE);
+        return ZookeeperServiceFactory.getZookeeperService(environment.getIps());
     }
 
-    private String getPath(Service service) {
-        String path = escape(service.getName());
+    private String getServicePath(Service service) {
+        String path = SERVICE_PATH + escape(service.getName());
         if(StringUtils.isNotEmpty(service.getGroup())) {
             path = path + '/' + service.getGroup();
         }
@@ -111,11 +149,20 @@ public class ServiceServiceImpl implements ServiceService {
 
     private void zkCreateService(Service service) throws Exception {
         ZookeeperService zkService = getZkService(service.getEnvId());
-        String path = getPath(service);
+        String path = getServicePath(service);
         if(zkService.exists(path)) {
             zkService.set(path, service.getHosts());
         } else {
             zkService.create(path, service.getHosts());
+        }
+        // Create weight node under /DP/WEIGHT
+        for(String host : service) {
+            String wp = WEIGHT_PATH + host;
+            if(zkService.exists(wp)) {
+                zkService.set(wp, DEFAULT_WEIGHT);
+            } else {
+                zkService.create(wp, DEFAULT_WEIGHT);
+            }
         }
     }
 

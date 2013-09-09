@@ -1,6 +1,8 @@
 package com.dianping.lion.entity;
 
-public class Service {
+import java.util.Iterator;
+
+public class Service implements Iterable<String> {
 
     private int id;
     private int projectId;
@@ -8,7 +10,7 @@ public class Service {
     private String name = "";
     private String desc = "";
     private String group = "";
-    private String hosts = "";
+    private String hosts = "";      // host1:port1, host2:port2, ...
 
     public int getId() {
         return id;
@@ -72,6 +74,45 @@ public class Service {
         sb.append(envId).append(">>").append(name).append(">>");
         sb.append(group);
         return sb.toString();
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return new HostIterator();
+    }
+
+    private class HostIterator implements Iterator<String> {
+
+        private String[] hostArray;
+        private int current;
+
+        public HostIterator() {
+            if(hosts==null)
+                throw new NullPointerException("hosts is null");
+            hostArray = hosts.split(",");
+            current = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            while(current < hostArray.length) {
+                if(hostArray[current].trim().length() > 0)
+                    return true;
+                current++;
+            }
+            return false;
+        }
+
+        @Override
+        public String next() {
+            return hostArray[current++].trim();
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
 }
