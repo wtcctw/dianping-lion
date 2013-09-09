@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <display-name>Archetype Created Web Application</display-name>
-  
+
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath*:config/spring/*.xml</param-value>
@@ -18,7 +18,7 @@
 		<param-name>log4jRefreshInterval</param-name>
 		<param-value>60000</param-value>
 	</context-param>
-	
+
 	<filter>
 		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -31,14 +31,14 @@
 			<param-value>true</param-value>
 		</init-param>
 	</filter>
-	
+
 	<filter-mapping>
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
-	
+
 	<servlet>
 		<servlet-name>SetConfigServlet</servlet-name>
 		<servlet-class>com.dianping.lion.api.http.SetConfigServlet</servlet-class>
@@ -59,6 +59,11 @@
 		<servlet-name>StartJobServlet</servlet-name>
 		<servlet-class>com.dianping.lion.api.http.StartJobServlet</servlet-class>
 	</servlet>
+    <servlet>
+        <servlet-name>GetConfigDiffServlet</servlet-name>
+        <servlet-class>com.dianping.lion.api.http.GetConfigDiffServlet</servlet-class>
+    </servlet>
+
 	<servlet-mapping>
 		<servlet-name>SetConfigServlet</servlet-name>
 		<url-pattern>/setconfig</url-pattern>
@@ -79,6 +84,11 @@
 		<servlet-name>StartJobServlet</servlet-name>
 		<url-pattern>/startjob</url-pattern>
 	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetConfigDiffServlet</servlet-name>
+        <url-pattern>/getconfigdiff</url-pattern>
+    </servlet-mapping>
+
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>

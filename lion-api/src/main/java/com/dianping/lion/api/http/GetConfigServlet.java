@@ -61,7 +61,7 @@ public class GetConfigServlet extends AbstractLionServlet {
         writer.print("<null>");
     }
 
-    private void checkAccessibility(HttpServletRequest req) {
+    protected void checkAccessibility(HttpServletRequest req) {
         String userIP = IPUtils.getUserIP(req);
         String whiteList = systemSettingService.getSetting(ServiceConstants.SETTING_GETCONFIG_WHITELIST);
         if (StringUtils.isBlank(whiteList)) {

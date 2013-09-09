@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-service-0.0.1
- * 
+ *
  * File Created at 2012-8-10
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -25,13 +25,13 @@ import com.dianping.lion.entity.ConfigSnapshotSet;
 public interface ConfigRelaseService {
 
 	int createSetTask(ConfigSetTask task);
-	
+
 	/**
 	 * @param id
 	 * @param id2
 	 * @param features
 	 * @param keys
-	 * @param b 
+	 * @param b
 	 */
 	void executeSetTask(int projectId, int envId, String[] features, String[] keys, boolean push2App);
 
@@ -53,8 +53,17 @@ public interface ConfigRelaseService {
 
 	/**
 	 * @param snapshotSet
-	 * @return 
+	 * @return
 	 */
 	ConfigRollbackResult rollbackSnapshotSet(ConfigSnapshotSet snapshotSet);
-	
+
+	/**
+	 * Rollback selected keys from snapshot
+	 *
+	 * @param snapshotSet to rollback configs from
+	 * @param keys to rollback
+	 * @return
+	 */
+	ConfigRollbackResult rollbackSnapshotSet(ConfigSnapshotSet snapshotSet, String[] keys);
+
 }

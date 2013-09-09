@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-api-0.0.1
- * 
+ *
  * File Created at 2012-8-1
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -46,20 +46,21 @@ public class RollbackConfigsServlet extends AbstractLionServlet {
 		String projectName = getNotBlankParameter(req, PARAM_PROJECT);
 		String env = getNotBlankParameter(req, PARAM_ENV);
 		String task = getNotBlankParameter(req, PARAM_TASK);
-		
+		String[] keys = req.getParameterValues(PARAM_KEY);
+
 		Environment environment = getRequiredEnv(env);
 		Project project = projectService.findProject(projectName);
-		
+
 		boolean hasRollbacked = false;
 		String keysNotRemoved = "";
-		
+
 		if (project != null) {
 		    String logcontent = "回滚task: " + task;
 		    try {
             		ConfigSnapshotSet snapshotSet = configReleaseService.findSnapshotSetToRollback(project.getId(), environment.getId(), task);
-            		
+
             		if (snapshotSet != null) {
-            			ConfigRollbackResult rollbackResult = configReleaseService.rollbackSnapshotSet(snapshotSet);
+            			ConfigRollbackResult rollbackResult = configReleaseService.rollbackSnapshotSet(snapshotSet, keys);
             			Set<String> notRemovedKeys = rollbackResult.getNotRemovedKeys();
             			if (CollectionUtils.isNotEmpty(notRemovedKeys)) {
             				keysNotRemoved = StringUtils.join(notRemovedKeys, ",") + " not removed.";
@@ -69,7 +70,7 @@ public class RollbackConfigsServlet extends AbstractLionServlet {
             			        "成功: " + logcontent + (!notRemovedKeys.isEmpty() ? ", 未清除key: " + StringUtils.join(notRemovedKeys, ",") : ""))
             			        .key(null, "true", null, null, querystr));
             		} else {
-            		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_Rollback, project.getId(), environment.getId(), 
+            		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_Rollback, project.getId(), environment.getId(),
             		            "成功: " + logcontent + ", 无镜像需要回滚")
             		            .key(null, "true", null, null, querystr));
             		}
