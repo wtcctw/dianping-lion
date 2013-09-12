@@ -5,7 +5,6 @@ package com.dianping.lion.client;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,18 +14,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.apache.zookeeper.data.Stat;
+
 import com.dianping.lion.Constants;
 import com.dianping.lion.Utils;
 
 /**
  * <p>
- * Title: ConfigPuller.java
+ * Title: ConfigCache.java
  * </p>
  * <p>
  * Description: 描述
@@ -47,6 +47,8 @@ public class ConfigCache {
 	private static Map<String, Long> timestampMap = new ConcurrentHashMap<String, Long>();
 
 	private ZooKeeperWrapper zk;
+
+	private ConfigDataWatcher configDataWatcher = new ConfigDataWatcher();
 
 	private List<ConfigChange> changeList = new ArrayList<ConfigChange>(); // CopyOnWriteArrayList
 
@@ -83,6 +85,7 @@ public class ConfigCache {
 	}
 
 	void reset() {
+	    configCache = null;
 		cache.clear();
 		timestampMap.clear();
 		changeList.clear();
@@ -137,7 +140,7 @@ public class ConfigCache {
 
 	private void init() throws IOException {
 		if (!this.isInit) {
-			this.zk = new ZooKeeperWrapper(this.address, this.timeout, new ConfigWatcher());
+			this.zk = new ZooKeeperWrapper(this.address, this.timeout, new ZookeeperSessionWatcher());
 			try {
 				if (this.zk.exists(Constants.DP_PATH, false) == null) {
 					this.zk.create(Constants.DP_PATH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -154,12 +157,21 @@ public class ConfigCache {
 			this.isInit = true;
 		}
 
+		FileInputStream fis = null;
 		try {
 			env = new Properties();
-			FileInputStream fis = new FileInputStream("/data/webapps/appenv");
+			fis = new FileInputStream(Constants.ENVIRONMENT_FILE);
 			env.load(fis);
 		} catch (Exception e) {
-			logger.warn("no appenv in this machine", e);
+			logger.warn("No environment file at location " + Constants.ENVIRONMENT_FILE, e);
+		} finally {
+		    if(fis != null) {
+		        try {
+		            fis.close();
+		        } catch(Exception ex) {
+		            logger.error("Failed to close file " + Constants.ENVIRONMENT_FILE);
+		        }
+		    }
 		}
 	}
 
@@ -193,32 +205,81 @@ public class ConfigCache {
 
 	private String getZKValue(String key) throws LionException {
 		StringValue value = cache.get(key);
+
 		if (value == null) {
-			String path = Constants.CONFIG_PATH + "/" + key;
-			String timestampPath = path + "/" + Constants.CONFIG_TIMESTAMP;
-			try {
-				if (this.zk.exists(path, false) != null) {
-					Watcher watcher = new ConfigDataWatcher(path, timestampPath, key);
-					value = new StringValue(new String(this.zk.getData(path, watcher, null), Constants.CHARSET));
-					cache.put(key, value);
-//					logger.info(">>>>>>>>>>>>getProperty key:" + key + "  value:" + value.getValue());
-					if (this.zk.exists(timestampPath, false) != null) {
-						Long timestamp = Utils.getLong(this.zk.getData(timestampPath, false, null));
-						timestampMap.put(path, timestamp);
-					}
-				} else {
-					cache.put(key, new StringValue(null));
-					logger.info(">>>>>>>>>>>getProperty key:" + key + "   value is null*******");
-				}
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-				throw new LionException(e);
-			}
+		    try {
+    		    String group = getGroup();
+    		    if(group != null) {
+    		        // Try to get config for the group, if no value found, fall back to default
+                    value = getValue(key, group);
+    		    }
+
+    		    // Group is null or no config for the group, fall back to default
+    	        if(value == null) {
+                    value = getValue(key);
+    	        }
+		    } catch (Exception ex) {
+		        logger.error("Failed to get value for key: " + key, ex);
+		        throw new LionException(ex);
+		    }
 		}
-		if (value != null) {
-			return value.getValue();
-		}
-		return null;
+
+		return value != null ? value.getValue() : null;
+	}
+
+	private boolean exists(String path) throws Exception {
+        Stat stat = zk.exists(path, false);
+        return stat != null;
+    }
+
+	private boolean exists(String path, Watcher watcher) throws Exception {
+	    Stat stat = zk.exists(path, watcher);
+	    return stat != null;
+	}
+
+	private String getGroup() throws LionException {
+	    String group = ConfigCache.getInstance().getAppenv(Constants.KEY_SWIMLANE);
+	    if(group == null || group.trim().length() == 0)
+            return null;
+	    return group.trim();
+	}
+
+	private String getConfigPath(String key) throws LionException {
+	    return getConfigPath(key, null);
+	}
+
+	private String getTimestampPath(String path) {
+	    return path + Constants.PATH_SEPARATOR + Constants.CONFIG_TIMESTAMP;
+	}
+	private String getConfigPath(String key, String group) throws LionException {
+	    String path = Constants.CONFIG_PATH + Constants.PATH_SEPARATOR + key;
+	    if(group != null)
+	        path = path + Constants.PATH_SEPARATOR + group;
+	    return path;
+	}
+
+	private StringValue getValue(String key) throws Exception {
+	    return getValue(key, null);
+	}
+
+	private StringValue getValue(String key, String group) throws Exception {
+	    String path = getConfigPath(key, group);
+        String timestampPath = getTimestampPath(path);
+
+        if( exists(path, configDataWatcher) ) {
+            StringValue value = new StringValue(new String(this.zk.getData(path, configDataWatcher, null), Constants.CHARSET));
+            // Cache key <-> value
+            cache.put(key, value);
+            // Update path <-> timestamp
+            if( exists(timestampPath) ) {
+                Long timestamp = Utils.getLong(this.zk.getData(timestampPath, false, null));
+                timestampMap.put(path, timestamp);
+            }
+            return value;
+        }
+
+        logger.warn("Path does not exist: " + path);
+        return null;
 	}
 
 	public Long getLongProperty(String key) throws LionException {
@@ -277,15 +338,16 @@ public class ConfigCache {
 		return Boolean.parseBoolean(value);
 	}
 
-	class ConfigWatcher implements Watcher {
+	class ZookeeperSessionWatcher implements Watcher {
 		@Override
 		public void process(WatchedEvent event) {
 			if (event.getState() == KeeperState.Expired) {
-				logger.info("Session Expried init,Invoke ZooKeeperWrapper method!");
+				logger.info("Zookeeper session expried, reconnecting...");
 				try {
-					zk.sessionExpiredReConnect();
+					zk.reconnectSession();
+					logger.info("Zookeeper session reconnected");
 				} catch (Exception e) {
-					logger.error(e.getMessage(), e);
+					logger.error("Zookeeper session reconnect failed", e);
 				}
 				return;
 			}
@@ -294,64 +356,98 @@ public class ConfigCache {
 
 	private class ConfigDataWatcher implements Watcher {
 
-		private String path;
-
-		private String timestampPath;
-
-		private String key;
-
-		public ConfigDataWatcher(String path, String timestampPath, String key) {
-			this.path = path;
-			this.timestampPath = timestampPath;
-			this.key = key;
+		public ConfigDataWatcher() {
 		}
 
 		@Override
 		public void process(WatchedEvent event) {
 			if (event.getType() == EventType.NodeCreated || event.getType() == EventType.NodeDataChanged) {
-				try {
-					zk.removeWatcher(this.path);
-					if (zk.exists(this.timestampPath, false) != null) {
-						Long timestamp = Utils.getLong(zk.getData(this.timestampPath, false, null));
-						Long timestamp_ = timestampMap.get(this.path);
+			    try {
+			        String key = getKey(event.getPath());
+			        String group = getGroup(event.getPath());
+
+    			    if(isFiltered(key, group)) {
+    			        return;
+    			    }
+    			    String path = event.getPath();
+    			    String tsPath = getTimestampPath(path);
+					zk.removeWatcher(path);
+					if( exists(tsPath) ) {
+						Long timestamp = Utils.getLong(zk.getData(tsPath, false, null));
+						Long timestamp_ = timestampMap.get(path);
 						if (timestamp_ == null || timestamp > timestamp_) {
-							timestampMap.put(this.path, timestamp);
-							byte[] data = zk.getData(this.path, this, null);
+							timestampMap.put(path, timestamp);
+							byte[] data = zk.getData(path, this, null);
 							if (data != null) {
 								String value = new String(data, Constants.CHARSET);
-								logger.info(">>>>>>>>>>>>pushProperty key:" + key + "  value:" + value);
-								StringValue sv = cache.get(this.key);
+								StringValue sv = cache.get(key);
 								if (sv == null) {
 									sv = new StringValue(value);
-									cache.put(this.key, sv);
+									cache.put(key, sv);
 								}
 								synchronized (sv) {
 									sv.value = value;
-									if (ConfigCache.this.changeList != null) {
+									logger.info(">>>>>>>>>>>>Key changed " + key + " group is " + group);
+									if(ConfigCache.this.changeList != null) {
 										for (ConfigChange change : ConfigCache.this.changeList) {
-											change.onChange(this.key, value);
+											change.onChange(key, value);
 										}
 									}
 								}
 							}
 						} else {
-							zk.getData(this.path, this, null);
+							zk.getData(path, this, null);
 						}
 					} else {
-						zk.getData(this.path, this, null);
+						zk.getData(path, this, null);
 					}
-				} catch (KeeperException e) {
-					logger.error(e.getMessage(), e);
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage(), e);
-				} catch (UnsupportedEncodingException e) {
-					logger.error(e.getMessage(), e);
-				} catch (IOException e) {
-					logger.error(e.getMessage(), e);
+				} catch (Exception ex) {
+					logger.error("", ex);
 				}
 			} else if (event.getType() == EventType.NodeDeleted) {
-				cache.remove(this.key);
+                try {
+                    String key = getKey(event.getPath());
+                    cache.remove(key);
+                } catch (Exception ex) {
+                    logger.error("", ex);
+                }
 			}
+		}
+
+		private String getKey(String path) throws Exception {
+		    int idx = path.lastIndexOf(Constants.PATH_SEPARATOR);
+		    if(idx == -1)
+		        return null;
+		    String key = path.substring(idx + 1);
+		    if(key.equals(ConfigCache.this.getGroup())) {
+		        int idx2 = path.lastIndexOf(Constants.PATH_SEPARATOR, idx-1);
+		        if(idx2 != -1)
+		            key = path.substring(idx2+1, idx);
+		    }
+		    return key;
+		}
+
+		private String getGroup(String path) throws Exception {
+		    String group = ConfigCache.this.getGroup();
+		    if(path.endsWith(Constants.PATH_SEPARATOR + group))
+		        return group;
+		    return null;
+		}
+
+		private boolean isFiltered(String key, String group) throws Exception {
+		    String swimlane = ConfigCache.this.getGroup();
+
+		    if(swimlane==null && group==null)
+		        return false;
+		    if(swimlane==null && group!=null)
+		        return true;
+		    if(swimlane!=null && group==null) {
+		        String pp = getConfigPath(key, swimlane);
+		        return exists(pp);
+		    }
+		    if(swimlane!=null && group!=null)
+		        return false;
+		    return true;
 		}
 
 	}
@@ -362,26 +458,36 @@ public class ConfigCache {
 
 		@Override
 		public void run() {
-			int k = 0;
+			String group = null;
+			try {
+                group = getGroup();
+            } catch (LionException ex) {
+                logger.error("Failed to get group", ex);
+            }
+
+            int k = 0;
 			while (true) {
 				try {
 					long now = System.currentTimeMillis();
 					if (now - this.lastTime > 20000) {
 						for (Entry<String, StringValue> entry : cache.entrySet()) {
 							synchronized (entry.getValue()) {
-
-								String path = Constants.CONFIG_PATH + "/" + entry.getKey();
-								String timestampPath = path + "/" + Constants.CONFIG_TIMESTAMP;
-								if (zk.exists(timestampPath, false) != null) {
+							    String path = getConfigPath(entry.getKey());
+							    if(group != null) {
+							        String pp = getConfigPath(entry.getKey(), group);
+							        if(exists(pp))
+							            path = pp;
+							    }
+								String timestampPath = getTimestampPath(path);
+								if (exists(timestampPath)) {
 									Long timestamp = Utils.getLong(zk.getData(timestampPath, false, null));
 									Long timestamp_ = timestampMap.get(path);
 									if (timestamp_ == null || timestamp > timestamp_) {
 										timestampMap.put(path, timestamp);
-										if (zk.exists(path, false) != null) {
+										if (exists(path)) {
 											String value = new String(zk.getData(path, false, null), Constants.CHARSET);
 
 											if (!value.equals(entry.getValue().value)) {
-												logger.info(">>>>>>>>>>>>syncProperty key:" + entry.getKey() + "  value:" + value);
 												entry.getValue().value = value;
 												if (changeList != null) {
 													for (ConfigChange change : changeList) {
@@ -392,7 +498,6 @@ public class ConfigCache {
 										}
 									}
 								}
-
 							}
 						}
 						this.lastTime = now;

@@ -32,5 +32,17 @@
             <artifactId>jodd-bean</artifactId>
             <version>3.4.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.netflix.curator</groupId>
+            <artifactId>curator-test</artifactId>
+            <version>1.1.18</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>1.1.18</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 </project>

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.dianping.lion.console;
 
@@ -20,35 +20,35 @@ import com.dianping.lion.Utils;
 import com.dianping.lion.client.LionException;
 import com.dianping.lion.client.ZooKeeperWrapper;
 
-/**    
- * <p>    
- * Title: ZKClient.java   
- * </p>    
- * <p>    
- * Description: 描述  
- * </p>   
- * @author saber miao   
- * @version 1.0    
- * @created 2011-5-23 下午09:16:46   
+/**
+ * <p>
+ * Title: ZKClient.java
+ * </p>
+ * <p>
+ * Description: 描述
+ * </p>
+ * @author saber miao
+ * @version 1.0
+ * @created 2011-5-23 下午09:16:46
  */
 public class ZKClient {
-	
+
 	private static Logger logger = Logger.getLogger(ZKClient.class);
 	private static Map<String,ZKClient> clientMap = new ConcurrentHashMap<String,ZKClient>();
 	private ZooKeeperWrapper zk;
-	
+
 	private int timeout = 15000;
 	private String address;
 	private String parentPath;
-	
+
 	public ZKClient(String path){
 		this.parentPath=path;
 	}
-	
+
 	public static ZKClient getInstance(String address) throws LionException{
 		return getInstance(address,Constants.CONFIG_PATH);
 	}
-	
+
 	public static ZKClient getInstance(String address,String path) throws LionException{
 		ZKClient client = clientMap.get(address+":"+path);
 		if(client == null){
@@ -68,7 +68,7 @@ public class ZKClient {
 		}
 		return client;
 	}
-	
+
 	private void init() throws IOException{
 			this.zk = new ZooKeeperWrapper(this.address,this.timeout,new Watcher(){
 				@Override
@@ -85,15 +85,15 @@ public class ZKClient {
 				logger.error(e.getMessage(),e);
 			}
 	}
-	
+
 	public boolean exists(String key) throws LionException{
 		try {
 			return this.zk.exists(this.parentPath+"/"+key, false) != null;
 		} catch (Exception e) {
 			throw new LionException(e);
-		} 
+		}
 	}
-	
+
 	public void create(String key,String value) throws LionException{
 		try {
 			this.zk.create(this.parentPath+"/"+key, value.getBytes(Constants.CHARSET), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -101,7 +101,7 @@ public class ZKClient {
 			throw new LionException(e);
 		}
 	}
-	
+
 	public void set(String key,String value) throws LionException{
 		try {
 			this.zk.setData(this.parentPath+"/"+key, value.getBytes(Constants.CHARSET), -1);
@@ -109,8 +109,8 @@ public class ZKClient {
 			throw new LionException(e);
 		}
 	}
-	
-	public void creatAndPush(String key,String value)throws LionException{
+
+	public void createAndPush(String key,String value)throws LionException{
 		try {
 			String keyPath = this.parentPath+"/"+key;
 			if(this.zk.exists(keyPath, false)!=null)
@@ -122,9 +122,9 @@ public class ZKClient {
 		}
 
 	}
-	
+
 	public void setAndPush(String key,String value) throws LionException{
-		try {			
+		try {
 			String timestampPath = this.parentPath+"/"+key+"/"+Constants.CONFIG_TIMESTAMP;
 			if(this.zk.exists(timestampPath, false) != null){
 				this.zk.setData(timestampPath, Utils.getLongBytes(new Date().getTime()), -1);
@@ -132,12 +132,12 @@ public class ZKClient {
 				this.zk.create(timestampPath, Utils.getLongBytes(new Date().getTime()),  Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 			}
 			this.zk.setData(this.parentPath+"/"+key, value.getBytes(Constants.CHARSET), -1);
-			
+
 		} catch (Exception e) {
 			throw new LionException(e);
 		}
 	}
-	
+
 	public String get(String key) throws LionException{
 		try {
 			return new String(this.zk.getData(this.parentPath+"/"+key, null, null),Constants.CHARSET);
@@ -145,7 +145,7 @@ public class ZKClient {
 			throw new LionException(e);
 		}
 	}
-	
+
 	public void delete(String key) throws LionException{
 		try {
 			String path = this.parentPath+"/"+key;
@@ -158,9 +158,9 @@ public class ZKClient {
 			this.zk.delete(this.parentPath+"/"+key, -1);
 		} catch (Exception e) {
 			throw new LionException(e);
-		} 
+		}
 	}
-	
+
 	public List<String> getKeyList() throws LionException{
 		try {
 			return this.zk.getChildren(this.parentPath, false);

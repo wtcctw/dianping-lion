@@ -22,7 +22,7 @@ public class ConfigCacheTest {
 	@BeforeClass 
 	public static void init(){
 		configCache = ConfigCache.getMockInstance();
-		configCache.setZk(new ZooKeeperWrapperMock(configCache.new ConfigWatcher()));
+		configCache.setZk(new ZooKeeperWrapperMock(configCache.new ZookeeperSessionWatcher()));
 		zkwMock = (ZooKeeperWrapperMock)configCache.getZk();
 	}
 	

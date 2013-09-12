@@ -103,7 +103,7 @@ public class ZooKeeperWrapperMock extends ZooKeeperWrapper {
 		}
 	}
 	
-	public void sessionExpiredReConnect(){
+	public void reconnectSession(){
 		state = KeeperState.SyncConnected;
 		System.out.println("Session reconnected");
 	}

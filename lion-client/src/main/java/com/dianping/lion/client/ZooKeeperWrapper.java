@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.dianping.lion.client;
 
@@ -18,38 +18,38 @@ import org.apache.zookeeper.KeeperException.SessionExpiredException;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
-/**    
- * <p>    
- * Title: ZooKeeperWrapper.java   
- * </p>    
- * <p>    
- * Description: 描述  
- * </p>   
- * @author saber miao   
- * @version 1.0    
- * @created 2011-7-14 下午05:38:01   
+/**
+ * <p>
+ * Title: ZooKeeperWrapper.java
+ * </p>
+ * <p>
+ * Description: 描述
+ * </p>
+ * @author saber miao
+ * @version 1.0
+ * @created 2011-7-14 下午05:38:01
  */
 public class ZooKeeperWrapper {
-	
+
 	private static Logger logger = Logger.getLogger(ZooKeeperWrapper.class);
 	private ZooKeeper zk;
-	
+
 	private String addresses;
 	private int timeout;
 	private Watcher watcher;
-	
+
 	private Map<String,Watcher> watcherMap = new ConcurrentHashMap<String,Watcher>();
-	
+
 	protected ZooKeeperWrapper(){
 	}
-	
+
 	public ZooKeeperWrapper(String addresses,int timeout,Watcher watcher) throws IOException{
 		this.addresses = addresses;
 		this.timeout = timeout;
 		this.watcher = watcher;
 		this.zk = new ZooKeeper(addresses,timeout,watcher);
 	}
-	
+
 	private synchronized void init(ZooKeeper zk) throws IOException, KeeperException, InterruptedException{
 		if(zk == this.zk){
 			this.zk = new ZooKeeper(addresses,timeout,watcher);
@@ -58,7 +58,7 @@ public class ZooKeeperWrapper {
 			}
 		}
 	}
-	
+
 	public Stat exists(String path,boolean watch) throws KeeperException, InterruptedException, IOException{
 		Stat stat = null;
 		ZooKeeper zk_ = this.zk;
@@ -72,7 +72,7 @@ public class ZooKeeperWrapper {
 		}
 		return stat;
 	}
-	
+
 	public Stat exists(String path,Watcher watcher) throws KeeperException, InterruptedException, IOException{
 		Stat stat = null;
 		ZooKeeper zk_ = this.zk;
@@ -88,7 +88,7 @@ public class ZooKeeperWrapper {
 		}
 		return stat;
 	}
-	
+
 	public String create(String path,byte[] data,List<ACL> acl,CreateMode createMode) throws KeeperException, InterruptedException, IOException{
 		ZooKeeper zk_ = this.zk;
 		try{
@@ -100,7 +100,7 @@ public class ZooKeeperWrapper {
 			return this.zk.create(path, data, acl, createMode);
 		}
 	}
-	
+
 	public byte[] getData(String path,Watcher watcher,Stat stat) throws KeeperException, InterruptedException, IOException{
 		ZooKeeper zk_ = this.zk;
 		try{
@@ -126,7 +126,7 @@ public class ZooKeeperWrapper {
 			return this.zk.getData(path, watch, stat);
 		}
 	}
-	
+
 	public Stat setData(String path,byte[] data,int version) throws KeeperException, InterruptedException, IOException{
 		ZooKeeper zk_ = this.zk;
 		try{
@@ -138,7 +138,7 @@ public class ZooKeeperWrapper {
 			return this.zk.setData(path, data, version);
 		}
 	}
-	
+
 	public List<String> getChildren(String path,boolean watch) throws KeeperException, InterruptedException, IOException{
 		ZooKeeper zk_ = this.zk;
 		try{
@@ -150,7 +150,7 @@ public class ZooKeeperWrapper {
 			return this.zk.getChildren(path, watch);
 		}
 	}
-	
+
 	public void delete(String path,int version) throws KeeperException, InterruptedException, IOException{
 		ZooKeeper zk_ = this.zk;
 		try{
@@ -162,12 +162,11 @@ public class ZooKeeperWrapper {
 			this.zk.delete(path, version);
 		}
 	}
-	
+
 	public void removeWatcher(String path){
 		this.watcherMap.remove(path);
 	}
-	public synchronized void sessionExpiredReConnect() throws IOException, KeeperException, InterruptedException{
-		logger.info("Session Expired Reconnect!");
+	public synchronized void reconnectSession() throws IOException, KeeperException, InterruptedException{
 		ZooKeeper zk_ = this.zk;
 		zk_.close();
 		init(zk_);

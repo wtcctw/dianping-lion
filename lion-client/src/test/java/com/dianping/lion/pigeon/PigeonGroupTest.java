@@ -171,7 +171,7 @@ public class PigeonGroupTest {
 		@SuppressWarnings("unused")
 		PigeonClientImpl pigeonClientImpl = new PigeonClientImpl(serviceChange);
 
-		m_client.creatAndPush(groupKey, DEFALUT_TUAN_NEW_SEVICE);
+		m_client.createAndPush(groupKey, DEFALUT_TUAN_NEW_SEVICE);
 		Thread.sleep(1000);
 		Assert.assertEquals(DEFALUT_TUAN_NEW_SEVICE, pigeonCache.queryServiceAddress(serviceName, m_tuangou));
 		Assert.assertEquals(RESULT, 3);
@@ -193,11 +193,11 @@ public class PigeonGroupTest {
 		bean.setName(ConfigCache.getInstance().getProperty(key));
 		System.out.println(bean.index);
 		System.out.println(bean.name);
-		
+
 		m_client.setAndPush(key, "1234");
-		
+
 		ConfigCache.getInstance().addChange(new ConfigChange() {
-			
+
 			@Override
 			public void onChange(String key, String value) {
 				System.out.println(key+":"+value);
