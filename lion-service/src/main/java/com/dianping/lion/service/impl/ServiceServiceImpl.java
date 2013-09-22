@@ -57,7 +57,7 @@ public class ServiceServiceImpl implements ServiceService {
     private void zkUpdateService(Service originalService, Service service) throws Exception {
         ZookeeperService zkService = getZkService(service.getEnvId());
         String path = getServicePath(service);
-        zkService.set(path, service.getHosts());
+        zkService.createOrSet(path, service.getHosts());
         // Update weight node under /DP/WEIGHT
         Set<String> oriHostSet = new HashSet<String>();
         for(String host : originalService)

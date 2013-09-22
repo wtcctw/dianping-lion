@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-15
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -20,18 +20,20 @@ package com.dianping.lion.vo;
  *
  */
 public class ConfigCriteria {
-	
+
 	public static final int HAS_VALUE_ALL = -1;
 	public static final int HAS_VALUE_YES = 1;
 	public static final int HAS_VALUE_NO = 0;
-	
+
 	private int projectId;
-	
+
 	private int envId;
 
 	private String key;
-	
+
 	private String value;
+
+	private String group;
 
 	private int hasValue = HasValueEnum.All.getValue();
 
@@ -104,5 +106,13 @@ public class ConfigCriteria {
 	public void setHasValue(int hasValue) {
 		this.hasValue = hasValue;
 	}
+
+	public String getGroup() {
+	    return group;
+	}
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
 
 }

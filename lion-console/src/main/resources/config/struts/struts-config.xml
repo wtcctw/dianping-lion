@@ -71,6 +71,21 @@
 			<result name="success">/WEB-INF/pages/config/config-edit-more.ftl</result>
 		</action>
 
+        <action name="saveContextValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="saveContextValue">
+            <result name="success" type="stream"/>
+        </action>
+
+        <action name="deleteContextValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="deleteContextValue">
+            <result name="success" type="stream"/>
+        </action>
+
+        <action name="updateContextValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="updateContextValue">
+            <result name="success" type="stream"/>
+        </action>
+
+        <action name="getContextListAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="getContextList">
+            <result name="success">/WEB-INF/pages/config/context-list-table.ftl</result>
+        </action>
 	</package>
 
 </struts>

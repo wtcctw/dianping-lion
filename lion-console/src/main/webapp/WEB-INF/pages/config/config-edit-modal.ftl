@@ -61,6 +61,6 @@
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">关闭</a>
       <input id="edit-save-btn" type="button" class="btn btn-primary" value=" 保存 ">
-      <input id="edit-more-btn" type="button" class="btn btn-info" value=" 编辑上下文相关配置 ">
+      <input id="edit-more-btn" type="button" class="btn btn-info" value=" 编辑泳道配置 ">
     </div>
 </div>

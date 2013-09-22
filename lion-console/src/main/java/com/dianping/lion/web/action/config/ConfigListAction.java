@@ -143,7 +143,7 @@ public class ConfigListAction extends AbstractConfigAction {
 					throw NoPrivilegeException.INSTANCE;
 				}
 			}
-			configService.deleteInstance(configId, envId);
+			configService.deleteInstances(configId, envId);
 			if (configFound != null) {
 				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Clear, configFound.getProjectId(), envId,
 						"清除配置项值[" + configFound.getKey() + "]").key(configFound.getKey()));
@@ -163,7 +163,7 @@ public class ConfigListAction extends AbstractConfigAction {
 			return SUCCESS;
 		}
 		try {
-			ConfigDeleteResult deleteResult = configService.delete(configId);
+			ConfigDeleteResult deleteResult = configService.deleteConfig(configId);
 			if (deleteResult.isSucceed()) {
 			    Config configDeleted = deleteResult.getConfig();
 			    if (configDeleted != null) {
@@ -249,6 +249,22 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
+
+    public String getContextList() {
+        this.environments = environmentService.findAll();
+        this.environment = environmentService.findEnvByID(envId);
+        this.config = configService.getConfig(configId);
+        List<ConfigInstance> instances = configService.findInstancesByConfig(configId, ServiceConstants.MAX_AVAIL_CONFIG_INST);
+        this.instanceMap = new HashMap<Integer, List<ConfigInstance>>();
+        for (ConfigInstance instance : instances) {
+            int envId = instance.getEnvId();
+            if (!instanceMap.containsKey(envId)) {
+                instanceMap.put(envId, new ArrayList<ConfigInstance>());
+            }
+            instanceMap.get(envId).add(instance);
+        }
+        return SUCCESS;
+    }
 
     private List<ConfigVo> enrichWithPrivilege(int projectId, int envId, User user, List<ConfigVo> configVos) {
         boolean hasLockPrivilege = user != null && privilegeDecider.hasLockConfigPrivilege(user.getId());

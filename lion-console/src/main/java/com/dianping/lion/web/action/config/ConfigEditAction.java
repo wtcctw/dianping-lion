@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-17
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -41,17 +41,19 @@ import com.dianping.lion.util.SecurityUtils;
  */
 @SuppressWarnings("serial")
 public class ConfigEditAction extends AbstractConfigAction {
-	
+
 	private Config config;
-	
+
 	private int configId;
-	
+
 	private boolean trim;
-	
+
 	private String value;
-	
+
+	private String context;
+
 	private List<Integer> envIds;
-	
+
 	public String create() {
 		int configType = config.getType();
 		boolean isStringType = configType == ConfigTypeEnum.String.getValue();
@@ -60,8 +62,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 		}
 		int configId;
 		try {
-			configId = configService.create(config);
-			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(), 
+			configId = configService.createConfig(config);
+			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(),
 			        "创建配置项[" + config.getKey() + "]").key(config.getKey()));
 		} catch (RuntimeBusinessException e) {
 			createErrorStreamResponse(e.getMessage());
@@ -80,7 +82,7 @@ public class ConfigEditAction extends AbstractConfigAction {
 					throw NoPrivilegeException.INSTANCE;
 				}
 				configService.createInstance(instance);
-				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId, 
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
 				        "设置配置项[" + config.getKey() + "]").key(config.getKey(), ConfigInstance.NO_CONTEXT, null, instance.getValue()));
 			} catch (NoPrivilegeException e) {
 				String env = envMap.get(envId).getLabel();
@@ -98,7 +100,7 @@ public class ConfigEditAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	public String saveDefaultValue() {
 		Config configFound = configService.getConfig(configId);
 		if (configFound == null) {
@@ -138,7 +140,57 @@ public class ConfigEditAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-	
+
+	public String saveContextValue() {
+	    try {
+	        Config config = configService.getConfig(configId);
+	        ConfigInstance instance = new ConfigInstance();
+	        instance.setConfigId(configId);
+	        instance.setContext(context);
+	        instance.setValue(value);
+	        instance.setEnvId(envId);
+    	    configService.createInstance(instance);
+    	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(), envId,
+                    "添加泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context, null, value));
+    	    createSuccessStreamResponse();
+	    } catch(RuntimeException ex) {
+	        logger.error("添加泳道配置" + config.getKey() + "/" + context + "失败", ex);
+	        createErrorStreamResponse("添加泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
+	    }
+	    return SUCCESS;
+	}
+
+	public String deleteContextValue() {
+	    try {
+    	    Config config = configService.getConfig(configId);
+    	    configService.deleteInstance(configId, envId, context);
+    	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, config.getProjectId(), envId,
+                    "删除泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context));
+    	    createSuccessStreamResponse();
+	    } catch(RuntimeException ex) {
+	        logger.error("删除泳道配置" + config.getKey() + "/" + context + "失败", ex);
+            createErrorStreamResponse("删除泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
+	    }
+        return SUCCESS;
+	}
+
+	public String updateContextValue() {
+	    try {
+    	    Config config = configService.getConfig(configId);
+    	    ConfigInstance instance = configService.findInstance(configId, envId, context);
+    	    String oldValue = instance.getValue();
+            instance.setValue(value);
+    	    configService.updateInstance(instance);
+    	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
+                    "编辑泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context, oldValue, value));
+            createSuccessStreamResponse();
+	    } catch(RuntimeException ex) {
+	        logger.error("编辑泳道配置" + config.getKey() + "/" + context + "失败", ex);
+            createErrorStreamResponse("编辑泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
+	    }
+        return SUCCESS;
+	}
+
 	public String loadDefaultValue() {
 		Config configFound = configService.getConfig(configId);
 		if (configFound == null) {
@@ -166,7 +218,7 @@ public class ConfigEditAction extends AbstractConfigAction {
 			}
 		}
 		try {
-            createStreamResponse("{\"code\":0, \"value\":" + JSONObject.quote(instanceFound != null ? instanceFound.getValue() : "") 
+            createStreamResponse("{\"code\":0, \"value\":" + JSONObject.quote(instanceFound != null ? instanceFound.getValue() : "")
                     + ", \"privilege\":" + JSONUtil.serialize(getEditPrivileges(configFound.getProjectId(), configId)) + ", \"msg\":\"" + (message != null ? message : "") + "\"}");
         } catch (JSONException e) {
             logger.error("get config edit privilege failed.", e);
@@ -174,7 +226,7 @@ public class ConfigEditAction extends AbstractConfigAction {
         }
 		return SUCCESS;
 	}
-	
+
 	/**
 	 * @return the project
 	 */
@@ -238,6 +290,14 @@ public class ConfigEditAction extends AbstractConfigAction {
 		this.envIds = envIds;
 	}
 
+	public String getContext() {
+	    return context;
+	}
+
+	public void setContext(String context) {
+	    this.context = context;
+	}
+
 	/**
 	 * @return the value
 	 */
@@ -265,5 +325,5 @@ public class ConfigEditAction extends AbstractConfigAction {
 	public void setConfigId(int configId) {
 		this.configId = configId;
 	}
-	
+
 }

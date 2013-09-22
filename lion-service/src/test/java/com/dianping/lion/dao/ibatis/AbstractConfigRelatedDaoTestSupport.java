@@ -65,16 +65,16 @@ public abstract class AbstractConfigRelatedDaoTestSupport extends AbstractDaoTes
 
     @Before
     public void setUp() {
-        foo1ConfigId = configDao.create(buildConfig(Project_Foo_Id, Config_Foo1_Key, ConfigTypeEnum.String, Config_Foo1_Desc, false, Config_Foo1_Seq));
+        foo1ConfigId = configDao.createConfig(buildConfig(Project_Foo_Id, Config_Foo1_Key, ConfigTypeEnum.String, Config_Foo1_Desc, false, Config_Foo1_Seq));
         foo1ConfigEnv1InstId1 = configDao.createInstance(buildConfigInstance(foo1ConfigId, Env1_Id, ConfigInstance.NO_CONTEXT, null, Config_Foo1_Env1_Value1,
                 Config_Foo1_Env1_Inst_Seq1));
         foo1ConfigEnv1InstId2 = configDao.createInstance(buildConfigInstance(foo1ConfigId, Env1_Id, Foo_Context, null, Config_Foo1_Env1_Value2,
                 Config_Foo1_Env1_Inst_Seq2));
         foo1ConfigEnv2InstId = configDao.createInstance(buildConfigInstance(foo1ConfigId, Env2_Id, ConfigInstance.NO_CONTEXT, null, Config_Foo1_Env2_Value,
                 Config_Foo1_Env2_Inst_Seq));
-        foo2ConfigId = configDao.create(buildConfig(Project_Foo_Id, Config_Foo2_Key, ConfigTypeEnum.String, Config_Foo2_Desc, false, Config_Foo2_Seq));
-        loo1ConfigId = configDao.create(buildConfig(Project_Loo_Id, Config_Loo1_Key, ConfigTypeEnum.String, Config_Loo1_Desc, false, Config_Loo1_Seq));
-        loo2ConfigId = configDao.create(buildConfig(Project_Loo_Id, Config_Loo2_Key, ConfigTypeEnum.String, Config_Loo2_Desc, false, Config_Loo2_Seq));
+        foo2ConfigId = configDao.createConfig(buildConfig(Project_Foo_Id, Config_Foo2_Key, ConfigTypeEnum.String, Config_Foo2_Desc, false, Config_Foo2_Seq));
+        loo1ConfigId = configDao.createConfig(buildConfig(Project_Loo_Id, Config_Loo1_Key, ConfigTypeEnum.String, Config_Loo1_Desc, false, Config_Loo1_Seq));
+        loo2ConfigId = configDao.createConfig(buildConfig(Project_Loo_Id, Config_Loo2_Key, ConfigTypeEnum.String, Config_Loo2_Desc, false, Config_Loo2_Seq));
         configDao.createInstance(buildConfigInstance(loo2ConfigId, Env2_Id, ConfigInstance.NO_CONTEXT, Config_Foo1_Key, "foo_val", 1));
     }
 

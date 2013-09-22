@@ -257,7 +257,7 @@ public class ConfigReleaseServiceImpl implements ConfigRelaseService {
 						this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 							@Override
 							protected void doInTransactionWithoutResult(TransactionStatus status) {
-								configDao.deleteInstance(currentConfig.getId(), envId);
+								configDao.deleteInstances(currentConfig.getId(), envId);
 								restoreConfigInstSnapshots(currentConfig.getId(), envId, snapshotInstList);
 							}
 						});
@@ -276,7 +276,7 @@ public class ConfigReleaseServiceImpl implements ConfigRelaseService {
 					this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 						@Override
 						protected void doInTransactionWithoutResult(TransactionStatus status) {
-							int configId = configService.create(configSnapshot.toConfig());
+							int configId = configService.createConfig(configSnapshot.toConfig());
 							restoreConfigInstSnapshots(configId, envId, snapshotInstList);
 						}
 					});

@@ -12,6 +12,8 @@ public interface ZookeeperService {
 
     public void set(String path, String data) throws Exception;
 
+    public void createOrSet(String path, String data) throws Exception;
+
     public List<String> getChildren(String path) throws Exception;
 
     public boolean exists(String path) throws Exception;

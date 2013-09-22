@@ -18,7 +18,7 @@
 		<result column="private" property="privatee"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
-	
+
 	<resultMap id="ConfigInstanceResult" class="ConfigInstance">
 		<result column="id" property="id"/>
 		<result column="configId" property="configId"/>
@@ -34,7 +34,7 @@
 		<result column="desc" property="desc"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
-	
+
 	<resultMap id="ConfigStatusResult" class="ConfigStatus">
 		<result column="id" property="id"/>
 		<result column="configId" property="configId"/>
@@ -44,23 +44,23 @@
 		<result column="modifyTime" property="modifyTime"/>
 		<result column="modifyUserId" property="modifyUserId"/>
 	</resultMap>
-	
+
 	<resultMap id="ConfigModifyTimeStatusResult" class="ConfigStatus">
 		<result column="configId" property="configId"/>
 		<result column="modifyTime" property="modifyTime"/>
 	</resultMap>
-	
+
 	<select id="findConfigsByProject" resultMap="ConfigResult" parameterClass="int">
 		SELECT * FROM config WHERE projectId = #projectId# ORDER BY seq, id
     </select>
-    
+
     <select id="findInstancesByProjectAndEnv" resultMap="ConfigInstanceResult" parameterClass="map">
 		SELECT i.*
 		FROM config c inner join config_instance i on c.id = i.configId
 		WHERE c.projectId = #projectId# AND i.envId = #envId#
 		ORDER BY c.seq, c.id
     </select>
-    
+
     <select id="findInstance" resultMap="ConfigInstanceResult" parameterClass="map">
     	SELECT *
     	FROM config_instance
@@ -68,7 +68,7 @@
     	<isNotNull property="envId"> AND envId = #envId#</isNotNull>
     	<isNotNull property="contextmd5"> AND contextmd5 = #contextmd5#</isNotNull>
     </select>
-    
+
     <select id="findMaxInstsBySeq" resultMap="ConfigInstanceResult" parameterClass="map">
     	SELECT a.*
     	FROM config_instance a
@@ -78,20 +78,20 @@
     	ORDER BY a.seq DESC
     	]]>
     </select>
-    
+
     <select id="findDefaultInstances" resultMap="ConfigInstanceResult" parameterClass="map">
     	SELECT i.*
     	FROM config c inner join config_instance i on c.id = i.configId
     	WHERE c.projectId = #projectId# AND i.envId = #envId# AND i.context = ''
 		ORDER BY c.seq, c.id
     </select>
-    
+
     <select id="findHasInstanceConfigs" resultClass="int" parameterClass="map">
     	SELECT DISTINCT c.id
     	FROM config c inner join config_instance i on c.id = i.configId
     	WHERE c.projectId = #projectId# AND i.envId = #envId#
     </select>
-    
+
     <select id="findHasContextInstConfigs" resultClass="int" parameterClass="map">
     	<![CDATA[
     	SELECT DISTINCT c.id
@@ -99,45 +99,45 @@
     	WHERE c.projectId = #projectId# AND i.envId = #envId# AND i.context <> ''
     	]]>
     </select>
-    
+
     <select id="getConfig" resultMap="ConfigResult" parameterClass="int">
     	SELECT * FROM config WHERE id = #configId#
     </select>
-    
+
     <select id="findConfigByKey" resultMap="ConfigResult" parameterClass="string">
     	SELECT * FROM config WHERE `key` = #key#
     </select>
-    
+
     <select id="findConfigByKeys" resultMap="ConfigResult" parameterClass="list">
     	SELECT * FROM config WHERE `key` IN <iterate open="(" close=")" conjunction=",">#[]#</iterate>
     </select>
-    
+
     <select id="getNextConfig" resultMap="ConfigResult" parameterClass="int">
     	SELECT c2.*
     	FROM config c1 INNER JOIN config c2 ON c1.projectId = c2.projectId
     	WHERE c1.id = #configId# AND c2.seq > c1.seq
     	ORDER BY c2.seq, c2.id
-    	LIMIT 1 
+    	LIMIT 1
     </select>
-    
+
     <select id="getMaxSeq" resultClass="int" parameterClass="int">
     	SELECT MAX(seq) FROM config WHERE projectId = #projectId#
     </select>
-    
+
     <select id="getMaxInstSeq" resultClass="int" parameterClass="map">
     	SELECT MAX(seq) FROM config_instance WHERE configId = #configId# AND envId = #envId#
     </select>
-    
+
     <select id="getPrevConfig" resultMap="ConfigResult" parameterClass="int">
     	<![CDATA[
     	SELECT c2.*
     	FROM config c1 INNER JOIN config c2 ON c1.projectId = c2.projectId
     	WHERE c1.id = #configId# AND c2.seq < c1.seq
     	ORDER BY c2.seq desc, c2.id desc
-    	LIMIT 1 
+    	LIMIT 1
     	]]>
     </select>
-    
+
     <sql id="getConfig_Fragment">
     	<dynamic>
     		<isNotNull prepend="AND" property="criteria.projectId">
@@ -148,14 +148,14 @@
     		</isNotEmpty>
     	</dynamic>
     </sql>
-    
+
     <select id="getConfigCount" parameterClass="map" resultClass="long">
-    	SELECT COUNT(*) 
-    	FROM config 
+    	SELECT COUNT(*)
+    	FROM config
     	WHERE 1 = 1
     	<include refid="getConfig_Fragment"/>
     </select>
-    
+
     <select id="getConfigList" parameterClass="map" resultMap="ConfigResult">
     	SELECT *
     	FROM config
@@ -163,86 +163,94 @@
     	<include refid="getConfig_Fragment"/>
     	LIMIT #paginater.firstResult#, #paginater.maxResults#
     </select>
-    
+
     <update id="updateConfig" parameterClass="Config">
     	UPDATE config
     	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = NOW(), private = #privatee#, seq = #seq#
     	WHERE id = #id#
     </update>
-    
+
     <insert id="insertConfig" parameterClass="Config">
     	INSERT INTO config(`key`, `desc`, type, projectId, createUserId, modifyUserId, createTime, modifyTime, private, seq)
-    	VALUES(#key#, #desc#, #type#, #projectId#, #createUserId#, #modifyUserId#, 
-    	<isNotNull property="createTime">#createTime#</isNotNull><isNull property="createTime">NOW()</isNull>, 
+    	VALUES(#key#, #desc#, #type#, #projectId#, #createUserId#, #modifyUserId#,
+    	<isNotNull property="createTime">#createTime#</isNotNull><isNull property="createTime">NOW()</isNull>,
     	<isNotNull property="modifyTime">#modifyTime#</isNotNull><isNull property="modifyTime">NOW()</isNull>, #privatee#, #seq#)
-    	<selectKey resultClass="int">    
+    	<selectKey resultClass="int">
             SELECT LAST_INSERT_ID() AS ID
-        </selectKey> 
+        </selectKey>
     </insert>
-    
+
     <delete id="deleteConfig" parameterClass="int">
     	DELETE FROM config WHERE id = #configId#
     </delete>
-    
+
     <insert id="insertInstance" parameterClass="ConfigInstance">
     	INSERT INTO config_instance(configId, envId, value, refkey, context, contextmd5, createUserId, modifyUserId, createTime, modifyTime, `desc`, seq)
-    	VALUES(#configId#, #envId#, #value#, #refkey#, #context#, #contextmd5#, #createUserId#, #modifyUserId#, 
-    	<isNotNull property="createTime">#createTime#</isNotNull><isNull property="createTime">NOW()</isNull>, 
+    	VALUES(#configId#, #envId#, #value#, #refkey#, #context#, #contextmd5#, #createUserId#, #modifyUserId#,
+    	<isNotNull property="createTime">#createTime#</isNotNull><isNull property="createTime">NOW()</isNull>,
     	<isNotNull property="modifyTime">#modifyTime#</isNotNull><isNull property="modifyTime">NOW()</isNull>, #desc#, #seq#)
-    	<selectKey resultClass="int">    
+    	<selectKey resultClass="int">
             SELECT LAST_INSERT_ID() AS ID
-        </selectKey> 
+        </selectKey>
     </insert>
-    
+
     <update id="updateInstance" parameterClass="ConfigInstance">
     	UPDATE config_instance
-    	SET value = #value#, refkey = #refkey#, context = #context#, contextmd5 = #contextmd5#, 
+    	SET value = #value#, refkey = #refkey#, context = #context#, contextmd5 = #contextmd5#,
     		modifyUserId = #modifyUserId#, modifyTime = NOW(), `desc` = #desc#, seq = #seq#
     	WHERE id = #id#
     </update>
-    
-    <delete id="deleteInstance" parameterClass="map">
+
+    <select id="getConfigInstCount" parameterClass="map" resultClass="int">
+        SELECT COUNT(*) FROM config_instance WHERE configId = #configId# AND envId = #envId#
+    </select>
+
+    <delete id="deleteInstances" parameterClass="map">
     	DELETE FROM config_instance WHERE configId = #configId# <isNotNull property="envId"> AND envId = #envId#</isNotNull>
     </delete>
-    
+
+    <delete id="deleteInstance" parameterClass="map">
+    	DELETE FROM config_instance WHERE configId = #configId# AND envId = #envId# AND context = #context#
+    </delete>
+
     <update id="updateModifyStatus" parameterClass="map">
     	UPDATE config_status SET modifyUserId = #modifyUserId#, modifyTime = NOW() WHERE configId = #configId# AND envId = #envId#
     </update>
-    
+
     <insert id="insertStatus" parameterClass="ConfigStatus">
     	INSERT INTO config_status(configId, envId, createUserId, createTime, modifyUserId, modifyTime)
     	VALUES(#configId#, #envId#, #createUserId#, NOW(), #modifyUserId#, NOW())
-    	<selectKey resultClass="int">    
+    	<selectKey resultClass="int">
             SELECT LAST_INSERT_ID() AS ID
-        </selectKey> 
+        </selectKey>
     </insert>
-    
+
     <delete id="deleteStatus" parameterClass="map">
     	DELETE FROM config_status WHERE configId = #configId# AND envId = #envId#
     </delete>
-    
+
     <select id="findStatus" parameterClass="map" resultMap="ConfigStatusResult">
     	SELECT s.*
     	FROM config c INNER JOIN config_status s ON c.id = s.configId
     	WHERE c.projectId = #projectId# AND s.envId = #envId#
     </select>
-    
+
     <select id="findModifyTime" parameterClass="map" resultMap="ConfigModifyTimeStatusResult">
     	SELECT s.configId, s.modifyTime
     	FROM config c INNER JOIN config_status s ON c.id = s.configId
     	WHERE c.projectId = #projectId# AND s.envId = #envId#
     </select>
-    
+
     <select id="hasConfigReferencedTo" parameterClass="map" resultMap="ConfigInstanceResult">
     	SELECT * FROM config_instance WHERE refkey = #configKey# AND envId = #envId# LIMIT 1
     </select>
-    
+
     <select id="getInstanceReferencedTo" parameterClass="map" resultMap="ConfigInstanceResult">
     	SELECT * FROM config_instance WHERE refkey = #configKey# AND envId = #envId#
     </select>
-    
+
     <select id="getProjectHasReferencedConfigs" parameterClass="map" resultClass="int">
     	SELECT DISTINCT c.id FROM config c, config_instance i WHERE c.projectId = #projectId# AND c.key = i.refkey
     </select>
-    
+
 </sqlMap>

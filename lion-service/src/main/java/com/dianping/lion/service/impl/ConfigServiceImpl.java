@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-12
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -73,30 +73,30 @@ import com.dianping.lion.vo.Paginater;
  *
  */
 public class ConfigServiceImpl implements ConfigService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
-	
+
 	@Autowired
 	private ConfigDao configDao;
-	
+
 	@Autowired
 	private ProjectDao projectDao;
-	
+
 	@Autowired
 	private EnvironmentService environmentService;
-	
+
 	@Autowired
 	private ConfigRegisterServiceRepository registerServiceRepository;
-	
+
 	@Autowired
 	private OperationLogService operationLogService;
-	
+
 	private TransactionTemplate transactionTemplate;
-	
+
 	private ConfigValueResolver valueResolver = new DefaultConfigValueResolver(this);
-	
+
 	private CacheClient cacheClient;
-	
+
 	public ConfigServiceImpl(PlatformTransactionManager transactionManager) {
 		this.transactionTemplate = new TransactionTemplate(transactionManager);
 		this.transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -112,25 +112,25 @@ public class ConfigServiceImpl implements ConfigService {
 		if (!configs.isEmpty()) {
 			List<Integer> hasInstanceConfigs = configDao.findHasInstanceConfigs(projectId, envId);
 			List<Integer> hasContextInstConfigs = configDao.findHasContextInstConfigs(projectId, envId);
-			Map<Integer, ConfigInstance> defaultInsts = configDao.findDefaultInstance(projectId, envId);
+			Map<Integer, ConfigInstance> defaultInsts = configDao.findDefaultInstances(projectId, envId);
 			List<Integer> hasReferencedConfigs = isSharedProject(projectId) ? configDao.getProjectHasReferencedConfigs(projectId) : Collections.<Integer>emptyList();
 			for (Config config : configs) {
 				//配置不会太多，使用内存过滤，无分页，如果配置太多影响到性能则考虑数据库过滤和分页
 				String key = StringUtils.trim(criteria.getKey());
 				String value = StringUtils.trim(criteria.getValue());
 				ConfigInstance defaultInst = defaultInsts.get(config.getId());
-				if ((StringUtils.isEmpty(key) || config.getKey().contains(key)) 
+				if ((StringUtils.isEmpty(key) || config.getKey().contains(key))
 						&& (hasValue == HasValueEnum.All || (hasValue == HasValueEnum.Yes && defaultInst != null)
 								|| (hasValue == HasValueEnum.No && defaultInst == null))
 						&& (StringUtils.isEmpty(value) || (defaultInst != null && defaultInst.getValue().contains(value)))) {
-					configVos.add(new ConfigVo(config, hasInstanceConfigs.contains(config.getId()), 
+					configVos.add(new ConfigVo(config, hasInstanceConfigs.contains(config.getId()),
 							hasContextInstConfigs.contains(config.getId()), hasReferencedConfigs.contains(config.getId()), defaultInst));
 				}
 			}
 		}
 		return configVos;
 	}
-	
+
 	public boolean isSharedProject(int projectId) {
 		return projectId == ServiceConstants.PROJECT_SHARED_ID || projectId == ServiceConstants.PROJECT_DB_ID;
 	}
@@ -148,8 +148,8 @@ public class ConfigServiceImpl implements ConfigService {
     			int seq = config.getSeq();
     			config.setSeq(nextConfig.getSeq());
     			nextConfig.setSeq(seq);
-    			configDao.update(config);
-    			configDao.update(nextConfig);
+    			configDao.updateConfig(config);
+    			configDao.updateConfig(nextConfig);
 		    } finally {
 		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
 		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
@@ -172,8 +172,8 @@ public class ConfigServiceImpl implements ConfigService {
     			int seq = config.getSeq();
     			config.setSeq(prevConfig.getSeq());
     			prevConfig.setSeq(seq);
-    			configDao.update(config);
-    			configDao.update(prevConfig);
+    			configDao.updateConfig(config);
+    			configDao.updateConfig(prevConfig);
 		    } finally {
 		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
 		    	cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
@@ -184,33 +184,41 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
-	public void deleteInstance(int configId, int envId) {
+	public void deleteInstances(int configId, int envId) {
 		Config config = getConfig(configId);
 		if (config == null) {
 			throw new EntityNotFoundException("Config[id=" + configId + "] not found.");
 		}
-		deleteInstance(config, envId);
+		deleteInstances(config, envId);
 	}
-	
-	public void deleteInstance(Config config, int envId) {
+
+	public void deleteInstances(Config config, int envId) {
 		if (hasConfigReferencedTo(config.getKey(), envId)) {
 			throw new ReferencedConfigForbidDeleteException(config.getKey());
 		}
-		configDao.deleteInstance(config.getId(), envId);
+		configDao.deleteInstances(config.getId(), envId);
 		configDao.deleteStatus(config.getId(), envId);
 		getRegisterService(envId).unregister(config.getKey());
 	}
-	
+
+    public void deleteInstance(int configId, int envId, String group) {
+        Config config = getConfig(configId);
+        configDao.deleteInstance(configId, envId, group);
+        if(configDao.getConfigInstCount(configId, envId) == 0)
+            configDao.deleteStatus(configId, envId);
+        getRegisterService(envId).unregister(config.getKey(), group);
+    }
+
 	private boolean hasConfigReferencedTo(String configKey, int envId) {
 		return configDao.hasConfigReferencedTo(configKey, envId);
 	}
-	
+
 	public List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId) {
 		return configDao.getInstanceReferencedTo(configKey, envId);
 	}
 
 	@Override
-	public ConfigDeleteResult delete(int configId) {
+	public ConfigDeleteResult deleteConfig(int configId) {
 		final ConfigDeleteResult result = new ConfigDeleteResult();
 		final Config config = getConfig(configId);
 		if (config != null) {
@@ -221,11 +229,11 @@ public class ConfigServiceImpl implements ConfigService {
 					this.transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 						@Override
 						protected void doInTransactionWithoutResult(TransactionStatus status) {
-							deleteInstance(config, environment.getId());
+							deleteInstances(config, environment.getId());
 						}
 					});
 				} catch (RuntimeException e) {
-					logger.error("Delete config[" + config.getKey() + "] in environment[" + environment.getLabel() 
+					logger.error("Delete config[" + config.getKey() + "] in environment[" + environment.getLabel()
 							+ "] failed.", e);
 					result.addFailedEnv(environment.getLabel());
 					if (e instanceof ReferencedConfigForbidDeleteException) {
@@ -234,7 +242,7 @@ public class ConfigServiceImpl implements ConfigService {
 				}
 			}
 			if (result.isSucceed()) {
-				configDao.delete(configId);
+				configDao.deleteConfig(configId);
 				cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + configId);
 				cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
 			}
@@ -243,7 +251,7 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
-	public int create(Config config) {
+	public int createConfig(Config config) {
 		Config configFound = configDao.findConfigByKey(config.getKey());
 		if (configFound != null) {
 			Project project = projectDao.getProject(configFound.getProjectId());
@@ -261,15 +269,15 @@ public class ConfigServiceImpl implements ConfigService {
 		if (!config.isPrivatee()) {
 			config.setPrivatee(isSharedProject(projectId));
 		}
-		config.setSeq(configDao.getMaxSeq(projectId) + 1);
-		return configDao.create(config);
+		config.setSeq(configDao.getMaxConfigSeq(projectId) + 1);
+		return configDao.createConfig(config);
 	}
 
 	@Override
 	public int createInstance(ConfigInstance instance) {
 		return createInstance(instance, ConfigSetType.RegisterAndPush);
 	}
-	
+
 	public int createInstance(ConfigInstance instance, ConfigSetType setType) {
 		Integer currentUserId = SecurityUtils.getCurrentUserId();
 		if (instance.getCreateUserId() == null) {
@@ -282,7 +290,7 @@ public class ConfigServiceImpl implements ConfigService {
 		int retryTimes = 0;
 		while (true) {
 			try {
-				instance.setSeq(configDao.getMaxInstSeq(instance.getConfigId(), instance.getEnvId()) + 1);
+				instance.setSeq(configDao.getMaxConfigInstSeq(instance.getConfigId(), instance.getEnvId()) + 1);
 				int instId = configDao.createInstance(instance);
 				updateConfigModifyStatus(instance.getConfigId(), instance.getEnvId());
 
@@ -291,9 +299,9 @@ public class ConfigServiceImpl implements ConfigService {
 
 				//确保注册操作是在最后一步
 				if (setType == ConfigSetType.RegisterAndPush) {
-					registerAndPush(instance.getConfigId(), instance.getEnvId());
+					registerAndPush(instance);
 				} else if (setType == ConfigSetType.Register) {
-					register(instance.getConfigId(), instance.getEnvId());
+				    register(instance);
 				}
 
                 updateReferencedInstances(config, refInstances, setType);
@@ -311,7 +319,7 @@ public class ConfigServiceImpl implements ConfigService {
 			}
 		}
 	}
-	
+
 	private void processInstanceIfReferenceType(ConfigInstance instance) {
 		String configval = instance.getValue();
 		if (configval != null && configval.contains(ServiceConstants.REF_CONFIG_PREFIX)) {
@@ -329,27 +337,27 @@ public class ConfigServiceImpl implements ConfigService {
 	public int updateInstance(ConfigInstance instance) {
 		return updateInstance(instance, ConfigSetType.RegisterAndPush);
 	}
-	
+
 	private int updateInstance(ConfigInstance instance, ConfigSetType setType) {
 		instance.setModifyUserId(SecurityUtils.getCurrentUserId());
 		processInstanceIfReferenceType(instance);
 		int instId = configDao.updateInstance(instance);
 		updateConfigModifyStatus(instance.getConfigId(), instance.getEnvId());
-		
+
 		Config config = getConfig(instance.getConfigId());
 		List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
 
 		//确保注册操作是在最后一步(后续的都需要try-catch掉所有error)
 		if (setType == ConfigSetType.RegisterAndPush) {
-			registerAndPush(instance.getConfigId(), instance.getEnvId());
+			registerAndPush(instance);
 		} else if (setType == ConfigSetType.Register) {
-			register(instance.getConfigId(), instance.getEnvId());
+			register(instance);
 		}
-		
+
 		updateReferencedInstances(config, refInstances, setType);
 		return instId;
 	}
-	
+
 	private void updateReferencedInstances(Config config, List<ConfigInstance> refInstances, ConfigSetType setType) {
 		try {
 			for (ConfigInstance refInstance : refInstances) {
@@ -362,7 +370,7 @@ public class ConfigServiceImpl implements ConfigService {
 					}
 				} catch (RuntimeException e) {
 					Config refconfig = getConfig(refInstance.getConfigId());
-					operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId, 
+					operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
 							"同步更新关联引用配置项[" + (refconfig != null ? refconfig.getKey() : refInstance.getConfigId()) + "]出错，请重新保存该配置.")
 						.key(config.getKey(), ConfigInstance.NO_CONTEXT));
 				}
@@ -376,7 +384,7 @@ public class ConfigServiceImpl implements ConfigService {
 	public void setConfigValue(int configId, int envId, String context, String value) {
 		setConfigValue(configId, envId, context, value, ConfigSetType.RegisterAndPush);
 	}
-	
+
 	public void setConfigValue(int configId, int envId, String context, String value, ConfigSetType setType) {
 		ConfigInstance found = configDao.findInstance(configId, envId, context);
 		if (found == null) {
@@ -397,13 +405,13 @@ public class ConfigServiceImpl implements ConfigService {
 			config.setDesc(desc);
 			config.setTypeEnum(ConfigTypeEnum.String);
 			config.setProjectId(projectId);
-			configId = create(config);
+			configId = createConfig(config);
 		} else {
 			configId = config.getId();
 		}
 		setConfigValue(configId, envId, context, value, setType);
 	}
-	
+
 	public void register(int configId, int envId) {
 		Config config = getConfig(configId);
 		if (config == null) {
@@ -420,7 +428,7 @@ public class ConfigServiceImpl implements ConfigService {
 			registerService.registerDefaultValue(config.getKey(), resolveConfigFinalValue(defaultInst.getValue(), envId));
 		} catch (RuntimeException e) {
 			Environment environment = environmentService.findEnvByID(envId);
-			logger.error("Register config[" + config.getKey() + "] to env[" + (environment != null ? environment.getLabel() : envId) 
+			logger.error("Register config[" + config.getKey() + "] to env[" + (environment != null ? environment.getLabel() : envId)
 					+ "] failed.", e);
 			throw e;
 		}
@@ -443,16 +451,16 @@ public class ConfigServiceImpl implements ConfigService {
 			registerService.registerDefaultValue(config.getKey(), resolveConfigFinalValue(defaultInst.getValue(), envId));
 		} catch (RuntimeException e) {
 			Environment environment = environmentService.findEnvByID(envId);
-			logger.error("Register and push config[" + config.getKey() + "] to env[" + (environment != null ? environment.getLabel() : envId) 
+			logger.error("Register and push config[" + config.getKey() + "] to env[" + (environment != null ? environment.getLabel() : envId)
 					+ "] failed.", e);
 			throw e;
 		}
 	}
-	
+
 	private String resolveConfigFinalValue(String configval, int envId) {
 		return valueResolver.resolve(configval, envId);
 	}
-	
+
 	private void updateConfigModifyStatus(int configId, int envId) {
 		int updated = configDao.updateModifyStatus(configId, envId);
 		if (updated == 0) {
@@ -492,11 +500,11 @@ public class ConfigServiceImpl implements ConfigService {
         }
         return config;
 	}
-	
+
 	public int updateConfig(Config config) {
 	    try {
     	    config.setModifyUserId(SecurityUtils.getCurrentUserId());
-    	    return configDao.update(config);
+    	    return configDao.updateConfig(config);
 	    } finally {
 	        cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getId());
 	        cacheClient.remove(ServiceConstants.CACHE_CONFIG_PREFIX + config.getKey());
@@ -507,6 +515,12 @@ public class ConfigServiceImpl implements ConfigService {
 	public String getConfigFromRegisterServer(int envId, String key) {
 		return getRegisterService(envId).get(key);
 	}
+
+    @Override
+    public String getConfigFromRegisterServer(int envId, String key,
+            String group) {
+        return getRegisterService(envId).get(key, group);
+    }
 
 	@Override
 	public ConfigInstance findInstance(int configId, int envId, String context) {
@@ -534,7 +548,7 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public List<ConfigInstance> findInstances(int projectId, int envId) {
-		return configDao.findInstanceByProjectAndEnv(projectId, envId);
+		return configDao.findInstancesByProjectAndEnv(projectId, envId);
 	}
 
 	@Override
@@ -543,13 +557,13 @@ public class ConfigServiceImpl implements ConfigService {
 		if (config == null) {
 			return Collections.emptyList();
 		}
-		return configDao.findInstanceByConfig(config.getId(), maxPerEnv);
+		return configDao.findInstancesByConfig(config.getId(), maxPerEnv);
 	}
 
 	@Override
 	public String getConfigContextValue(int configId, int envId) {
 		try {
-			List<ConfigInstance> topInsts = configDao.findInstanceByConfig(configId, envId, ServiceConstants.MAX_AVAIL_CONFIG_INST);
+			List<ConfigInstance> topInsts = configDao.findInstancesByConfig(configId, envId, ServiceConstants.MAX_AVAIL_CONFIG_INST);
 			if (!topInsts.isEmpty()) {
 				Iterator<ConfigInstance> iterator = topInsts.iterator();
 				while (iterator.hasNext()) {
@@ -570,7 +584,7 @@ public class ConfigServiceImpl implements ConfigService {
 			return valueArray.toString();
 		} catch (JSONException e) {
 			Config config = getConfig(configId);
-			throw new RuntimeBusinessException("Cannot create config[key=" + config.getKey() + "]'s register value, " 
+			throw new RuntimeBusinessException("Cannot create config[key=" + config.getKey() + "]'s register value, "
 					+ "plz check its instances' value.", e);
 		}
 	}
@@ -637,5 +651,35 @@ public class ConfigServiceImpl implements ConfigService {
 	public void setOperationLogService(OperationLogService operationLogService) {
 		this.operationLogService = operationLogService;
 	}
-	
+
+    @Override
+    public void register(ConfigInstance configInstance) {
+        Config config = null;
+        try {
+            config = getConfig(configInstance.getConfigId());
+            ConfigRegisterService registerService = getRegisterService(configInstance.getEnvId());
+            registerService.registerGroupValue(config.getKey(), configInstance.getContext(), configInstance.getValue());
+        } catch (RuntimeException e) {
+            Environment environment = environmentService.findEnvByID(configInstance.getEnvId());
+            logger.error("Register config[" + (config != null ? config.getKey() : configInstance.getConfigId()) + "] to env[" +
+                    (environment != null ? environment.getLabel() : configInstance.getEnvId()) + "] failed.", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void registerAndPush(ConfigInstance configInstance) {
+        Config config = null;
+        try {
+            config = getConfig(configInstance.getConfigId());
+            ConfigRegisterService registerService = getRegisterService(configInstance.getEnvId());
+            registerService.registerAndPushGroupValue(config.getKey(), configInstance.getContext(), configInstance.getValue());
+        } catch (RuntimeException e) {
+            Environment environment = environmentService.findEnvByID(configInstance.getEnvId());
+            logger.error("Register config[" + (config != null ? config.getKey() : configInstance.getConfigId()) + "] to env[" +
+                    (environment != null ? environment.getLabel() : configInstance.getEnvId()) + "] failed.", e);
+            throw e;
+        }
+    }
+
 }

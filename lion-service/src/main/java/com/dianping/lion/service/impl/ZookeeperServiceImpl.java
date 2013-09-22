@@ -85,6 +85,15 @@ public class ZookeeperServiceImpl implements ZookeeperService {
     }
 
     @Override
+    public void createOrSet(String path, String data) throws Exception {
+        if(exists(path)) {
+            set(path, data);
+        } else {
+            create(path, data);
+        }
+    }
+
+    @Override
     public List<String> getChildren(String path) throws Exception {
         try {
             List<String> children = client.getChildren().forPath(path);
