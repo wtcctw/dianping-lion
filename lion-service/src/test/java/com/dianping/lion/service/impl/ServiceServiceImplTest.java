@@ -20,12 +20,15 @@ import com.dianping.lion.service.ZookeeperServiceFactory;
 })
 public class ServiceServiceImplTest {
 
-    private static final int ENV_ID = 52;   // 52->192.168.7.86:2181
-    private static final String ZOOKEEPER_SERVER = "192.168.7.86:2181";
+    private static final int ENV_ID = 52;   // 52->192.168.7.41:2181
+    private static final String ZOOKEEPER_SERVER = "192.168.7.41:2181";
     private static final String SERVICE_NAME = "http://service.dianping.com/test_project/test_service_1.0.0";
     private static final String GROUP = "test";
-    private static final String HOSTS = "localhost:9090,127.0.0.1:8080";
-    private static final String HOSTS2 = "127.0.0.1:8080,localhost:9090";
+    private static final String HOST1 = "1.1.1.1:1111";
+    private static final String HOST2 = "2.2.2.2:2222";
+    private static final String HOST3 = "3.3.3.3:3333";
+    private static final String HOST_LIST = HOST1 + "," + HOST2;
+    private static final String HOST_LIST2 = HOST2 + "," + HOST3;
 
     @Autowired
     private ServiceService serviceService;
@@ -41,26 +44,38 @@ public class ServiceServiceImplTest {
         service.setName(SERVICE_NAME);
         service.setDesc("this is a test servcie");
         service.setGroup(GROUP);
-        service.setHosts(HOSTS);
+        service.setHosts(HOST_LIST);
 
         // Create service
         serviceService.createService(service);
         // Verify service is created in DB and ZK
         service = serviceDao.getServiceByEnvNameGroup(ENV_ID, SERVICE_NAME, GROUP);
-        assertEquals(HOSTS, service.getHosts());
+        assertEquals(HOST_LIST, service.getHosts());
         ZookeeperService zookeeper = ZookeeperServiceFactory.getZookeeperService(ZOOKEEPER_SERVER);
         String data = zookeeper.get("/DP/SERVER/" + SERVICE_NAME.replace('/', '^') + '/' + GROUP);
-        assertEquals(HOSTS, data);
+        assertEquals(HOST_LIST, data);
+        boolean exist = zookeeper.exists("/DP/WEIGHT/" + HOST1);
+        assertTrue(exist);
+        exist = zookeeper.exists("/DP/WEIGHT/" + HOST2);
+        assertTrue(exist);
+        exist = zookeeper.exists("/DP/WEIGHT/" + HOST3);
+        assertFalse(exist);
 
         // Update service
-        service.setHosts(HOSTS2);
+        service.setHosts(HOST_LIST2);
         serviceService.updateService(service);
         // Verify service is updated in DB and ZK
         service = serviceDao.getServiceById(service.getId());
-        assertEquals(HOSTS2, service.getHosts());
+        assertEquals(HOST_LIST2, service.getHosts());
         zookeeper = ZookeeperServiceFactory.getZookeeperService(ZOOKEEPER_SERVER);
         data = zookeeper.get("/DP/SERVER/" + SERVICE_NAME.replace('/', '^') + '/' + GROUP);
-        assertEquals(HOSTS2, data);
+        assertEquals(HOST_LIST2, data);
+        exist = zookeeper.exists("/DP/WEIGHT/" + HOST1);
+        assertFalse(exist);
+        exist = zookeeper.exists("/DP/WEIGHT/" + HOST2);
+        assertTrue(exist);
+        exist = zookeeper.exists("/DP/WEIGHT/" + HOST3);
+        assertTrue(exist);
 
         // Delete service
         serviceService.deleteService(service);
@@ -69,6 +84,12 @@ public class ServiceServiceImplTest {
         assertEquals(null, service);
         data = zookeeper.get("/DP/SERVER/" + SERVICE_NAME.replace('/', '^') + '/' + GROUP);
         assertEquals(null, data);
+        exist = zookeeper.exists("/DP/WEIGHT/" + HOST1);
+        assertFalse(exist);
+        exist = zookeeper.exists("/DP/WEIGHT/" + HOST2);
+        assertFalse(exist);
+        exist = zookeeper.exists("/DP/WEIGHT/" + HOST3);
+        assertFalse(exist);
     }
 
 }

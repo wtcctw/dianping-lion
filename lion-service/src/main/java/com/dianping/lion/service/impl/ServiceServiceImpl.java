@@ -1,6 +1,7 @@
 package com.dianping.lion.service.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,7 +67,7 @@ public class ServiceServiceImpl implements ServiceService {
         for(String host : service)
             hostSet.add(host);
 
-        Set<String> removeSet = (Set<String>) CollectionUtils.subtract(oriHostSet, hostSet);
+        Collection<String> removeSet = CollectionUtils.subtract(oriHostSet, hostSet);
         for(String host : removeSet) {
             String wp = WEIGHT_PATH + host;
             if(zkService.exists(wp)) {
@@ -74,14 +75,10 @@ public class ServiceServiceImpl implements ServiceService {
             }
         }
 
-        Set<String> addSet = (Set<String>) CollectionUtils.subtract(hostSet, oriHostSet);
-        for(String host : service) {
+        Collection<String> addSet = CollectionUtils.subtract(hostSet, oriHostSet);
+        for(String host : addSet) {
             String wp = WEIGHT_PATH + host;
-            if(zkService.exists(wp)) {
-                zkService.set(wp, DEFAULT_WEIGHT);
-            } else {
-                zkService.create(wp, DEFAULT_WEIGHT);
-            }
+            zkService.createOrSet(wp, DEFAULT_WEIGHT);
         }
     }
 

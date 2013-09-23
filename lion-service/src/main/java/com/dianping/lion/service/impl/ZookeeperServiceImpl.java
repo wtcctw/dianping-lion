@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 
 import com.dianping.lion.service.ZookeeperService;
@@ -68,6 +69,9 @@ public class ZookeeperServiceImpl implements ZookeeperService {
         try {
             byte[] data = client.getData().forPath(path);
             return new String(data, CHARSET);
+        } catch(KeeperException.NoNodeException ex) {
+            LOG.warn("", ex);
+            return null;
         } catch (Exception ex) {
             LOG.error("Failed to get path " + path, ex);
             throw ex;
