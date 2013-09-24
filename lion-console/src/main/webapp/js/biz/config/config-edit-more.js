@@ -2,33 +2,36 @@ var $commonAlert;
 var modal_context_edited = false;
 
 $(function(){
+
+    $("[rel=tooltip]").tooltip({delay : {show : 800}});
+    
+    $("#create-context-btn").click(
+		function() {
+			$.ajax("/config/saveContextValueAjax.vhtml".prependcontext(), {
+				type : "POST",
+				data : $.param({
+					"envId" : $("#env-id").val(),
+					"configId" : $("#config-id").val(),
+					"context" : $("#context-name").val(),
+					"value" : $("#context-value").val()
+				}, true),
+				dataType: "json",
+				success : function(result) {
+					if (result.code == Res_Code_Success) {
+						$commonAlert.html("添加成功").dialog("open");
+						reloadContextListTable();
+					} else if (result.code == Res_Code_Error) {
+						$commonAlert.html(result.msg).dialog("open");
+					}
+				}
+			}
+			);
+		}
+	);
+    
     bindContextTableEvents();
-
+    
     function bindContextTableEvents() {
-        $("[rel=tooltip]").tooltip({delay : {show : 800}});
-
-        $("#create-context-btn").click(
-            function() {
-                $.ajax("/config/saveContextValueAjax.vhtml".prependcontext(), {
-                    type : "POST",
-                    data : $.param({
-                        "envId" : $("#env-id").val(),
-                        "configId" : $("#config-id").val(),
-                        "context" : $("#context-name").val(),
-                        "value" : $("#context-value").val()
-                    }, true),
-                    dataType: "json",
-                    success : function(result) {
-                        if (result.code == Res_Code_Success) {
-                            $commonAlert.html("添加成功").dialog("open");
-                            reloadContextListTable();
-                        } else if (result.code == Res_Code_Error) {
-                            $commonAlert.html(result.msg).dialog("open");
-                        }
-                    }
-                }
-            );
-        });
 
         $(".remove-context-btn").click(
             function() {
@@ -72,33 +75,33 @@ $(function(){
     			return false;
         	}
         );
-
-        $("#context-save-btn").click(
-        	function() {
-        		$.ajax("/config/updateContextValueAjax.vhtml".prependcontext(), {
-        			type: "POST",
-        			data: $.param({
-        				"envId" : $("#edit-context-modal [name='env-id']").val(),
-                        "configId" : $("#edit-context-modal [name='config-id']").val(),
-                        "context" : $("#edit-context-name").val(),
-                        "value" : $("#edit-context-value").val()
-        			}, true),
-        			dataType: "json",
-        			success: function(result) {
-        				if (result.code == Res_Code_Success) {
-        					modal_context_edited = true;
-                            $commonAlert.html("更新成功").dialog("open");
-                        } else if (result.code == Res_Code_Error) {
-                            $commonAlert.html(result.msg).dialog("open");
-                        }
-        				$('#edit-context-modal').modal('hide');
-        			}
-        		});
-        	}
-        );
     }
 
-	$("#edit-context-modal").on("show", function() {
+    $("#context-save-btn").click(
+		function() {
+			$.ajax("/config/updateContextValueAjax.vhtml".prependcontext(), {
+				type: "POST",
+				data: $.param({
+					"envId" : $("#edit-context-modal [name='env-id']").val(),
+					"configId" : $("#edit-context-modal [name='config-id']").val(),
+					"context" : $("#edit-context-name").val(),
+					"value" : $("#edit-context-value").val()
+				}, true),
+				dataType: "json",
+				success: function(result) {
+					$('#edit-context-modal').modal('hide');
+					if (result.code == Res_Code_Success) {
+						modal_context_edited = true;
+						$commonAlert.html("更新成功").dialog("open");
+					} else if (result.code == Res_Code_Error) {
+						$commonAlert.html(result.msg).dialog("open");
+					}
+				}
+			});
+		}
+    );
+
+    $("#edit-context-modal").on("show", function() {
 		modal_context_edited = false;
 	});
 
