@@ -7,6 +7,8 @@ $(function(){
     
     $("#create-context-btn").click(
 		function() {
+			if(!validate())
+				return;
 			$.ajax("/config/saveContextValueAjax.vhtml".prependcontext(), {
 				type : "POST",
 				data : $.param({
@@ -100,7 +102,23 @@ $(function(){
 			});
 		}
     );
-
+    
+    function validate() {
+    	var context = $("#context-name").val().trim();
+		if (context.length == 0) {
+			$commonAlert.html("泳道不能为空").dialog("open");
+			return false;
+		}
+		
+		var value = $("#context-value").val().trim();
+		if(value.length == 0) {
+			$commonAlert.html("Value不能为空").dialog("open");
+			return false;
+		}
+		
+		return true;
+    }
+    
     $("#edit-context-modal").on("show", function() {
 		modal_context_edited = false;
 	});
