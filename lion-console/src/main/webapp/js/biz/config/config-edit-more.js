@@ -121,11 +121,11 @@ $(function(){
 	}
 
     function getEnvId($element_in_row) {
-        return $element_in_row.parents(".tab-content").find("#env-id").val();
+        return $element_in_row.parents(".tab-pane").find("#env-id").val();
     }
 
     function getEnvLabel($element_in_row) {
-    	return $element_in_row.parents(".tab-content").find("#env-label").val();
+    	return $element_in_row.parents(".tab-pane").find("#env-label").val();
     }
 
     function getContext($element_in_row) {
