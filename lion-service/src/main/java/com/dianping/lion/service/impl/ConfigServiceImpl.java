@@ -310,7 +310,7 @@ public class ConfigServiceImpl implements ConfigService {
 			} catch (RuntimeException e) {
 				if (DBUtils.isDuplicateKeyError(e)) {
 					if (retryTimes++ >= 1) {
-						String errorMsg = StringUtils.isNotBlank(instance.getContext()) ? "该上下文[context]下配置值已存在!": "默认配置值已存在!";
+						String errorMsg = StringUtils.isNotBlank(instance.getContext()) ? "该上下文["+instance.getContext()+"]下配置值已存在!": "默认配置值已存在!";
 						throw new RuntimeBusinessException(errorMsg);
 					}
 				} else {

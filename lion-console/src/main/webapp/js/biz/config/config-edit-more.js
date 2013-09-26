@@ -160,7 +160,7 @@ $(function(){
             resizable : false,
             modal : true,
             title : "信息框",
-            height : 120,
+            height : 180,
             buttons : {
                 "确定" : function() {$(this).dialog("close");}
             }

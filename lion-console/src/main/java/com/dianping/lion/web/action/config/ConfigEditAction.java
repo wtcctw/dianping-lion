@@ -142,8 +142,9 @@ public class ConfigEditAction extends AbstractConfigAction {
 	}
 
 	public String saveContextValue() {
+		Config config = null;
 	    try {
-	        Config config = configService.getConfig(configId);
+	        config = configService.getConfig(configId);
 	        ConfigInstance instance = new ConfigInstance();
 	        instance.setConfigId(configId);
 	        instance.setContext(context);
@@ -154,35 +155,37 @@ public class ConfigEditAction extends AbstractConfigAction {
                     "添加泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context, null, value));
     	    createSuccessStreamResponse();
 	    } catch(RuntimeException ex) {
-	        logger.error("添加泳道配置" + config.getKey() + "/" + context + "失败", ex);
+	        logger.error("添加泳道配置" + (config==null?configId:config.getKey()) + "/" + context + "失败", ex);
 	        createErrorStreamResponse("添加泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
 	    }
 	    return SUCCESS;
 	}
 
 	public String deleteContextValue() {
+		Config config = null;
 	    try {
-    	    Config config = configService.getConfig(configId);
+    	    config = configService.getConfig(configId);
     	    configService.deleteInstance(configId, envId, context);
     	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, config.getProjectId(), envId,
                     "删除泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context));
     	    createSuccessStreamResponse();
 	    } catch(RuntimeException ex) {
-	        logger.error("删除泳道配置" + config.getKey() + "/" + context + "失败", ex);
+	        logger.error("删除泳道配置" + (config==null?configId:config.getKey()) + "/" + context + "失败", ex);
             createErrorStreamResponse("删除泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
 	    }
         return SUCCESS;
 	}
 
 	public String updateContextValue() {
+		Config config = null;
 	    try {
-    	    Config config = configService.getConfig(configId);
+    	    config = configService.getConfig(configId);
     	    ConfigInstance instance = configService.findInstance(configId, envId, context);
     	    String oldValue = instance.getValue();
             instance.setValue(value);
     	    configService.updateInstance(instance);
     	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
-                    "编辑泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context, oldValue, value));
+                    "编辑泳道配置: " + (config==null?configId:config.getKey()) + "/" + context).key(config.getKey() + "/" + context, context, oldValue, value));
             createSuccessStreamResponse();
 	    } catch(RuntimeException ex) {
 	        logger.error("编辑泳道配置" + config.getKey() + "/" + context + "失败", ex);
