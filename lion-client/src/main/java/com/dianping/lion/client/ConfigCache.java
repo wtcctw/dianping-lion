@@ -21,6 +21,9 @@ import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
+
 import com.dianping.lion.Constants;
 import com.dianping.lion.Utils;
 
@@ -81,6 +84,10 @@ public class ConfigCache {
 
 		public String getValue() {
 			return value;
+		}
+		
+		public String toString() {
+			return value==null ? "null" : value;
 		}
 	}
 
@@ -173,6 +180,27 @@ public class ConfigCache {
 		        }
 		    }
 		}
+		
+		Signal.handle(new Signal("INT"), new SignalHandler() {
+
+			@Override
+			public void handle(Signal arg0) {
+				System.out.println("xxxxxxxxxx=====SIGNAL=====xxxxxxxxxx");
+				System.out.println("Environment:");
+				for(Entry entry : env.entrySet()) {
+					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
+				}
+				System.out.println("Cached Configurations:");
+				for(Entry<String, StringValue> entry : cache.entrySet()) {
+					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
+				}
+				System.out.println("Local Properties:");
+				for(Entry entry : pts.entrySet()) {
+					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
+				}
+			}
+			
+		});
 	}
 
 	// FIXME if key is null, should throw NullPointerException
