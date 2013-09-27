@@ -48,11 +48,14 @@ public class GetConfigServlet extends AbstractLionServlet {
         if (environment.isOnline()) {
             checkAccessibility(req);
         }
+        
         PrintWriter writer = resp.getWriter();
         String key = getNotBlankParameter(req, PARAM_KEY);
+        String group = getGroupParameter(req);
+        
         Config config = configService.findConfigByKey(key);
         if (config != null) {
-            String configVal = configService.getConfigValue(config.getId(), environment.getId(), ConfigInstance.NO_CONTEXT);
+            String configVal = configService.getConfigValue(config.getId(), environment.getId(), group);
             if (configVal != null) {
                 writer.print(configVal);
                 return;

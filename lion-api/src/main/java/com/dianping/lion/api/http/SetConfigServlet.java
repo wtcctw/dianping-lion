@@ -48,6 +48,7 @@ public class SetConfigServlet extends AbstractLionServlet {
 		String value = getRequiredParameter(req, PARAM_VALUE);
 		String effect = getNotBlankParameter(req, PARAM_EFFECT);	//是否立即生效
 		String configKey = checkConfigKey(projectName, key);
+		String group = getGroupParameter(req);
 		
 		Project project = getRequiredProject(projectName);
 		Environment environment = getRequiredEnv(env);
@@ -57,14 +58,14 @@ public class SetConfigServlet extends AbstractLionServlet {
 		Config existConfig = configService.findConfigByKey(configKey);
 		String existValue = null;
 		if (existConfig != null) {
-            ConfigInstance existInstance = configService.findInstance(existConfig.getId(), environment.getId(), ConfigInstance.NO_CONTEXT);
+            ConfigInstance existInstance = configService.findInstance(existConfig.getId(), environment.getId(), group);
             if (existInstance != null) {
                 existValue = existInstance.getValue();
             }
         }
 		try {
         		if (EFFECT_SOON.equals(effect)) {
-        			configService.setConfigValue(project.getId(), environment.getId(), configKey, "", ConfigInstance.NO_CONTEXT, value, 
+        			configService.setConfigValue(project.getId(), environment.getId(), configKey, "", group, value, 
         					ConfigSetType.RegisterAndPush);
         		} else {
         			String feature = getNotBlankParameter(req, PARAM_FEATURE);
@@ -74,16 +75,16 @@ public class SetConfigServlet extends AbstractLionServlet {
         			configSetTask.setFeature(feature);
         			configSetTask.setKey(configKey);
         			configSetTask.setValue(value);
-        			configSetTask.setContext(ConfigInstance.NO_CONTEXT);
+        			configSetTask.setContext(group);
         			configSetTask.setDelete(false);
         			configReleaseService.createSetTask(configSetTask);
         		}
         		operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_SetConfig, project.getId(), environment.getId(),
-        		        "成功: " + logcontent).key(configKey, "true", existValue, value, querystr));
+        		        "成功: " + logcontent).key(getKeyWithGroup(configKey, group), "true", existValue, value, querystr));
         		resp.getWriter().print(SUCCESS_CODE);
 		} catch (Exception e) {
 		    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_SetConfig, project.getId(), environment.getId(),
-		            "失败: " + logcontent).key(configKey, "false", existValue, value, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
+		            "失败: " + logcontent).key(getKeyWithGroup(configKey, group), "false", existValue, value, querystr, ThrowableUtils.extractStackTrace(e, 30000)));
 		    throw e;
 		}
 	}

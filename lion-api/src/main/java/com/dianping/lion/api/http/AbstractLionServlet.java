@@ -55,6 +55,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	public static final String 		PARAM_PROJECT 	= "p";		//项目名
 	public static final String 		PARAM_ENV 		= "e";		//环境名
 	public static final String 		PARAM_KEY 		= "k";		//配置名，不包含项目名前缀
+	public static final String		PARAM_GROUP		= "g";		//泳道名
 	public static final String 		PARAM_FEATURE 	= "f";		//项目feature名称
 	public static final String 		PARAM_VALUE 	= "v";		//配置项值
 	public static final String 		PARAM_TASK 		= "t";		//项目任务id
@@ -65,6 +66,8 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	
 	public static final String 		SUCCESS_CODE 	= "0|";		//正确返回码
 	public static final String 		ERROR_CODE 		= "1|";		//错误返回码
+	
+	public static final String		DEFAULT_GROUP	= "";		//默认泳道为空
 	
 	protected ApplicationContext 	applicationContext;
 	protected ProjectService 		projectService;
@@ -137,6 +140,18 @@ public abstract class AbstractLionServlet extends HttpServlet {
 			throw new RuntimeBusinessException("Only support user with system level.");
 		}
 		return user;
+	}
+	
+	protected String getGroupParameter(HttpServletRequest servletRequest) {
+		String group = servletRequest.getParameter(PARAM_GROUP);
+        if(StringUtils.isBlank(group)) {
+        	group = DEFAULT_GROUP;
+        }
+        return group;
+	}
+	
+	protected String getKeyWithGroup(String key, String group) {
+		return StringUtils.isBlank(group) ? key : key + "/" + group;
 	}
 	
 	@SuppressWarnings("unused")
