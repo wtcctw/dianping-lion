@@ -4,7 +4,9 @@
 package com.dianping.lion.client;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class ConfigCache {
 
 	private static Logger logger = Logger.getLogger(ConfigCache.class);
 
-	private static ConfigCache configCache;
+	private static ConfigCache instance;
 
 	private static Map<String, StringValue> cache = new ConcurrentHashMap<String, StringValue>();
 
@@ -63,13 +65,13 @@ public class ConfigCache {
 
 	private String avatarBizPrefix = "avatar-biz.";
 
-	private Properties pts;
+	private Properties localProps;
 
-	private Properties env;
-
+	private Properties appenv;
+	
 	public String getAppenv(String key) {
-		if (env != null) {
-			return env.getProperty(key);
+		if (appenv != null) {
+			return appenv.getProperty(key);
 		} else {
 			return null;
 		}
@@ -92,7 +94,7 @@ public class ConfigCache {
 	}
 
 	void reset() {
-	    configCache = null;
+	    instance = null;
 		cache.clear();
 		timestampMap.clear();
 		changeList.clear();
@@ -106,16 +108,16 @@ public class ConfigCache {
 	 * @throws LionException
 	 */
 	public static ConfigCache getInstance() throws LionException {
-		if (configCache == null) {
+		if (instance == null) {
 			throw new LionException(
-			      "you must config SpringConfig or use getInstance(String address) before this operation");
+			      "ConfigCache has not been initialized. Please invoke ConfigCache.getInstance(String address) before this operation");
 		}
-		return configCache;
+		return instance;
 	}
 
 	static ConfigCache getMockInstance() {
-		configCache = new ConfigCache();
-		return configCache;
+		instance = new ConfigCache();
+		return instance;
 	}
 
 	/**
@@ -125,69 +127,77 @@ public class ConfigCache {
 	 * @throws LionException
 	 */
 	public static ConfigCache getInstance(String address) throws LionException {
-		if (configCache == null) {
-			synchronized (cache) {
-				if (configCache == null) {
+		if (instance == null) {
+			synchronized (ConfigCache.class) {
+				if (instance == null) {
 					try {
-						configCache = new ConfigCache();
-						configCache.setAddress(address);
-						configCache.init();
-					} catch (IOException e) {
+						instance = new ConfigCache();
+						instance.setAddress(address);
+						instance.init();
+					} catch (Exception e) {
+						logger.error("Failed to initialize ConfigCache", e);
 						throw new LionException(e);
 					}
 				}
 			}
 		} else {
-			if (!address.equals(configCache.getAddress())) {
-				throw new LionException("error address:" + address);
+			if (!address.equals(instance.getAddress())) {
+				throw new LionException("ConfigCache has been initialized with address " + address);
 			}
 		}
-		return configCache;
+		return instance;
 	}
 
-	private void init() throws IOException {
+	private void init() throws Exception {
 		if (!this.isInit) {
 			this.zk = new ZooKeeperWrapper(this.address, this.timeout, new ZookeeperSessionWatcher());
-			try {
-				if (this.zk.exists(Constants.DP_PATH, false) == null) {
-					this.zk.create(Constants.DP_PATH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-				}
-				if (this.zk.exists(Constants.CONFIG_PATH, false) == null) {
-					this.zk.create(Constants.CONFIG_PATH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-				}
-				Thread t = new Thread(new CheckConfig());
-				t.setDaemon(true);
-				t.start();
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-			}
+			
+			initZookeeper(zk);
+			
+			loadAppenv();
+			
+			registerSignalHandler();
+			
+			Thread t = new Thread(new CheckConfig());
+			t.setDaemon(true);
+			t.start();
+			
 			this.isInit = true;
 		}
+	}
 
-		FileInputStream fis = null;
-		try {
-			env = new Properties();
-			fis = new FileInputStream(Constants.ENVIRONMENT_FILE);
-			env.load(fis);
-		} catch (Exception e) {
-			logger.warn("No environment file at location " + Constants.ENVIRONMENT_FILE, e);
-		} finally {
-		    if(fis != null) {
-		        try {
-		            fis.close();
-		        } catch(Exception ex) {
-		            logger.error("Failed to close file " + Constants.ENVIRONMENT_FILE);
-		        }
-		    }
+	private void initZookeeper(ZooKeeperWrapper zk) throws Exception {
+		if (this.zk.exists(Constants.DP_PATH, false) == null) {
+			this.zk.create(Constants.DP_PATH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		}
-		
+		if (this.zk.exists(Constants.CONFIG_PATH, false) == null) {
+			this.zk.create(Constants.CONFIG_PATH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		}
+	}
+	
+	private void loadAppenv() throws IOException {
+		InputStream in = null;
+		try {
+			appenv = new Properties();
+			in = new FileInputStream(Constants.ENVIRONMENT_FILE);
+			appenv.load(in);
+		} catch(FileNotFoundException e) {
+			logger.info("No appenv file " + Constants.ENVIRONMENT_FILE);
+		} finally {
+			if(in != null) {
+				in.close();
+			}
+		}
+	}
+	
+	private void registerSignalHandler() {
 		Signal.handle(new Signal("INT"), new SignalHandler() {
 
 			@Override
 			public void handle(Signal arg0) {
 				System.out.println("xxxxxxxxxx=====SIGNAL=====xxxxxxxxxx");
 				System.out.println("Environment:");
-				for(Entry entry : env.entrySet()) {
+				for(Entry entry : appenv.entrySet()) {
 					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
 				}
 				System.out.println("Cached Configurations:");
@@ -195,14 +205,14 @@ public class ConfigCache {
 					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
 				}
 				System.out.println("Local Properties:");
-				for(Entry entry : pts.entrySet()) {
+				for(Entry entry : localProps.entrySet()) {
 					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
 				}
 			}
 			
 		});
 	}
-
+	
 	// FIXME if key is null, should throw NullPointerException
 	public String getProperty(String key) throws LionException {
 		if (key != null) {
@@ -214,24 +224,24 @@ public class ConfigCache {
 			key = this.avatarBizPrefix + key;
 		}
 		String v = null;
-		if (this.pts != null) {
-			v = this.pts.getProperty(key);
+		if (this.localProps != null) {
+			v = this.localProps.getProperty(key);
 			if (v != null && !v.startsWith("${") && !v.endsWith("}")) {
 				return v;
 			}
 			if (v != null && v.startsWith("${") && v.endsWith("}")) {
 				v = v.substring(2);
 				v = v.substring(0, v.length() - 1);
-				return getZKValue(v);
+				return getZkValue(v);
 			}
 		}
 		if (v == null) {
-			v = getZKValue(key);
+			v = getZkValue(key);
 		}
 		return v;
 	}
 
-	private String getZKValue(String key) throws LionException {
+	private String getZkValue(String key) throws LionException {
 		StringValue value = cache.get(key);
 
 		if (value == null) {
@@ -265,8 +275,8 @@ public class ConfigCache {
 	    return stat != null;
 	}
 
-	private String getGroup() throws LionException {
-	    String group = ConfigCache.getInstance().getAppenv(Constants.KEY_SWIMLANE);
+	private String getGroup() {
+	    String group = instance.getAppenv(Constants.KEY_SWIMLANE);
 	    if(group == null || group.trim().length() == 0)
             return null;
 	    return group.trim();
@@ -275,16 +285,17 @@ public class ConfigCache {
 	private String getConfigPath(String key) throws LionException {
 	    return getConfigPath(key, null);
 	}
-
-	private String getTimestampPath(String path) {
-	    return path + Constants.PATH_SEPARATOR + Constants.CONFIG_TIMESTAMP;
-	}
 	private String getConfigPath(String key, String group) throws LionException {
 	    String path = Constants.CONFIG_PATH + Constants.PATH_SEPARATOR + key;
 	    if(group != null)
 	        path = path + Constants.PATH_SEPARATOR + group;
 	    return path;
 	}
+	
+	private String getTimestampPath(String path) {
+		return path + Constants.PATH_SEPARATOR + Constants.CONFIG_TIMESTAMP;
+	}
+	
 
 	private StringValue getValue(String key) throws Exception {
 	    return getValue(key, null);
@@ -306,7 +317,7 @@ public class ConfigCache {
             return value;
         }
 
-        logger.warn("Path does not exist: " + path);
+        logger.info("Path does not exist " + path);
         return null;
 	}
 
@@ -415,7 +426,7 @@ public class ConfigCache {
 								}
 								synchronized (sv) {
 									sv.value = value;
-									logger.info(">>>>>>>>>>>>Key changed " + key + " group is " + group);
+									logger.info(">>>>>>>>>>>>Config changed, path is " + path + " swimlane is " + ConfigCache.this.getGroup());
 									if(ConfigCache.this.changeList != null) {
 										for (ConfigChange change : ConfigCache.this.changeList) {
 											change.onChange(key, value);
@@ -482,22 +493,23 @@ public class ConfigCache {
 
 	private class CheckConfig implements Runnable {
 
-		private long lastTime = System.currentTimeMillis();
-
+		private long lastTime;
+		private String group;
+		
+		public CheckConfig() throws LionException {
+			lastTime = System.currentTimeMillis();
+			group = getGroup();
+		}
+		
 		@Override
 		public void run() {
-			String group = null;
-			try {
-                group = getGroup();
-            } catch (LionException ex) {
-                logger.error("Failed to get group", ex);
-            }
-
-            int k = 0;
+			logger.debug("CheckConfig thread started, swimlane is " + group);
+            
+			int k = 0;
 			while (true) {
 				try {
 					long now = System.currentTimeMillis();
-					if (now - this.lastTime > 20000) {
+					if (now - this.lastTime > 60000) {
 						for (Entry<String, StringValue> entry : cache.entrySet()) {
 							synchronized (entry.getValue()) {
 							    String path = getConfigPath(entry.getKey());
@@ -517,6 +529,7 @@ public class ConfigCache {
 
 											if (!value.equals(entry.getValue().value)) {
 												entry.getValue().value = value;
+												logger.info(">>>>>>>>>>>>Config changed, path is " + path + " swimlane is " + getGroup());
 												if (changeList != null) {
 													for (ConfigChange change : changeList) {
 														change.onChange(entry.getKey(), value);
@@ -543,7 +556,7 @@ public class ConfigCache {
 							e1.printStackTrace();
 						}
 					}
-					logger.error(e.getMessage(), e);
+					logger.error("", e);
 				}
 			}
 		}
@@ -579,11 +592,11 @@ public class ConfigCache {
 	 *           the pts to set
 	 */
 	public void setPts(Properties pts) {
-		this.pts = pts;
+		this.localProps = pts;
 	}
 
 	public Properties getPts() {
-		return pts;
+		return localProps;
 	}
 
 	/**
