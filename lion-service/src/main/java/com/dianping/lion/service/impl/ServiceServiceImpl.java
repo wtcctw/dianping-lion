@@ -197,4 +197,41 @@ public class ServiceServiceImpl implements ServiceService {
         this.cacheClient = cacheClient;
     }
 
+	@Override
+	public int getWeight(int envId, String ip, int port) throws Exception {
+		ZookeeperService zkService = getZkService(envId);
+		if(port == DEFAULT_PORT) {
+			port = getServicePort(zkService, ip);
+		}
+		String path = WEIGHT_PATH + ip + ":" + port;
+		String value = zkService.get(path);
+		return Integer.parseInt(value);
+	}
+
+	@Override
+	public int setWeight(int envId, String ip, int port, int weight) throws Exception {
+		ZookeeperService zkService = getZkService(envId);
+		if(port == DEFAULT_PORT) {
+			port = getServicePort(zkService, ip);
+		}
+		String path = WEIGHT_PATH + ip + ":" + port;
+		zkService.set(path, "" + weight);
+		return weight;
+	}
+
+	private int getServicePort(ZookeeperService zkService, String ip) throws Exception {
+		List<String> children = zkService.getChildren("/DP/WEIGHT");
+		String path = null;
+		for(String child : children) {
+			if(child.startsWith(ip)) {
+				path = child;
+				break;
+			}
+		}
+		if(path == null) 
+			throw new NullPointerException("Failed to find service port " + ip);
+		path = path.substring(path.indexOf(':') + 1);
+		return Integer.parseInt(path);
+	}
+
 }

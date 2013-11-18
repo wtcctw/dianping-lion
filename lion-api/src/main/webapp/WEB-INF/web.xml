@@ -63,6 +63,14 @@
         <servlet-name>GetConfigDiffServlet</servlet-name>
         <servlet-class>com.dianping.lion.api.http.GetConfigDiffServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ServiceServlet</servlet-name>
+        <servlet-class>com.dianping.lion.api.http.ServiceServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>WeightServlet</servlet-name>
+        <servlet-class>com.dianping.lion.api.http.WeightServlet</servlet-class>
+    </servlet>
 
 	<servlet-mapping>
 		<servlet-name>SetConfigServlet</servlet-name>
@@ -87,6 +95,14 @@
     <servlet-mapping>
         <servlet-name>GetConfigDiffServlet</servlet-name>
         <url-pattern>/getconfigdiff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ServiceServlet</servlet-name>
+        <url-pattern>/service/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>WeightServlet</servlet-name>
+        <url-pattern>/weight/*</url-pattern>
     </servlet-mapping>
 
 	<listener>

@@ -92,4 +92,24 @@ public class ServiceServiceImplTest {
         assertFalse(exist);
     }
 
+    @Test
+    public void testWeight() throws Exception {
+    	String path = "/DP/WEIGHT/1.1.1.1:1111";
+    	String ip = "1.1.1.1";
+    	int port = 1111;
+    	ZookeeperService zookeeper = ZookeeperServiceFactory.getZookeeperService(ZOOKEEPER_SERVER);
+    	zookeeper.set(path, "3");
+    	int weight = serviceService.getWeight(ENV_ID, ip, port);
+        assertEquals(weight, 3);
+        weight = serviceService.setWeight(ENV_ID, ip, port, 7);
+        String strWeight = zookeeper.get(path);
+        assertEquals(strWeight, "7");
+        // With default port
+        zookeeper.set(path, "5");
+        weight = serviceService.getWeight(ENV_ID, ip, ServiceService.DEFAULT_PORT);
+        assertEquals(weight, 5);
+        weight = serviceService.setWeight(ENV_ID, ip, ServiceService.DEFAULT_PORT, 9);
+        strWeight = zookeeper.get(path);
+        assertEquals(strWeight, "9");
+    }
 }

@@ -37,6 +37,7 @@ public enum OperationTypeEnum {
     Config_Clear("配置-清除", 17, true),
 //    API_All("项目相关-api-----------全部日志", 101, 120, true),
     API_All("API调用", 101, 120, true),
+    API_SetWeight("API-setweight", 104, true),
     API_SetConfig("API-setconfig", 105, true),
     API_TakeEffect("API-takeeffect", 106, true),
     API_Rollback("API-rollback", 107, true),

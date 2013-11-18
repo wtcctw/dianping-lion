@@ -6,6 +6,8 @@ import com.dianping.lion.entity.Service;
 
 public interface ServiceService {
 
+	int DEFAULT_PORT = 0;
+			
     public void updateService(Service service) throws Exception;
 
     public void deleteService(Service service) throws Exception;
@@ -19,5 +21,9 @@ public interface ServiceService {
     public Service getService(int id);
 
     public Service getService(int envId, String name, String group);
+
+	public int getWeight(int envId, String ip, int port) throws Exception;
+
+	public int setWeight(int envId, String ip, int port, int weight) throws Exception;
 
 }

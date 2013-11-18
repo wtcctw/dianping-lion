@@ -76,6 +76,8 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	protected ConfigRelaseService	configReleaseService;
 	protected OperationLogService   operationLogService;
     protected SystemSettingService  systemSettingService;
+    protected ServiceService		serviceService;
+    protected UserService			userService;
     protected boolean               requestIdentityRequired = true;
 	
 	@Override
@@ -87,6 +89,8 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		configReleaseService = getBean(ConfigRelaseService.class);
 		operationLogService = getBean(OperationLogService.class);
         systemSettingService = getBean(SystemSettingService.class);
+        serviceService = getBean(ServiceService.class);
+        userService = getBean(UserService.class);
 	}
 
 	@SuppressWarnings("unchecked")
