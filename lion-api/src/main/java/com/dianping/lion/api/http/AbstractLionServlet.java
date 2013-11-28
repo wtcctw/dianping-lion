@@ -31,9 +31,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.dianping.lion.dao.ConfigReleaseDao;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.User;
@@ -78,6 +80,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
     protected SystemSettingService  systemSettingService;
     protected ServiceService		serviceService;
     protected UserService			userService;
+    protected ConfigReleaseDao		configReleaseDao;
     protected boolean               requestIdentityRequired = true;
 	
 	@Override
@@ -91,6 +94,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
         systemSettingService = getBean(SystemSettingService.class);
         serviceService = getBean(ServiceService.class);
         userService = getBean(UserService.class);
+        configReleaseDao = getBean(ConfigReleaseDao.class);
 	}
 
 	@SuppressWarnings("unchecked")

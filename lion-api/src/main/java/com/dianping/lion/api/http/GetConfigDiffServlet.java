@@ -11,9 +11,11 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSON;
 import com.dianping.lion.dao.ConfigReleaseDao;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
@@ -27,9 +29,6 @@ import com.dianping.lion.exception.RuntimeBusinessException;
 public class GetConfigDiffServlet extends GetConfigServlet {
 
     private static final long serialVersionUID = 1L;
-
-    @Autowired
-    private ConfigReleaseDao configReleaseDao;
 
     @Override
     protected void doService(HttpServletRequest req, HttpServletResponse resp, String querystr) throws Exception {
@@ -99,7 +98,7 @@ public class GetConfigDiffServlet extends GetConfigServlet {
         }
 
         PrintWriter writer = resp.getWriter();
-        writer.print(new JSONObject(configDiffList).toString());
+        writer.print(JSON.toJSONString(configDiffList));
     }
 
     private class ConfigDiff {
@@ -142,7 +141,7 @@ public class GetConfigDiffServlet extends GetConfigServlet {
         }
 
         public String toString() {
-            return new JSONObject(this).toString();
+            return JSON.toJSONString(this);
         }
     }
 }
