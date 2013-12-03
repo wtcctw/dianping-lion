@@ -35,6 +35,8 @@ public class ConfigCriteria {
 
 	private String group;
 
+	private String status;
+	
 	private int hasValue = HasValueEnum.All.getValue();
 
 	/**
@@ -114,5 +116,13 @@ public class ConfigCriteria {
     public void setGroup(String group) {
         this.group = group;
     }
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 }
