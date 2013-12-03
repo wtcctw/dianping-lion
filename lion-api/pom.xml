@@ -5,12 +5,11 @@
     <parent>
         <artifactId>lion-all</artifactId>
         <groupId>com.dianping.lion</groupId>
-        <version>0.3.1-SNAPSHOT</version>
+        <version>0.3.1</version>
     </parent>
 
     <artifactId>lion-api</artifactId>
     <packaging>war</packaging>
-    <version>0.3.1-SNAPSHOT</version>
 
     <name>lion-api</name>
 
