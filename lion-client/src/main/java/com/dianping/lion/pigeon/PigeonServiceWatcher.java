@@ -48,6 +48,8 @@ public class PigeonServiceWatcher implements Watcher {
 	@Override
 	public void process(WatchedEvent event) {
 		String keyPath = event.getPath();
+		if(keyPath == null) 
+			return;
 		EventType type = event.getType();
 		ServiceNameInfo info = parseKey(keyPath);
 		String key = info.getServiceName();

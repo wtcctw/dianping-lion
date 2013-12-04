@@ -36,6 +36,8 @@ public class PigeonHostWatcher implements Watcher {
 		} else  {
 			logger.info("Host Node " + event.getType() + " " + event.getPath());
 			String keyPath = event.getPath();
+			if(keyPath == null)
+				return;
 			String key = keyPath.substring(keyPath.lastIndexOf("/") + 1);
 			try {
 				pigeonCache.queryHostWeightFromZK(key);
