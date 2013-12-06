@@ -11,11 +11,11 @@ import org.junit.Test;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.console.ZKClient;
-import com.netflix.curator.test.TestingServer;
+import org.apache.curator.test.TestingServer;
 
 public class ConfigGroupTest {
 
-    public static final String ENV_FILE = "D:\\data\\webapps\\appenv";
+    public static final String ENV_FILE = "/data/webapps/appenv";
     public static final String GROUP = "group";
     public static final String KEY = "project.key";
     public static final String VALUE = "value";
