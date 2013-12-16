@@ -5,7 +5,7 @@
     <parent>
         <artifactId>lion-all</artifactId>
         <groupId>com.dianping.lion</groupId>
-        <version>0.3.4</version>
+        <version>0.3.4.1</version>
     </parent>
 
     <artifactId>lion-api</artifactId>
@@ -62,6 +62,11 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>2.5.2</version>
         </dependency>
     </dependencies>
 
