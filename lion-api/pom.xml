@@ -5,7 +5,7 @@
     <parent>
         <artifactId>lion-all</artifactId>
         <groupId>com.dianping.lion</groupId>
-        <version>0.3.3</version>
+        <version>0.3.4</version>
     </parent>
 
     <artifactId>lion-api</artifactId>
@@ -41,14 +41,6 @@
             <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>1.8.5</version>
@@ -70,7 +62,6 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.1.23</version>
         </dependency>
     </dependencies>
 

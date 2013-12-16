@@ -76,4 +76,10 @@ public class ServiceIbatisDao extends SqlMapClientDaoSupport implements ServiceD
         List<Service> result = getSqlMapClientTemplate().queryForList("Service.getServiceListByEnvName", Maps.entry("envId", envId).entry("name", name).get());
         return result;
     }
+
+	@Override
+	public Integer getProjectId(String name) {
+		Integer result = (Integer) getSqlMapClientTemplate().queryForObject("Service.getProjectId", name);
+		return result;
+	}
 }

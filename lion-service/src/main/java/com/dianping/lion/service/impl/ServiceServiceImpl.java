@@ -114,7 +114,7 @@ public class ServiceServiceImpl implements ServiceService {
         }
     }
 
-    private ZookeeperService getZkService(int envId) throws IOException {
+    private ZookeeperService getZkService(int envId) throws Exception {
         Environment environment = environmentService.findEnvByID(envId);
         return ZookeeperServiceFactory.getZookeeperService(environment.getIps());
     }
@@ -232,6 +232,12 @@ public class ServiceServiceImpl implements ServiceService {
 			throw new NullPointerException("Failed to find service port " + ip);
 		path = path.substring(path.indexOf(':') + 1);
 		return Integer.parseInt(path);
+	}
+
+	@Override
+	public Integer getProjectId(String name) {
+		Integer projectId = serviceDao.getProjectId(name);
+        return projectId;
 	}
 
 }

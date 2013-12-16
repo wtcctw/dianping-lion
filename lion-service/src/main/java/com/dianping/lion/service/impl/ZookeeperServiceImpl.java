@@ -8,9 +8,9 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 
 import com.dianping.lion.service.ZookeeperService;
-import com.netflix.curator.framework.CuratorFramework;
-import com.netflix.curator.framework.CuratorFrameworkFactory;
-import com.netflix.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 
 /**
  * TODO: add border condition check
@@ -26,11 +26,11 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 
     private CuratorFramework client;
 
-    public ZookeeperServiceImpl(String server) throws IOException {
+    public ZookeeperServiceImpl(String server) throws Exception {
         this(server, null);
     }
 
-    public ZookeeperServiceImpl(String server, String namespace) throws IOException {
+    public ZookeeperServiceImpl(String server, String namespace) throws Exception {
         try {
             client = CuratorFrameworkFactory.builder().
                      connectString(server).
@@ -38,7 +38,7 @@ public class ZookeeperServiceImpl implements ZookeeperService {
                      namespace(namespace).
                      build();
             client.start();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOG.error("Failed to initialize zookeeper client", ex);
             throw ex;
         }

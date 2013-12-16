@@ -25,5 +25,7 @@ public interface ServiceService {
 	public int getWeight(int envId, String ip, int port) throws Exception;
 
 	public int setWeight(int envId, String ip, int port, int weight) throws Exception;
+	
+	public Integer getProjectId(String name);
 
 }

@@ -22,4 +22,6 @@ public interface ServiceDao {
 
     public List<Service> getServiceListByEnvName(int envId, String name);
 
+	public Integer getProjectId(String name);
+
 }

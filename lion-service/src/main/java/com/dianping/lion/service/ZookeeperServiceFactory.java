@@ -9,7 +9,7 @@ public class ZookeeperServiceFactory {
 
     private static ConcurrentHashMap<String, ZookeeperService> serviceMap = new ConcurrentHashMap<String, ZookeeperService>();
 
-    public static ZookeeperService getZookeeperService(String server, String namespace) throws IOException {
+    public static ZookeeperService getZookeeperService(String server, String namespace) throws Exception {
         String key = namespace == null ? server : server + '_' + namespace;
         ZookeeperService zkService = serviceMap.get(key);
         if(zkService == null) {
@@ -21,7 +21,7 @@ public class ZookeeperServiceFactory {
         return zkService;
     }
 
-    public static ZookeeperService getZookeeperService(String server) throws IOException {
+    public static ZookeeperService getZookeeperService(String server) throws Exception {
         return getZookeeperService(server, null);
     }
 

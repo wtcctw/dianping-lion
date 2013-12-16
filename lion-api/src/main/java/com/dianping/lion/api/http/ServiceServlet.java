@@ -3,7 +3,10 @@ package com.dianping.lion.api.http;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Service;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.service.ServiceService;
@@ -42,18 +45,18 @@ public class ServiceServlet extends AbstractLionServlet {
 			service = getParam(request, Key.service);
 			group = getParam(request, Key.group, DEFAULT_GROUP);
 			result = getServiceAddress(env, service, group);
-			response.getWriter().write(result);
+			response.getWriter().write("0|" + result);
 			break;
 		case set:
 			// setServiceAddress(env, id, service, group, address)
 			env = getParam(request, Key.env);
 			id = getParam(request, Key.id);
-			project = getParam(request, Key.project);
+			project = getParam(request, Key.project, "");
 			service = getParam(request, Key.service);
 			group = getParam(request, Key.group, DEFAULT_GROUP);
 			address = getParam(request, Key.address);
 			result = setServiceAddress(env, id, project, service, group, address);
-			response.getWriter().write(result);
+			response.getWriter().write("0|" + result);
 			break;
 		case publish:
 			// publishService(env, id, service, group, ip, port)
@@ -65,7 +68,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			ip = getParam(request, Key.ip);
 			port = getParam(request, Key.port);
 			result = publishService(env, id, project, service, group, ip, port);
-			response.getWriter().write(result);
+			response.getWriter().write("0|" + result);
 			break;
 		case unpublish:
 			// unpublishService(env, id, service, group, ip, port)
@@ -76,7 +79,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			ip = getParam(request, Key.ip);
 			port = getParam(request, Key.port);
 			result = unpublishService(env, id, service, group, ip, port);
-			response.getWriter().write(result);
+			response.getWriter().write("0|" + result);
 			break;
 		}
 	}
@@ -94,12 +97,44 @@ public class ServiceServlet extends AbstractLionServlet {
 	}
 
 	private String setServiceAddress(String env, String id, String project, 
-			String service, String group, String address) {
+			String service, String group, String address) throws Exception {
 		int envId = getEnvId(env);
 		verifyIdentity(id);
-		return null;
+		
+		Service srv = serviceService.getService(envId, service, group);
+		if(srv != null) {
+			srv.setHosts(address);
+			serviceService.updateService(srv);
+		} else {
+			int projectId = getProjectId(service, project);
+			
+			srv = new Service();
+			srv.setEnvId(envId);
+			srv.setProjectId(projectId);
+			srv.setName(service);
+			srv.setGroup(group);
+			srv.setHosts(address);
+			serviceService.createService(srv);
+		}
+		return address;
 	}
 
+	private int getProjectId(String service, String project) {
+		Integer projectId = serviceService.getProjectId(service);
+		if(projectId != null)
+			return projectId.intValue();
+		
+		if(StringUtils.isBlank(project)) {
+			throw new RuntimeException("Project is null");
+		}
+		
+		Project prj = projectService.findProject(project);
+		if(prj != null) {
+			return prj.getId();
+		}
+		throw new RuntimeException("Invalid project " + project);
+	}
+	
 	private void verifyIdentity(String id) {
 		int userId = 0;
 		try {
@@ -119,6 +154,14 @@ public class ServiceServlet extends AbstractLionServlet {
 	private String getServiceAddress(String env, String service, String group) {
 		int envId = getEnvId(env);
 		Service srv = serviceService.getService(envId, service, group);
+		if(srv==null) {
+			StringBuilder sb = new StringBuilder("no service ");
+			sb.append(service);
+			if(StringUtils.isNotBlank(group))
+				sb.append(" for group ").append(group);
+			sb.append(" in env ").append(env);
+			throw new RuntimeException(sb.toString());
+		}
 		return srv.getHosts();
 	}
 

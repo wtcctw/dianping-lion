@@ -14,6 +14,10 @@
 		<result column="hosts" property="hosts"/>
 	</resultMap>
 
+    <select id="getProjectId" parameterClass="string" resultClass="int">
+        SELECT `projectId` FROM `service` WHERE `name` = #name# LIMIT 1;
+    </select>
+
     <select id="getServiceById" parameterClass="int" resultMap="ServiceResult">
     	SELECT * FROM service WHERE `id` = #id#
     </select>
