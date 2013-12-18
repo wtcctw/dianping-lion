@@ -1,6 +1,5 @@
 package com.dianping.lion.service.impl;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;

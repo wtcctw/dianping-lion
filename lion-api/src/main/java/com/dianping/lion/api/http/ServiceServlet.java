@@ -9,8 +9,6 @@ import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Service;
 import com.dianping.lion.entity.User;
-import com.dianping.lion.service.ServiceService;
-import com.dianping.lion.service.UserService;
 
 //TODO where to get project name?
 public class ServiceServlet extends AbstractLionServlet {
@@ -62,7 +60,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			// publishService(env, id, service, group, ip, port)
 			env = getParam(request, Key.env);
 			id = getParam(request, Key.id);
-			project = getParam(request, Key.project);
+			project = getParam(request, Key.project, "");
 			service = getParam(request, Key.service);
 			group = getParam(request, Key.group, DEFAULT_GROUP);
 			ip = getParam(request, Key.ip);
@@ -84,39 +82,130 @@ public class ServiceServlet extends AbstractLionServlet {
 		}
 	}
 
-	private String unpublishService(String env, String id, String service,
-			String group, String ip, String port) {
-		// TODO to be implemented after "统一项目名规范" is approved by TC
-		return null;
-	}
+    private String getServiceAddress(String env, String service, String group) {
+        int envId = getEnvId(env);
+        Service srv = serviceService.getService(envId, service, group);
+        if(srv==null) {
+            StringBuilder sb = new StringBuilder("no service ");
+            sb.append(service);
+            if(StringUtils.isNotBlank(group))
+                sb.append(" for group ").append(group);
+            sb.append(" in env ").append(env);
+            throw new RuntimeException(sb.toString());
+        }
+        return srv.getHosts();
+    }
+
+    private String setServiceAddress(String env, String id, String project, 
+            String service, String group, String address) throws Exception {
+        int envId = getEnvId(env);
+        verifyIdentity(id);
+        
+        Service srv = serviceService.getService(envId, service, group);
+        if(srv != null) {
+            srv.setHosts(address);
+            serviceService.updateService(srv);
+        } else {
+            int projectId = getProjectId(service, project);
+            
+            srv = new Service();
+            srv.setEnvId(envId);
+            srv.setProjectId(projectId);
+            srv.setName(service);
+            srv.setGroup(group);
+            srv.setHosts(address);
+            serviceService.createService(srv);
+        }
+        return address;
+    }
 
 	private String publishService(String env, String id, String project, 
-			String service, String group, String ip, String port) {
-		// TODO to be implemented after "统一项目名规范" is approved by TC
-		return null;
+	        String service, String group, String ip, String port) throws Exception {
+	    int envId = getEnvId(env);
+	    verifyIdentity(id);
+	    
+	    Service srv = serviceService.getService(envId, service, group);
+	    if(srv != null) {
+	        srv.setHosts(addHost(srv.getHosts(), ip, port));
+	        serviceService.updateService(srv);
+	    } else {
+	        int projectId = getProjectId(service, project);
+	        
+	        srv = new Service();
+	        srv.setEnvId(envId);
+	        srv.setProjectId(projectId);
+	        srv.setName(service);
+	        srv.setGroup(group);
+	        srv.setHosts(addHost(null, ip, port));
+	        serviceService.createService(srv);
+	    }
+	    return srv.getHosts();
+	}
+	
+	private String unpublishService(String env, String id, String service,
+			String group, String ip, String port) throws Exception {
+	    int envId = getEnvId(env);
+        verifyIdentity(id);
+        
+        Service srv = serviceService.getService(envId, service, group);
+        if(srv == null) {
+            throw new RuntimeException("env " + env + " service " + service + " group " + group + " is not found");
+        }
+        srv.setHosts(removeHost(srv.getHosts(), ip, port));
+        serviceService.updateService(srv);
+        return srv.getHosts();
+	}
+	
+	private String addHost(String hosts, String ip, String port) {
+	    if(!checkIpAddress(ip)) {
+	        throw new RuntimeException("Invalid ip " + ip);
+	    }
+	    if(!checkNumber(port, 1, 65535)) {
+	        throw new RuntimeException("Invalid port " + port);
+	    }
+	    String host = ip + ":" + port;
+	    if(hosts != null && hosts.indexOf(host) != -1) {
+	        throw new RuntimeException("Host " + host + " already in service host list " + hosts);
+	    }
+	    hosts = (hosts==null ? "" : hosts.trim());
+	    StringBuilder sb = new StringBuilder(hosts);
+	    if(hosts.length()>0 && !hosts.endsWith(","))
+	        sb.append(',');
+	    sb.append(host);
+	    return sb.toString();
 	}
 
-	private String setServiceAddress(String env, String id, String project, 
-			String service, String group, String address) throws Exception {
-		int envId = getEnvId(env);
-		verifyIdentity(id);
-		
-		Service srv = serviceService.getService(envId, service, group);
-		if(srv != null) {
-			srv.setHosts(address);
-			serviceService.updateService(srv);
-		} else {
-			int projectId = getProjectId(service, project);
-			
-			srv = new Service();
-			srv.setEnvId(envId);
-			srv.setProjectId(projectId);
-			srv.setName(service);
-			srv.setGroup(group);
-			srv.setHosts(address);
-			serviceService.createService(srv);
-		}
-		return address;
+	private String removeHost(String hosts, String ip, String port) {
+	    if(!checkIpAddress(ip)) {
+            throw new RuntimeException("Invalid ip " + ip);
+        }
+        if(!checkNumber(port, 1, 65535)) {
+            throw new RuntimeException("Invalid port " + port);
+        }
+	    String host = ip + ":" + port;
+	    int idx = -1;
+	    if(hosts==null || (idx = hosts.indexOf(host)) == -1) {
+	        throw new RuntimeException("Host " + host + " is not in service host list " + hosts);
+	    }
+	    int idx2 = hosts.indexOf(',', idx);
+	    String newHosts = hosts.substring(0, idx) + 
+	            ((idx2==-1 || idx2==hosts.length()-1) ? "" : hosts.substring(idx2 + 1));
+	    return newHosts;
+	}
+	
+	private boolean checkIpAddress(String ip) {
+	    if(null == ip)
+	        return false;
+	    return ip.indexOf('.') != -1;
+	}
+	
+	private boolean checkNumber(String number, int min, int max) {
+	    try {
+	        int n = Integer.parseInt(number);
+	        return (n>=min && n<=max);
+	    } catch(NumberFormatException e) {
+	        return false;
+	    }
 	}
 
 	private int getProjectId(String service, String project) {
@@ -151,20 +240,6 @@ public class ServiceServlet extends AbstractLionServlet {
 		}
 	}
 
-	private String getServiceAddress(String env, String service, String group) {
-		int envId = getEnvId(env);
-		Service srv = serviceService.getService(envId, service, group);
-		if(srv==null) {
-			StringBuilder sb = new StringBuilder("no service ");
-			sb.append(service);
-			if(StringUtils.isNotBlank(group))
-				sb.append(" for group ").append(group);
-			sb.append(" in env ").append(env);
-			throw new RuntimeException(sb.toString());
-		}
-		return srv.getHosts();
-	}
-
 	private int getEnvId(String env) {
 		Environment environment = environmentService.findEnvByName(env);
 		if (environment == null) {
@@ -173,7 +248,6 @@ public class ServiceServlet extends AbstractLionServlet {
 		return environment.getId();
 	}
 
-	// TODO URL decode
 	private String getParam(HttpServletRequest request, Key key) {
 		String param = request.getParameter(key.name());
 		if(param == null)
