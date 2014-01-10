@@ -45,7 +45,7 @@ public class ConfigCache {
 
 	private static Logger logger = Logger.getLogger(ConfigCache.class);
 
-	private static ConfigCache instance;
+	private static volatile ConfigCache instance;
 
 	private static Map<String, StringValue> cache = new ConcurrentHashMap<String, StringValue>();
 
@@ -131,9 +131,10 @@ public class ConfigCache {
 			synchronized (ConfigCache.class) {
 				if (instance == null) {
 					try {
-						instance = new ConfigCache();
-						instance.setAddress(address);
-						instance.init();
+						ConfigCache cc = new ConfigCache();
+						cc.setAddress(address);
+						cc.init();
+						instance = cc;
 					} catch (Exception e) {
 						logger.error("Failed to initialize ConfigCache", e);
 						throw new LionException(e);
@@ -276,7 +277,7 @@ public class ConfigCache {
 	}
 
 	private String getGroup() {
-	    String group = instance.getAppenv(Constants.KEY_SWIMLANE);
+	    String group = getAppenv(Constants.KEY_SWIMLANE);
 	    if(group == null || group.trim().length() == 0)
             return null;
 	    return group.trim();

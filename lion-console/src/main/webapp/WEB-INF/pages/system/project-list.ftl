@@ -56,7 +56,7 @@
 	      		<td>${projectStatus.index + 1}</td>
 	      		<td>${teamName}</td>
 	      		<td>${productName}</td>
-	      		<td>${name}</td>
+	      		<td><a href="<@s.url action="navigate" namespace="/"/>?menu=project&pid=${id}">${name}</a></td>
 	      		<td>${createTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 	      		<td>${modifyTime?string("yyyy-MM-dd HH:mm:ss")}</td>
 				<td>

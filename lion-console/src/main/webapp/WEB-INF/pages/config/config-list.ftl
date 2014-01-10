@@ -47,7 +47,7 @@
 			<@s.form cssClass="form-inline lion" action="/config/configList.vhtml" method="get">
 				<@s.hidden name="menu"/><@s.hidden name="pid"/><@s.hidden name="envId" id="envId"/>
 				<label class="control-label" for="key">KEY：</label>
-				<@s.textfield id="key" name="criteria.key" cssClass="input-medium" maxlength="50"/>
+				<@s.textfield id="key" name="criteria.key" cssClass="input-medium" maxlength="100"/>
 				<label class="control-label" for="value">VALUE：</label>
 				<@s.textfield id="value" name="criteria.value" cssClass="input-medium" maxlength="50"/>
 				<label class="control-label" for="status">Status：</label>

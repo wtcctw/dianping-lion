@@ -10,7 +10,6 @@ import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Service;
 import com.dianping.lion.entity.User;
 
-//TODO where to get project name?
 public class ServiceServlet extends AbstractLionServlet {
 
 	private enum Key {env, id, project, service, address, group, ip, port};
@@ -25,14 +24,14 @@ public class ServiceServlet extends AbstractLionServlet {
 	protected void doService(HttpServletRequest request, HttpServletResponse response, String querystr) throws Exception {
 		String pathInfo = request.getPathInfo();
 		if(pathInfo == null) 
-			throw new RuntimeException("action is null");
+			throw new RuntimeException("Action is null");
 		
 		pathInfo = pathInfo.toLowerCase().substring(1);
 		Action action = null;
 		try {
 			action = Action.valueOf(pathInfo);
 		} catch(RuntimeException e) {
-			throw new RuntimeException("unknown action " + pathInfo);
+			throw new RuntimeException("Unknown action " + pathInfo);
 		}
 		
 		String env, id, project, service, address, group, ip, port, result = null;
@@ -86,7 +85,7 @@ public class ServiceServlet extends AbstractLionServlet {
         int envId = getEnvId(env);
         Service srv = serviceService.getService(envId, service, group);
         if(srv==null) {
-            StringBuilder sb = new StringBuilder("no service ");
+            StringBuilder sb = new StringBuilder("No service ");
             sb.append(service);
             if(StringUtils.isNotBlank(group))
                 sb.append(" for group ").append(group);
@@ -149,7 +148,7 @@ public class ServiceServlet extends AbstractLionServlet {
         
         Service srv = serviceService.getService(envId, service, group);
         if(srv == null) {
-            throw new RuntimeException("env " + env + " service " + service + " group " + group + " is not found");
+            throw new RuntimeException("Env " + env + " service " + service + " group " + group + " is not found");
         }
         srv.setHosts(removeHost(srv.getHosts(), ip, port));
         serviceService.updateService(srv);
