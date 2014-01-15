@@ -204,6 +204,8 @@ public class ServiceServiceImpl implements ServiceService {
 		}
 		String path = WEIGHT_PATH + ip + ":" + port;
 		String value = zkService.get(path);
+		if(value == null) 
+		    throw new RuntimeException("Failed to get weight for " + ip + ":" + port);
 		return Integer.parseInt(value);
 	}
 
@@ -221,8 +223,9 @@ public class ServiceServiceImpl implements ServiceService {
 	private int getServicePort(ZookeeperService zkService, String ip) throws Exception {
 		List<String> children = zkService.getChildren("/DP/WEIGHT");
 		String path = null;
+		String prefix = ip + ":";
 		for(String child : children) {
-			if(child.startsWith(ip)) {
+			if(child.startsWith(prefix)) {
 				path = child;
 				break;
 			}
