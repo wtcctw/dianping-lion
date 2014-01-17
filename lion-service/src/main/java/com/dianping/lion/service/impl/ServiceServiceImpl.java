@@ -70,7 +70,7 @@ public class ServiceServiceImpl implements ServiceService {
         for(String host : removeSet) {
             String wp = WEIGHT_PATH + host;
             if(zkService.exists(wp)) {
-                zkService.delete(wp);
+//                zkService.delete(wp);
             }
         }
 
@@ -108,7 +108,7 @@ public class ServiceServiceImpl implements ServiceService {
         for(String host : service) {
             String wp = WEIGHT_PATH + host;
             if(zkService.exists(wp)) {
-                zkService.delete(wp);
+//                zkService.delete(wp);
             }
         }
     }
