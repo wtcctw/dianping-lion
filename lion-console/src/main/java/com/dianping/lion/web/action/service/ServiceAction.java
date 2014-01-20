@@ -21,8 +21,8 @@ public class ServiceAction extends AbstractConfigAction {
         try {
             Service service = serviceService.getService(serviceId);
             serviceService.deleteService(service);
-            operationLogService.createOpLog(new OperationLog(
-                    OperationTypeEnum.Service_Delete, projectId, envId, "删除服务：" + service));
+            operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Delete, projectId, envId, 
+                    "删除服务：" + service + " 服务器 " + service.getHosts()));
             createSuccessStreamResponse();
         } catch (Exception ex) {
             logger.error("删除服务失败", ex);
@@ -47,13 +47,14 @@ public class ServiceAction extends AbstractConfigAction {
             service.setGroup(serviceGroup.trim());
             service.setHosts(serviceHosts.trim());
             if(serviceId > 0) {
+                Service existService = serviceService.getService(serviceId);
                 serviceService.updateService(service);
-                operationLogService.createOpLog(new OperationLog(
-                        OperationTypeEnum.Service_Update, projectId, envId, "修改服务：" + service));
+                operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, projectId, envId, 
+                        "修改服务：" + service + " 服务器 " + existService.getHosts() + " => " + service.getHosts()));
             } else {
                 serviceService.createService(service);
-                operationLogService.createOpLog(new OperationLog(
-                        OperationTypeEnum.Service_Create, projectId, envId, "新增服务：" + service));
+                operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Create, projectId, envId, 
+                        "新增服务：" + service + " 服务器 " + service.getHosts()));
             }
             createSuccessStreamResponse();
         } catch (Exception ex) {

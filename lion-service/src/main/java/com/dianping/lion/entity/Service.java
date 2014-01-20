@@ -2,6 +2,8 @@ package com.dianping.lion.entity;
 
 import java.util.Iterator;
 
+import org.apache.commons.lang.StringUtils;
+
 public class Service implements Iterable<String> {
 
     private int id;
@@ -69,10 +71,13 @@ public class Service implements Iterable<String> {
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(id).append(">>").append(projectId).append(">>");
-        sb.append(envId).append(">>").append(name).append(">>");
-        sb.append(group);
+        StringBuilder sb = new StringBuilder(name);
+        if(StringUtils.isNotBlank(group)) {
+            sb.append('/').append(group);
+        }
+//        if(StringUtils.isNotBlank(hosts)) {
+//            sb.append(':').append(hosts);
+//        }
         return sb.toString();
     }
 

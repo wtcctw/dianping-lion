@@ -23,8 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.ConsoleConstants;
-import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.service.PrivilegeService;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.web.tag.MenuManager.Menu;
 import com.dianping.lion.web.tag.MenuManager.MenuGroup;

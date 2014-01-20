@@ -32,8 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.OperationLogService;
-import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.service.PrivilegeService;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;

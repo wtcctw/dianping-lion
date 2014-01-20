@@ -258,6 +258,9 @@ public class ConfigServiceImpl implements ConfigService {
 			throw new RuntimeBusinessException("该配置项已存在(project: " + (project != null ? project.getName() : "***") + ", desc: " + configFound.getDesc() + ")!");
 		}
 		Integer currentUserId = SecurityUtils.getCurrentUserId();
+		if(currentUserId == null) {
+		    throw new RuntimeBusinessException("Invalid user id " + currentUserId);
+		}
 		int projectId = config.getProjectId();
 		if (config.getCreateUserId() == null) {
 			config.setCreateUserId(currentUserId);
