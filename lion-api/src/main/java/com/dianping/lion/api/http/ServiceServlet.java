@@ -164,7 +164,9 @@ public class ServiceServlet extends AbstractLionServlet {
 	    }
 	    String host = ip + ":" + port;
 	    if(hosts != null && hosts.indexOf(host) != -1) {
-	        throw new RuntimeException("Host " + host + " already in service host list " + hosts);
+	        // if already exists, just return	        
+	        logger.error("Host " + host + " already in service host list " + hosts);
+	        return hosts;
 	    }
 	    hosts = (hosts==null ? "" : hosts.trim());
 	    StringBuilder sb = new StringBuilder(hosts);
@@ -184,7 +186,9 @@ public class ServiceServlet extends AbstractLionServlet {
 	    String host = ip + ":" + port;
 	    int idx = -1;
 	    if(hosts==null || (idx = hosts.indexOf(host)) == -1) {
-	        throw new RuntimeException("Host " + host + " is not in service host list " + hosts);
+	        // if not exist, ignore
+	        logger.error("Host " + host + " is not in service host list " + hosts);
+	        return hosts;
 	    }
 	    int idx2 = hosts.indexOf(',', idx);
 	    String newHosts = hosts.substring(0, idx) + 
