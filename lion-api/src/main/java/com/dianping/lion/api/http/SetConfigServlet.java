@@ -100,9 +100,9 @@ public class SetConfigServlet extends AbstractLionServlet {
         }
         
         // relay pre to ppe
-        if (environment.getId() == 4) {
-            httpSetConfig(querystr);
-        }
+//        if (environment.getId() == 4) {
+//            httpSetConfig(querystr);
+//        }
     }
 
     private void httpSetConfig(String querystr) throws IOException {

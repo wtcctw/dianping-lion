@@ -89,9 +89,9 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
         }
         
         // relay pre to ppe
-        if (environment.getId() == 4) {
-            httpTakeEffect(querystr);
-        }
+//        if (environment.getId() == 4) {
+//            httpTakeEffect(querystr);
+//        }
     }
 
     private void httpTakeEffect(String querystr) throws IOException {
