@@ -64,6 +64,15 @@ public class ZooKeeperWrapper {
 			}
 		}
 	}
+	
+	public void close() {
+	    if(zk != null) {
+	        try {
+                zk.close();
+            } catch (InterruptedException e) {
+            }
+	    }
+	}
 
 	public Stat exists(String path,boolean watch) throws KeeperException, InterruptedException, IOException{
 		Stat stat = null;
