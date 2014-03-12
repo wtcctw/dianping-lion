@@ -10,14 +10,14 @@
         		<div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label" for="config-key">Key:</label>
 			      <div class="controls lion-controls">
-			        <input type="text" style="width:350px;" id="config-key" value="${project.name}." maxlength="60">
+			        <input type="text" style="width:350px;" id="config-key" value="${project.name}." maxlength="200">
 			        <span class="help-inline hide message">必填,项目名打头!</span>
 			      </div>
 			    </div>
         		<div class="control-group control-lion-group">
 			      <label class="control-label control-lion-label" for="config-desc">描述:</label>
 			      <div class="controls lion-controls">
-			        <input type="text" style="width:350px;" id="config-desc" maxlength="60">
+			        <input type="text" style="width:350px;" id="config-desc" maxlength="200">
 			        <span class="help-inline hide message">必填!</span>
 			      </div>
 			    </div>
