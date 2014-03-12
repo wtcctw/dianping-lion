@@ -58,6 +58,11 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public Product findProduct(String name) {
+	    return productDao.findProduct(name);
+	}
+	
+	@Override
 	public Product findProductByID(int id) {
 		return productDao.findProductByID(id);
 	}

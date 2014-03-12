@@ -71,6 +71,10 @@
         <servlet-name>WeightServlet</servlet-name>
         <servlet-class>com.dianping.lion.api.http.WeightServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ProjectServlet</servlet-name>
+        <servlet-class>com.dianping.lion.api.http.ProjectServlet</servlet-class>
+    </servlet>
 
 	<servlet-mapping>
 		<servlet-name>SetConfigServlet</servlet-name>
@@ -103,6 +107,10 @@
     <servlet-mapping>
         <servlet-name>WeightServlet</servlet-name>
         <url-pattern>/weight/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProjectServlet</servlet-name>
+        <url-pattern>/project/*</url-pattern>
     </servlet-mapping>
 
 	<listener>

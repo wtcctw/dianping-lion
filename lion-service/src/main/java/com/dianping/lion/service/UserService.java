@@ -29,6 +29,8 @@ public interface UserService {
 
 	List<User> findAll();
 	
+	User findUser(String name);
+	
 	User findById(int id);
 	
 	User findNoPasswdById(int id);

@@ -29,6 +29,21 @@
 			WHERE p.teamId = t.id
 		]]>
     </select>
+    <select id="findProduct" resultMap="ProductResult">
+        <![CDATA[
+            SELECT
+              p.id,
+              p.name,
+              teamId,
+              t.name AS teamName,
+              productLeaderId,
+              u.name AS productLeaderName,
+              p.createTime,
+              p.modifyTime
+            FROM product AS p LEFT JOIN user u ON p.productLeaderId = u.id, team t
+            WHERE p.teamId = t.id AND p.name=#name#
+        ]]>
+    </select>
     <select id="findByID" resultMap="ProductResult">
 		<![CDATA[
 			SELECT

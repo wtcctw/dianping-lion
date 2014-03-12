@@ -196,7 +196,7 @@ public class ZooKeeperWrapper {
 	
 	public class WatcherWrapper implements Watcher {
 	    
-	    private volatile boolean connected;
+	    private boolean connected;
 	    private Watcher wrappedWatcher;
 	    
 	    public WatcherWrapper(Watcher watcher) {
@@ -208,8 +208,10 @@ public class ZooKeeperWrapper {
         public void process(WatchedEvent event) {
             if(event.getState() == KeeperState.SyncConnected) {
                 logger.info("Zookeeper connected");
-                connected = true;
-                this.notifyAll();
+                synchronized(this) {
+                    connected = true;
+                    this.notifyAll();
+                }
                 return;
             }
             

@@ -80,6 +80,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
     protected SystemSettingService  systemSettingService;
     protected ServiceService		serviceService;
     protected UserService			userService;
+    protected ProductService        productService;
     protected ConfigReleaseDao		configReleaseDao;
     protected boolean               requestIdentityRequired = true;
 	
@@ -94,6 +95,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
         systemSettingService = getBean(SystemSettingService.class);
         serviceService = getBean(ServiceService.class);
         userService = getBean(UserService.class);
+        productService = getBean(ProductService.class);
         configReleaseDao = getBean(ConfigReleaseDao.class);
 	}
 

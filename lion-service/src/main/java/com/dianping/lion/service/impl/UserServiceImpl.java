@@ -58,6 +58,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+    public User findUser(String name) {
+	    return userDao.findByName(name);
+	}
+	
+	@Override
 	public User findById(int id) {
 		User user = cacheClient.get(ServiceConstants.CACHE_USER_PREFIX + id);
 		if (user == null) {
