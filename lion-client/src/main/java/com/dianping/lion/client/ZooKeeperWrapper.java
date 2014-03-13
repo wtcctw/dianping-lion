@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
@@ -45,20 +47,20 @@ public class ZooKeeperWrapper {
 	protected ZooKeeperWrapper(){
 	}
 
-	public ZooKeeperWrapper(String addresses,int timeout,final Watcher watcher) throws IOException{
+	public ZooKeeperWrapper(String addresses,int timeout,final Watcher watcher) throws IOException, InterruptedException {
 		this.addresses = addresses;
 		this.timeout = timeout;
 		this.watcher = watcher;
 		WatcherWrapper watcherWrapper = new WatcherWrapper(watcher);
 		this.zk = new ZooKeeper(addresses, timeout, watcherWrapper);
-		watcherWrapper.waitUntilConnected(30000);
+		watcherWrapper.waitUntilConnected();
 	}
 
-	private synchronized void init(ZooKeeper zk) throws IOException, KeeperException, InterruptedException{
+	private synchronized void init(ZooKeeper zk) throws IOException, KeeperException, InterruptedException {
 		if(zk == this.zk){
 		    WatcherWrapper watcherWrapper = new WatcherWrapper(watcher);
 	        this.zk = new ZooKeeper(addresses, timeout, watcherWrapper);
-	        watcherWrapper.waitUntilConnected(30000);
+	        watcherWrapper.waitUntilConnected();
 			for(Entry<String,Watcher> entry : watcherMap.entrySet()){
 				this.zk.getData(entry.getKey(), entry.getValue(),null);
 			}
@@ -196,11 +198,11 @@ public class ZooKeeperWrapper {
 	
 	public class WatcherWrapper implements Watcher {
 	    
-	    private boolean connected;
+	    private CountDownLatch latch;
 	    private Watcher wrappedWatcher;
 	    
 	    public WatcherWrapper(Watcher watcher) {
-	        this.connected = false;
+	        this.latch = new CountDownLatch(1);
 	        this.wrappedWatcher = watcher;
 	    }
 	    
@@ -208,10 +210,7 @@ public class ZooKeeperWrapper {
         public void process(WatchedEvent event) {
             if(event.getState() == KeeperState.SyncConnected) {
                 logger.info("Zookeeper connected");
-                synchronized(this) {
-                    connected = true;
-                    this.notifyAll();
-                }
+                latch.countDown();
                 return;
             }
             
@@ -220,22 +219,10 @@ public class ZooKeeperWrapper {
             }
         }
 	    
-	    public void waitUntilConnected(long milliseconds) throws IOException {
-	        synchronized(this){
-	            long start = System.currentTimeMillis();
-	            while(!connected){
-	                long waitMillis = milliseconds - (System.currentTimeMillis() - start);
-	                if(waitMillis <= 0) {
-	                    throw new IOException("Timeout while connecting to zookeeper");
-	                } else {
-	                    try {
-	                        this.wait(waitMillis);
-	                    } catch (InterruptedException e) {
-	                        throw new IOException("Interrupted while connecting to zookeeper", e);
-	                    }
-	                }
-	            }
-	        }    
+	    public void waitUntilConnected() throws IOException, InterruptedException {
+            if(!latch.await(30, TimeUnit.SECONDS)) {
+                throw new IOException("Timeout while connecting to zookeeper");
+            }
 	    }
 	}
 }

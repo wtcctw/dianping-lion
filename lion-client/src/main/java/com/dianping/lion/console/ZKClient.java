@@ -60,7 +60,7 @@ public class ZKClient {
 						client.address = address;
 						client.init();
 						clientMap.put(address+":"+path, client);
-					} catch (IOException e) {
+					} catch (Exception e) {
 						throw new LionException(e);
 					}
 				}
@@ -69,7 +69,7 @@ public class ZKClient {
 		return client;
 	}
 
-	private void init() throws IOException{
+	private void init() throws IOException, InterruptedException {
 			this.zk = new ZooKeeperWrapper(this.address,this.timeout,new Watcher(){
 				@Override
 				public void process(WatchedEvent event) {

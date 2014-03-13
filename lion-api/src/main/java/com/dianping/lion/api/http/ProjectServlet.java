@@ -13,9 +13,9 @@ import com.dianping.lion.entity.User;
 
 public class ProjectServlet extends AbstractLionServlet {
 
-    private enum Key {id, project, product, name, owner};
+    private enum Key {id, project, product, name, owner, member, operator};
     
-    private enum Action {create, delete, rename};
+    private enum Action {create, delete, rename, update};
     
     public ProjectServlet() {
     }
@@ -34,7 +34,7 @@ public class ProjectServlet extends AbstractLionServlet {
             throw new RuntimeException("Unknown action " + pathInfo);
         }
         
-        String project, product, name, owner, result = null;
+        String project, product, name, owner, member, operator, result = null;
         switch (action) {
         case create:
             project = getParam(request, Key.project);
@@ -52,6 +52,15 @@ public class ProjectServlet extends AbstractLionServlet {
             project = getParam(request, Key.project);
             name = getParam(request, Key.name);
             result = renameProject(project, name);
+            response.getWriter().write("0|" + result);
+            break;
+        case update:
+            project = getParam(request, Key.project);
+            name = getParam(request, Key.name, "");
+            owner = getParam(request, Key.owner, "");
+            member = getParam(request, Key.member, "");
+            operator = getParam(request, Key.operator, "");
+            result = updateProject(project, name, owner, member, operator);
             response.getWriter().write("0|" + result);
             break;
         }
@@ -94,6 +103,57 @@ public class ProjectServlet extends AbstractLionServlet {
         prj.setModifyTime(new Date());
         projectService.editProject(prj);
         return "Renamed project " + project + " to " + name;
+    }
+
+    private String updateProject(String project, String name, String owner, String member, String operator) {
+        Project prj = getProject(project);
+        StringBuilder sb = new StringBuilder();
+        if(StringUtils.isNotBlank(name)) {
+            prj.setName(name);
+            prj.setModifyTime(new Date());
+            projectService.editProject(prj);
+            sb.append("Renamed project " + project + " to " + name + ", ");
+        }
+        if(StringUtils.isNotBlank(owner)) {
+            String[] owners = owner.split(",");
+            for(String o : owners) {
+                User user = userService.findUser(o);
+                if(user == null) {
+                    sb.append("user ").append(o).append(" does not exist, ");
+                    continue;
+                }
+                projectService.addMember(prj.getId(), "owner", user.getId());
+                sb.append("added owner ").append(o).append(", ");
+            }
+        }
+        if(StringUtils.isNotBlank(member)) {
+            String[] members = member.split(",");
+            for(String m : members) {
+                User user = userService.findUser(m);
+                if(user == null) {
+                    sb.append("user ").append(m).append(" does not exist, ");
+                    continue;
+                }
+                projectService.addMember(prj.getId(), "member", user.getId());
+                sb.append("added member ").append(m).append(", ");
+            }
+        }
+        if(StringUtils.isNotBlank(operator)) {
+            String[] operators = operator.split(",");
+            for(String o : operators) {
+                User user = userService.findUser(o);
+                if(user == null) {
+                    sb.append("user ").append(o).append(" does not exist, ");
+                    continue;
+                }
+                projectService.addMember(prj.getId(), "operator", user.getId());
+                sb.append("added operator ").append(o).append(", ");
+            }
+        }
+        if(sb.length() == 0) {
+            sb.append("Did nothing");
+        }
+        return sb.toString();
     }
 
     private Project getProject(String name) {
