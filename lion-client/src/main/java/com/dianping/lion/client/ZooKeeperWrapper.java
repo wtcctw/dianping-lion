@@ -51,14 +51,14 @@ public class ZooKeeperWrapper {
 		this.watcher = watcher;
 		WatcherWrapper watcherWrapper = new WatcherWrapper(watcher);
 		this.zk = new ZooKeeper(addresses, timeout, watcherWrapper);
-		watcherWrapper.waitUntilConnected(2000);
+		watcherWrapper.waitUntilConnected(30000);
 	}
 
 	private synchronized void init(ZooKeeper zk) throws IOException, KeeperException, InterruptedException{
 		if(zk == this.zk){
 		    WatcherWrapper watcherWrapper = new WatcherWrapper(watcher);
 	        this.zk = new ZooKeeper(addresses, timeout, watcherWrapper);
-	        watcherWrapper.waitUntilConnected(2000);
+	        watcherWrapper.waitUntilConnected(30000);
 			for(Entry<String,Watcher> entry : watcherMap.entrySet()){
 				this.zk.getData(entry.getKey(), entry.getValue(),null);
 			}
