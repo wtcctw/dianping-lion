@@ -53,9 +53,11 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
         String[] keys = req.getParameterValues(PARAM_KEY);
         String push2App = req.getParameter(PARAM_PUSH);
         String snapshot = req.getParameter(PARAM_SNAPSHOT);
+        String setTask = req.getParameter("set");
         push2App = push2App != null ? push2App : "0";
         boolean createSnapshot = snapshot != null ? CREATE_SNAPSHOT.equals(snapshot.trim()) : false;
-
+        boolean executeSetTask = !(setTask != null && "0".equals(setTask.trim()));
+                
         Environment environment = getRequiredEnv(env);
 
         if (keys != null && keys.length > 0) {
@@ -70,9 +72,11 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
                             task != null ? task : "");
                 }
 
-                String[] features = getRequiredParameters(req, PARAM_FEATURE);
-                configReleaseService.executeSetTask(project.getId(), environment.getId(), features, keys,
-                        PUSH_TO_APP.equals(push2App));
+                if(executeSetTask) {
+                    String[] features = getRequiredParameters(req, PARAM_FEATURE);
+                    configReleaseService.executeSetTask(project.getId(), environment.getId(), features, keys,
+                            PUSH_TO_APP.equals(push2App));
+                }
 
                 resp.getWriter().write(SUCCESS_CODE + snapshotId);
                 operationLogService.createOpLog(new OperationLog(OperationTypeEnum.API_TakeEffect, project.getId(),
@@ -88,27 +92,8 @@ public class TakeEffectConfigsServlet extends AbstractLionServlet {
             resp.getWriter().write(SUCCESS_CODE);
         }
         
-        // relay pre to ppe
-//        if (environment.getId() == 4) {
-//            httpTakeEffect(querystr);
-//        }
     }
 
-    private void httpTakeEffect(String querystr) throws IOException {
-        String url = "http://lion-api-ppe01.hm:8080/takeeffect?";
-        String query = querystr.replace("e=prelease", "e=product");
-        url = url + query;
-        Content content = Request.Get(url).execute().returnContent();
-        String result = content.asString();
-        if(result.startsWith("0|")) {
-            logger.info("take effect in ppe: " + result);
-        } else {
-            String message = "failed to take effect in ppe: " + result;
-            logger.error(message);
-            throw new RuntimeException(message);
-        }
-    }
-    
     private void checkConfigKeys(String projectName, String[] keys) {
         for (int i = 0; i < keys.length; i++) {
             keys[i] = checkConfigKey(projectName, keys[i]);

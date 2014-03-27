@@ -57,10 +57,11 @@ public class ProjectServlet extends AbstractLionServlet {
         case update:
             project = getParam(request, Key.project);
             name = getParam(request, Key.name, "");
+            product = getParam(request, Key.product, "");
             owner = getParam(request, Key.owner, "");
             member = getParam(request, Key.member, "");
             operator = getParam(request, Key.operator, "");
-            result = updateProject(project, name, owner, member, operator);
+            result = updateProject(project, name, product, owner, member, operator);
             response.getWriter().write("0|" + result);
             break;
         }
@@ -104,8 +105,9 @@ public class ProjectServlet extends AbstractLionServlet {
         projectService.editProject(prj);
         return "Renamed project " + project + " to " + name;
     }
-
-    private String updateProject(String project, String name, String owner, String member, String operator) {
+    
+    // TODO Update product
+    private String updateProject(String project, String name, String product, String owner, String member, String operator) {
         Project prj = getProject(project);
         StringBuilder sb = new StringBuilder();
         if(StringUtils.isNotBlank(name)) {
@@ -113,6 +115,13 @@ public class ProjectServlet extends AbstractLionServlet {
             prj.setModifyTime(new Date());
             projectService.editProject(prj);
             sb.append("Renamed project " + project + " to " + name + ", ");
+        }
+        if(StringUtils.isNotBlank(product)) {
+            int productId = getProductId(product);
+            prj.setProductId(productId);
+            prj.setModifyTime(new Date());
+            projectService.editProject(prj);
+            sb.append("Moved project " + project + " to " + product + ", ");
         }
         if(StringUtils.isNotBlank(owner)) {
             String[] owners = owner.split(",");
