@@ -11,14 +11,14 @@
 <#include "/WEB-INF/pages/system/project-span.ftl"> 
 
 <form id="projectQuery" class="form-inline lion" action="<@s.url action='projectList' namespace='/system'/>" method="get">
-	<label class="control-label" for="teamSelect">业务组</label>
+	<label class="control-label" for="teamSelect">业务团队</label>
 	  <select id="teamSelect" name="teamSelect">
 	<option value=0>所有的</option>
 	<#list teamList as team>
 		<option value=${team.id}>${team.name}</option>
 	</#list>
 	  </select>
-	<label class="control-label" for="productSelect">产品线</label>
+	<label class="control-label" for="productSelect">业务分支</label>
 	  <select id="productSelect" name="productSelect">
 	<option team=0 value=0>所有的</option>
 	<#list teamList as team>
@@ -35,8 +35,8 @@
 	  <thead>
 	    <tr>
 	      <th width="65">序号</th>
-	      <th width="120">业务组</th>
-	      <th width="120">所属产品线</th>
+	      <th width="120">业务团队</th>
+	      <th width="120">业务分支</th>
 	      <th>项目名</th>
 	      <th width="230">创建时间</th>
 	      <th width="230">更新时间</th>
@@ -91,7 +91,7 @@
         	<form class="form-horizontal">
         		<fieldset>
 	        		<div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="productSelectAdd">产品线:</label>
+				      <label class="control-label control-lion-label" for="productSelectAdd">业务分支:</label>
 				      <div class="controls lion-controls">
 				        <select id="productSelectAdd">
 					       <#list teamList as team>
@@ -126,7 +126,7 @@
         		<fieldset>
         		<input type="hidden" id="projectIdEdit" value="" />
 	        		<div class="control-group control-lion-group">
-				      <label class="control-label control-lion-label" for="productSelectAdd">产品线:</label>
+				      <label class="control-label control-lion-label" for="productSelectAdd">业务分支:</label>
 				      <div class="controls lion-controls">
 				        <select id="productSelectEdit">
 					       <#list teamList as team>

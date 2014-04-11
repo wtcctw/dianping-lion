@@ -11,7 +11,7 @@
 			  	<#if active == "project">
 					项目
 				<#elseif active == "product">
-					产品线
+					业务分支
 				<#elseif active == "team">
 					业务团队
 				</#if>
@@ -31,7 +31,7 @@
 			<#else>
 				<li>
 			</#if>
-			<a href="<@s.url action='productList' namespace='/system'/>" >产品线</a></li>
+			<a href="<@s.url action='productList' namespace='/system'/>" >业务分支</a></li>
 		    <#if active == "team">
 				<li class="active">
 			<#else>

@@ -1,7 +1,7 @@
 <div class="modal hide fade" id="myModal">
 <div class="modal-header">
 <button type="button" class="close" data-dismiss="modal">×</button>
-<h3><#if id == 0>添加<#else>修改</#if>产品线</h3>
+<h3><#if id == 0>添加<#else>修改</#if>业务分支</h3>
 </div>
  <div class="modal-body">
         	<form class="form-horizontal">
