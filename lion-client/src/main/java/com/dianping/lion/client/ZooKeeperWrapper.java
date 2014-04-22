@@ -14,10 +14,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.KeeperException.ConnectionLossException;
 import org.apache.zookeeper.KeeperException.SessionExpiredException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.Watcher.Event.KeeperState;
+import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
@@ -29,201 +30,231 @@ import org.apache.zookeeper.data.Stat;
  * <p>
  * Description: 描述
  * </p>
+ * 
  * @author saber miao
  * @version 1.0
  * @created 2011-7-14 下午05:38:01
  */
-public class ZooKeeperWrapper {
+public class ZooKeeperWrapper implements Watcher {
 
-	private static Logger logger = Logger.getLogger(ZooKeeperWrapper.class);
-	private ZooKeeper zk;
+    private static Logger logger = Logger.getLogger(ZooKeeperWrapper.class);
 
-	private String addresses;
-	private int timeout;
-	private Watcher watcher;
-	
-	private Map<String,Watcher> watcherMap = new ConcurrentHashMap<String,Watcher>();
+    private ZooKeeper zk;
 
-	protected ZooKeeperWrapper(){
-	}
+    private String addresses;
+    private int timeout;
+    private Watcher watcher;
+    private volatile CountDownLatch latch;
 
-	public ZooKeeperWrapper(String addresses,int timeout,final Watcher watcher) throws IOException, InterruptedException {
-		this.addresses = addresses;
-		this.timeout = timeout;
-		this.watcher = watcher;
-		WatcherWrapper watcherWrapper = new WatcherWrapper(watcher);
-		this.zk = new ZooKeeper(addresses, timeout, watcherWrapper);
-		watcherWrapper.waitUntilConnected();
-	}
+    private Map<String, Watcher> watcherMap = new ConcurrentHashMap<String, Watcher>();
 
-	private synchronized void init(ZooKeeper zk) throws IOException, KeeperException, InterruptedException {
-		if(zk == this.zk){
-		    WatcherWrapper watcherWrapper = new WatcherWrapper(watcher);
-	        this.zk = new ZooKeeper(addresses, timeout, watcherWrapper);
-	        watcherWrapper.waitUntilConnected();
-			for(Entry<String,Watcher> entry : watcherMap.entrySet()){
-				this.zk.getData(entry.getKey(), entry.getValue(),null);
-			}
-		}
-	}
-	
-	public void close() {
-	    if(zk != null) {
-	        try {
-                zk.close();
-            } catch (InterruptedException e) {
-            }
-	    }
-	}
+    protected ZooKeeperWrapper() {
+    }
 
-	public Stat exists(String path,boolean watch) throws KeeperException, InterruptedException, IOException{
-		Stat stat = null;
-		ZooKeeper zk_ = this.zk;
-		try{
-			stat = zk_.exists(path, watch);
-		}catch(SessionExpiredException see){
-			logger.error("OP:exists1---"+see.getMessage(),see);
-			zk_.close();
-			init(zk_);
-			stat = this.zk.exists(path, watch);
-		}
-		return stat;
-	}
+    public ZooKeeperWrapper(String addresses, int timeout, final Watcher watcher) throws IOException,
+            InterruptedException {
+        this.addresses = addresses;
+        this.timeout = timeout;
+        this.watcher = watcher;
+        this.latch = new CountDownLatch(1);
+        this.zk = new ZooKeeper(addresses, timeout, this);
+    }
 
-	public Stat exists(String path,Watcher watcher) throws KeeperException, InterruptedException, IOException{
-		Stat stat = null;
-		ZooKeeper zk_ = this.zk;
-		try{
-			stat = zk_.exists(path, watcher);
-			if(watcher!=null)
-				this.watcherMap.put(path, watcher);
-		}catch(SessionExpiredException see){
-			logger.error("OP:exists2---"+see.getMessage(),see);
-			zk_.close();
-			init(zk_);
-			stat = this.zk.exists(path, watcher);
-		}
-		return stat;
-	}
-
-	public String create(String path,byte[] data,List<ACL> acl,CreateMode createMode) throws KeeperException, InterruptedException, IOException{
-		ZooKeeper zk_ = this.zk;
-		try{
-			return zk_.create(path, data, acl, createMode);
-		}catch(SessionExpiredException see){
-			logger.error("OP:create---"+see.getMessage(),see);
-			zk_.close();
-			init(zk_);
-			return this.zk.create(path, data, acl, createMode);
-		}
-	}
-
-	public byte[] getData(String path,Watcher watcher,Stat stat) throws KeeperException, InterruptedException, IOException{
-		ZooKeeper zk_ = this.zk;
-		try{
-			byte[] data = zk_.getData(path, watcher, stat);
-			if(watcher!=null)
-				this.watcherMap.put(path, watcher);
-			return data;
-		}catch(SessionExpiredException see){
-			logger.error("OP:getData1---"+see.getMessage(),see);
-			zk_.close();
-			init(zk_);
-			return this.zk.getData(path, watcher, stat);
-		}
-	}
-	public byte[] getData(String path,boolean watch,Stat stat) throws KeeperException, InterruptedException, IOException{
-		ZooKeeper zk_ = this.zk;
-		try{
-			return zk_.getData(path, watch, stat);
-		}catch(SessionExpiredException see){
-			logger.error("OP:getData2---"+see.getMessage(),see);
-			zk_.close();
-			init(zk_);
-			return this.zk.getData(path, watch, stat);
-		}
-	}
-
-	public Stat setData(String path,byte[] data,int version) throws KeeperException, InterruptedException, IOException{
-		ZooKeeper zk_ = this.zk;
-		try{
-			return zk_.setData(path, data, version);
-		}catch(SessionExpiredException see){
-			logger.error("OP:setData---"+see.getMessage(),see);
-			zk_.close();
-			init(zk_);
-			return this.zk.setData(path, data, version);
-		}
-	}
-
-	public List<String> getChildren(String path,boolean watch) throws KeeperException, InterruptedException, IOException{
-		ZooKeeper zk_ = this.zk;
-		try{
-			return zk_.getChildren(path, watch);
-		}catch(SessionExpiredException see){
-			logger.error("OP:getChildren---"+see.getMessage(),see);
-			zk_.close();
-			init(zk_);
-			return this.zk.getChildren(path, watch);
-		}
-	}
-
-	public void delete(String path,int version) throws KeeperException, InterruptedException, IOException{
-		ZooKeeper zk_ = this.zk;
-		try{
-			zk_.delete(path, version);
-		}catch(SessionExpiredException see){
-			logger.error("OP:getChildren---"+see.getMessage(),see);
-			zk_.close();
-			init(zk_);
-			this.zk.delete(path, version);
-		}
-	}
-
-	public void removeWatcher(String path){
-		this.watcherMap.remove(path);
-	}
-	public synchronized void reconnectSession() throws IOException, KeeperException, InterruptedException{
-		ZooKeeper zk_ = this.zk;
-		zk_.close();
-		init(zk_);
-	}
-
-	/**
-	 * @return the addresses
-	 */
-	public String getAddresses() {
-		return addresses;
-	}
-	
-	public class WatcherWrapper implements Watcher {
-	    
-	    private CountDownLatch latch;
-	    private Watcher wrappedWatcher;
-	    
-	    public WatcherWrapper(Watcher watcher) {
-	        this.latch = new CountDownLatch(1);
-	        this.wrappedWatcher = watcher;
-	    }
-	    
-	    @Override
-        public void process(WatchedEvent event) {
-            if(event.getState() == KeeperState.SyncConnected) {
-                logger.info("Zookeeper connected");
-                latch.countDown();
-                return;
-            }
-            
-            if(wrappedWatcher != null) {
-                wrappedWatcher.process(event);
+    private void init(ZooKeeper zk) throws IOException, KeeperException, InterruptedException {
+        if (zk == this.zk) {
+            this.zk = new ZooKeeper(addresses, timeout, this);
+            for (Entry<String, Watcher> entry : watcherMap.entrySet()) {
+                this.zk.getData(entry.getKey(), entry.getValue(), null);
             }
         }
-	    
-	    public void waitUntilConnected() throws IOException, InterruptedException {
-            if(!latch.await(30, TimeUnit.SECONDS)) {
-                throw new IOException("Timeout while connecting to zookeeper");
-            }
-	    }
-	}
-}
+    }
 
+    public void close() throws InterruptedException {
+        if (zk != null) {
+            zk.close();
+            zk = null;
+        }
+    }
+
+    private void reconnectSession() throws IOException, KeeperException, InterruptedException {
+        ZooKeeper zk_ = this.zk;
+        zk_.close();
+        init(zk_);
+    }
+    
+    public Stat exists(String path, boolean watch) throws KeeperException, InterruptedException, IOException {
+        while (true) {
+            try {
+                Stat stat = zk.exists(path, watch);
+                return stat;
+            } catch (ConnectionLossException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            } catch (SessionExpiredException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            }
+        }
+    }
+
+    public Stat exists(String path, Watcher watcher) throws KeeperException, InterruptedException, IOException {
+        while (true) {
+            try {
+                Stat stat = zk.exists(path, watcher);
+                if (watcher != null)
+                    this.watcherMap.put(path, watcher);
+                return stat;
+            } catch (ConnectionLossException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            } catch (SessionExpiredException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            }
+        }
+    }
+
+    public String create(String path, byte[] data, List<ACL> acl, CreateMode createMode) throws KeeperException,
+            InterruptedException, IOException {
+        while (true) {
+            try {
+                return zk.create(path, data, acl, createMode);
+            } catch (ConnectionLossException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            } catch (SessionExpiredException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            }
+        }
+    }
+
+    public byte[] getData(String path, Watcher watcher, Stat stat) throws KeeperException, InterruptedException,
+            IOException {
+        while (true) {
+            try {
+                byte[] data = zk.getData(path, watcher, stat);
+                if (watcher != null)
+                    this.watcherMap.put(path, watcher);
+                return data;
+            } catch (ConnectionLossException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            } catch (SessionExpiredException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            }
+        }
+    }
+
+    public byte[] getData(String path, boolean watch, Stat stat) throws KeeperException, InterruptedException,
+            IOException {
+        while (true) {
+            try {
+                return zk.getData(path, watch, stat);
+            } catch (ConnectionLossException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            } catch (SessionExpiredException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            }
+        }
+    }
+
+    public Stat setData(String path, byte[] data, int version) throws KeeperException, InterruptedException,
+            IOException {
+        while (true) {
+            try {
+                return zk.setData(path, data, version);
+            } catch (ConnectionLossException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            } catch (SessionExpiredException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            }
+        }
+    }
+
+    public List<String> getChildren(String path, boolean watch) throws KeeperException, InterruptedException,
+            IOException {
+        while (true) {
+            try {
+                return zk.getChildren(path, watch);
+            } catch (ConnectionLossException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            } catch (SessionExpiredException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            }
+        }
+    }
+
+    public void delete(String path, int version) throws KeeperException, InterruptedException, IOException {
+        while (true) {
+            try {
+                zk.delete(path, version);
+                return;
+            } catch (ConnectionLossException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            } catch (SessionExpiredException e) {
+                logger.info(e.getMessage());
+                waitUntilConnected();
+            }
+        }
+    }
+
+    public void removeWatcher(String path) {
+        this.watcherMap.remove(path);
+    }
+
+    /**
+     * @return the addresses
+     */
+    public String getAddresses() {
+        return addresses;
+    }
+
+    @Override
+    public void process(WatchedEvent event) {
+        if (event.getType() == EventType.None) {
+            try {
+                processStateChange(event);
+            } catch (Exception e) {
+                logger.error("", e);
+            }
+            return;
+        }
+
+        if (watcher != null) {
+            watcher.process(event);
+        }
+    }
+
+    private void processStateChange(WatchedEvent event) throws InterruptedException, IOException,
+            KeeperException {
+        switch (event.getState()) {
+        case SyncConnected:
+            logger.info("Connected to zookeeper " + zk);
+            latch.countDown();
+            break;
+        case Disconnected:
+            logger.info("Disconnected from zookeeper " + zk);
+            latch = new CountDownLatch(1);
+            break;
+        case Expired:
+            logger.info("Zookeeper session expired " + zk);
+            reconnectSession();
+            break;
+        }
+    }
+
+    private void waitUntilConnected() throws IOException, InterruptedException {
+        if (!latch.await(60, TimeUnit.SECONDS)) {
+            throw new IOException("Timeout while connecting to zookeeper " + addresses);
+        }
+    }
+}

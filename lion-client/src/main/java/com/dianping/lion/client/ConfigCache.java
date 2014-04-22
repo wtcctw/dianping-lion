@@ -151,7 +151,7 @@ public class ConfigCache {
 
 	private void init() throws Exception {
 		if (!this.isInit) {
-			this.zk = new ZooKeeperWrapper(this.address, this.timeout, new ZookeeperSessionWatcher());
+			this.zk = new ZooKeeperWrapper(this.address, this.timeout, null);
 			
 			initZookeeper(zk);
 			
@@ -376,22 +376,6 @@ public class ConfigCache {
 			return null;
 		}
 		return Boolean.parseBoolean(value);
-	}
-
-	class ZookeeperSessionWatcher implements Watcher {
-		@Override
-		public void process(WatchedEvent event) {
-			if (event.getState() == KeeperState.Expired) {
-				logger.info("Zookeeper session expried, reconnecting...");
-				try {
-					zk.reconnectSession();
-					logger.info("Zookeeper session reconnected");
-				} catch (Exception e) {
-					logger.error("Zookeeper session reconnect failed", e);
-				}
-				return;
-			}
-		}
 	}
 
 	private class ConfigDataWatcher implements Watcher {
