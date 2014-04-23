@@ -93,6 +93,9 @@ public class ProjectServlet extends AbstractLionServlet {
             List<ConfigInstance> instances = configService.findInstancesByConfig(oldConfigId, null);
             for(ConfigInstance instance : instances) {
                 instance.setConfigId(newConfigId);
+                if(instance.getEnvId() == -1) {
+                    throw new RuntimeException("Invalid envId " + instance.getEnvId() + " for config " + oldConfigId);
+                }
                 configService.createInstance(instance);
             }
             count++;
