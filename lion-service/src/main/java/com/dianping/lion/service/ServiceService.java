@@ -10,12 +10,16 @@ public interface ServiceService {
 			
     public void updateService(Service service) throws Exception;
 
+    public void updateService(Service service, boolean updateZk) throws Exception;
+    
     public void deleteService(Service service) throws Exception;
 
     public void deleteService(int id) throws Exception;
 
     public void createService(Service service) throws Exception;
 
+    public void createService(Service service, boolean updateZk) throws Exception;
+    
     public List<Service> getServiceList(int projectId, int envId);
 
     public Service getService(int id);

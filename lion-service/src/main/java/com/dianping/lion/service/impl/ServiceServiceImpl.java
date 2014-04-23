@@ -53,6 +53,14 @@ public class ServiceServiceImpl implements ServiceService {
         serviceDao.updateService(service);
         zkUpdateService(originalService, service);
     }
+    
+    @Override
+    public void updateService(Service service, boolean updateZk) throws Exception {
+        Service originalService = serviceDao.getServiceById(service.getId());
+        serviceDao.updateService(service);
+        if(updateZk)
+            zkUpdateService(originalService, service);
+    }
 
     private void zkUpdateService(Service originalService, Service service) throws Exception {
         ZookeeperService zkService = getZkService(service.getEnvId());
@@ -141,6 +149,13 @@ public class ServiceServiceImpl implements ServiceService {
     public void createService(Service service) throws Exception {
         serviceDao.createService(service);
         zkCreateService(service);
+    }
+    
+    @Override
+    public void createService(Service service, boolean updateZk) throws Exception {
+        serviceDao.createService(service);
+        if(updateZk)
+            zkCreateService(service);
     }
 
     private void zkCreateService(Service service) throws Exception {

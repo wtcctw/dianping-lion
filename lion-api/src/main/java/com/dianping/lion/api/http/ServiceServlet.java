@@ -12,7 +12,7 @@ import com.dianping.lion.entity.User;
 
 public class ServiceServlet extends AbstractLionServlet {
 
-	private enum Key {env, id, project, service, address, group, ip, port};
+	private enum Key {env, id, project, service, address, group, ip, port, updatezk};
 	
 	private enum Action {get, set, publish, unpublish};
 	
@@ -34,7 +34,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			throw new RuntimeException("Unknown action " + pathInfo);
 		}
 		
-		String env, id, project, service, address, group, ip, port, result = null;
+		String env, id, project, service, address, group, ip, port, result, updatezk = null;
 		switch (action) {
 		case get:
 			// getServiceAddress(env, service, group)
@@ -64,7 +64,8 @@ public class ServiceServlet extends AbstractLionServlet {
 			group = getParam(request, Key.group, DEFAULT_GROUP);
 			ip = getParam(request, Key.ip);
 			port = getParam(request, Key.port);
-			result = publishService(env, id, project, service, group, ip, port);
+			updatezk = getParam(request, Key.updatezk, "");
+			result = publishService(env, id, project, service, group, ip, port, updatezk);
 			response.getWriter().write("0|" + result);
 			break;
 		case unpublish:
@@ -75,7 +76,8 @@ public class ServiceServlet extends AbstractLionServlet {
 			group = getParam(request, Key.group, DEFAULT_GROUP);
 			ip = getParam(request, Key.ip);
 			port = getParam(request, Key.port);
-			result = unpublishService(env, id, service, group, ip, port);
+			updatezk = getParam(request, Key.updatezk, "");
+			result = unpublishService(env, id, service, group, ip, port, updatezk);
 			response.getWriter().write("0|" + result);
 			break;
 		}
@@ -119,14 +121,15 @@ public class ServiceServlet extends AbstractLionServlet {
     }
 
 	private String publishService(String env, String id, String project, 
-	        String service, String group, String ip, String port) throws Exception {
+	        String service, String group, String ip, String port, String updatezk) throws Exception {
 	    int envId = getEnvId(env);
 	    verifyIdentity(id);
 	    
+	    boolean writeZk = "true".equalsIgnoreCase(updatezk);
 	    Service srv = serviceService.getService(envId, service, group);
 	    if(srv != null) {
 	        srv.setHosts(addHost(srv.getHosts(), ip, port));
-	        serviceService.updateService(srv);
+	        serviceService.updateService(srv, writeZk);
 	    } else {
 	        int projectId = getProjectId(service, project);
 	        
@@ -136,13 +139,13 @@ public class ServiceServlet extends AbstractLionServlet {
 	        srv.setName(service);
 	        srv.setGroup(group);
 	        srv.setHosts(addHost(null, ip, port));
-	        serviceService.createService(srv);
+	        serviceService.createService(srv, writeZk);
 	    }
 	    return srv.getHosts();
 	}
 	
 	private String unpublishService(String env, String id, String service,
-			String group, String ip, String port) throws Exception {
+			String group, String ip, String port, String updatezk) throws Exception {
 	    int envId = getEnvId(env);
         verifyIdentity(id);
         
@@ -151,7 +154,8 @@ public class ServiceServlet extends AbstractLionServlet {
             throw new RuntimeException("Env " + env + " service " + service + " group " + group + " is not found");
         }
         srv.setHosts(removeHost(srv.getHosts(), ip, port));
-        serviceService.updateService(srv);
+        boolean writeZk = "true".equalsIgnoreCase(updatezk);
+        serviceService.updateService(srv, writeZk);
         return srv.getHosts();
 	}
 	
