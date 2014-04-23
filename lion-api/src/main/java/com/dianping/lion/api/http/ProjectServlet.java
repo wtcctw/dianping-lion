@@ -1,12 +1,16 @@
 package com.dianping.lion.api.http;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.dianping.lion.entity.Config;
+import com.dianping.lion.entity.ConfigInstance;
+import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Product;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.User;
@@ -15,7 +19,7 @@ public class ProjectServlet extends AbstractLionServlet {
 
     private enum Key {id, project, product, name, owner, member, operator};
     
-    private enum Action {create, delete, rename, update};
+    private enum Action {create, delete, rename, update, moveconfig};
     
     public ProjectServlet() {
     }
@@ -64,7 +68,36 @@ public class ProjectServlet extends AbstractLionServlet {
             result = updateProject(project, name, product, owner, member, operator);
             response.getWriter().write("0|" + result);
             break;
+        case moveconfig:
+            project = getParam(request, Key.project);
+            name = getParam(request, Key.name);
+            result = moveConfig(project, name);
+            response.getWriter().write("0|" + result);
+            break;
         }
+    }
+    
+    public String moveConfig(String oldProjectName, String newProjectName) {
+        Project oldProject = getProject(oldProjectName);
+        Project newProject = getProject(newProjectName);
+        List<Config> configs = configService.findConfigs(oldProject.getId());
+        
+        int total = configs.size(), count = 0;
+        for(Config config : configs) {
+            int oldConfigId = config.getId();
+            String newKey = config.getKey().replace(oldProjectName, newProjectName);
+            config.setProjectId(newProject.getId());
+            config.setKey(newKey);
+            int newConfigId = configService.createConfig(config);
+            
+            List<ConfigInstance> instances = configService.findInstancesByConfig(oldConfigId, null);
+            for(ConfigInstance instance : instances) {
+                instance.setConfigId(newConfigId);
+                configService.createInstance(instance);
+            }
+            count++;
+        }
+        return "Moved " + count + "/" + total + " configs";
     }
     
     public String createProject(String project, String product, String owner) {
