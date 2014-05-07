@@ -487,11 +487,25 @@ public class ConfigServiceImpl implements ConfigService {
         return config;
 	}
 
+	public List<Config> findConfigByPrefix(String prefix) {
+	    return configDao.findConfigByPrefix(prefix);
+	}
+	
 	@Override
 	public List<Config> findConfigByKeys(List<String> keys) {
 		return configDao.findConfigByKeys(keys);
 	}
+	
+	@Override
+	public List<ConfigInstance> findInstancesByKeys(List<String> keys, int envId, String group) {
+	    return configDao.findInstancesByKeys(keys, envId, group);
+	}
 
+    @Override
+    public List<ConfigInstance> findInstancesByPrefix(String prefix, int envId, String group) {
+        return configDao.findInstancesByPrefix(prefix, envId, group);
+    }
+    
 	@Override
 	public Config getConfig(int configId) {
 	    Config config = cacheClient.get(ServiceConstants.CACHE_CONFIG_PREFIX + configId);
@@ -528,6 +542,11 @@ public class ConfigServiceImpl implements ConfigService {
 	@Override
 	public ConfigInstance findInstance(int configId, int envId, String context) {
 		return configDao.findInstance(configId, envId, context);
+	}
+	
+	@Override
+	public ConfigInstance findInstance(String key, int envId, String context) {
+	    return configDao.findInstance(key, envId, context);
 	}
 
     @Override

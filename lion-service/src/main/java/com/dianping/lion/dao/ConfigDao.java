@@ -152,6 +152,14 @@ public interface ConfigDao {
 	ConfigInstance findInstance(int configId, int envId, String context);
 
 	/**
+	 * 获取指定配置项在指定环境和泳道下的配置实例
+	 * @param key
+	 * @param envId
+	 * @param context 配置所在泳道
+	 */
+	ConfigInstance findInstance(String key, int envId, String context);
+
+	/**
 	 * 创建配置实例
 	 * @param instance
 	 * @return
@@ -215,5 +223,11 @@ public interface ConfigDao {
 	List<Integer> getProjectHasReferencedConfigs(int projectId);
 
 	List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId);
+
+    List<Config> findConfigByPrefix(String prefix);
+
+    List<ConfigInstance> findInstancesByKeys(List<String> keys, int envId, String group);
+
+    List<ConfigInstance> findInstancesByPrefix(String prefix, int envId, String group);
 
 }

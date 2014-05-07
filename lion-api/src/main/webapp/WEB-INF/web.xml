@@ -75,6 +75,10 @@
         <servlet-name>ProjectServlet</servlet-name>
         <servlet-class>com.dianping.lion.api.http.ProjectServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ConfigServlet</servlet-name>
+        <servlet-class>com.dianping.lion.api.http.ConfigServlet</servlet-class>
+    </servlet>
 
 	<servlet-mapping>
 		<servlet-name>SetConfigServlet</servlet-name>
@@ -111,6 +115,10 @@
     <servlet-mapping>
         <servlet-name>ProjectServlet</servlet-name>
         <url-pattern>/project/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ConfigServlet</servlet-name>
+        <url-pattern>/config/*</url-pattern>
     </servlet-mapping>
 
 	<listener>

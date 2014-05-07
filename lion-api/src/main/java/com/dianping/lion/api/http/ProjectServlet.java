@@ -85,7 +85,7 @@ public class ProjectServlet extends AbstractLionServlet {
         int total = configs.size(), count = 0;
         for(Config config : configs) {
             int oldConfigId = config.getId();
-            String newKey = config.getKey().replace(oldProjectName, newProjectName);
+            String newKey = getNewKey(config.getKey(), newProjectName);
             config.setProjectId(newProject.getId());
             config.setKey(newKey);
             int newConfigId = configService.createConfig(config);
@@ -103,6 +103,19 @@ public class ProjectServlet extends AbstractLionServlet {
         return "Moved " + count + "/" + total + " configs";
     }
     
+    private String getNewKey(String key, String newProjectName) {
+        if(key == null) {
+            throw new NullPointerException("Key is null");
+        }
+        
+        int idx = key.indexOf('.');
+        if(idx == -1) {
+            throw new RuntimeException("Invalid key " + key);
+        }
+        
+        return key.replace(key.substring(0, idx), newProjectName);
+    }
+
     public String createProject(String project, String product, String owner) {
         Project prj = projectService.findProject(project);
         if(prj != null) {

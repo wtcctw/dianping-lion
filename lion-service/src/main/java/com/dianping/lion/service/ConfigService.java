@@ -107,6 +107,15 @@ public interface ConfigService {
 	List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv);
 
 	/**
+	 * 获取指定key列表在指定环境下的配置值
+	 * @param keyList
+	 * @param envId
+	 * @param group
+	 * @return
+	 */
+	List<ConfigInstance> findInstancesByKeys(List<String> keyList, int envId, String group);
+
+	/**
 	 * @param key
 	 */
 	Config findConfigByKey(String key);
@@ -114,6 +123,8 @@ public interface ConfigService {
 	List<Config> findConfigByKeys(List<String> keys);
 
 	List<Config> findConfigs(int projectId);
+	
+	List<Config> findConfigByPrefix(String prefix);
 
 	/**
 	 * @param configId
@@ -222,5 +233,9 @@ public interface ConfigService {
 	Paginater<Config> paginateConfigs(ConfigCriteria criteria, Paginater<Config> paginater);
 
 	List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId);
+
+    ConfigInstance findInstance(String key, int envId, String group);
+
+    List<ConfigInstance> findInstancesByPrefix(String prefix, int envId, String group);
 
 }

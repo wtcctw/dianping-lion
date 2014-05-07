@@ -54,6 +54,10 @@
 		SELECT * FROM config WHERE projectId = #projectId# ORDER BY seq, id
     </select>
 
+	<select id="findConfigsByPrefix" resultMap="ConfigResult" parameterClass="string">
+		SELECT * FROM config WHERE `key` LIKE #prefix# ORDER BY seq, id
+    </select>
+
     <select id="findInstancesByProjectAndEnv" resultMap="ConfigInstanceResult" parameterClass="map">
 		SELECT i.*
 		FROM config c inner join config_instance i on c.id = i.configId
@@ -65,6 +69,14 @@
     	SELECT *
     	FROM config_instance
     	WHERE configId = #configId#
+    	<isNotNull property="envId"> AND envId = #envId#</isNotNull>
+    	<isNotNull property="contextmd5"> AND contextmd5 = #contextmd5#</isNotNull>
+    </select>
+
+    <select id="findInstanceByKey" resultMap="ConfigInstanceResult" parameterClass="map">
+    	SELECT *
+    	FROM config_instance
+    	WHERE configId = (SELECT id FROM config WHERE `key` = #key#)
     	<isNotNull property="envId"> AND envId = #envId#</isNotNull>
     	<isNotNull property="contextmd5"> AND contextmd5 = #contextmd5#</isNotNull>
     </select>
@@ -110,6 +122,23 @@
 
     <select id="findConfigByKeys" resultMap="ConfigResult" parameterClass="list">
     	SELECT * FROM config WHERE `key` IN <iterate open="(" close=")" conjunction=",">#[]#</iterate>
+    </select>
+
+    <select id="findInstancesByKeys" resultMap="ConfigInstanceResult" parameterClass="map">
+    	SELECT c.`key` refkey, ci.`id`, ci.`configId`, ci.`envId`, ci.`value`, ci.`context`, ci.`contextmd5`, 
+            ci.`createUserId`, ci.`modifyUserId`, ci.`createTime`, ci.`modifyTime`, ci.`desc`, ci.`seq`
+        FROM `config_instance` ci 
+        JOIN `config` c ON ci.`configId` = c.`id` 
+        WHERE ci.`envId` = #envId# AND ci.`contextmd5` = #contextmd5# 
+            AND c.`key` IN <iterate property="keyList" open="(" close=")" conjunction=",">#keyList[]#</iterate>
+    </select>
+
+    <select id="findInstancesByPrefix" resultMap="ConfigInstanceResult" parameterClass="map">
+    	SELECT c.`key` refkey, ci.`id`, ci.`configId`, ci.`envId`, ci.`value`, ci.`context`, ci.`contextmd5`, 
+            ci.`createUserId`, ci.`modifyUserId`, ci.`createTime`, ci.`modifyTime`, ci.`desc`, ci.`seq`
+        FROM `config_instance` ci 
+        JOIN `config` c ON ci.`configId` = c.`id` 
+        WHERE ci.`envId` = #envId# AND ci.`contextmd5` = #contextmd5# AND c.`key` LIKE #prefix#
     </select>
 
     <select id="getNextConfig" resultMap="ConfigResult" parameterClass="int">

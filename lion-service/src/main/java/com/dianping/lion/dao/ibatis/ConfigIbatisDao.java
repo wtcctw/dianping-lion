@@ -250,4 +250,30 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return getSqlMapClientTemplate().queryForList("Config.getProjectHasReferencedConfigs", Maps.entry("projectId", projectId).get());
 	}
 
+    @Override
+    public List<Config> findConfigByPrefix(String prefix) {
+        return getSqlMapClientTemplate().queryForList("Config.findConfigsByPrefix", prefix+"%");
+    }
+
+    @Override
+    public ConfigInstance findInstance(String key, int envId, String context) {
+        return (ConfigInstance) getSqlMapClientTemplate().queryForObject("Config.findInstanceByKey", Maps.entry("key", key)
+                .entry("envId", envId).entry("contextmd5", DigestUtils.md5Hex(context)).get());
+    }
+
+    @Override
+    public List<ConfigInstance> findInstancesByKeys(List<String> keyList, int envId, String group) {
+        if (keyList == null || keyList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getSqlMapClientTemplate().queryForList("Config.findInstancesByKeys", Maps.entry("keyList", keyList)
+                .entry("envId", envId).entry("contextmd5", DigestUtils.md5Hex(group)).get());
+    }
+
+    @Override
+    public List<ConfigInstance> findInstancesByPrefix(String prefix, int envId, String group) {
+        return getSqlMapClientTemplate().queryForList("Config.findInstancesByPrefix", Maps.entry("prefix", prefix+"%")
+                .entry("envId", envId).entry("contextmd5", DigestUtils.md5Hex(group)).get());
+    }
+
 }
