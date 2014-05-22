@@ -29,6 +29,7 @@ public class Constants {
 	public static final String PATH_SEPARATOR = "/";
 	public static final String KEY_SWIMLANE = "swimlane";
 	public static final String ENVIRONMENT_FILE = "/data/webapps/appenv";
+	public static final String PROPERTIES_FILE = "config/applicationContext.properties";
 
 	public static Set<String> avatarBizKeySet = new HashSet<String>();
 

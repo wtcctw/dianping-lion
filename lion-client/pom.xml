@@ -5,12 +5,16 @@
     <parent>
 		<artifactId>lion-all</artifactId>
 		<groupId>com.dianping.lion</groupId>
-		<version>0.3.7-SNAPSHOT</version>
+		<version>0.3.8</version>
 	</parent>
 
 	<artifactId>lion-client</artifactId>
 
 	<name>lion-client</name>
+
+    <properties>
+        <env>dev</env>
+    </properties>
 
 	<dependencies>
 		<dependency>
@@ -21,6 +25,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>com.dianping.lion</groupId>
+            <artifactId>lion-${env}</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.jodd</groupId>
             <artifactId>jodd-bean</artifactId>

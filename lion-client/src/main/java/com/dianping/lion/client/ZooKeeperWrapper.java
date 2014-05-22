@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -61,11 +62,23 @@ public class ZooKeeperWrapper implements Watcher {
     }
 
     private void init(ZooKeeper zk) throws IOException, KeeperException, InterruptedException {
-        if (zk == this.zk) {
-            this.zk = new ZooKeeper(addresses, timeout, this);
-            for (Entry<String, Watcher> entry : watcherMap.entrySet()) {
-                this.zk.getData(entry.getKey(), entry.getValue(), null);
+        if(zk != this.zk) 
+            return;
+        
+        Random random = new Random();
+        Thread.sleep(random.nextInt(2000));
+        while(true) {
+            try {
+                this.zk = new ZooKeeper(addresses, timeout, this);
+                break;
+            } catch(IOException e) {
+                logger.error("failed to connect to zookeeper " + this.addresses, e);
+                Thread.sleep(5000);
             }
+        }
+        
+        for (Entry<String, Watcher> entry : watcherMap.entrySet()) {
+            this.zk.getData(entry.getKey(), entry.getValue(), null);
         }
     }
 

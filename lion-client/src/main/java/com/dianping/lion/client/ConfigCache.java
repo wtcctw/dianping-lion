@@ -19,7 +19,6 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
-import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
@@ -27,6 +26,7 @@ import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 import com.dianping.lion.Constants;
+import com.dianping.lion.EnvZooKeeperConfig;
 import com.dianping.lion.Utils;
 
 /**
@@ -52,6 +52,7 @@ public class ConfigCache {
 	private static Map<String, Long> timestampMap = new ConcurrentHashMap<String, Long>();
 
 	private ZooKeeperWrapper zk;
+	private volatile boolean localMode = false;
 
 	private ConfigDataWatcher configDataWatcher = new ConfigDataWatcher();
 
@@ -151,17 +152,28 @@ public class ConfigCache {
 
 	private void init() throws Exception {
 		if (!this.isInit) {
-			this.zk = new ZooKeeperWrapper(this.address, this.timeout, null);
-			
-			initZookeeper(zk);
+		    try {
+		        this.zk = new ZooKeeperWrapper(this.address, this.timeout, null);
+		        initZookeeper(zk);
+		    } catch(IOException e) {
+		        logger.error("failed to connect to zookeeper " + this.address, e);
+		        if(EnvZooKeeperConfig.getEnv().equals("dev") || 
+		                EnvZooKeeperConfig.getEnv().equals("alpha")) {
+		            localMode = true;
+		        } else {
+		            throw e;
+		        }
+		    }
 			
 			loadAppenv();
 			
 			registerSignalHandler();
 			
-			Thread t = new Thread(new CheckConfig());
-			t.setDaemon(true);
-			t.start();
+			if(!localMode) {
+    			Thread t = new Thread(new CheckConfig());
+    			t.setDaemon(true);
+    			t.start();
+			}
 			
 			this.isInit = true;
 		}
@@ -174,6 +186,25 @@ public class ConfigCache {
 		if (this.zk.exists(Constants.CONFIG_PATH, false) == null) {
 			this.zk.create(Constants.CONFIG_PATH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		}
+	}
+	
+	public void loadProperties(String propertiesFile) throws IOException {
+	    localProps = new Properties();
+	    InputStream in = null;
+	    try {
+	        in = new FileInputStream(propertiesFile);
+	        localProps.load(in);
+	    } catch(IOException e) {
+	        logger.error("failed to load properties file " + propertiesFile);
+	        throw e;
+	    } finally {
+	        if(in != null) {
+	            try {
+                    in.close();
+                } catch (IOException e) {
+                }
+	        }
+	    }
 	}
 	
 	private void loadAppenv() throws IOException {
@@ -192,7 +223,7 @@ public class ConfigCache {
 	}
 	
 	private void registerSignalHandler() {
-		Signal.handle(new Signal("INT"), new SignalHandler() {
+		Signal.handle(new Signal("USR1"), new SignalHandler() {
 
 			@Override
 			public void handle(Signal arg0) {
@@ -230,13 +261,13 @@ public class ConfigCache {
 			if (v != null && !v.startsWith("${") && !v.endsWith("}")) {
 				return v;
 			}
-			if (v != null && v.startsWith("${") && v.endsWith("}")) {
+			if (v != null && v.startsWith("${") && v.endsWith("}") && !localMode) {
 				v = v.substring(2);
 				v = v.substring(0, v.length() - 1);
 				return getZkValue(v);
 			}
 		}
-		if (v == null) {
+		if (v == null && !localMode) {
 			v = getZkValue(key);
 		}
 		return v;
