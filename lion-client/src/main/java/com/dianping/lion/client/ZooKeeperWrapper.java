@@ -70,6 +70,7 @@ public class ZooKeeperWrapper implements Watcher {
         while(true) {
             try {
                 this.zk = new ZooKeeper(addresses, timeout, this);
+                waitUntilConnected();
                 break;
             } catch(IOException e) {
                 logger.error("failed to connect to zookeeper " + this.addresses, e);
