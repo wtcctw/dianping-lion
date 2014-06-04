@@ -20,6 +20,11 @@
 	</properties>
 
 	<dependencies>
+        <dependency>
+            <artifactId>xwork-core</artifactId>
+            <groupId>org.apache.struts.xwork</groupId>
+            <version>2.3.16.2.1</version>
+        </dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
