@@ -8,6 +8,8 @@ public interface TeamDao {
     
 	List<Team> findAll();
 	
+	Team findTeam(String name);
+	
 	Team findTeamByID(int id);
 	
 	int create(Team team);

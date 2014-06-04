@@ -39,6 +39,15 @@
 		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
 
+    <servlet>  
+        <servlet-name>rest</servlet-name>  
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>  
+        <init-param>  
+            <param-name>contextConfigLocation</param-name>  
+            <param-value>classpath:config/spring/rest.xml</param-value>  
+        </init-param>  
+        <load-on-startup>1</load-on-startup>  
+    </servlet>  
 	<servlet>
 		<servlet-name>SetConfigServlet</servlet-name>
 		<servlet-class>com.dianping.lion.api.http.SetConfigServlet</servlet-class>
@@ -80,6 +89,10 @@
         <servlet-class>com.dianping.lion.api.http.ConfigServlet</servlet-class>
     </servlet>
 
+    <servlet-mapping>  
+        <servlet-name>rest</servlet-name>  
+        <url-pattern>/*</url-pattern>  
+    </servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>SetConfigServlet</servlet-name>
 		<url-pattern>/setconfig</url-pattern>
@@ -120,7 +133,7 @@
         <servlet-name>ConfigServlet</servlet-name>
         <url-pattern>/config/*</url-pattern>
     </servlet-mapping>
-
+    
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>

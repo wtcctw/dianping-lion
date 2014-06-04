@@ -45,6 +45,11 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Override
+	public Team findTeam(String name) {
+	    return teamDao.findTeam(name);
+	}
+	
+	@Override
 	public void delete(int id) {
 	    try {
     	    Team team = findTeamByID(id);
