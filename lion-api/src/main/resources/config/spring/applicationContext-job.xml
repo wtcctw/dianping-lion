@@ -2,26 +2,26 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans default-lazy-init="false" default-autowire="byName">
 	
-	<bean id="DataSourceJob" class="com.dianping.lion.db.DataSourceJob">
-		<property name="jobName" value="DataSourceJob"></property>
-		<property name="jobDownTime" value="20"></property>
-	</bean>
+<!-- 	<bean id="DataSourceJob" class="com.dianping.lion.db.DataSourceJob"> -->
+<!-- 		<property name="jobName" value="DataSourceJob"></property> -->
+<!-- 		<property name="jobDownTime" value="20"></property> -->
+<!-- 	</bean> -->
 	
-	<bean id="dataSourceFetchJobTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject" ref="DataSourceJob"/>
-		<property name="targetMethod" value="work"/>
-	</bean>
+<!-- 	<bean id="dataSourceFetchJobTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> -->
+<!-- 		<property name="targetObject" ref="DataSourceJob"/> -->
+<!-- 		<property name="targetMethod" value="work"/> -->
+<!-- 	</bean> -->
 	
-	<bean id="dataSourceFetchCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
-		<property name="jobDetail" ref="dataSourceFetchJobTask" />
-		<property name="cronExpression" value="${lion-api.dsfetcher.cronexpr}" />
-	</bean>
+<!-- 	<bean id="dataSourceFetchCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean"> -->
+<!-- 		<property name="jobDetail" ref="dataSourceFetchJobTask" /> -->
+<!-- 		<property name="cronExpression" value="${lion-api.dsfetcher.cronexpr}" /> -->
+<!-- 	</bean> -->
 	
-	<bean id="startQuertz" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false" autowire="no">
-		<property name="triggers">
-			<list>
-				<ref bean="dataSourceFetchCronTrigger" /> 
-			</list>
-		</property>
-	</bean>
+<!-- 	<bean id="startQuertz" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false" autowire="no"> -->
+<!-- 		<property name="triggers"> -->
+<!-- 			<list> -->
+<!-- 				<ref bean="dataSourceFetchCronTrigger" />  -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
 </beans>

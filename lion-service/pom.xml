@@ -136,17 +136,17 @@
 			<artifactId>mail-remote</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.dianping.dpsf</groupId>
-			<artifactId>dpsf-net</artifactId>
-			<version>1.9.8</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.dianping.lion</groupId>
-					<artifactId>lion-dev</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.dianping.dpsf</groupId> -->
+<!-- 			<artifactId>dpsf-net</artifactId> -->
+<!-- 			<version>1.9.8</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>com.dianping.lion</groupId> -->
+<!-- 					<artifactId>lion-dev</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>
