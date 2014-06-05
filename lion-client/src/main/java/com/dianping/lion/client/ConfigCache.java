@@ -223,26 +223,30 @@ public class ConfigCache {
 	}
 	
 	private void registerSignalHandler() {
-		Signal.handle(new Signal("USR1"), new SignalHandler() {
-
-			@Override
-			public void handle(Signal arg0) {
-				System.out.println("xxxxxxxxxx=====SIGNAL=====xxxxxxxxxx");
-				System.out.println("Environment:");
-				for(Entry entry : appenv.entrySet()) {
-					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
-				}
-				System.out.println("Cached Configurations:");
-				for(Entry<String, StringValue> entry : cache.entrySet()) {
-					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
-				}
-				System.out.println("Local Properties:");
-				for(Entry entry : localProps.entrySet()) {
-					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
-				}
-			}
-			
-		});
+	    try {
+    		Signal.handle(new Signal("USR1"), new SignalHandler() {
+    
+    			@Override
+    			public void handle(Signal arg0) {
+    				System.out.println("xxxxxxxxxx=====SIGNAL=====xxxxxxxxxx");
+    				System.out.println("Environment:");
+    				for(Entry entry : appenv.entrySet()) {
+    					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
+    				}
+    				System.out.println("Cached Configurations:");
+    				for(Entry<String, StringValue> entry : cache.entrySet()) {
+    					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
+    				}
+    				System.out.println("Local Properties:");
+    				for(Entry entry : localProps.entrySet()) {
+    					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
+    				}
+    			}
+    			
+    		});
+	    } catch(IllegalArgumentException e) {
+	        logger.warn("Failed to register signal handler: " + e.getMessage());
+	    }
 	}
 	
 	// FIXME if key is null, should throw NullPointerException
