@@ -9,6 +9,7 @@
 	</parent>
 
 	<artifactId>lion-service</artifactId>
+    <packaging>jar</packaging>
 
 	<name>lion-service</name>
 
