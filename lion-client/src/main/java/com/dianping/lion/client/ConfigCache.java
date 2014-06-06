@@ -224,7 +224,7 @@ public class ConfigCache {
 	
 	private void registerSignalHandler() {
 	    try {
-    		Signal.handle(new Signal("USR1"), new SignalHandler() {
+    		Signal.handle(new Signal("USR2"), new SignalHandler() {
     
     			@Override
     			public void handle(Signal arg0) {
