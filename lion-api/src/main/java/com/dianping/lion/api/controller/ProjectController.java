@@ -87,7 +87,7 @@ public class ProjectController extends BaseController {
         }
         
         Product prd = productService.findProduct(product);
-        if(prd != null) {
+        if(prd == null) {
             return Result.createErrorResult(String.format("Product %s does not exist", product));
         }
         
