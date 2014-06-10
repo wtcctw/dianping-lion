@@ -118,6 +118,7 @@ public class ConfigController extends BaseController {
                       @RequestParam(value="env") String env,
                       @RequestParam(value="key", required=false) String key,
                       @RequestParam(value="keys", required=false) String keys,
+                      @RequestParam(value="project", required=false) String project,
                       @RequestParam(value="prefix", required=false) String prefix,
                       @RequestParam(value="group", required=false, defaultValue="") String group) {
         try {
@@ -139,6 +140,13 @@ public class ConfigController extends BaseController {
             result = Result.createSuccessResult(object);
         } else if(StringUtils.isNotBlank(keys)) {
             object = getConfigs(envId, keys, group);
+            result = Result.createSuccessResult(object);
+        } else if(StringUtils.isNotBlank(project)) {
+            Project prj = projectService.findProject(project);
+            if(prj == null) {
+                return Result.createErrorResult(String.format("Project %s does not exist", project));
+            }
+            object = getConfigsByProject(envId, prj.getId(), group);
             result = Result.createSuccessResult(object);
         } else if(StringUtils.isNotBlank(prefix)) {
             if(prefix==null || prefix.length() < 5) {
@@ -162,6 +170,16 @@ public class ConfigController extends BaseController {
     private Map<String, String> getConfigs(int envId, String keys, String group) {
         List<String> keyList = convertToList(keys);
         List<ConfigInstance> ciList = configService.findInstancesByKeys(keyList, envId, group);
+        
+        Map<String, String> keyValue = new HashMap<String, String>();
+        for(ConfigInstance ci : ciList) {
+            keyValue.put(ci.getRefkey(), ci.getValue());
+        }
+        return keyValue;
+    }
+
+    private Map<String, String> getConfigsByProject(int envId, int projectId, String group) {
+        List<ConfigInstance> ciList = configService.findInstancesByProject(projectId, envId, group);
         
         Map<String, String> keyValue = new HashMap<String, String>();
         for(ConfigInstance ci : ciList) {

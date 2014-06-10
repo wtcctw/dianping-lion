@@ -275,5 +275,11 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
         return getSqlMapClientTemplate().queryForList("Config.findInstancesByPrefix", Maps.entry("prefix", prefix+"%")
                 .entry("envId", envId).entry("contextmd5", DigestUtils.md5Hex(group)).get());
     }
+    
+    @Override
+    public List<ConfigInstance> findInstancesByProject(int projectId, int envId, String group) {
+        return getSqlMapClientTemplate().queryForList("Config.findInstancesByProject", Maps.entry("projectId", projectId)
+                .entry("envId", envId).entry("contextmd5", DigestUtils.md5Hex(group)).get());
+    }
 
 }

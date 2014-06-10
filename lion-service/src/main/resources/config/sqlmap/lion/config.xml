@@ -140,6 +140,14 @@
         JOIN `config` c ON ci.`configId` = c.`id` 
         WHERE ci.`envId` = #envId# AND ci.`contextmd5` = #contextmd5# AND c.`key` LIKE #prefix#
     </select>
+    
+    <select id="findInstancesByProject" resultMap="ConfigInstanceResult" parameterClass="map">
+        SELECT c.`key` refkey, ci.`id`, ci.`configId`, ci.`envId`, ci.`value`, ci.`context`, ci.`contextmd5`, 
+            ci.`createUserId`, ci.`modifyUserId`, ci.`createTime`, ci.`modifyTime`, ci.`desc`, ci.`seq`
+        FROM `config_instance` ci 
+        JOIN `config` c ON ci.`configId` = c.`id` 
+        WHERE ci.`envId` = #envId# AND ci.`contextmd5` = #contextmd5# AND c.`projectId` = #projectId#
+    </select>
 
     <select id="getNextConfig" resultMap="ConfigResult" parameterClass="int">
     	SELECT c2.*

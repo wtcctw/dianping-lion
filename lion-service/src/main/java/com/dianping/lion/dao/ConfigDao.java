@@ -230,4 +230,6 @@ public interface ConfigDao {
 
     List<ConfigInstance> findInstancesByPrefix(String prefix, int envId, String group);
 
+    List<ConfigInstance> findInstancesByProject(int projectId, int envId, String group);
+
 }

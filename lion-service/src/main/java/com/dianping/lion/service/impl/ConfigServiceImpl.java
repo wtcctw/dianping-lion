@@ -505,6 +505,11 @@ public class ConfigServiceImpl implements ConfigService {
     public List<ConfigInstance> findInstancesByPrefix(String prefix, int envId, String group) {
         return configDao.findInstancesByPrefix(prefix, envId, group);
     }
+
+    @Override
+    public List<ConfigInstance> findInstancesByProject(int projectId, int envId, String group) {
+        return configDao.findInstancesByProject(projectId, envId, group);
+    }
     
 	@Override
 	public Config getConfig(int configId) {
