@@ -38,6 +38,7 @@ import com.dianping.lion.exception.RegisterToZookeeperException;
 import com.dianping.lion.exception.UnregisterFromZookeeperException;
 import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.util.EncodeUtils;
+import com.dianping.lion.util.SecurityUtils;
 
 /**
  * @author danson.liu
@@ -176,6 +177,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 
 	private void set(String path, String value) throws UnsupportedEncodingException, KeeperException, InterruptedException, IOException {
 		if (value != null) {
+		    value = SecurityUtils.tryDecode(value);
 			set(path, value.getBytes(charset));
 		} else {
 			logger.warn("Set null config value to zk[" + StringUtils.substringBefore(this.serverIps, ",") + "] with path[" + path + "].");

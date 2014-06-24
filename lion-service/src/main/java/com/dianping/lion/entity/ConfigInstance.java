@@ -121,7 +121,7 @@ public class ConfigInstance implements Serializable {
 	 * @param value the value to set
 	 */
 	public void setValue(String value) {
-		this.value = SecurityUtils.tryDecode(value);
+		this.value = value;
 	}
 	public boolean isDefault() {
 		return NO_CONTEXT.equals(context);
