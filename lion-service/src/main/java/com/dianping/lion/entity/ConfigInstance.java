@@ -18,6 +18,7 @@ package com.dianping.lion.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.util.StringUtils;
 
 
@@ -120,7 +121,7 @@ public class ConfigInstance implements Serializable {
 	 * @param value the value to set
 	 */
 	public void setValue(String value) {
-		this.value = value;
+		this.value = SecurityUtils.tryDecode(value);
 	}
 	public boolean isDefault() {
 		return NO_CONTEXT.equals(context);
