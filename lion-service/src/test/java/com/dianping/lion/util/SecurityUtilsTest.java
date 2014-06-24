@@ -1,12 +1,10 @@
 package com.dianping.lion.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 public class SecurityUtilsTest {
@@ -23,17 +21,6 @@ public class SecurityUtilsTest {
         assertEquals("dp!@78()-", decoded);
         decoded = SecurityUtils.tryDecode("~{hello}");
         assertEquals("~{hello}", decoded);
-        
-        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-
-        for(;;) {
-            System.out.print("Input password to encode: ");
-            String password = console.readLine();
-            if(password.length() == 0) {
-                return;
-            }
-            System.out.println(SecurityUtils.tryDecode(password));
-        }
     }
 
 }
