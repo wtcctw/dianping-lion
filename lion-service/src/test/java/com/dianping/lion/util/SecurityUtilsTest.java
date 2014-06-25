@@ -17,8 +17,8 @@ public class SecurityUtilsTest {
         assertEquals("", decoded);
         decoded = SecurityUtils.tryDecode("hello");
         assertEquals("hello", decoded);
-        decoded = SecurityUtils.tryDecode("~{74d693d085f3b3507b568141ffb0d0d1d0d0d0c4bca7ba816}");
-        assertEquals("dp!@78()-", decoded);
+        decoded = SecurityUtils.tryDecode("~{d3b4f5e2a4b3c1a0622267e0b011b61150b0b0a5f913267ad}");
+        assertEquals("dp!@78()-=", decoded);
         decoded = SecurityUtils.tryDecode("~{hello}");
         assertEquals("~{hello}", decoded);
     }

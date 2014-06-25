@@ -17,7 +17,6 @@ package com.dianping.lion.util;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.BitSet;
 
 import org.apache.log4j.Logger;
 
@@ -30,7 +29,7 @@ import com.dianping.lion.entity.User;
 public class SecurityUtils {
 
     private static Logger logger = Logger.getLogger(SecurityUtils.class);
-    
+
     private static ThreadLocal<User> currentUser = new InheritableThreadLocal<User>();
 
     public static User getCurrentUser() {
@@ -51,30 +50,6 @@ public class SecurityUtils {
         currentUser.remove();
     }
 
-    private static String decode(String src) {
-        int len = src.length();
-        ByteBuffer bb = ByteBuffer.allocate((len - 3) / 2);
-        int p = Character.digit(src.charAt(0), 16);
-        int q = Character.digit(src.charAt(1), 16);
-        int k = Character.digit(src.charAt(2), 16);
-
-        for (int i = 3; i < len; i += 2) {
-            byte high = (byte) (Character.digit(src.charAt(i), 16) & 0xFF);
-            byte low = (byte) (Character.digit(src.charAt(i + 1), 16) & 0xFF);
-
-            bb.put((byte) (high << 4 | low));
-        }
-
-        byte[] data = (byte[]) bb.flip().array();
-        byte[] result = massage(data, p, q, k);
-
-        try {
-            return new String(result, 0, result.length - 13, "utf-8");
-        } catch (IOException e) {
-            return new String(result, 0, result.length - 13);
-        }
-    }
-
     public static String tryDecode(String value) {
         if (value != null && value.startsWith("~{") && value.endsWith("}")) {
             try {
@@ -86,67 +61,55 @@ public class SecurityUtils {
         return value;
     }
 
-    private static byte[] massage(byte[] data, int p, int q, int k) {
+    private static void mask(byte[] data, int k) {
         for (int i = data.length - 1; i >= 0; i--) {
             data[i] ^= k;
         }
+    }
 
-        BitSet bs = toBitSet(data);
-        int len = bs.size();
+    private static void swap(byte[] data, int p, int q) {
+        int len = data.length * 8;
 
         for (int i = 0; i < len; i += p) {
             int j = i + q;
 
             if (j < len) {
-                boolean flag = bs.get(i);
+                byte b1 = data[i / 8];
+                byte b2 = data[j / 8];
+                int f1 = b1 & (1 << (i % 8));
+                int f2 = b2 & (1 << (j % 8));
 
-                bs.set(i, bs.get(j));
-                bs.set(j, flag);
-            }
-        }
-
-        byte[] ba = toByteArray(bs);
-
-        return ba;
-    }
-
-    private static BitSet toBitSet(byte[] data) {
-        int len = data.length;
-        BitSet bs = new BitSet(len * 8);
-
-        for (int i = 0; i < len; i++) {
-            byte b = data[i];
-
-            for (int j = 0; j < 8; j++) {
-                bs.set(i * 8 + j, (b & 0x01) != 0);
-
-                b >>= 1;
-            }
-        }
-
-        return bs;
-    }
-
-    private static byte[] toByteArray(BitSet bs) {
-        int len = bs.length() / 8;
-        byte[] data = new byte[len];
-
-        for (int i = 0; i < len; i++) {
-            byte b = 0;
-
-            for (int j = 7; j >= 0; j--) {
-                b <<= 1;
-
-                if (bs.get(i * 8 + j)) {
-                    b++;
+                if ((f1 != 0) != (f2 != 0)) {
+                    data[i / 8] ^= 1 << (i % 8);
+                    data[j / 8] ^= 1 << (j % 8);
                 }
             }
+        }
+    }
 
-            data[i] = b;
+    private static String decode(String src) {
+        int len = src.length();
+        ByteBuffer bb = ByteBuffer.allocate((len - 3) / 2);
+        int p = Character.digit(src.charAt(0), 16) & 0x07;
+        int q = Character.digit(src.charAt(1), 16);
+        int k = Character.digit(src.charAt(2), 16);
+
+        for (int i = 3; i < len; i += 2) {
+            byte high = (byte) (Character.digit(src.charAt(i), 16) & 0xFF);
+            byte low = (byte) (Character.digit(src.charAt(i + 1), 16) & 0xFF);
+
+            bb.put((byte) (high << 4 | low));
         }
 
-        return data;
+        byte[] data = (byte[]) bb.flip().array();
+
+        mask(data, k);
+        swap(data, p, q);
+
+        try {
+            return new String(data, 0, data.length - 13, "utf-8");
+        } catch (IOException e) {
+            return new String(data, 0, data.length - 13);
+        }
     }
-    
-    
 }
