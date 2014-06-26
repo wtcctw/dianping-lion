@@ -23,6 +23,7 @@ import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.ProjectService;
+import com.dianping.lion.util.SecurityUtils;
 
 @Controller
 @RequestMapping("/config2")
@@ -164,7 +165,7 @@ public class ConfigController extends BaseController {
     
     private String getConfig(int envId, String key, String group) {
         ConfigInstance ci = configService.findInstance(key, envId, group);
-        return ci.getValue();
+        return SecurityUtils.tryDecode(ci.getValue());
     }
     
     private Map<String, String> getConfigs(int envId, String keys, String group) {
@@ -173,7 +174,7 @@ public class ConfigController extends BaseController {
         
         Map<String, String> keyValue = new HashMap<String, String>();
         for(ConfigInstance ci : ciList) {
-            keyValue.put(ci.getRefkey(), ci.getValue());
+            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(ci.getValue()));
         }
         return keyValue;
     }
@@ -183,7 +184,7 @@ public class ConfigController extends BaseController {
         
         Map<String, String> keyValue = new HashMap<String, String>();
         for(ConfigInstance ci : ciList) {
-            keyValue.put(ci.getRefkey(), ci.getValue());
+            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(ci.getValue()));
         }
         return keyValue;
     }
@@ -193,7 +194,7 @@ public class ConfigController extends BaseController {
         
         Map<String, String> keyValue = new HashMap<String, String>();
         for(ConfigInstance ci : ciList) {
-            keyValue.put(ci.getRefkey(), ci.getValue());
+            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(ci.getValue()));
         }
         return keyValue;
     }

@@ -7,7 +7,7 @@
 	<parent>
 		<artifactId>lion-all</artifactId>
 		<groupId>com.dianping.lion</groupId>
-		<version>0.4.1</version>
+		<version>0.4.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>lion-console</artifactId>
@@ -15,9 +15,9 @@
 
 	<name>lion-console</name>
 
-	<properties>
-		<env>dev</env>
-	</properties>
+    <properties>
+        <env>dev</env>
+    </properties>
 
 	<dependencies>
         <dependency>
@@ -81,28 +81,18 @@
 			<artifactId>gson</artifactId>
 			<version>1.6</version>
 		</dependency>
+        <dependency>
+             <groupId>com.dianping.cat</groupId>
+             <artifactId>cat-client</artifactId>   
+        </dependency>
 		<dependency>
 			<groupId>com.dianping.lion</groupId>
 			<artifactId>lion-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.dianping.lion</groupId>
-			<artifactId>lion-${env}</artifactId>
-			<version>1.0.0</version>
-		</dependency>
 	</dependencies>
 
 	<build>
 		<finalName>lion-console-${env}-${version}</finalName>
-		<filters>
-			<filter>src/main/filters/config-${env}.properties</filter>
-		</filters>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
 	</build>
 </project>

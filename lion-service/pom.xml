@@ -5,17 +5,13 @@
 	<parent>
 		<artifactId>lion-all</artifactId>
 		<groupId>com.dianping.lion</groupId>
-		<version>0.4.1</version>
+		<version>0.4.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>lion-service</artifactId>
     <packaging>jar</packaging>
 
 	<name>lion-service</name>
-
-    <properties>
-        <env>dev</env>
-    </properties>
 
     <build>
         <plugins>
@@ -37,12 +33,6 @@
 			<artifactId>lion-client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>com.dianping.lion</groupId>
-            <artifactId>lion-${env}</artifactId>
-            <version>1.0.0</version>
-			<scope>provided</scope>
-        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
@@ -137,17 +127,6 @@
 			<artifactId>mail-remote</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.dianping.dpsf</groupId> -->
-<!-- 			<artifactId>dpsf-net</artifactId> -->
-<!-- 			<version>1.9.8</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>com.dianping.lion</groupId> -->
-<!-- 					<artifactId>lion-dev</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-framework</artifactId>

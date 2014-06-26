@@ -17,6 +17,7 @@ import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.User;
+import com.dianping.lion.util.SecurityUtils;
 
 public class ConfigServlet extends AbstractLionServlet {
 
@@ -84,7 +85,7 @@ public class ConfigServlet extends AbstractLionServlet {
         
         Map<String, String> keyValue = new HashMap<String, String>();
         for(ConfigInstance ci : ciList) {
-            keyValue.put(ci.getRefkey(), ci.getValue());
+            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(ci.getValue()));
         }
         return new JSONObject(keyValue).toString();
     }
@@ -98,7 +99,7 @@ public class ConfigServlet extends AbstractLionServlet {
         
         Map<String, String> keyValue = new HashMap<String, String>();
         for(ConfigInstance ci : ciList) {
-            keyValue.put(ci.getRefkey(), ci.getValue());
+            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(ci.getValue()));
         }
         return new JSONObject(keyValue).toString();
     }
@@ -121,7 +122,7 @@ public class ConfigServlet extends AbstractLionServlet {
         int envId = getEnvId(env);
         verifyIdentity(envId, id);
         ConfigInstance ci = configService.findInstance(key, envId, group);
-        return ci.getValue();
+        return SecurityUtils.tryDecode(ci.getValue());
     }
 
     private String getKeyList(String prefix) {

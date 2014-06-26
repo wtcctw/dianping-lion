@@ -27,6 +27,7 @@ import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.util.IPUtils;
+import com.dianping.lion.util.SecurityUtils;
 
 
 /**
@@ -57,6 +58,7 @@ public class GetConfigServlet extends AbstractLionServlet {
         Config config = configService.findConfigByKey(key);
         if (config != null) {
             String configVal = configService.getConfigValue(config.getId(), environment.getId(), group);
+            configVal = SecurityUtils.tryDecode(configVal);
             if (configVal != null) {
                 writer.print(configVal);
                 return;
