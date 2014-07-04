@@ -289,7 +289,6 @@ public class ConfigServiceImpl implements ConfigService {
 		if (instance.getModifyUserId() == null) {
 			instance.setModifyUserId(currentUserId);
 		}
-		processInstanceIfReferenceType(instance);
 		int retryTimes = 0;
 		while (true) {
 			try {
@@ -301,13 +300,14 @@ public class ConfigServiceImpl implements ConfigService {
                 List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
 
 				//确保注册操作是在最后一步
+                processInstanceIfReferenceType(instance);
 				if (setType == ConfigSetType.RegisterAndPush) {
 					registerAndPush(instance);
 				} else if (setType == ConfigSetType.Register) {
 				    register(instance);
 				}
 
-                updateReferencedInstances(config, refInstances, setType);
+                updateReferencedInstances(config, instance, refInstances, setType);
 
 				return instId;
 			} catch (RuntimeException e) {
@@ -325,17 +325,27 @@ public class ConfigServiceImpl implements ConfigService {
 
 	private void processInstanceIfReferenceType(ConfigInstance instance) {
 		String configval = instance.getValue();
-		if (configval != null && configval.contains(ServiceConstants.REF_CONFIG_PREFIX)) {
-			Matcher matcher = ServiceConstants.REF_EXPR_PATTERN.matcher(configval);
-			if (matcher.find()) {
-				String refkey = matcher.group(1);
-				instance.setRefkey(refkey);
-				return;
-			}
+		if (isReferenceValue(configval)) {
+		    String key = configval.substring(2, configval.length()-1);
+		    Config config = findConfigByKey(key);
+    		if(config != null) {
+    			ConfigInstance configInst = configDao.findInstance(config.getId(), instance.getEnvId(), ConfigInstance.NO_CONTEXT);
+    			if(configInst != null) {
+    			    if(isReferenceValue(configInst.getValue())) {
+    			        throw new RuntimeException("Indirect reference is not supported, config instance: " + instance.getId());
+    			    }
+    			    instance.setValue(configInst.getValue());
+    			}
+		    }
 		}
-		instance.setRefkey(null);
 	}
 
+	private boolean isReferenceValue(String value) {
+	    return value != null && 
+	           value.startsWith(ServiceConstants.REF_CONFIG_PREFIX) &&
+	           value.endsWith(ServiceConstants.REF_CONFIG_SUFFIX);
+	}
+	
 	@Override
 	public int updateInstance(ConfigInstance instance) {
 		return updateInstance(instance, ConfigSetType.RegisterAndPush);
@@ -343,7 +353,6 @@ public class ConfigServiceImpl implements ConfigService {
 
 	private int updateInstance(ConfigInstance instance, ConfigSetType setType) {
 		instance.setModifyUserId(SecurityUtils.getCurrentUserId());
-		processInstanceIfReferenceType(instance);
 		int instId = configDao.updateInstance(instance);
 		updateConfigModifyStatus(instance.getConfigId(), instance.getEnvId());
 
@@ -351,29 +360,30 @@ public class ConfigServiceImpl implements ConfigService {
 		List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
 
 		//确保注册操作是在最后一步(后续的都需要try-catch掉所有error)
+		processInstanceIfReferenceType(instance);
 		if (setType == ConfigSetType.RegisterAndPush) {
 			registerAndPush(instance);
 		} else if (setType == ConfigSetType.Register) {
 			register(instance);
 		}
 
-		updateReferencedInstances(config, refInstances, setType);
+		updateReferencedInstances(config, instance, refInstances, setType);
 		return instId;
 	}
 
-	private void updateReferencedInstances(Config config, List<ConfigInstance> refInstances, ConfigSetType setType) {
+	private void updateReferencedInstances(Config config, ConfigInstance instance, List<ConfigInstance> refInstances, ConfigSetType setType) {
 		try {
 			for (ConfigInstance refInstance : refInstances) {
-				int envId = refInstance.getEnvId();
+			    refInstance.setValue(instance.getValue());
 				try {
 					if (setType == ConfigSetType.RegisterAndPush) {
-						registerAndPush(refInstance.getConfigId(), envId);
+						registerAndPush(refInstance);
 					} else if (setType == ConfigSetType.Register) {
-						register(refInstance.getConfigId(), envId);
+						register(refInstance);
 					}
 				} catch (RuntimeException e) {
 					Config refconfig = getConfig(refInstance.getConfigId());
-					operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
+					operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), refInstance.getEnvId(),
 							"同步更新关联引用配置项[" + (refconfig != null ? refconfig.getKey() : refInstance.getConfigId()) + "]出错，请重新保存该配置.")
 						.key(config.getKey(), ConfigInstance.NO_CONTEXT));
 				}

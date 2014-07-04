@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -70,20 +72,21 @@ public class ConfigController extends BaseController {
     
     @RequestMapping(value = "/set", method = RequestMethod.GET)
     @ResponseBody
-    public Result set(@RequestParam(value="id") int id, 
+    public Result set(HttpServletRequest request,
+                      @RequestParam(value="id") int id, 
                       @RequestParam(value="env") String env,
                       @RequestParam(value="key") String key,
                       @RequestParam(value="group", required=false, defaultValue="") String group,
                       @RequestParam(value="value") String value) {
-        try {
-            verifyIdentity(id);
-        } catch (SecurityException e) {
-            return Result.createErrorResult(e.getMessage());
-        }
-        
         int envId = getEnvId(env);
         if(envId == -1) {
             return Result.createErrorResult("Invalid environment " + env);
+        }
+
+        try {
+            verifyIdentity(request, envId, id);
+        } catch (SecurityException e) {
+            return Result.createErrorResult(e.getMessage());
         }
         
         Config config = configService.findConfigByKey(key);
@@ -115,22 +118,23 @@ public class ConfigController extends BaseController {
     
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     @ResponseBody
-    public Result get(@RequestParam(value="id") int id, 
+    public Result get(HttpServletRequest request,
+                      @RequestParam(value="id") int id, 
                       @RequestParam(value="env") String env,
                       @RequestParam(value="key", required=false) String key,
                       @RequestParam(value="keys", required=false) String keys,
                       @RequestParam(value="project", required=false) String project,
                       @RequestParam(value="prefix", required=false) String prefix,
                       @RequestParam(value="group", required=false, defaultValue="") String group) {
-        try {
-            verifyIdentity(id);
-        } catch (SecurityException e) {
-            return Result.createErrorResult(e.getMessage());
-        }
-        
         int envId = getEnvId(env);
         if(envId == -1) {
             return Result.createErrorResult("Invalid environment " + env);
+        }
+        
+        try {
+            verifyIdentity(request, envId, id);
+        } catch (SecurityException e) {
+            return Result.createErrorResult(e.getMessage());
         }
 
         Result result = null;

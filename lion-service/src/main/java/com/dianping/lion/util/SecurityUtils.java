@@ -16,9 +16,12 @@
 package com.dianping.lion.util;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.nio.ByteBuffer;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.unidal.helper.Bytes;
 
 import com.dianping.lion.entity.User;
 
@@ -60,7 +63,61 @@ public class SecurityUtils {
         }
         return value;
     }
+    
+    public static String tryEncode(String value) {
+        if (value != null && !(value.startsWith("~{") && value.endsWith("}"))) {
+            try {
+                String code = encode(value);
+                return "~{" + code + "}";
+            } catch (Exception e) {
+                logger.error("failed to encode: " + value + ", " + e);
+            }
+        }
+        return value;
+    }
+    
+    private static String encode(String src) throws Exception {
+        int p = new Random().nextInt(5) + 3;
 
+        return encode(src, p, p / 2 + 1, p * 2 + 1);
+    }
+
+    private static String encode(String src, int p, int q, int k) throws Exception {
+        byte[] data = padding(src);
+
+        Bytes.forBits().swap(data, p, q);
+        Bytes.forBits().mask(data, k);
+
+        return wrapup(data, p, q, k);
+    }
+
+    private static byte[] padding(String str) throws Exception {
+        byte[] data = str.getBytes("utf-8");
+        ByteBuffer bb = ByteBuffer.allocate(data.length + 13);
+
+        bb.put(data);
+        bb.put((byte) 0);
+        bb.put(Inet4Address.getLocalHost().getAddress());
+        bb.putLong(System.currentTimeMillis());
+
+        return (byte[]) bb.flip().array();
+    }
+
+    private static String wrapup(byte[] data, int p, int q, int k) {
+        StringBuilder sb = new StringBuilder(data.length * 2 + 3);
+
+        sb.append(Integer.toHexString(p | 0x08));
+        sb.append(Integer.toHexString(q));
+        sb.append(Integer.toHexString(k));
+
+        for (byte d : data) {
+            sb.append(Integer.toHexString(d >> 4 & 0x0F));
+            sb.append(Integer.toHexString(d & 0x0F));
+        }
+
+        return sb.toString();
+    }
+    
     private static void mask(byte[] data, int k) {
         for (int i = data.length - 1; i >= 0; i--) {
             data[i] ^= k;

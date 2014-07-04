@@ -7,7 +7,7 @@
     <parent>
         <artifactId>lion-all</artifactId>
         <groupId>com.dianping.lion</groupId>
-        <version>0.4.2</version>
+        <version>0.4.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>lion-console</artifactId>
@@ -20,6 +20,21 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.3-1101-jdbc4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>sqljdbc4</artifactId>
+            <version>4.0</version>
+        </dependency>
         <dependency>
             <artifactId>xwork-core</artifactId>
             <groupId>org.apache.struts.xwork</groupId>

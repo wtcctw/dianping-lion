@@ -3,6 +3,8 @@ package com.dianping.lion.api.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,20 +74,21 @@ public class ServiceContoller extends BaseController {
     
     @RequestMapping(value = "/set", method = RequestMethod.GET)
     @ResponseBody
-    public Result set(@RequestParam(value="id") int id,
+    public Result set(HttpServletRequest request,
+                      @RequestParam(value="id") int id,
                       @RequestParam(value="env") String env,
                       @RequestParam(value="service") String service,
                       @RequestParam(value="group", required=false, defaultValue="") String group,
                       @RequestParam(value="address") String address) {
-        try {
-            verifyIdentity(id);
-        } catch (SecurityException e) {
-            return Result.createErrorResult(e.getMessage());
-        }
-        
         int envId = getEnvId(env);
         if(envId == -1) {
             return Result.createErrorResult("Invalid environment " + env);
+        }
+        
+        try {
+            verifyIdentity(request, envId, id);
+        } catch (SecurityException e) {
+            return Result.createErrorResult(e.getMessage());
         }
         
         Service srv = serviceService.getService(envId, service, group);

@@ -10,7 +10,7 @@
     
     <groupId>com.dianping.lion</groupId>
     <artifactId>lion-all</artifactId>
-    <version>0.4.2</version>
+    <version>0.4.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>lion-all</name>

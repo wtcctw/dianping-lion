@@ -283,7 +283,7 @@
     </select>
 
     <select id="getInstanceReferencedTo" parameterClass="map" resultMap="ConfigInstanceResult">
-    	SELECT * FROM config_instance WHERE refkey = #configKey# AND envId = #envId#
+    	SELECT * FROM config_instance WHERE value = #configKey# AND envId = #envId#
     </select>
 
     <select id="getProjectHasReferencedConfigs" parameterClass="map" resultClass="int">

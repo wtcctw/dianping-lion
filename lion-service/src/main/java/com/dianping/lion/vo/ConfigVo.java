@@ -145,4 +145,10 @@ public class ConfigVo implements Serializable {
 		this.hasReference = hasReference;
 	}
     
+	public boolean isJdbcUrl() {
+	    if(config != null) {
+	        return config.getKey().endsWith(".jdbc.url");
+	    }
+	    return false;
+	}
 }

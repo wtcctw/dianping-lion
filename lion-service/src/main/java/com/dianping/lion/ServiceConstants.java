@@ -45,7 +45,8 @@ public interface ServiceConstants {
 	int ROLE_QA_ID = 4;
 	int ROLE_DEV_ID = 5;
 	
-	String REF_CONFIG_PREFIX = "$ref{";
+	String REF_CONFIG_PREFIX = "${";
+	String REF_CONFIG_SUFFIX = "}";
 	Pattern REF_EXPR_PATTERN = Pattern.compile("\\$ref\\{([^\\?]+?)(\\?(.*?))?\\}");
 	
 	String PROJECT_OWNER = "owner";

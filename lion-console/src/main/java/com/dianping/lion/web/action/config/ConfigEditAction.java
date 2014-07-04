@@ -15,6 +15,9 @@
  */
 package com.dianping.lion.web.action.config;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -230,6 +233,89 @@ public class ConfigEditAction extends AbstractConfigAction {
 		return SUCCESS;
 	}
 
+    public String testJdbcConnection() {
+        String url = null;
+        Connection conn = null;
+        try {
+            Config config = configService.getConfig(configId);
+            String urlKey = config.getKey();
+            String keyPrefix = urlKey.substring(0, urlKey.lastIndexOf('.'));
+            
+            url = configService.getConfigValue(configId, envId, ConfigInstance.NO_CONTEXT);
+            assertNotNull(url, "JDBC url is null, key: " + config.getKey());
+            // to avoid waiting for a long time before the getConnection(url) returns, append timeout params to the url
+            url = appendTimeoutParams(url);
+            
+            String driverClassKey = keyPrefix + ".driverClassName";
+            config = configService.findConfigByKey(driverClassKey);
+            assertNotNull(config, "No config for key: " + driverClassKey);
+            String driverClassName = configService.getConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+            if(driverClassName == null) {
+                // infer driver class from url
+                driverClassName = getDriverFromUrl(url);
+                assertNotNull(driverClassName, "JDBC driver class name is null, url: " + url);
+            }
+
+            Class.forName(driverClassName);
+            
+            String usernameKey = keyPrefix + ".username";
+            config = configService.findConfigByKey(usernameKey);
+            assertNotNull(config, "No config for key: " + usernameKey);
+            String username = configService.getConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+            assertNotNull(username, "JDBC user name is null, key: " + usernameKey);
+            
+            String passwordKey = keyPrefix + ".password";
+            config = configService.findConfigByKey(passwordKey);
+            assertNotNull(config, "No config for key: " + passwordKey);
+            String password = configService.getConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+            password = SecurityUtils.tryDecode(password);
+            assertNotNull(password, "JDBC password is null, key: " + passwordKey);
+            
+            conn = DriverManager.getConnection(url, username, password);
+            createStreamResponse(0, "Connected to: " + url + "\n\tusername: " + username + "\n\tpassword: " + password);
+        } catch (Exception ex) {
+            createStreamResponse(-1, "Failed to connect to: " + url + ", " + ex.getMessage());
+        } finally {
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
+        return SUCCESS;
+    }
+	
+    private void assertNotNull(Object value, String message) {
+        if(value == null) {
+            throw new RuntimeException(message);
+        }
+    }
+    
+    private String appendTimeoutParams(String url) {
+        if(url.indexOf("jdbc:mysql:") != -1) {
+            return url.indexOf('?') == -1 ? url + "?connectTimeout=5000" : url + "&connectTimeout=5000";
+        } else if(url.indexOf("jdbc:postgresql:") != -1) {
+            return url.indexOf('?') == -1 ? url + "?loginTimeout=5" : url + "&loginTimeout=5";
+        } else if(url.indexOf("jdbc:sqlserver:") != -1) {
+            return url + ";loginTimeout=5";
+        }
+        // unsupported database schema
+        return url;
+    }
+    
+    private String getDriverFromUrl(String url) {
+        if(url.indexOf("jdbc:mysql:") != -1) {
+            return "com.mysql.jdbc.Driver";
+        } else if(url.indexOf("jdbc:postgresql:") != -1) {
+            return "org.postgresql.Driver";
+        } else if(url.indexOf("jdbc:sqlserver:") != -1) {
+            return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+        }
+        // unsupported database schema
+        return null;
+    }
+    
 	/**
 	 * @return the project
 	 */

@@ -622,6 +622,20 @@ $(function(){
 			return false;
 		});
 
+		$(".test-connection-btn").click(function() {
+			$.ajax("/config/testConnectionAjax.vhtml".prependcontext(), {
+				data : $.param({
+					"configId" : getConfigId($(this)),
+					"envId" : $("#envId").val()
+				}, true),
+				dataType : "json",
+				success : function(result) {
+					$commonAlert.html(result.msg).dialog("open");
+				}
+			});
+			return false;
+		});
+		
 		$(".moveup-config-btn").click(function() {
 			$.ajax("/config/moveUpConfigAjax.vhtml".prependcontext(), {
 				data : $.param({

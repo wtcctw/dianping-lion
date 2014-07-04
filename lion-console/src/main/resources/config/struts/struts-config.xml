@@ -86,6 +86,10 @@
         <action name="getContextListAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="getContextList">
             <result name="success">/WEB-INF/pages/config/context-list-table.ftl</result>
         </action>
+
+        <action name="testConnectionAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="testJdbcConnection">
+            <result name="success" type="stream"/>
+        </action>
 	</package>
 
 </struts>
