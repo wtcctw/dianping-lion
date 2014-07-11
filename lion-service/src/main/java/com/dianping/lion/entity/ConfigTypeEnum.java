@@ -29,12 +29,7 @@ public enum ConfigTypeEnum {
 	String(10, "string"), 
 	Number(20, "number"), 
 	Boolean(30, "boolean"), 
-	List_Str(40, "list<string>"), 
-	List_Num(45, "list<number>"), 
-	Map(50, "map/pojo"),
-	Ref_Shared(60, "ref_shared"), 
-	Ref_DB(70, "ref_db"),
-	Reference(80, "reference");
+	Ref_Shared(60, "reference");
 
     private static volatile List<ConfigTypeEnum> Non_Ref_Types;
 

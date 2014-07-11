@@ -182,7 +182,7 @@ $(function(){
 
 	$("#refshared-editor").on("show", function() {
 		$("[name='ref-config-key']").val("");
-		loadSelectableConfigs(sharedProjectId, 0, $(this));
+		loadSelectableConfigs(dsProjectId, 0, $(this));
 	});
 
 	$("#refdb-editor").on("show", function() {
@@ -327,7 +327,7 @@ $(function(){
             if ($(this).attr("id") == "refdb-ok-btn") {
                 $("#" + backfill).val("$ref{" + configKey + "?i=15&m=5&M=30}");
             } else {
-                $("#" + backfill).val("$ref{" + configKey + "}");
+                $("#" + backfill).val("${" + configKey + "}");
             }
             $modal.modal("hide");
         }
@@ -336,7 +336,7 @@ $(function(){
 
 	$("#refshared-search").click(function() {
 		var $modal = $(this).parents(".modal");
-		loadSelectableConfigs(sharedProjectId, 0, $modal);
+		loadSelectableConfigs(dsProjectId, 0, $modal);
 		return false;
 	});
 
@@ -379,6 +379,12 @@ $(function(){
 		var type = parseInt($(this).val());
 		clearValidateError($("#config-value"));
 		$("#config-value-container").html(generateValueComponent(type, "config-value"));
+	});
+
+	$("#edit-config-type-selector").change(function() {
+		var type = parseInt($(this).val());
+		clearValidateError($("#edit-config-value"));
+		$("#edit-config-value-container").html(generateValueComponent(type, "edit-config-value"));
 	});
 
 	function generateValueComponent(type, inputId) {

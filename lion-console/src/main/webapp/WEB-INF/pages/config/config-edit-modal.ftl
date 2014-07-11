@@ -13,7 +13,7 @@
 			      	<span rel="tooltip" data-original-title="仅用于Value输入值校验">类型:</span>
 			      </label>
 			      <div class="controls lion-controls">
-			        <select id="edit-config-type-selector" disabled="disabled">
+			        <select id="edit-config-type-selector">
 			        	<@s.iterator value="%{@com.dianping.lion.entity.ConfigTypeEnum@values()}">
 			        		<option value="${value}">${label?html}</option>
 			        	</@s.iterator>
