@@ -193,12 +193,14 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	public void deleteInstances(Config config, int envId) {
-		if (hasConfigReferencedTo(config.getKey(), envId)) {
-			throw new ReferencedConfigForbidDeleteException(config.getKey());
-		}
 		configDao.deleteInstances(config.getId(), envId);
 		configDao.deleteStatus(config.getId(), envId);
 		getRegisterService(envId).unregister(config.getKey());
+		List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), envId);
+		for(ConfigInstance refInst : refInstances) {
+		    Config refConfig = getConfig(refInst.getConfigId());
+		    getRegisterService(envId).unregister(refConfig.getKey());
+		}
 	}
 
     public void deleteInstance(int configId, int envId, String group) {
@@ -297,18 +299,22 @@ public class ConfigServiceImpl implements ConfigService {
 				updateConfigModifyStatus(instance.getConfigId(), instance.getEnvId());
 
                 Config config = getConfig(instance.getConfigId());
-                List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
 
 				//确保注册操作是在最后一步
                 processInstanceIfReferenceType(instance);
-				if (setType == ConfigSetType.RegisterAndPush) {
-					registerAndPush(instance);
-				} else if (setType == ConfigSetType.Register) {
-				    register(instance);
-				}
-
-                updateReferencedInstances(config, instance, refInstances, setType);
-
+                if(!isReferenceValue(instance.getValue())) {
+    				if (setType == ConfigSetType.RegisterAndPush) {
+    					registerAndPush(instance);
+    				} else if (setType == ConfigSetType.Register) {
+    				    register(instance);
+    				}
+                }
+                
+                if(StringUtils.isEmpty(instance.getContext())) {
+                    List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
+                    updateReferencedInstances(config, instance, refInstances, setType);
+                }
+                
 				return instId;
 			} catch (RuntimeException e) {
 				if (DBUtils.isDuplicateKeyError(e)) {
@@ -357,17 +363,23 @@ public class ConfigServiceImpl implements ConfigService {
 		updateConfigModifyStatus(instance.getConfigId(), instance.getEnvId());
 
 		Config config = getConfig(instance.getConfigId());
-		List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
 
 		//确保注册操作是在最后一步(后续的都需要try-catch掉所有error)
 		processInstanceIfReferenceType(instance);
-		if (setType == ConfigSetType.RegisterAndPush) {
-			registerAndPush(instance);
-		} else if (setType == ConfigSetType.Register) {
-			register(instance);
+		if(!isReferenceValue(instance.getValue())) {
+    		if (setType == ConfigSetType.RegisterAndPush) {
+    			registerAndPush(instance);
+    		} else if (setType == ConfigSetType.Register) {
+    			register(instance);
+    		}
+		} else {
+		    getRegisterService(instance.getEnvId()).unregister(config.getKey(), instance.getContext());
 		}
-
-		updateReferencedInstances(config, instance, refInstances, setType);
+		
+		if(StringUtils.isEmpty(instance.getContext())) {
+    		List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
+    		updateReferencedInstances(config, instance, refInstances, setType);
+		}
 		return instId;
 	}
 
