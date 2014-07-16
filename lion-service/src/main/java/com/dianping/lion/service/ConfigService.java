@@ -240,4 +240,6 @@ public interface ConfigService {
 
     List<ConfigInstance> findInstancesByProject(int projectId, int envId, String group);
 
+    String resolveConfigValue(int configId, int envId, String context);
+
 }

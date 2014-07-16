@@ -219,7 +219,7 @@ $(function(){
 		}
 		elements = $(this_).parents("#refshared-editor");
 		if (elements.length > 0) {
-			loadSelectableConfigs(sharedProjectId, pageNo, $("#refshared-editor"));
+			loadSelectableConfigs(dsProjectId, pageNo, $("#refshared-editor"));
 			return;
 		}
 	};

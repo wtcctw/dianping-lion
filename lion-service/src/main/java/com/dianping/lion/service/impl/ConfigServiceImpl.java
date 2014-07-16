@@ -294,11 +294,14 @@ public class ConfigServiceImpl implements ConfigService {
 		int retryTimes = 0;
 		while (true) {
 			try {
+			    Config config = getConfig(instance.getConfigId());
+			    if(isSecretKey(config.getKey()) && !isReferenceValue(instance.getValue())) {
+			        instance.setValue(SecurityUtils.tryEncode(instance.getValue()));
+			    }
+			    
 				instance.setSeq(configDao.getMaxConfigInstSeq(instance.getConfigId(), instance.getEnvId()) + 1);
 				int instId = configDao.createInstance(instance);
 				updateConfigModifyStatus(instance.getConfigId(), instance.getEnvId());
-
-                Config config = getConfig(instance.getConfigId());
 
 				//确保注册操作是在最后一步
                 processInstanceIfReferenceType(instance);
@@ -329,6 +332,10 @@ public class ConfigServiceImpl implements ConfigService {
 		}
 	}
 
+    private boolean isSecretKey(String key) {
+        return key == null ? false : key.endsWith(".password");
+    }
+	
 	private void processInstanceIfReferenceType(ConfigInstance instance) {
 		String configval = instance.getValue();
 		if (isReferenceValue(configval)) {
@@ -359,10 +366,13 @@ public class ConfigServiceImpl implements ConfigService {
 
 	private int updateInstance(ConfigInstance instance, ConfigSetType setType) {
 		instance.setModifyUserId(SecurityUtils.getCurrentUserId());
+		Config config = getConfig(instance.getConfigId());
+		if(isSecretKey(config.getKey()) && !isReferenceValue(instance.getValue())) {
+		    instance.setValue(SecurityUtils.tryEncode(instance.getValue()));
+		}
+		
 		int instId = configDao.updateInstance(instance);
 		updateConfigModifyStatus(instance.getConfigId(), instance.getEnvId());
-
-		Config config = getConfig(instance.getConfigId());
 
 		//确保注册操作是在最后一步(后续的都需要try-catch掉所有error)
 		processInstanceIfReferenceType(instance);
@@ -585,6 +595,29 @@ public class ConfigServiceImpl implements ConfigService {
         return null;
     }
 
+    @Override
+    public String resolveConfigValue(int configId, int envId, String context) {
+        ConfigInstance instance = findInstance(configId, envId, context);
+        String configval = null;
+        if (instance != null) {
+            configval = instance.getValue();
+            if (isReferenceValue(configval)) {
+                String key = configval.substring(2, configval.length()-1);
+                Config config = findConfigByKey(key);
+                if(config != null) {
+                    ConfigInstance configInst = configDao.findInstance(config.getId(), instance.getEnvId(), ConfigInstance.NO_CONTEXT);
+                    if(configInst != null) {
+                        if(isReferenceValue(configInst.getValue())) {
+                            throw new RuntimeException("Indirect reference is not supported, config instance: " + instance.getId());
+                        }
+                        configval = configInst.getValue();
+                    }
+                }
+            }
+        }
+        return configval;
+    }
+    
     @Override
 	public ConfigInstance findDefaultInstance(int configId, int envId) {
 		return findInstance(configId, envId, ConfigInstance.NO_CONTEXT);

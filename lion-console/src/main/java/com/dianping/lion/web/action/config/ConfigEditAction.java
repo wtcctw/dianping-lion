@@ -241,15 +241,16 @@ public class ConfigEditAction extends AbstractConfigAction {
             String urlKey = config.getKey();
             String keyPrefix = urlKey.substring(0, urlKey.lastIndexOf('.'));
             
-            url = configService.getConfigValue(configId, envId, ConfigInstance.NO_CONTEXT);
+            url = configService.resolveConfigValue(configId, envId, ConfigInstance.NO_CONTEXT);
             assertNotNull(url, "JDBC url is null, key: " + config.getKey());
             // to avoid waiting for a long time before the getConnection(url) returns, append timeout params to the url
             url = appendTimeoutParams(url);
             
             String driverClassKey = keyPrefix + ".driverClassName";
             config = configService.findConfigByKey(driverClassKey);
-            assertNotNull(config, "No config for key: " + driverClassKey);
-            String driverClassName = configService.getConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+            String driverClassName = null;
+            if(config != null) 
+                driverClassName = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
             if(driverClassName == null) {
                 // infer driver class from url
                 driverClassName = getDriverFromUrl(url);
@@ -261,13 +262,13 @@ public class ConfigEditAction extends AbstractConfigAction {
             String usernameKey = keyPrefix + ".username";
             config = configService.findConfigByKey(usernameKey);
             assertNotNull(config, "No config for key: " + usernameKey);
-            String username = configService.getConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+            String username = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
             assertNotNull(username, "JDBC user name is null, key: " + usernameKey);
             
             String passwordKey = keyPrefix + ".password";
             config = configService.findConfigByKey(passwordKey);
             assertNotNull(config, "No config for key: " + passwordKey);
-            String password = configService.getConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+            String password = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
             password = SecurityUtils.tryDecode(password);
             assertNotNull(password, "JDBC password is null, key: " + passwordKey);
             
