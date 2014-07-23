@@ -34,6 +34,8 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
+import com.dianping.lion.EnvZooKeeperConfig;
+
 /**
  * <p>
  * Title: InitializeConfig.java
@@ -65,29 +67,7 @@ public class InitializeConfig implements BeanFactoryPostProcessor, PriorityOrder
     private String propertiesPath;
     private boolean includeLocalProps; // 是否使用本地的propertiesPath指定的配置文件中的配置
     private Properties localProps;
-    private Map<String, BeanData> propertyMap = new HashMap<String, BeanData>();
-
-    private String getProjectEnv() {
-        try {
-            Class<?> config = Class.forName("com.dianping.lion.EnvZooKeeperConfig");
-            Method method = config.getMethod("getEnv");
-            return (String) method.invoke(null);
-        } catch (Exception e) {
-            logger.error("can not find class com.dianping.lion.EnvZooKeeperConfig", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String getZKAdress() {
-        try {
-            Class<?> config = Class.forName("com.dianping.lion.EnvZooKeeperConfig");
-            Method method = config.getMethod("getZKAddress");
-            return (String) method.invoke(null);
-        } catch (Exception e) {
-            logger.error("can not find class com.dianping.lion.EnvZooKeeperConfig", e);
-            throw new RuntimeException(e);
-        }
-    }
+    private Map<String, List<BeanData>> propertyMap = new HashMap<String, List<BeanData>>();
 
     public void init() throws IOException {
         this.localProps = new Properties();
@@ -121,11 +101,12 @@ public class InitializeConfig implements BeanFactoryPostProcessor, PriorityOrder
                 propIn.close();
             }
         }
-
-        this.address = this.getZKAdress();
+        
+        this.address = EnvZooKeeperConfig.getZKAddress();
         logger.info(">>>>>>>>>>>zookeeper address is " + this.address);
-        this.environment = this.getProjectEnv();
+        this.environment = EnvZooKeeperConfig.getEnv();
         logger.info(">>>>>>>>>>>project environment is " + this.environment);
+        logger.info(">>>>>>>>>>>project swimlane is " + EnvZooKeeperConfig.getSwimlane());
     }
 
     public void setOrder(int order) {
@@ -196,7 +177,12 @@ public class InitializeConfig implements BeanFactoryPostProcessor, PriorityOrder
                                         && value_.endsWith(this.placeholderSuffix)) {
                                     value_ = value_.substring(2);
                                     value_ = value_.substring(0, value_.length() - 1);
-                                    this.propertyMap.put(value_, new BeanData(beanNames[i], pv.getName()));
+                                    List<BeanData> beanDataList = propertyMap.get(value_);
+                                    if(beanDataList == null) {
+                                        beanDataList = new ArrayList<BeanData>();
+                                        propertyMap.put(value_, beanDataList);
+                                    }
+                                    beanDataList.add(new BeanData(beanNames[i], pv.getName()));
                                 }
                             }
                         }
@@ -386,11 +372,13 @@ public class InitializeConfig implements BeanFactoryPostProcessor, PriorityOrder
 
         @Override
         public void onChange(String key, String value) {
-            BeanData bd = InitializeConfig.this.propertyMap.get(key);
-            if (bd != null) {
-                Object bean = InitializeConfig.this.beanFactory.getBean(bd.getBeanName());
-                if (bean != null) {
-                    BeanUtil.setProperty(bean, bd.getFieldName(), value);
+            List<BeanData> beanDataList = InitializeConfig.this.propertyMap.get(key);
+            if (beanDataList != null) {
+                for(BeanData bd : beanDataList) {
+                    Object bean = InitializeConfig.this.beanFactory.getBean(bd.getBeanName());
+                    if (bean != null) {
+                        BeanUtil.setProperty(bean, bd.getFieldName(), value);
+                    }
                 }
             }
         }
