@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.dianping.lion.ServiceConstants;
 import com.dianping.lion.api.exception.SecurityException;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
@@ -168,39 +169,52 @@ public class ConfigController extends BaseController {
     }
     
     private String getConfig(int envId, String key, String group) {
-        ConfigInstance ci = configService.findInstance(key, envId, group);
-        return SecurityUtils.tryDecode(ci.getValue());
+        String value = configService.resolveConfigValue(key, envId, group);
+        return SecurityUtils.tryDecode(value);
     }
     
     private Map<String, String> getConfigs(int envId, String keys, String group) {
         List<String> keyList = convertToList(keys);
         List<ConfigInstance> ciList = configService.findInstancesByKeys(keyList, envId, group);
         
-        Map<String, String> keyValue = new HashMap<String, String>();
-        for(ConfigInstance ci : ciList) {
-            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(ci.getValue()));
-        }
-        return keyValue;
+        return toValueMap(ciList);
     }
 
     private Map<String, String> getConfigsByProject(int envId, int projectId, String group) {
         List<ConfigInstance> ciList = configService.findInstancesByProject(projectId, envId, group);
         
-        Map<String, String> keyValue = new HashMap<String, String>();
-        for(ConfigInstance ci : ciList) {
-            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(ci.getValue()));
-        }
-        return keyValue;
+        return toValueMap(ciList);
     }
     
     private Map<String, String> getConfigsByPrefix(int envId, String prefix, String group) {
         List<ConfigInstance> ciList = configService.findInstancesByPrefix(prefix, envId, group);
         
+        return toValueMap(ciList);
+    }
+    
+    private Map<String, String> toValueMap(List<ConfigInstance> ciList) {
         Map<String, String> keyValue = new HashMap<String, String>();
         for(ConfigInstance ci : ciList) {
-            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(ci.getValue()));
+            String value = ci.getValue();
+            if(isReferenceValue(value)) {
+                String refkey = value.substring(2, value.length()-1);
+                ConfigInstance configInst = configService.findInstance(refkey, ci.getEnvId(), ConfigInstance.NO_CONTEXT);
+                if(configInst != null) {
+                    if(isReferenceValue(configInst.getValue())) {
+                        throw new RuntimeException("Indirect reference is not supported, config instance: " + ci.getId());
+                    }
+                    value = configInst.getValue();
+                }
+            }
+            keyValue.put(ci.getRefkey(), SecurityUtils.tryDecode(value));
         }
         return keyValue;
+    }
+
+    private boolean isReferenceValue(String value) {
+        return value != null && 
+               value.startsWith(ServiceConstants.REF_CONFIG_PREFIX) &&
+               value.endsWith(ServiceConstants.REF_CONFIG_SUFFIX);
     }
     
     private List<String> convertToList(String keys) {

@@ -596,22 +596,39 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    public String resolveConfigValue(String key, int envId, String context) {
+        ConfigInstance instance = findInstance(key, envId, context);
+        String configval = null;
+        if (instance != null) {
+            configval = instance.getValue();
+            if (isReferenceValue(configval)) {
+                String refkey = configval.substring(2, configval.length()-1);
+                ConfigInstance configInst = configDao.findInstance(refkey, instance.getEnvId(), ConfigInstance.NO_CONTEXT);
+                if(configInst != null) {
+                    if(isReferenceValue(configInst.getValue())) {
+                        throw new RuntimeException("Indirect reference is not supported, config instance: " + instance.getId());
+                    }
+                    configval = configInst.getValue();
+                }
+            }
+        }
+        return configval;
+    }
+    
+    @Override
     public String resolveConfigValue(int configId, int envId, String context) {
         ConfigInstance instance = findInstance(configId, envId, context);
         String configval = null;
         if (instance != null) {
             configval = instance.getValue();
             if (isReferenceValue(configval)) {
-                String key = configval.substring(2, configval.length()-1);
-                Config config = findConfigByKey(key);
-                if(config != null) {
-                    ConfigInstance configInst = configDao.findInstance(config.getId(), instance.getEnvId(), ConfigInstance.NO_CONTEXT);
-                    if(configInst != null) {
-                        if(isReferenceValue(configInst.getValue())) {
-                            throw new RuntimeException("Indirect reference is not supported, config instance: " + instance.getId());
-                        }
-                        configval = configInst.getValue();
+                String refkey = configval.substring(2, configval.length()-1);
+                ConfigInstance configInst = configDao.findInstance(refkey, instance.getEnvId(), ConfigInstance.NO_CONTEXT);
+                if(configInst != null) {
+                    if(isReferenceValue(configInst.getValue())) {
+                        throw new RuntimeException("Indirect reference is not supported, config instance: " + instance.getId());
                     }
+                    configval = configInst.getValue();
                 }
             }
         }

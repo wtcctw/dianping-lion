@@ -57,7 +57,7 @@ public class GetConfigServlet extends AbstractLionServlet {
         
         Config config = configService.findConfigByKey(key);
         if (config != null) {
-            String configVal = configService.getConfigValue(config.getId(), environment.getId(), group);
+            String configVal = configService.resolveConfigValue(config.getId(), environment.getId(), group);
             configVal = SecurityUtils.tryDecode(configVal);
             if (configVal != null) {
                 writer.print(configVal);
