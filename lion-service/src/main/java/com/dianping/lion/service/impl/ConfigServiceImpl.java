@@ -440,14 +440,17 @@ public class ConfigServiceImpl implements ConfigService {
 	void notifyLiger(String type, int envId, String key, String group) {
 	    StringBuilder url = null;
 	    try {
-	        String enabled = ConfigCache.getInstance().getProperty("lion-console.liger.notify.enabled");
+	        ConfigRegisterService registerService = registerServiceRepository.getRegisterService(envId);
+	        String enabled = registerService.get("lion-console.liger.notify.enabled");
 	        if(enabled == null || !enabled.equals("true"))
 	            return;
-    	    String ligerNotifyUrl = ConfigCache.getInstance().getProperty("lion-console.liger.notify.url");
+    	    String ligerNotifyUrl = registerService.get("lion-console.liger.notify.url");
+    	    if(ligerNotifyUrl == null)
+    	        return;
     	    url = new StringBuilder(ligerNotifyUrl);
             url.append("&type=").append(type);
             Environment environment = environmentService.findEnvByID(envId);
-            url.append("&env=").append(environment.getLabel());
+            url.append("&env=").append(environment.getName());
             url.append("&key=").append(key);
             if(group == null) {
                 group = "";
