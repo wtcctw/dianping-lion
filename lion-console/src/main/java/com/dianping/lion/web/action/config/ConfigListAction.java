@@ -23,6 +23,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import com.dianping.lion.ServiceConstants;
+import com.dianping.lion.client.ConfigCache;
+import com.dianping.lion.client.LionException;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
@@ -67,7 +69,7 @@ public class ConfigListAction extends AbstractConfigAction {
 	private Map<Integer, List<ConfigInstance>> instanceMap;
 
 	private Map<Environment, List<ConfigInstance>> refList = new HashMap<Environment, List<ConfigInstance>>();
-
+	
 	public String list() {
 		this.environments = environmentService.findAll();
 		this.project = projectService.getProject(projectId);
@@ -101,7 +103,7 @@ public class ConfigListAction extends AbstractConfigAction {
             }
             criteria.setProjectId(projectId);
             criteria.setEnvId(envId);
-            paginater.setMaxResults(100);
+            paginater.setMaxResults(getItemsPerPage());
             paginater = configService.findConfigVos(criteria, paginater);
             configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), paginater.getResults());
 
@@ -113,10 +115,24 @@ public class ConfigListAction extends AbstractConfigAction {
     public String ajaxList() {
 		criteria.setProjectId(projectId);
 		criteria.setEnvId(envId);
-		configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), configService.findConfigVos(criteria));
+		paginater.setMaxResults(getItemsPerPage());
+        paginater = configService.findConfigVos(criteria, paginater);
+		configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), paginater.getResults());
 		return SUCCESS;
 	}
 
+    private int getItemsPerPage() {
+        try {
+            String value = ConfigCache.getInstance().getProperty("lion-console.items.per.page");
+            if(value == null) {
+                return 50;
+            }
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return 50;
+        }
+    }
+    
     public String ajaxSimpleList() {
     	paginater.setMaxResults(13);
     	paginater = configService.paginateConfigs(criteria, paginater);

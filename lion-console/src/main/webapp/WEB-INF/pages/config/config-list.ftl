@@ -45,7 +45,7 @@
 		<div class="row">
 			<div class="span12">
 			<@s.form id="configForm" cssClass="form-inline lion" action="/config/configList.vhtml" method="get">
-			    <input type="hidden" name="paginater.pageNumber" value="1"/>
+			    <input type="hidden" name="paginater.pageNumber" value="${paginater.pageNumber}"/>
 				<@s.hidden name="menu"/><@s.hidden name="pid"/><@s.hidden name="envId" id="envId"/>
 				<label class="control-label" for="key">KEY：</label>
 				<@s.textfield id="key" name="criteria.key" cssClass="input-medium" maxlength="100"/>

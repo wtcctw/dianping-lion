@@ -363,7 +363,8 @@ $(function(){
 			"envId" : $("[name='envId']").val(),
 			"criteria.key" : $("#key").val(),
 			"criteria.value" : $("#value").val(),
-			"criteria.status" : $("#status").val()
+			"criteria.status" : $("#status").val(),
+			"paginater.pageNumber" : $("#configForm [name='paginater.pageNumber']").val()
 		}, true), function() {
 			bindConfigTableEvents();
 			$("#display-all-btn").attr("checked", display_all_btn).triggerHandler("click");
@@ -633,6 +634,20 @@ $(function(){
 
 		$(".test-connection-btn").click(function() {
 			$.ajax("/config/testConnectionAjax.vhtml".prependcontext(), {
+				data : $.param({
+					"configId" : getConfigId($(this)),
+					"envId" : $("#envId").val()
+				}, true),
+				dataType : "json",
+				success : function(result) {
+					$commonAlert.html(result.msg).dialog("open");
+				}
+			});
+			return false;
+		});
+		
+		$(".decode-password-btn").click(function() {
+			$.ajax("/config/decodePasswordAjax.vhtml".prependcontext(), {
 				data : $.param({
 					"configId" : getConfigId($(this)),
 					"envId" : $("#envId").val()

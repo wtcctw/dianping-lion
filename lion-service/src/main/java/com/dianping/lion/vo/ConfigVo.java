@@ -151,4 +151,17 @@ public class ConfigVo implements Serializable {
 	    }
 	    return false;
 	}
+	
+	public boolean needDecode() {
+	    if(config != null && defaultInstance != null) {
+	        String key = config.getKey();
+            String value = defaultInstance.getValue();
+            if(key.endsWith(".jdbc.password") &&
+               value != null &&
+               value.startsWith("${") &&
+               value.endsWith("}"))
+                return true;
+        }
+        return false;
+    }
 }

@@ -67,6 +67,9 @@
 	  			<@s.if test="%{#configVo.isJdbcUrl()}">
 	  			<a href="#" class="test-connection-btn"><i class="icon-flag" rel="tooltip" data-original-title="测试数据库连接"></i></a>
 	  			</@s.if>
+	  			<@s.if test="%{#configVo.needDecode()}">
+                <a href="#" class="decode-password-btn"><i class="icon-qrcode" rel="tooltip" data-original-title="显示明文密码"></i></a>
+                </@s.if>
   				<a href="#" class="edit-config-attr optional hide"><i class="icon-list-alt" rel="tooltip" title="属性编辑"></i></a>
 	  			<a href="#" class="moveup-config-btn optional hide"><i class="icon-arrow-up" rel="tooltip" data-original-title="上移"></i></a>
 	  			<a href="#" class="movedown-config-btn optional hide"><i class="icon-arrow-down" rel="tooltip" data-original-title="下移"></i></a>

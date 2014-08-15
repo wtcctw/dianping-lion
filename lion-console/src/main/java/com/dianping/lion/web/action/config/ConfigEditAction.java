@@ -233,6 +233,14 @@ public class ConfigEditAction extends AbstractConfigAction {
 		return SUCCESS;
 	}
 
+	public String decodePassword() {
+	    config = configService.getConfig(configId);
+        String password = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+        String decodedPassword = SecurityUtils.tryDecode(password);
+        createStreamResponse(0, "Password: " + decodedPassword);
+        return SUCCESS;
+	}
+	
     public String testJdbcConnection() {
         String url = null;
         Connection conn = null;
@@ -269,10 +277,10 @@ public class ConfigEditAction extends AbstractConfigAction {
             config = configService.findConfigByKey(passwordKey);
             assertNotNull(config, "No config for key: " + passwordKey);
             String password = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
-            password = SecurityUtils.tryDecode(password);
             assertNotNull(password, "JDBC password is null, key: " + passwordKey);
             
-            conn = DriverManager.getConnection(url, username, password);
+            String decodedPassword = SecurityUtils.tryDecode(password);
+            conn = DriverManager.getConnection(url, username, decodedPassword);
             createStreamResponse(0, "Connected to: " + url + "\n\tusername: " + username + "\n\tpassword: " + password);
         } catch (Exception ex) {
             createStreamResponse(-1, "Failed to connect to: " + url + ", " + ex.getMessage());

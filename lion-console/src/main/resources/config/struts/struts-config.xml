@@ -90,6 +90,10 @@
         <action name="testConnectionAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="testJdbcConnection">
             <result name="success" type="stream"/>
         </action>
+
+        <action name="decodePasswordAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="decodePassword">
+            <result name="success" type="stream"/>
+        </action>
 	</package>
 
 </struts>
