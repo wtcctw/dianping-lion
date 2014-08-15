@@ -15,6 +15,7 @@
  */
 package com.dianping.lion.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +45,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.dianping.lion.ServiceConstants;
+import com.dianping.lion.client.ConfigCache;
 import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Config;
@@ -233,6 +241,7 @@ public class ConfigServiceImpl implements ConfigService {
 		    Config refConfig = getConfig(refInst.getConfigId());
 		    getRegisterService(envId).unregister(refConfig.getKey());
 		}
+		notifyLiger("delete", envId, config.getKey(), "");
 	}
 
     public void deleteInstance(int configId, int envId, String group) {
@@ -241,6 +250,7 @@ public class ConfigServiceImpl implements ConfigService {
         if(configDao.getConfigInstCount(configId, envId) == 0)
             configDao.deleteStatus(configId, envId);
         getRegisterService(envId).unregister(config.getKey(), group);
+        notifyLiger("delete", envId, config.getKey(), group);
     }
 
 	private boolean hasConfigReferencedTo(String configKey, int envId) {
@@ -350,6 +360,7 @@ public class ConfigServiceImpl implements ConfigService {
                     updateReferencedInstances(config, instance, refInstances, setType);
                 }
                 
+                notifyLiger("create", instance.getEnvId(), config.getKey(), instance.getContext());
 				return instId;
 			} catch (RuntimeException e) {
 				if (DBUtils.isDuplicateKeyError(e)) {
@@ -422,10 +433,54 @@ public class ConfigServiceImpl implements ConfigService {
     		List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
     		updateReferencedInstances(config, instance, refInstances, setType);
 		}
+		notifyLiger("update", instance.getEnvId(), config.getKey(), instance.getContext());
 		return instId;
 	}
 
-	private void updateReferencedInstances(Config config, ConfigInstance instance, List<ConfigInstance> refInstances, ConfigSetType setType) {
+	void notifyLiger(String type, int envId, String key, String group) {
+	    StringBuilder url = null;
+	    try {
+	        String enabled = ConfigCache.getInstance().getProperty("lion-console.liger.notify.enabled");
+	        if(enabled == null || !enabled.equals("true"))
+	            return;
+    	    String ligerNotifyUrl = ConfigCache.getInstance().getProperty("lion-console.liger.notify.url");
+    	    url = new StringBuilder(ligerNotifyUrl);
+            url.append("&type=").append(type);
+            Environment environment = environmentService.findEnvByID(envId);
+            url.append("&env=").append(environment.getLabel());
+            url.append("&key=").append(key);
+            if(group == null) {
+                group = "";
+            }
+            url.append("&group=").append(group.trim());
+            GetMethod getMethod = new GetMethod(url.toString());
+            getHttpClient().executeMethod(getMethod);
+            if(logger.isInfoEnabled()) {
+                logger.info("notify liger url: " + url + ", status code: " + getMethod.getStatusCode() + 
+                        ", response: " + getMethod.getResponseBodyAsString());
+            }
+        } catch (Exception e) {
+            logger.error("failed to notify liger " + url, e);
+        }
+    }
+
+	private HttpClient getHttpClient() {
+        HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+        params.setMaxTotalConnections(300);
+        params.setDefaultMaxConnectionsPerHost(50);
+        params.setConnectionTimeout(3000);
+        params.setTcpNoDelay(true);
+        params.setSoTimeout(3000);
+        params.setStaleCheckingEnabled(true);
+        connectionManager.setParams(params);
+        HttpClient httpClient = new HttpClient();
+        httpClient.setHttpConnectionManager(connectionManager);
+
+        return httpClient;
+    }
+	
+    private void updateReferencedInstances(Config config, ConfigInstance instance, List<ConfigInstance> refInstances, ConfigSetType setType) {
 		try {
 			for (ConfigInstance refInstance : refInstances) {
 			    refInstance.setValue(instance.getValue());
