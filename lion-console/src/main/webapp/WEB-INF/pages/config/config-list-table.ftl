@@ -1,3 +1,4 @@
+<#include "/WEB-INF/pages/common/paginater.ftl">
 <table class="table table-bordered table-striped table-condensed">
 	<thead>
     <tr>
@@ -75,3 +76,4 @@
   	</@s.iterator>
   </tbody>
 </table>
+<#include "/WEB-INF/pages/common/paginater.ftl">

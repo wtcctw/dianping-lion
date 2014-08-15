@@ -58,7 +58,7 @@ public class ConfigListAction extends AbstractConfigAction {
 
 	private List<Service> services;
 
-	private Paginater<Config> paginater = new Paginater<Config>();
+	private Paginater paginater = new Paginater();
 
 	private Config config;
 
@@ -87,6 +87,28 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
+	
+   public String listPage() {
+        this.environments = environmentService.findAll();
+        this.project = projectService.getProject(projectId);
+        if (envId == null) {
+            envId = !environments.isEmpty() ? environments.get(0).getId() : null;
+        }
+        if (envId != null) {
+            environment = environmentService.findEnvByID(envId);
+            if (environment == null) {
+                throw new RuntimeBusinessException("该环境已不存在!");
+            }
+            criteria.setProjectId(projectId);
+            criteria.setEnvId(envId);
+            paginater.setMaxResults(100);
+            paginater = configService.findConfigVos(criteria, paginater);
+            configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), paginater.getResults());
+
+            services = serviceService.getServiceList(projectId, envId);
+        }
+        return SUCCESS;
+    }
 
     public String ajaxList() {
 		criteria.setProjectId(projectId);

@@ -38,6 +38,8 @@ public interface ConfigService {
 	 * @return
 	 */
 	List<ConfigVo> findConfigVos(ConfigCriteria criteria);
+	
+    Paginater findConfigVos(ConfigCriteria criteria, Paginater paginater);
 
 	/**
 	 * @param projectId

@@ -216,7 +216,7 @@ public interface ConfigDao {
 
 	long getConfigCount(ConfigCriteria criteria);
 
-	List<Config> getConfigList(ConfigCriteria criteria, Paginater<Config> paginater);
+	List<Config> getConfigList(ConfigCriteria criteria, Paginater paginater);
 
 	boolean hasConfigReferencedTo(String configKey, int envId);
 

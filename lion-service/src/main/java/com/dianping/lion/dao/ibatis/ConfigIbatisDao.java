@@ -229,7 +229,7 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Config> getConfigList(ConfigCriteria criteria, Paginater<Config> paginater) {
+	public List<Config> getConfigList(ConfigCriteria criteria, Paginater paginater) {
 		return getSqlMapClientTemplate().queryForList("Config.getConfigList", Maps.entry("criteria", criteria).entry("paginater", paginater).get());
 	}
 

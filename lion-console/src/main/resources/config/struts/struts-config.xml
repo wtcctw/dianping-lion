@@ -6,7 +6,7 @@
 
 	<package name="config" namespace="/config" extends="default">
 
-		<action name="configList" class="com.dianping.lion.web.action.config.ConfigListAction" method="list">
+		<action name="configList" class="com.dianping.lion.web.action.config.ConfigListAction" method="listPage">
 			<result name="success">/WEB-INF/pages/config/config-list.ftl</result>
 		</action>
 

@@ -222,6 +222,9 @@ $(function(){
 			loadSelectableConfigs(dsProjectId, pageNo, $("#refshared-editor"));
 			return;
 		}
+		$("#configForm [name='paginater.pageNumber']").val(pageNo);
+		$("#configForm").submit();
+		event.preventDefault();
 	};
 
 	function loadConfigAttrFailed(error) {

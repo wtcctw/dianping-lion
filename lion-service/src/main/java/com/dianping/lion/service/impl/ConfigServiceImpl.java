@@ -130,6 +130,38 @@ public class ConfigServiceImpl implements ConfigService {
 		}
 		return configVos;
 	}
+	
+	@Override
+	public Paginater findConfigVos(ConfigCriteria criteria, Paginater paginater) {
+	    int projectId = criteria.getProjectId();
+	    int envId = criteria.getEnvId();
+	    HasValueEnum hasValue = EnumUtils.fromEnumProperty(HasValueEnum.class, "value", criteria.getHasValue());
+	    List<Config> configs = configDao.getConfigList(criteria, paginater);
+	    List<ConfigVo> configVos = new ArrayList<ConfigVo>(configs.size());
+	    if (!configs.isEmpty()) {
+	        List<Integer> hasInstanceConfigs = configDao.findHasInstanceConfigs(projectId, envId);
+	        List<Integer> hasContextInstConfigs = configDao.findHasContextInstConfigs(projectId, envId);
+	        Map<Integer, ConfigInstance> defaultInsts = configDao.findDefaultInstances(projectId, envId);
+	        List<Integer> hasReferencedConfigs = isSharedProject(projectId) ? configDao.getProjectHasReferencedConfigs(projectId) : Collections.<Integer>emptyList();
+	        for (Config config : configs) {
+	            //配置不会太多，使用内存过滤，无分页，如果配置太多影响到性能则考虑数据库过滤和分页
+	            String key = StringUtils.trim(criteria.getKey());
+	            String value = StringUtils.trim(criteria.getValue());
+	            ConfigInstance defaultInst = defaultInsts.get(config.getId());
+	            if ((StringUtils.isEmpty(key) || config.getKey().contains(key))
+	                    && (hasValue == HasValueEnum.All || (hasValue == HasValueEnum.Yes && defaultInst != null)
+	                    || (hasValue == HasValueEnum.No && defaultInst == null))
+	                    && (StringUtils.isEmpty(value) || (defaultInst != null && defaultInst.getValue().contains(value)))) {
+	                configVos.add(new ConfigVo(config, hasInstanceConfigs.contains(config.getId()),
+	                        hasContextInstConfigs.contains(config.getId()), hasReferencedConfigs.contains(config.getId()), defaultInst));
+	            }
+	        }
+	    }
+	    long count = configDao.getConfigCount(criteria);
+        paginater.setTotalCount(count);
+	    paginater.setResults(configVos);
+	    return paginater;
+	}
 
 	public boolean isSharedProject(int projectId) {
 		return projectId == ServiceConstants.PROJECT_SHARED_ID || projectId == ServiceConstants.PROJECT_DB_ID;
@@ -699,7 +731,7 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	@Override
-	public Paginater<Config> paginateConfigs(ConfigCriteria criteria, Paginater<Config> paginater) {
+	public Paginater paginateConfigs(ConfigCriteria criteria, Paginater paginater) {
 		long configCount = configDao.getConfigCount(criteria);
 		List<Config> logList = configDao.getConfigList(criteria, paginater);
         paginater.setTotalCount(configCount);
