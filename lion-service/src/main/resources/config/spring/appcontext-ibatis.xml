@@ -39,4 +39,11 @@
 		<aop:advisor advice-ref="Lion.TransactionAdvice" pointcut-ref="ServiceOperations" order="2"/>
 	</aop:config>
 	
+    <bean id="Lion.NotifyLigerAdvice" class="com.dianping.lion.aop.NotifyLigerInterceptor"/>
+    
+	<aop:config>
+		<aop:pointcut id="ConfigServiceOperations" expression="execution(* com.dianping.lion.service.ConfigService.setConfigValue(..))"/>
+		<aop:advisor advice-ref="Lion.NotifyLigerAdvice" pointcut-ref="ConfigServiceOperations" order="1"/>
+	</aop:config>
+	
 </beans>

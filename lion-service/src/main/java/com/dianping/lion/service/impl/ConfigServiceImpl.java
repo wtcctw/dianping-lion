@@ -240,7 +240,6 @@ public class ConfigServiceImpl implements ConfigService {
 		    Config refConfig = getConfig(refInst.getConfigId());
 		    getRegisterService(envId).unregister(refConfig.getKey());
 		}
-		notifyLiger("delete", envId, config.getKey(), "");
 	}
 
     public void deleteInstance(int configId, int envId, String group) {
@@ -249,7 +248,6 @@ public class ConfigServiceImpl implements ConfigService {
         if(configDao.getConfigInstCount(configId, envId) == 0)
             configDao.deleteStatus(configId, envId);
         getRegisterService(envId).unregister(config.getKey(), group);
-        notifyLiger("delete", envId, config.getKey(), group);
     }
 
 	private boolean hasConfigReferencedTo(String configKey, int envId) {
@@ -359,7 +357,6 @@ public class ConfigServiceImpl implements ConfigService {
                     updateReferencedInstances(config, instance, refInstances, setType);
                 }
                 
-                notifyLiger("create", instance.getEnvId(), config.getKey(), instance.getContext());
 				return instId;
 			} catch (RuntimeException e) {
 				if (DBUtils.isDuplicateKeyError(e)) {
@@ -432,70 +429,9 @@ public class ConfigServiceImpl implements ConfigService {
     		List<ConfigInstance> refInstances = getInstanceReferencedTo(config.getKey(), instance.getEnvId());
     		updateReferencedInstances(config, instance, refInstances, setType);
 		}
-		notifyLiger("update", instance.getEnvId(), config.getKey(), instance.getContext());
+		
 		return instId;
 	}
-
-	void notifyLiger(String type, int envId, String key, String group) {
-	    ConfigRegisterService registerService = registerServiceRepository.getRegisterService(envId);
-        String enabled = registerService.get("lion-console.liger.notify.enabled");
-        if(enabled == null || !enabled.equals("true"))
-            return;
-        String ligerNotifyUrl = registerService.get("lion-console.liger.notify.url");
-        if(ligerNotifyUrl == null)
-            return;
-	    String url = generateUrl(ligerNotifyUrl, type, envId, key, group);
-	    String content;
-        try {
-            content = doHttpGet(url);
-            if(logger.isInfoEnabled()) {
-                logger.info("notify liger url: " + url + ", response: " + content);
-            }
-        } catch (Exception e) {
-            logger.error("failed to notify liger, url " + url, e);
-        }
-    }
-
-    private String doHttpGet(String url) throws Exception {
-        GetMethod get = new GetMethod(url);
-        HttpClient httpClient = getHttpClient();
-        try {
-            httpClient.executeMethod(get);
-            return get.getResponseBodyAsString();
-        } finally {
-            get.releaseConnection();
-        }
-    }
-
-    private String generateUrl(String ligerNotifyUrl, String type, int envId, String key, String group) {
-        StringBuilder url = new StringBuilder(ligerNotifyUrl);
-        url.append("&type=").append(type);
-        Environment environment = environmentService.findEnvByID(envId);
-        url.append("&env=").append(environment.getName());
-        url.append("&key=").append(key);
-        if(group == null) {
-            group = "";
-        }
-        url.append("&group=").append(group.trim());
-        return url.toString();
-    }
-    
-    private HttpClient getHttpClient() {
-        if(httpClient == null) {
-            HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-            HttpConnectionManagerParams params = new HttpConnectionManagerParams();
-            params.setMaxTotalConnections(500);
-            params.setDefaultMaxConnectionsPerHost(10);
-            params.setConnectionTimeout(3000);
-            params.setTcpNoDelay(true);
-            params.setSoTimeout(3000);
-            params.setStaleCheckingEnabled(true);
-            connectionManager.setParams(params);
-            
-            httpClient = new HttpClient(connectionManager);
-        }
-        return httpClient;
-    }
 	
     private void updateReferencedInstances(Config config, ConfigInstance instance, List<ConfigInstance> refInstances, ConfigSetType setType) {
 		try {
