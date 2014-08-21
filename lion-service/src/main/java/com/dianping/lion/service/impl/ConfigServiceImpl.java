@@ -23,11 +23,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
@@ -45,7 +43,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.dianping.lion.ServiceConstants;
-import com.dianping.lion.client.ConfigCache;
 import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.dao.ProjectDao;
 import com.dianping.lion.entity.Config;
@@ -104,6 +101,8 @@ public class ConfigServiceImpl implements ConfigService {
 	private ConfigValueResolver valueResolver = new DefaultConfigValueResolver(this);
 
 	private CacheClient cacheClient;
+	
+	private HttpClient httpClient;
 
 	public ConfigServiceImpl(PlatformTransactionManager transactionManager) {
 		this.transactionTemplate = new TransactionTemplate(transactionManager);
@@ -438,48 +437,63 @@ public class ConfigServiceImpl implements ConfigService {
 	}
 
 	void notifyLiger(String type, int envId, String key, String group) {
-	    StringBuilder url = null;
-	    try {
-	        ConfigRegisterService registerService = registerServiceRepository.getRegisterService(envId);
-	        String enabled = registerService.get("lion-console.liger.notify.enabled");
-	        if(enabled == null || !enabled.equals("true"))
-	            return;
-    	    String ligerNotifyUrl = registerService.get("lion-console.liger.notify.url");
-    	    if(ligerNotifyUrl == null)
-    	        return;
-    	    url = new StringBuilder(ligerNotifyUrl);
-            url.append("&type=").append(type);
-            Environment environment = environmentService.findEnvByID(envId);
-            url.append("&env=").append(environment.getName());
-            url.append("&key=").append(key);
-            if(group == null) {
-                group = "";
-            }
-            url.append("&group=").append(group.trim());
-            GetMethod getMethod = new GetMethod(url.toString());
-            getHttpClient().executeMethod(getMethod);
+	    ConfigRegisterService registerService = registerServiceRepository.getRegisterService(envId);
+        String enabled = registerService.get("lion-console.liger.notify.enabled");
+        if(enabled == null || !enabled.equals("true"))
+            return;
+        String ligerNotifyUrl = registerService.get("lion-console.liger.notify.url");
+        if(ligerNotifyUrl == null)
+            return;
+	    String url = generateUrl(ligerNotifyUrl, type, envId, key, group);
+	    String content;
+        try {
+            content = doHttpGet(url);
             if(logger.isInfoEnabled()) {
-                logger.info("notify liger url: " + url + ", status code: " + getMethod.getStatusCode() + 
-                        ", response: " + getMethod.getResponseBodyAsString());
+                logger.info("notify liger url: " + url + ", response: " + content);
             }
         } catch (Exception e) {
-            logger.error("failed to notify liger " + url, e);
+            logger.error("failed to notify liger, url " + url, e);
         }
     }
 
-	private HttpClient getHttpClient() {
-        HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-        HttpConnectionManagerParams params = new HttpConnectionManagerParams();
-        params.setMaxTotalConnections(300);
-        params.setDefaultMaxConnectionsPerHost(50);
-        params.setConnectionTimeout(3000);
-        params.setTcpNoDelay(true);
-        params.setSoTimeout(3000);
-        params.setStaleCheckingEnabled(true);
-        connectionManager.setParams(params);
-        HttpClient httpClient = new HttpClient();
-        httpClient.setHttpConnectionManager(connectionManager);
+    private String doHttpGet(String url) throws Exception {
+        GetMethod get = new GetMethod(url);
+        HttpClient httpClient = getHttpClient();
+        try {
+            httpClient.executeMethod(get);
+            return get.getResponseBodyAsString();
+        } finally {
+            get.releaseConnection();
+        }
+    }
 
+    private String generateUrl(String ligerNotifyUrl, String type, int envId, String key, String group) {
+        StringBuilder url = new StringBuilder(ligerNotifyUrl);
+        url.append("&type=").append(type);
+        Environment environment = environmentService.findEnvByID(envId);
+        url.append("&env=").append(environment.getName());
+        url.append("&key=").append(key);
+        if(group == null) {
+            group = "";
+        }
+        url.append("&group=").append(group.trim());
+        return url.toString();
+    }
+    
+    private HttpClient getHttpClient() {
+        if(httpClient == null) {
+            HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+            HttpConnectionManagerParams params = new HttpConnectionManagerParams();
+            params.setMaxTotalConnections(500);
+            params.setDefaultMaxConnectionsPerHost(10);
+            params.setConnectionTimeout(3000);
+            params.setTcpNoDelay(true);
+            params.setSoTimeout(3000);
+            params.setStaleCheckingEnabled(true);
+            connectionManager.setParams(params);
+            
+            httpClient = new HttpClient(connectionManager);
+        }
         return httpClient;
     }
 	
