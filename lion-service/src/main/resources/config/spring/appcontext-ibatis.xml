@@ -42,7 +42,11 @@
     <bean id="Lion.NotifyLigerAdvice" class="com.dianping.lion.aop.NotifyLigerInterceptor"/>
     
 	<aop:config>
-		<aop:pointcut id="ConfigServiceOperations" expression="execution(* com.dianping.lion.service.ConfigService.setConfigValue(..))"/>
+		<aop:pointcut id="ConfigServiceOperations" expression="execution(* com.dianping.lion.service.ConfigService.setConfigValue(..)) ||
+            execution(* com.dianping.lion.service.ConfigService.updateInstance(..)) ||
+            execution(* com.dianping.lion.service.ConfigService.createInstance(..)) ||
+            execution(* com.dianping.lion.service.ConfigService.deleteInstance(..)) ||
+            execution(* com.dianping.lion.service.ConfigService.deleteInstances(..))"/>
 		<aop:advisor advice-ref="Lion.NotifyLigerAdvice" pointcut-ref="ConfigServiceOperations" order="1"/>
 	</aop:config>
 	

@@ -1,6 +1,10 @@
 package com.dianping.lion.aop;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -13,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Config;
+import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.register.ConfigRegisterServiceRepository;
@@ -32,12 +37,31 @@ public class NotifyLigerInterceptor implements MethodInterceptor {
     @Autowired
     private ConfigService configService;
     
+    private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 20, TimeUnit.SECONDS, new ArrayBlockingQueue(10), new RejectedExecutionHandler() {
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            // safely ingnore it
+        }
+    });
+    
     private HttpClient httpClient;
     
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
+    public Object invoke(final MethodInvocation invocation) throws Throwable {
         Object result = invocation.proceed();
-        notifyLiger(invocation);
+        executor.submit(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    notifyLiger(invocation);
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                } catch (Exception e) {
+                    logger.error("failed to notify liger", e);
+                }
+            }
+            
+        });
         return result;
     }
 
@@ -45,7 +69,10 @@ public class NotifyLigerInterceptor implements MethodInterceptor {
         Method method = invocation.getMethod();
         String methodName = method.getName();
         if(methodName.equals("createInstance")) {
-            
+            Object[] arguments = invocation.getArguments();
+            ConfigInstance ci = (ConfigInstance) arguments[0];
+            Config config = configService.getConfig(ci.getConfigId());
+            notifyLiger("create", ci.getEnvId(), config.getKey(), ci.getContext());
         } else if(methodName.equals("setConfigValue")) {
             Object[] arguments = invocation.getArguments();
             if(arguments.length == 4 || arguments.length == 5) {
@@ -53,11 +80,27 @@ public class NotifyLigerInterceptor implements MethodInterceptor {
                 notifyLiger("update", (Integer)arguments[1], config.getKey(), (String)arguments[2]);
             }
         } else if(methodName.equals("deleteInstance")) {
-            
+            Object[] arguments = invocation.getArguments();
+            if(arguments.length == 3) {
+                Config config = configService.getConfig((Integer) arguments[0]);
+                notifyLiger("delete", (Integer)arguments[1], config.getKey(), (String)arguments[2]);
+            }
         } else if(methodName.equals("deleteInstances")) {
-            
+            Object[] arguments = invocation.getArguments();
+            if(arguments.length == 2) {
+                Config config = null;
+                if(!(arguments[0] instanceof Config)) {
+                    config = configService.getConfig((Integer) arguments[0]);
+                } else {
+                    config = (Config)arguments[0];
+                }
+                notifyLiger("delete", (Integer)arguments[1], config.getKey(), "");
+            }
         } else if(methodName.equals("updateInstance")) {
-            
+            Object[] arguments = invocation.getArguments();
+            ConfigInstance ci = (ConfigInstance) arguments[0];
+            Config config = configService.getConfig(ci.getConfigId());
+            notifyLiger("update", ci.getEnvId(), config.getKey(), ci.getContext());
         }
     }
 
