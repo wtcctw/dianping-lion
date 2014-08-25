@@ -16,12 +16,12 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dianping.lion.dao.ConfigDao;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.register.ConfigRegisterServiceRepository;
-import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 
 public class NotifyLigerInterceptor implements MethodInterceptor {
@@ -35,7 +35,7 @@ public class NotifyLigerInterceptor implements MethodInterceptor {
     private EnvironmentService environmentService;
     
     @Autowired
-    private ConfigService configService;
+    private ConfigDao configService;
     
     private ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 20, TimeUnit.SECONDS, new ArrayBlockingQueue(10), new RejectedExecutionHandler() {
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
