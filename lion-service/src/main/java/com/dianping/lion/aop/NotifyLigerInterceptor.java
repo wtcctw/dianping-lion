@@ -78,6 +78,8 @@ public class NotifyLigerInterceptor implements MethodInterceptor {
             if(arguments.length == 4 || arguments.length == 5) {
                 Config config = configService.getConfig((Integer) arguments[0]);
                 notifyLiger("update", (Integer)arguments[1], config.getKey(), (String)arguments[2]);
+            } else if(arguments.length == 7) {
+                notifyLiger("update", (Integer) arguments[1], (String) arguments[2], (String) arguments[4]);
             }
         } else if(methodName.equals("deleteInstance")) {
             Object[] arguments = invocation.getArguments();
