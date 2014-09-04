@@ -9,6 +9,11 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
+				<#include "/WEB-INF/pages/system/local-config-diff-form.ftl">
+			</div>
+		</div>
+		<div class="row">
+			<div class="span12">
 				<input type="hidden" id="projectName" name="projectName" value="${project.name}"/>
 				<ul class="noborder smallpadding smallbottommargin breadcrumb">
 				  <li>

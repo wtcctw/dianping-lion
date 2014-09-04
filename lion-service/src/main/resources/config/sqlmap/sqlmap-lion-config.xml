@@ -19,5 +19,8 @@
     <sqlMap resource="config/sqlmap/lion/systemsetting.xml"/>
     <sqlMap resource="config/sqlmap/lion/privilege.xml"/>
     <sqlMap resource="config/sqlmap/lion/service.xml"/>
+    <sqlMap resource="config/sqlmap/lion/globalsearch.xml"/>
+    <sqlMap resource="config/sqlmap/lion/localconfigdiff.xml"/>
+	<sqlMap resource="config/sqlmap/lion/globalconfigdiff.xml"/>
 
 </sqlMapConfig>

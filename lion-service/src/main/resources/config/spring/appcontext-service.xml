@@ -75,6 +75,12 @@
 
 	<bean id="registerServiceFactory" class="com.dianping.lion.register.zookeeper.ConfigZookeeperServiceFactory"/>
 
+	<bean id="globalSearchService" class="com.dianping.lion.service.impl.GlobalSearchServiceImpl"/>
+
+    <bean id="localConfigDiffService" class="com.dianping.lion.service.impl.LocalConfigDiffServiceImpl"/>
+
+	<bean id="globalConfigDiffService" class="com.dianping.lion.service.impl.GlobalConfigDiffServiceImpl"/>
+
 	<!--
 	<bean id="httpMailService" class="com.dianping.lion.service.impl.HttpMailServiceImpl" init-method="init">
 		<property name="host" value="${lion-console.mailserver.host}"></property>

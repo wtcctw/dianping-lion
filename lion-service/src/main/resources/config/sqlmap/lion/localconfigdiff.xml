@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="LocalConfigDiff">
+	<typeAlias alias="LocalConfigDiff" type="com.dianping.lion.entity.LocalConfigDiff" />
+    <typeAlias alias="LocalConfigOverview" type="com.dianping.lion.entity.LocalConfigOverview" />
+
+	<resultMap id="LocalConfigOverviewResult" class="LocalConfigOverview">
+        <result column="key" property="key"/>
+        <result column="value" property="value"/>
+	</resultMap>
+
+    <select id="getLocalConfigOverview" resultMap="LocalConfigOverviewResult" parameterClass="map">
+        SELECT c.key, ci.value
+        FROM config_instance ci INNER JOIN config c ON ci.configId = c.id
+        WHERE c.projectId = #projectId# AND ci.envId = #envId#
+        ORDER BY c.key
+    </select>
+
+</sqlMap>
