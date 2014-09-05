@@ -132,13 +132,13 @@ public class ConfigServiceImpl implements ConfigService {
 		}
 		return configVos;
 	}
-	
+
 	@Override
 	public Paginater findConfigVos(ConfigCriteria criteria, Paginater paginater) {
 	    int projectId = criteria.getProjectId();
 	    int envId = criteria.getEnvId();
 	    HasValueEnum hasValue = EnumUtils.fromEnumProperty(HasValueEnum.class, "value", criteria.getHasValue());
-	    List<Config> configs = configDao.getConfigList(criteria, paginater);
+	    List<Config> configs = configDao.getSearchConfigList(criteria, paginater);
 	    List<ConfigVo> configVos = new ArrayList<ConfigVo>(configs.size());
 	    if (!configs.isEmpty()) {
 	        List<Integer> hasInstanceConfigs = configDao.findHasInstanceConfigs(projectId, envId);
@@ -159,7 +159,7 @@ public class ConfigServiceImpl implements ConfigService {
 	            }
 	        }
 	    }
-	    long count = configDao.getConfigCount(criteria);
+	    long count = configDao.getSearchConfigCount(criteria);
         paginater.setTotalCount(count);
 	    paginater.setResults(configVos);
 	    return paginater;

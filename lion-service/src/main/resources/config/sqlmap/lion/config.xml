@@ -201,6 +201,77 @@
     	LIMIT #paginater.firstResult#, #paginater.maxResults#
     </select>
 
+	<sql id="getSearchConfig_Fragment">
+		<dynamic>
+			<isNotNull prepend="AND" property="criteria.projectId">
+				c.projectId = #criteria.projectId#
+			</isNotNull>
+			<isNotEmpty prepend="AND" property="criteria.key">
+				c.key LIKE CONCAT('%', #criteria.key#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="criteria.value">
+				ci.value LIKE CONCAT('%', #criteria.value#, '%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="getSearchConfigAllCount" parameterClass="map" resultClass="long">
+		SELECT COUNT(*)
+		FROM config c
+		LEFT JOIN (SELECT * FROM config_instance WHERE envId = #criteria.envId#) AS ci
+		ON c.id = ci.configId
+		WHERE 1 = 1
+		<include refid="getSearchConfig_Fragment"/>
+	</select>
+
+	<select id="getSearchConfigAllList" parameterClass="map" resultMap="ConfigResult">
+		SELECT *
+		FROM config c
+		LEFT JOIN (SELECT * FROM config_instance WHERE envId = #criteria.envId#) AS ci
+		ON c.id = ci.configId
+		WHERE 1 = 1
+		<include refid="getSearchConfig_Fragment"/>
+		LIMIT #paginater.firstResult#, #paginater.maxResults#
+	</select>
+
+	<select id="getSearchConfigOnCount" parameterClass="map" resultClass="long">
+		SELECT COUNT(*)
+		FROM config c
+		INNER JOIN (SELECT * FROM config_instance WHERE envId = #criteria.envId#) AS ci
+		ON c.id = ci.configId
+		WHERE 1 = 1
+		<include refid="getSearchConfig_Fragment"/>
+	</select>
+
+	<select id="getSearchConfigOnList" parameterClass="map" resultMap="ConfigResult">
+		SELECT *
+		FROM config c
+		INNER JOIN (SELECT * FROM config_instance WHERE envId = #criteria.envId#) AS ci
+		ON c.id = ci.configId
+		WHERE 1 = 1
+		<include refid="getSearchConfig_Fragment"/>
+		LIMIT #paginater.firstResult#, #paginater.maxResults#
+	</select>
+
+	<select id="getSearchConfigOffCount" parameterClass="map" resultClass="long">
+		SELECT COUNT(*)
+		FROM config c
+		LEFT JOIN (SELECT * FROM config_instance WHERE envId = #criteria.envId#) AS ci
+		ON c.id = ci.configId
+		WHERE ci.configId IS NULL
+		<include refid="getSearchConfig_Fragment"/>
+	</select>
+
+	<select id="getSearchConfigOffList" parameterClass="map" resultMap="ConfigResult">
+		SELECT *
+		FROM config c
+		LEFT JOIN (SELECT * FROM config_instance WHERE envId = #criteria.envId#) AS ci
+		ON c.id = ci.configId
+		WHERE ci.configId IS NULL
+		<include refid="getSearchConfig_Fragment"/>
+		LIMIT #paginater.firstResult#, #paginater.maxResults#
+	</select>
+
     <update id="updateConfig" parameterClass="Config">
     	UPDATE config
     	SET `desc` = #desc#, type = #type#, modifyUserId = #modifyUserId#, modifyTime = NOW(), private = #privatee#, seq = #seq#
