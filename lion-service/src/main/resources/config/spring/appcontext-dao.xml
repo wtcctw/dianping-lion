@@ -56,4 +56,16 @@
         <property name="sqlMapClient" ref="Lion.SqlMapClient"/>
     </bean>
 
+    <bean id="globalSearchDao" class="com.dianping.lion.dao.ibatis.GlobalSearchIbatisDao">
+        <property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+    </bean>
+
+    <bean id="localConfigDiffDao" class="com.dianping.lion.dao.ibatis.LocalConfigDiffIbatisDao">
+        <property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+    </bean>
+
+	<bean id="globalConfigDiffDao" class="com.dianping.lion.dao.ibatis.GlobalConfigDiffIbatisDao">
+		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+	</bean>
+
 </beans>

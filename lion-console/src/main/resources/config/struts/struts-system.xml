@@ -145,7 +145,45 @@
 		<action name="clearCacheAjax" class="com.dianping.lion.web.action.system.CacheManageAction" method="clearCache">
 			<result name="success" type="stream"/>
 		</action>
-		
+
+		<!--Global Search-->
+		<action name="globalSearchForm" class="com.dianping.lion.web.action.system.GlobalSearchAction" method="globalSearchForm">
+			<result name="success">/WEB-INF/pages/system/global-search.ftl</result>
+		</action>
+		<action name="globalSearch" class="com.dianping.lion.web.action.system.GlobalSearchAction" method="globalSearch">
+			<result name="success">/WEB-INF/pages/system/global-search.ftl</result>
+		</action>
+
+        <!--Global Config Diff-->
+        <action name="selectTeam" class="com.dianping.lion.web.action.system.GlobalConfigDiffAction" method="selectTeam">
+            <result name="success">/WEB-INF/pages/system/global-config-diff.ftl</result>
+        </action>
+
+        <action name="selectProductAjax" class="com.dianping.lion.web.action.system.GlobalConfigDiffAction" method="ajaxSelectProduct">
+            <result name="success" type="stream"></result>
+        </action>
+
+		<action name="selectProjectAjax" class="com.dianping.lion.web.action.system.GlobalConfigDiffAction" method="ajaxSelectProject">
+			<result name="success" type="stream"></result>
+		</action>
+
+		<action name="globalConfigDiff" class="com.dianping.lion.web.action.system.GlobalConfigDiffAction" method="globalConfigDiff">
+			<result name="success">/WEB-INF/pages/system/global-config-diff.ftl</result>
+		</action>
+
+        <!--Config Diff-->
+        <action name="localConfigDiff" class="com.dianping.lion.web.action.system.LocalConfigDiffAction" method="localConfigDiff">
+            <result name="success">/WEB-INF/pages/system/local-config-diff.ftl</result>
+        </action>
+
+		<action name="localConfigDiffNumDetail" class="com.dianping.lion.web.action.system.LocalConfigDiffAction" method="localConfigDiffNumDetail">
+			<result name="success">/WEB-INF/pages/system/local-config-diff.ftl</result>
+		</action>
+
+		<action name="localConfigOmitNumDetail" class="com.dianping.lion.web.action.system.LocalConfigDiffAction" method="localConfigOmitNumDetail">
+			<result name="success">/WEB-INF/pages/system/local-config-diff.ftl</result>
+		</action>
+
 	</package>
 
 </struts>

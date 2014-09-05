@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="GlobalSearch">
+	<typeAlias alias="GlobalSearch" type="com.dianping.lion.entity.GlobalSearch" />
+
+	<resultMap id="GlobalSearchResult" class="GlobalSearch">
+        <result column="label" property="envLabel"/>
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="key" property="key"/>
+        <result column="value" property="value"/>
+	</resultMap>
+
+    <select id="getGlobalSearchList" resultMap="GlobalSearchResult" parameterClass="map">
+        SELECT e.label, p.id, p.name, c.key, ci.value
+        FROM config_instance ci INNER JOIN config c ON ci.configId = c.id INNER JOIN project p ON c.projectId = p.id INNER JOIN environment e ON ci.envId = e.id
+        WHERE ci.value LIKE CONCAT('%',#value#,'%')
+        <isNotNull property="key">AND c.key = #key#</isNotNull>
+        <isNotNull property="envId">AND ci.envId = #envId#</isNotNull>
+    </select>
+
+</sqlMap>

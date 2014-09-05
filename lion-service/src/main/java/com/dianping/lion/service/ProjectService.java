@@ -79,4 +79,6 @@ public interface ProjectService {
     void addMember(int projectId, String memberType, int userId);
 
     void deleteMember(int productId, String memberType, int userId);
+
+	 Project getProjectExtra(int projectId);
 }
