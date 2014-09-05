@@ -1,4 +1,5 @@
-<@s.form id="globalSearchForm" cssClass="form-inline lion" action="/system/globalSearch.vhtml" method="get">
+<script type="text/javascript" src="/js/biz/system/global-config-search.js"></script>
+<@s.form id="global-config-search-form" cssClass="form-inline lion" action="/system/globalSearch.vhtml" method="get">
 	<label class="control-label" for="key">KEY：</label>
 	<@s.textfield id="key" name="criteria.key" cssClass="input-medium" maxlength="100"/>
 	<label class="control-label" for="value">VALUE：</label>
