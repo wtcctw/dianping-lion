@@ -214,9 +214,15 @@ public interface ConfigDao {
 	 */
 	List<ConfigStatus> findModifyTime(int projectId, int envId);
 
+
+
 	long getConfigCount(ConfigCriteria criteria);
 
 	List<Config> getConfigList(ConfigCriteria criteria, Paginater paginater);
+
+	long getSearchConfigCount(ConfigCriteria criteria);
+
+	List<Config> getSearchConfigList(ConfigCriteria criteria, Paginater paginater);
 
 	boolean hasConfigReferencedTo(String configKey, int envId);
 
