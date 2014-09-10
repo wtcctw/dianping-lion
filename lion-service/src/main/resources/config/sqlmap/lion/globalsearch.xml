@@ -15,7 +15,7 @@
         SELECT e.label, p.id, p.name, c.key, ci.value
         FROM config_instance ci INNER JOIN config c ON ci.configId = c.id INNER JOIN project p ON c.projectId = p.id INNER JOIN environment e ON ci.envId = e.id
         WHERE ci.value LIKE CONCAT('%',#value#,'%')
-        <isNotNull property="key">AND c.key = #key#</isNotNull>
+        <isNotNull property="key">AND c.key LIKE CONCAT('%',#key#,'%')</isNotNull>
         <isNotNull property="envId">AND ci.envId = #envId#</isNotNull>
     </select>
 

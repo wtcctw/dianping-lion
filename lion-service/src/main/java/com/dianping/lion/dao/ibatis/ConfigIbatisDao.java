@@ -247,9 +247,14 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		      Maps.entry("criteria", criteria).entry("paginater", paginater).get());
 	}
 
+	private boolean isFastSearch(ConfigCriteria criteria) {
+		return ((criteria.getKey() == null || criteria.getKey().isEmpty())
+				&& (criteria.getValue() == null || criteria.getValue().isEmpty()) && criteria.getHasValue() == -1);
+	}
+
 	@Override
 	public long getSearchConfigCount(ConfigCriteria criteria) {
-		if (criteria.getKey() == null && criteria.getValue() == null && criteria.getHasValue() == -1) {
+		if (isFastSearch(criteria)) {
 			return getConfigCount(criteria);
 		}
 
@@ -268,7 +273,7 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Config> getSearchConfigList(ConfigCriteria criteria, Paginater paginater) {
-		if (criteria.getKey() == null && criteria.getValue() == null && criteria.getHasValue() == -1) {
+		if (isFastSearch(criteria)) {
 			return getConfigList(criteria, paginater);
 		}
 
@@ -298,7 +303,7 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 	private List<Config> getSearchConfigAllList(ConfigCriteria criteria, Paginater paginater) {
 		try {
 			return getSqlMapClientTemplate().queryForList("Config.getSearchConfigAllList",
-					Maps.entry("criteria", criteria).entry("paginater", paginater).get());
+			      Maps.entry("criteria", criteria).entry("paginater", paginater).get());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
