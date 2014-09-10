@@ -59,7 +59,7 @@
             <label class="control-label" for="status">Status：</label>
 				<@s.select id="status" name="criteria.hasValue" list="%{@com.dianping.lion.vo.HasValueEnum@values()}" listKey="value"
 				listValue="label" value="criteria.hasValue" cssClass="input-medium"/>
-            <button type="submit" class="btn">搜索</button>
+            <button id="submit-button" type="submit" class="btn">搜索</button>
 		  </@s.form>
         </div>
     </div>
