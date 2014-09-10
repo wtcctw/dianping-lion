@@ -46,7 +46,8 @@
             execution(* com.dianping.lion.service.ConfigService.updateInstance(..)) ||
             execution(* com.dianping.lion.service.ConfigService.createInstance(..)) ||
             execution(* com.dianping.lion.service.ConfigService.deleteInstance(..)) ||
-            execution(* com.dianping.lion.service.ConfigService.deleteInstances(..))"/>
+            execution(* com.dianping.lion.service.ConfigService.deleteInstances(..)) ||
+            execution(* com.dianping.lion.service.ConfigService.deleteConfig(..))"/>
 		<aop:advisor advice-ref="Lion.NotifyLigerAdvice" pointcut-ref="ConfigServiceOperations" order="1"/>
 	</aop:config>
 	

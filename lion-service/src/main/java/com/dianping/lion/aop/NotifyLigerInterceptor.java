@@ -1,6 +1,7 @@
 package com.dianping.lion.aop;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -22,6 +23,7 @@ import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.register.ConfigRegisterService;
 import com.dianping.lion.register.ConfigRegisterServiceRepository;
+import com.dianping.lion.register.zookeeper.ConfigZookeeperService;
 import com.dianping.lion.service.EnvironmentService;
 
 public class NotifyLigerInterceptor implements MethodInterceptor {
@@ -65,7 +67,7 @@ public class NotifyLigerInterceptor implements MethodInterceptor {
         return result;
     }
 
-    private void notifyLiger(MethodInvocation invocation) {
+    private void notifyLiger(MethodInvocation invocation) throws Exception {
         Method method = invocation.getMethod();
         String methodName = method.getName();
         if(methodName.equals("createInstance")) {
@@ -103,10 +105,36 @@ public class NotifyLigerInterceptor implements MethodInterceptor {
             ConfigInstance ci = (ConfigInstance) arguments[0];
             Config config = configService.getConfig(ci.getConfigId());
             notifyLiger("update", ci.getEnvId(), config.getKey(), ci.getContext());
+        } else if(methodName.equals("deleteConfig")) {
+            Object[] arguments = invocation.getArguments();
+            int configId = (Integer) arguments[0];
+            notifyLiger("delete", -1, ""+configId, "");
         }
     }
 
-    void notifyLiger(String type, int envId, String key, String group) {
+    private void notifyLiger(String type, int envId, String key, String group) throws Exception {
+        if(envId > 0) {
+            if(needNotifyLiger(envId)) {
+                ConfigZookeeperService zookeeperService = (ConfigZookeeperService)registerServiceRepository.getRegisterService(envId);
+                String path = "/DP/LIGER/" + type;
+                zookeeperService.ensurePathExists("/DP/LIGER");
+                zookeeperService.set(path, "");
+            }
+        } else {
+            List<Environment> envs = environmentService.findAll();
+            for(Environment env : envs) {
+                notifyLiger(type, env.getId(), key, group);
+            }
+        }
+    }
+    
+    private boolean needNotifyLiger(int envId) {
+        ConfigZookeeperService zookeeperService = (ConfigZookeeperService)registerServiceRepository.getRegisterService(envId);
+        String enabled = zookeeperService.get("lion-console.liger.notify.enabled");
+        return (enabled != null && enabled.equals("true"));
+    }
+    
+    private void notifyLiger2(String type, int envId, String key, String group) {
         ConfigRegisterService registerService = registerServiceRepository.getRegisterService(envId);
         String enabled = registerService.get("lion-console.liger.notify.enabled");
         if(enabled == null || !enabled.equals("true"))

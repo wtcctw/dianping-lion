@@ -166,7 +166,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 		}
 	}
 
-	private void ensurePathExists(String path) throws KeeperException, InterruptedException, IOException {
+	public void ensurePathExists(String path) throws KeeperException, InterruptedException, IOException {
 		if (!existsEnsuredPaths.contains(path)) {
 			if (zookeeper.exists(path, false) == null) {
 				zookeeper.create(path, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -175,7 +175,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 		}
 	}
 
-	private void set(String path, String value) throws UnsupportedEncodingException, KeeperException, InterruptedException, IOException {
+	public void set(String path, String value) throws UnsupportedEncodingException, KeeperException, InterruptedException, IOException {
 		if (value != null) {
 		    value = SecurityUtils.tryDecode(value);
 			set(path, value.getBytes(charset));

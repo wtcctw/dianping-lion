@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
@@ -56,7 +57,7 @@ public class ConfigCache {
 
 	private ConfigDataWatcher configDataWatcher = new ConfigDataWatcher();
 
-	private List<ConfigChange> changeList = new ArrayList<ConfigChange>(); // CopyOnWriteArrayList
+	private List<ConfigChange> changeList = new CopyOnWriteArrayList<ConfigChange>(); // CopyOnWriteArrayList
 
 	private boolean isInit = false;
 

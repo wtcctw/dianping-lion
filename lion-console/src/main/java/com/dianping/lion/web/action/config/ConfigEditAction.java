@@ -155,7 +155,7 @@ public class ConfigEditAction extends AbstractConfigAction {
 	        instance.setEnvId(envId);
     	    configService.createInstance(instance);
     	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(), envId,
-                    "添加泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context, null, value));
+                    "添加泳道配置: " + config.getKey() + "/" + context).key(config.getKey(), context, null, value));
     	    createSuccessStreamResponse();
 	    } catch(RuntimeException ex) {
 	        logger.error("添加泳道配置" + (config==null?configId:config.getKey()) + "/" + context + "失败", ex);
@@ -170,7 +170,7 @@ public class ConfigEditAction extends AbstractConfigAction {
     	    config = configService.getConfig(configId);
     	    configService.deleteInstance(configId, envId, context);
     	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, config.getProjectId(), envId,
-                    "删除泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context));
+                    "删除泳道配置: " + config.getKey() + "/" + context).key(config.getKey(), context));
     	    createSuccessStreamResponse();
 	    } catch(RuntimeException ex) {
 	        logger.error("删除泳道配置" + (config==null?configId:config.getKey()) + "/" + context + "失败", ex);
@@ -188,7 +188,7 @@ public class ConfigEditAction extends AbstractConfigAction {
             instance.setValue(value);
     	    configService.updateInstance(instance);
     	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
-                    "编辑泳道配置: " + (config==null?configId:config.getKey()) + "/" + context).key(config.getKey() + "/" + context, context, oldValue, value));
+                    "编辑泳道配置: " + (config==null?configId:config.getKey()) + "/" + context).key(config.getKey(), context, oldValue, value));
             createSuccessStreamResponse();
 	    } catch(RuntimeException ex) {
 	        logger.error("编辑泳道配置" + config.getKey() + "/" + context + "失败", ex);
