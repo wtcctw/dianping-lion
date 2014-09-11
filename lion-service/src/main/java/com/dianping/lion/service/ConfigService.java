@@ -122,6 +122,8 @@ public interface ConfigService {
 	 */
 	Config findConfigByKey(String key);
 
+	List<Config> findConfigByKeyPattern(String keyPattern);
+
 	List<Config> findConfigByKeys(List<String> keys);
 
 	List<Config> findConfigs(int projectId);

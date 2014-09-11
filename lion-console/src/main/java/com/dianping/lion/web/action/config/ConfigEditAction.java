@@ -18,10 +18,10 @@ package com.dianping.lion.web.action.config;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.dianping.lion.util.GroupPatternUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.json.JSONException;
 import org.apache.struts2.json.JSONUtil;
@@ -124,6 +124,7 @@ public class ConfigEditAction extends AbstractConfigAction {
 				}
 			    ConfigInstance existInstance = configService.findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
 				configService.setConfigValue(configId, envId, ConfigInstance.NO_CONTEXT, value);
+				setJDBCConfigGroup(envId, configFound.getKey(), reference2Key(value));
 				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, configFound.getProjectId(), envId,
 				        "设置配置项: " + configFound.getKey())
 				        .key(configFound.getKey(), ConfigInstance.NO_CONTEXT, existInstance != null ? existInstance.getValue() : null, value));
@@ -142,6 +143,53 @@ public class ConfigEditAction extends AbstractConfigAction {
 			createWarnStreamResponse("保存[" + StringUtils.join(failedEnvs, ',') + "]环境下的配置项值失败.");
 		}
 		return SUCCESS;
+	}
+
+	private String key2Reference(String key) {
+		return "${" + key + "}";
+	}
+
+	private String reference2Key(String reference) {
+		reference = reference.replace("${", "");
+		reference = reference.replace("}", "");
+		return reference;
+	}
+
+	private void setJDBCConfigGroup(int envId, String privateKey, String publicKey) {
+		GroupPatternUtils.JDBCGroup privateJDBCGroup = GroupPatternUtils.typeofJDBC(privateKey);
+		GroupPatternUtils.JDBCGroup publicJDBCGroup = GroupPatternUtils.typeofJDBC(publicKey);
+
+		if (privateJDBCGroup != publicJDBCGroup) {
+			return;
+		} else {
+			String privateJDBCKeyPattern = GroupPatternUtils.getJDBCKeyPattern(privateKey);
+			String publicJDBCKeyPattern = GroupPatternUtils.getJDBCKeyPattern(publicKey);
+
+			List<Config> privateJDBCConfigs = configService.findConfigByKeyPattern(privateJDBCKeyPattern);
+			List<Config> publicJDBCConfigs = configService.findConfigByKeyPattern(publicJDBCKeyPattern);
+
+			pairJDBCConfigs(envId, privateJDBCConfigs, publicJDBCConfigs);
+		}
+	}
+
+	private void pairJDBCConfigs(int envId, List<Config> privateJDBCConfigs, List<Config> publicJDBCConfigs) {
+		for (Config privateJDBCConfig : privateJDBCConfigs) {
+			String privateKey = privateJDBCConfig.getKey();
+			GroupPatternUtils.JDBCGroup privateJDBCGroup = GroupPatternUtils.typeofJDBC(privateKey);
+
+			if (privateJDBCGroup == GroupPatternUtils.JDBCGroup.JDBC_NO) {
+				continue;
+			}
+
+			for (Config publicJDBCConfig : publicJDBCConfigs) {
+				String publicKey = publicJDBCConfig.getKey();
+				GroupPatternUtils.JDBCGroup publicJDBCGroup = GroupPatternUtils.typeofJDBC(publicKey);
+
+				if (privateJDBCGroup == publicJDBCGroup) {
+					configService.setConfigValue(privateJDBCConfig.getId(), envId, ConfigInstance.NO_CONTEXT, key2Reference(publicKey));
+				}
+			}
+		}
 	}
 
 	public String saveContextValue() {

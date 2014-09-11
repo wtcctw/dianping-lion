@@ -87,6 +87,8 @@ public interface ConfigDao {
 	 */
 	List<Config> findConfigByKeys(List<String> keys);
 
+	List<Config> findConfigByKeyPattern(String keyPattern);
+
 	/**
 	 * 更新配置项
 	 * @param config

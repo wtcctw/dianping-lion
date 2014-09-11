@@ -395,6 +395,10 @@ $(function(){
 		$("#edit-config-value-container").html(generateValueComponent(type, "edit-config-value"));
 	});
 
+    $("#submit-button").click(function() {
+        $("#configForm [name='paginater.pageNumber']").val(1);
+    })
+
 	function generateValueComponent(type, inputId) {
 		switch (type) {
 			case Type_String : return generateStringComponent(inputId);
