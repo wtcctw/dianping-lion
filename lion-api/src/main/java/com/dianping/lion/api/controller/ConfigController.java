@@ -71,7 +71,7 @@ public class ConfigController extends BaseController {
         return Result.createSuccessResult(message);
     }
     
-    @RequestMapping(value = "/set", method = RequestMethod.GET)
+    @RequestMapping(value = "/set", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     public Result set(HttpServletRequest request,
                       @RequestParam(value="id") int id, 
