@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import com.dianping.lion.util.GroupPatternUtils;
 import org.apache.commons.collections.map.HashedMap;
@@ -66,8 +67,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 		int configId;
 		try {
 			configId = configService.createConfig(config);
-			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(),
-			        "创建配置项[" + config.getKey() + "]").key(config.getKey()));
+			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(), "创建配置项["
+			      + config.getKey() + "]").key(config.getKey()));
 		} catch (RuntimeBusinessException e) {
 			createErrorStreamResponse(e.getMessage());
 			return SUCCESS;
@@ -85,8 +86,9 @@ public class ConfigEditAction extends AbstractConfigAction {
 					throw NoPrivilegeException.INSTANCE;
 				}
 				configService.createInstance(instance);
-				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
-				        "设置配置项[" + config.getKey() + "]").key(config.getKey(), ConfigInstance.NO_CONTEXT, null, instance.getValue()));
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(),
+				      envId, "设置配置项[" + config.getKey() + "]").key(config.getKey(), ConfigInstance.NO_CONTEXT, null,
+				      instance.getValue()));
 			} catch (NoPrivilegeException e) {
 				String env = envMap.get(envId).getLabel();
 				failedEnvs.add(env + "(无权限)");
@@ -119,15 +121,16 @@ public class ConfigEditAction extends AbstractConfigAction {
 		Integer currentUserId = SecurityUtils.getCurrentUserId();
 		for (Integer envId : envIds) {
 			try {
-				if (!privilegeDecider.hasEditConfigPrivilege(configFound.getProjectId(), envId, configFound.getId(), currentUserId)) {
+				if (!privilegeDecider.hasEditConfigPrivilege(configFound.getProjectId(), envId, configFound.getId(),
+				      currentUserId)) {
 					throw NoPrivilegeException.INSTANCE;
 				}
-			    ConfigInstance existInstance = configService.findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
+				ConfigInstance existInstance = configService.findInstance(configId, envId, ConfigInstance.NO_CONTEXT);
 				configService.setConfigValue(configId, envId, ConfigInstance.NO_CONTEXT, value);
 				setJDBCConfigGroup(envId, configFound.getKey(), reference2Key(value));
-				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, configFound.getProjectId(), envId,
-				        "设置配置项: " + configFound.getKey())
-				        .key(configFound.getKey(), ConfigInstance.NO_CONTEXT, existInstance != null ? existInstance.getValue() : null, value));
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, configFound.getProjectId(),
+				      envId, "设置配置项: " + configFound.getKey()).key(configFound.getKey(), ConfigInstance.NO_CONTEXT,
+				      existInstance != null ? existInstance.getValue() : null, value));
 			} catch (NoPrivilegeException e) {
 				String env = envMap.get(envId).getLabel();
 				failedEnvs.add(env + "(无权限)");
@@ -162,8 +165,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 		if (privateJDBCGroup != publicJDBCGroup) {
 			return;
 		} else {
-			String privateJDBCKeyPattern = GroupPatternUtils.getJDBCKeyPattern(privateKey);
-			String publicJDBCKeyPattern = GroupPatternUtils.getJDBCKeyPattern(publicKey);
+			String privateJDBCKeyPattern = GroupPatternUtils.getPrivateJDBCKeyPattern(privateKey);
+			String publicJDBCKeyPattern = GroupPatternUtils.getPublicJDBCKeyPattern(publicKey);
 
 			List<Config> privateJDBCConfigs = configService.findConfigByKeyPattern(privateJDBCKeyPattern);
 			List<Config> publicJDBCConfigs = configService.findConfigByKeyPattern(publicJDBCKeyPattern);
@@ -186,7 +189,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 				GroupPatternUtils.JDBCGroup publicJDBCGroup = GroupPatternUtils.typeofJDBC(publicKey);
 
 				if (privateJDBCGroup == publicJDBCGroup) {
-					configService.setConfigValue(privateJDBCConfig.getId(), envId, ConfigInstance.NO_CONTEXT, key2Reference(publicKey));
+					configService.setConfigValue(privateJDBCConfig.getId(), envId, ConfigInstance.NO_CONTEXT,
+					      key2Reference(publicKey));
 				}
 			}
 		}
@@ -194,55 +198,57 @@ public class ConfigEditAction extends AbstractConfigAction {
 
 	public String saveContextValue() {
 		Config config = null;
-	    try {
-	        config = configService.getConfig(configId);
-	        ConfigInstance instance = new ConfigInstance();
-	        instance.setConfigId(configId);
-	        instance.setContext(context);
-	        instance.setValue(value);
-	        instance.setEnvId(envId);
-    	    configService.createInstance(instance);
-    	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(), envId,
-                    "添加泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context, null, value));
-    	    createSuccessStreamResponse();
-	    } catch(RuntimeException ex) {
-	        logger.error("添加泳道配置" + (config==null?configId:config.getKey()) + "/" + context + "失败", ex);
-	        createErrorStreamResponse("添加泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
-	    }
-	    return SUCCESS;
+		try {
+			config = configService.getConfig(configId);
+			ConfigInstance instance = new ConfigInstance();
+			instance.setConfigId(configId);
+			instance.setContext(context);
+			instance.setValue(value);
+			instance.setEnvId(envId);
+			configService.createInstance(instance);
+			operationLogService
+			      .createOpLog(new OperationLog(OperationTypeEnum.Config_Add, config.getProjectId(), envId, "添加泳道配置: "
+			            + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context, null, value));
+			createSuccessStreamResponse();
+		} catch (RuntimeException ex) {
+			logger.error("添加泳道配置" + (config == null ? configId : config.getKey()) + "/" + context + "失败", ex);
+			createErrorStreamResponse("添加泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
+		}
+		return SUCCESS;
 	}
 
 	public String deleteContextValue() {
 		Config config = null;
-	    try {
-    	    config = configService.getConfig(configId);
-    	    configService.deleteInstance(configId, envId, context);
-    	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, config.getProjectId(), envId,
-                    "删除泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context));
-    	    createSuccessStreamResponse();
-	    } catch(RuntimeException ex) {
-	        logger.error("删除泳道配置" + (config==null?configId:config.getKey()) + "/" + context + "失败", ex);
-            createErrorStreamResponse("删除泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
-	    }
-        return SUCCESS;
+		try {
+			config = configService.getConfig(configId);
+			configService.deleteInstance(configId, envId, context);
+			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, config.getProjectId(),
+			      envId, "删除泳道配置: " + config.getKey() + "/" + context).key(config.getKey() + "/" + context, context));
+			createSuccessStreamResponse();
+		} catch (RuntimeException ex) {
+			logger.error("删除泳道配置" + (config == null ? configId : config.getKey()) + "/" + context + "失败", ex);
+			createErrorStreamResponse("删除泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
+		}
+		return SUCCESS;
 	}
 
 	public String updateContextValue() {
 		Config config = null;
-	    try {
-    	    config = configService.getConfig(configId);
-    	    ConfigInstance instance = configService.findInstance(configId, envId, context);
-    	    String oldValue = instance.getValue();
-            instance.setValue(value);
-    	    configService.updateInstance(instance);
-    	    operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
-                    "编辑泳道配置: " + (config==null?configId:config.getKey()) + "/" + context).key(config.getKey() + "/" + context, context, oldValue, value));
-            createSuccessStreamResponse();
-	    } catch(RuntimeException ex) {
-	        logger.error("编辑泳道配置" + config.getKey() + "/" + context + "失败", ex);
-            createErrorStreamResponse("编辑泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
-	    }
-        return SUCCESS;
+		try {
+			config = configService.getConfig(configId);
+			ConfigInstance instance = configService.findInstance(configId, envId, context);
+			String oldValue = instance.getValue();
+			instance.setValue(value);
+			configService.updateInstance(instance);
+			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Edit, config.getProjectId(), envId,
+			      "编辑泳道配置: " + (config == null ? configId : config.getKey()) + "/" + context).key(config.getKey() + "/"
+			      + context, context, oldValue, value));
+			createSuccessStreamResponse();
+		} catch (RuntimeException ex) {
+			logger.error("编辑泳道配置" + config.getKey() + "/" + context + "失败", ex);
+			createErrorStreamResponse("编辑泳道配置" + config.getKey() + "/" + context + "失败: \n" + ex.getMessage());
+		}
+		return SUCCESS;
 	}
 
 	public String loadDefaultValue() {
@@ -259,7 +265,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 			if (prevEnv != null) {
 				instanceFound = configService.findDefaultInstance(configId, prevEnv.getId());
 				if (instanceFound != null) {
-					if (privilegeDecider.hasReadConfigPrivilege(configFound.getProjectId(), prevEnv.getId(), configId, currentUserId)) {
+					if (privilegeDecider.hasReadConfigPrivilege(configFound.getProjectId(), prevEnv.getId(), configId,
+					      currentUserId)) {
 						message = "Value预填[" + prevEnv.getLabel() + "]环境的值.";
 					} else {
 						instanceFound = null;
@@ -272,107 +279,125 @@ public class ConfigEditAction extends AbstractConfigAction {
 			}
 		}
 		try {
-            createStreamResponse("{\"code\":0, \"value\":" + JSONObject.quote(instanceFound != null ? instanceFound.getValue() : "")
-                    + ", \"privilege\":" + JSONUtil.serialize(getEditPrivileges(configFound.getProjectId(), configId)) + ", \"msg\":\"" + (message != null ? message : "") + "\"}");
-        } catch (JSONException e) {
-            logger.error("get config edit privilege failed.", e);
-            createErrorStreamResponse("get config edit privilege failed.");
-        }
+			createStreamResponse("{\"code\":0, \"value\":"
+			      + JSONObject.quote(instanceFound != null ? instanceFound.getValue() : "") + ", \"privilege\":"
+			      + JSONUtil.serialize(getEditPrivileges(configFound.getProjectId(), configId)) + ", \"msg\":\""
+			      + (message != null ? message : "") + "\"}");
+		} catch (JSONException e) {
+			logger.error("get config edit privilege failed.", e);
+			createErrorStreamResponse("get config edit privilege failed.");
+		}
 		return SUCCESS;
 	}
 
 	public String decodePassword() {
-	    config = configService.getConfig(configId);
-        String password = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
-        String decodedPassword = SecurityUtils.tryDecode(password);
-        createStreamResponse(0, "Password: " + decodedPassword);
-        return SUCCESS;
+		config = configService.getConfig(configId);
+		String password = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+		String decodedPassword = SecurityUtils.tryDecode(password);
+		createStreamResponse(0, "Password: " + decodedPassword);
+		return SUCCESS;
 	}
-	
-    public String testJdbcConnection() {
-        String url = null;
-        Connection conn = null;
-        try {
-            Config config = configService.getConfig(configId);
-            String urlKey = config.getKey();
-            String keyPrefix = urlKey.substring(0, urlKey.lastIndexOf('.'));
-            
-            url = configService.resolveConfigValue(configId, envId, ConfigInstance.NO_CONTEXT);
-            assertNotNull(url, "JDBC url is null, key: " + config.getKey());
-            // to avoid waiting for a long time before the getConnection(url) returns, append timeout params to the url
-            url = appendTimeoutParams(url);
-            
-            String driverClassKey = keyPrefix + ".driverClassName";
-            config = configService.findConfigByKey(driverClassKey);
-            String driverClassName = null;
-            if(config != null) 
-                driverClassName = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
-            if(driverClassName == null) {
-                // infer driver class from url
-                driverClassName = getDriverFromUrl(url);
-                assertNotNull(driverClassName, "JDBC driver class name is null, url: " + url);
-            }
 
-            Class.forName(driverClassName);
-            
-            String usernameKey = keyPrefix + ".username";
-            config = configService.findConfigByKey(usernameKey);
-            assertNotNull(config, "No config for key: " + usernameKey);
-            String username = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
-            assertNotNull(username, "JDBC user name is null, key: " + usernameKey);
-            
-            String passwordKey = keyPrefix + ".password";
-            config = configService.findConfigByKey(passwordKey);
-            assertNotNull(config, "No config for key: " + passwordKey);
-            String password = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
-            assertNotNull(password, "JDBC password is null, key: " + passwordKey);
-            
-            String decodedPassword = SecurityUtils.tryDecode(password);
-            conn = DriverManager.getConnection(url, username, decodedPassword);
-            createStreamResponse(0, "Connected to: " + url + "\n\tusername: " + username + "\n\tpassword: " + password);
-        } catch (Exception ex) {
-            createStreamResponse(-1, "Failed to connect to: " + url + ", " + ex.getMessage());
-        } finally {
-            if(conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
-        return SUCCESS;
-    }
-	
-    private void assertNotNull(Object value, String message) {
-        if(value == null) {
-            throw new RuntimeException(message);
-        }
-    }
-    
-    private String appendTimeoutParams(String url) {
-        if(url.indexOf("jdbc:mysql:") != -1) {
-            return url.indexOf('?') == -1 ? url + "?connectTimeout=5000" : url + "&connectTimeout=5000";
-        } else if(url.indexOf("jdbc:postgresql:") != -1) {
-            return url.indexOf('?') == -1 ? url + "?loginTimeout=5" : url + "&loginTimeout=5";
-        } else if(url.indexOf("jdbc:sqlserver:") != -1) {
-            return url + ";loginTimeout=5";
-        }
-        // unsupported database schema
-        return url;
-    }
-    
-    private String getDriverFromUrl(String url) {
-        if(url.indexOf("jdbc:mysql:") != -1) {
-            return "com.mysql.jdbc.Driver";
-        } else if(url.indexOf("jdbc:postgresql:") != -1) {
-            return "org.postgresql.Driver";
-        } else if(url.indexOf("jdbc:sqlserver:") != -1) {
-            return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-        }
-        // unsupported database schema
-        return null;
-    }
-    
+	private boolean isOnline() {
+		Environment environment = environmentService.findEnvByID(envId);
+		return environment.isOnline();
+	}
+
+	public String testJdbcConnection() {
+		String url = null;
+		Connection conn = null;
+		try {
+			Config config = configService.getConfig(configId);
+			String urlKey = config.getKey();
+			String keyPrefix = urlKey.substring(0, urlKey.lastIndexOf('.'));
+
+			url = configService.resolveConfigValue(configId, envId, ConfigInstance.NO_CONTEXT);
+			assertNotNull(url, "JDBC url is null, key: " + config.getKey());
+			// to avoid waiting for a long time before the getConnection(url) returns, append timeout params to the url
+			url = appendTimeoutParams(url);
+
+			String driverClassKey = keyPrefix + ".driverClassName";
+			config = configService.findConfigByKey(driverClassKey);
+			String driverClassName = null;
+			if (config != null)
+				driverClassName = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+			if (driverClassName == null) {
+				// infer driver class from url
+				driverClassName = getDriverFromUrl(url);
+				assertNotNull(driverClassName, "JDBC driver class name is null, url: " + url);
+			}
+
+			Class.forName(driverClassName);
+
+			String usernameKey = keyPrefix + ".username";
+			config = configService.findConfigByKey(usernameKey);
+			assertNotNull(config, "No config for key: " + usernameKey);
+			String username = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+			assertNotNull(username, "JDBC user name is null, key: " + usernameKey);
+
+			String passwordKey = keyPrefix + ".password";
+			config = configService.findConfigByKey(passwordKey);
+			assertNotNull(config, "No config for key: " + passwordKey);
+			String password = configService.resolveConfigValue(config.getId(), envId, ConfigInstance.NO_CONTEXT);
+			assertNotNull(password, "JDBC password is null, key: " + passwordKey);
+
+			String decodedPassword = SecurityUtils.tryDecode(password);
+
+			if (isOnline()) {
+				conn = DriverManager.getConnection(url, username, decodedPassword);
+				createStreamResponse(0, "Connected to: " + url + "\n\tusername: " + username + "\n\tpassword: " + password);
+			} else {
+				createStreamResponse(0, "Connection information:" + "\n\turl: " + url + ",\n\tusername: " + username
+				      + ",\n\tpassword: " + decodedPassword + ",\n\tdriverClass: " + driverClassName);
+			}
+
+		} catch (Exception ex) {
+			if (isOnline()) {
+				createStreamResponse(-1, "Failed to connect to: " + url + ", " + ex.getMessage());
+			} else {
+				createStreamResponse(-1, "Miss connection information: " + "\n\t" + ex.getMessage());
+			}
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		return SUCCESS;
+	}
+
+	private void assertNotNull(Object value, String message) {
+		if (value == null) {
+			throw new RuntimeException(message);
+		}
+	}
+
+	private String appendTimeoutParams(String url) {
+		if (url.indexOf("jdbc:mysql:") != -1) {
+			return url.indexOf('?') == -1 ? url + "?connectTimeout=5000" : url + "&connectTimeout=5000";
+		} else if (url.indexOf("jdbc:postgresql:") != -1) {
+			return url.indexOf('?') == -1 ? url + "?loginTimeout=5" : url + "&loginTimeout=5";
+		} else if (url.indexOf("jdbc:sqlserver:") != -1) {
+			return url + ";loginTimeout=5";
+		}
+		// unsupported database schema
+		return url;
+	}
+
+	private String getDriverFromUrl(String url) {
+		if (url.indexOf("jdbc:mysql:") != -1) {
+			return "com.mysql.jdbc.Driver";
+		} else if (url.indexOf("jdbc:postgresql:") != -1) {
+			return "org.postgresql.Driver";
+		} else if (url.indexOf("jdbc:sqlserver:") != -1) {
+			return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		}
+		// unsupported database schema
+		return null;
+	}
+
 	/**
 	 * @return the project
 	 */
@@ -388,7 +413,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 	}
 
 	/**
-	 * @param config the config to set
+	 * @param config
+	 *           the config to set
 	 */
 	public void setConfig(Config config) {
 		this.config = config;
@@ -402,7 +428,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 	}
 
 	/**
-	 * @param projectId the projectId to set
+	 * @param projectId
+	 *           the projectId to set
 	 */
 	public void setPid(int projectId) {
 		this.projectId = projectId;
@@ -416,7 +443,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 	}
 
 	/**
-	 * @param trim the trim to set
+	 * @param trim
+	 *           the trim to set
 	 */
 	public void setTrim(boolean trim) {
 		this.trim = trim;
@@ -430,18 +458,17 @@ public class ConfigEditAction extends AbstractConfigAction {
 	}
 
 	/**
-	 * @param environments the environments to set
 	 */
 	public void setEnvIds(List<Integer> envIds) {
 		this.envIds = envIds;
 	}
 
 	public String getContext() {
-	    return context;
+		return context;
 	}
 
 	public void setContext(String context) {
-	    this.context = context;
+		this.context = context;
 	}
 
 	/**
@@ -452,7 +479,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 	}
 
 	/**
-	 * @param value the value to set
+	 * @param value
+	 *           the value to set
 	 */
 	public void setValue(String value) {
 		this.value = value;
@@ -466,7 +494,8 @@ public class ConfigEditAction extends AbstractConfigAction {
 	}
 
 	/**
-	 * @param configId the configId to set
+	 * @param configId
+	 *           the configId to set
 	 */
 	public void setConfigId(int configId) {
 		this.configId = configId;
