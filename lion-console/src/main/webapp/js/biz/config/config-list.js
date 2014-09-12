@@ -357,6 +357,10 @@ $(function(){
 		return false;
 	});
 
+    $("#submit-button").click(function() {
+        $("#configForm [name='paginater.pageNumber']").val(1);
+    });
+
 	function reloadConfigListTable() {
 		$("#config-list-container").load("/config/configListAjax.vhtml".prependcontext(), $.param({
 			"pid" : $("[name='pid']").val(),
