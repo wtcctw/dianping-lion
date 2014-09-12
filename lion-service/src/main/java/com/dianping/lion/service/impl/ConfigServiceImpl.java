@@ -562,6 +562,11 @@ public class ConfigServiceImpl implements ConfigService {
 	public List<Config> findConfigByKeys(List<String> keys) {
 		return configDao.findConfigByKeys(keys);
 	}
+
+	@Override
+	public List<Config> findConfigByKeyPattern(String keyPattern) {
+		return configDao.findConfigByKeyPattern(keyPattern);
+	}
 	
 	@Override
 	public List<ConfigInstance> findInstancesByKeys(List<String> keys, int envId, String group) {

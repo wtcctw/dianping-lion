@@ -58,6 +58,10 @@
 		SELECT * FROM config WHERE `key` LIKE #prefix# ORDER BY seq, id
     </select>
 
+	<select id="findConfigByKeyPattern" resultMap="ConfigResult" parameterClass="string">
+		SELECT * FROM config WHERE `key` LIKE CONCAT(#keyPattern#, '%')
+	</select>
+
     <select id="findInstancesByProjectAndEnv" resultMap="ConfigInstanceResult" parameterClass="map">
 		SELECT i.*
 		FROM config c inner join config_instance i on c.id = i.configId

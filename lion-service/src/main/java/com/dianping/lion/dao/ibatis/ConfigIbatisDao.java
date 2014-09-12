@@ -142,6 +142,20 @@ public class ConfigIbatisDao extends SqlMapClientDaoSupport implements ConfigDao
 		return getSqlMapClientTemplate().queryForList("Config.findConfigByKeys", keys);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Config> findConfigByKeyPattern(String keyPattern) {
+		if (keyPattern == null) {
+			return Collections.emptyList();
+		}
+		try {
+			return getSqlMapClientTemplate().queryForList("Config.findConfigByKeyPattern", keyPattern);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	@Override
 	public ConfigInstance findInstance(int configId, int envId, String context) {
 		return (ConfigInstance) getSqlMapClientTemplate().queryForObject(
