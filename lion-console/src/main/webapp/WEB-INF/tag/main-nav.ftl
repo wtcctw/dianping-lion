@@ -1,3 +1,4 @@
+<script type="text/javascript" src="/js/biz/system/dropdown-menu.js"></script>
 <@s.iterator value="navMenus.menuOrGroups" var="menuOrGroup">
 	<@s.if test="%{#menuOrGroup instanceof com.dianping.lion.web.tag.MenuManager$Menu}">
 		<@s.if test="%{#menuOrGroup.name == @com.dianping.lion.ConsoleConstants@MENU_PROJECT}">

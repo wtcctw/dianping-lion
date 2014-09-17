@@ -22,6 +22,11 @@
 		<body-content>empty</body-content>
 	</tag>
 	<tag>
+		<name>MainGlobalSearch</name>
+		<tag-class>com.dianping.lion.web.tag.MainGlobalSearch</tag-class>
+		<body-content>empty</body-content>
+	</tag>
+	<tag>
 		<name>Security</name>
 		<tag-class>com.dianping.lion.web.tag.SecurityTag</tag-class>
 		<attribute>
