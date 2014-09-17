@@ -30,7 +30,7 @@
 		<menu name="jobmanagement" label="任务管理" url="/system/jobManagement.vhtml" resource="res_job"/>
 		<menu name="cachemanagement" label="缓存管理" url="/system/cacheManage.vhtml" resource="res_cache"/>
         <menu name="globalSearchForm" label="配置搜索" url="/system/globalSearchForm.vhtml"/>
-        <menu name="globalConfigDiff" label="配置比较" url="/system/selectTeam.vhtml" resource="res_security"/>
+        <menu name="globalConfigDiff" label="配置比较" url="/system/selectTeam.vhtml" resource="res_oplog_view"/>
 		<!-- 
 		<menu name="syssetting" label="系统设置" url="/"/>
 		<menu sperator="true"/>
