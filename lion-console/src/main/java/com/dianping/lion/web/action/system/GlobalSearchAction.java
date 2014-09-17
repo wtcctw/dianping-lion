@@ -3,6 +3,8 @@ package com.dianping.lion.web.action.system;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.GlobalSearch;
 import com.dianping.lion.service.GlobalSearchService;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.vo.GlobalSearchCriteria;
 import com.dianping.lion.web.action.config.AbstractConfigAction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class GlobalSearchAction extends AbstractConfigAction {
 
 	@Autowired
 	private GlobalSearchService globalSearchService;
+
+	@Autowired
+	private ProjectPrivilegeDecider projectPrivilegeDecider;
 
 	static {
 		ALL_ENV.setId(ALL_ENV_ID);
@@ -58,7 +63,19 @@ public class GlobalSearchAction extends AbstractConfigAction {
 		}
 
 		this.globalSearches = globalSearchService.getGlobalSearchList(criteria);
+
+		hideConfigByPrivilege(globalSearches);
+
 		return SUCCESS;
+	}
+
+	private void hideConfigByPrivilege(List<GlobalSearch> globalSearches) {
+		for (GlobalSearch globalSearch : globalSearches) {
+			if (!projectPrivilegeDecider.hasReadConfigPrivilege(globalSearch.getId(),
+					globalSearch.getEnvId(), globalSearch.getConfigId(), SecurityUtils.getCurrentUserId())) {
+				globalSearch.setValue("=无权查看=");
+			}
+		}
 	}
 
 	public boolean getHasSearched() {
