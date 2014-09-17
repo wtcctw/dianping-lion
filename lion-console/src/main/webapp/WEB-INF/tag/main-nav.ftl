@@ -6,7 +6,7 @@
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><@s.property value="name"/> <b class="caret"></b></a>
 				<@s.if test="%{#team.hasProjectsMoreThan(12)}">
-				<ul class="dropdown-menu big-menu">
+				<ul class="dropdown-menu">
 					<div class="pop-panel pp_location" id="G_loc-panel" style="visibility: visible; ">
 						<@s.iterator value="#team.products" var="product">
 						<dl>
