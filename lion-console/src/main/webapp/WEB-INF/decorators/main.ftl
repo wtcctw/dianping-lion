@@ -50,7 +50,7 @@
 		        <ul class="nav pull-right">
 		        	<li><@lion.UserLogin/></li>
 		        </ul>
-	          	<ul class="nav pull-right">
+	          	<ul class="nav">
 	          		<@lion.MainNav/>
 	          	</ul>
         	</div><!-- /.nav-collapse -->
@@ -62,6 +62,7 @@
 		<div class="row-fluid">
 			<div class="span12"><@decorator.body/></div>
 		</div>
+		 <@lion.MainGlobalSearch/>
 	</div>
 	
 	<div class="container">

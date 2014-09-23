@@ -27,6 +27,8 @@
 			      <div class="controls lion-controls2" style="width:390px;">
 			      		<input type="checkbox" id="edit-select-all-env"/><label for="edit-select-all-env" class="help-inline">全选线下</label>
 			      		&nbsp;&nbsp;
+                   <input type="checkbox" id="edit-select-all-online-env"/><label for="edit-select-all-online-env" class="help-inline">全选线上</label>
+                   &nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
 			      		<input type="checkbox" name="edit-config-env" online="${online?string("true","false")}" id="edit-config-env-${id}" value="${id}"
 			      		><label for="edit-config-env-${id}" class="help-inline">${label}</label>

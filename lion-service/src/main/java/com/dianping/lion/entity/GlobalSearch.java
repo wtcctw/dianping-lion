@@ -23,6 +23,12 @@ public class GlobalSearch implements Serializable {
 
 	private String value;
 
+	private int configId;
+
+	private int projectId;
+
+	private int envId;
+
 	public String getAbbrevValue() {
 		return StringUtils.cutString(value, MAX_VALUE_DISPLAY_LEN);
 	}
@@ -75,4 +81,27 @@ public class GlobalSearch implements Serializable {
 		this.value = value;
 	}
 
+	public int getConfigId() {
+		return configId;
+	}
+
+	public void setConfigId(int configId) {
+		this.configId = configId;
+	}
+
+	public int getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
+	}
+
+	public int getEnvId() {
+		return envId;
+	}
+
+	public void setEnvId(int envId) {
+		this.envId = envId;
+	}
 }

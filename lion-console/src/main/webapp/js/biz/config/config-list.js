@@ -383,6 +383,10 @@ $(function(){
 		$(":checkbox[name='edit-config-env'][online='false']:enabled").attr("checked", $(this).is(":checked"));
 	});
 
+    $("#edit-select-all-online-env").click(function() {
+        $(":checkbox[name='edit-config-env'][online='true']:enabled").attr("checked", $(this).is(":checked"));
+    });
+
 	$("#config-type-selector").change(function() {
 		var type = parseInt($(this).val());
 		clearValidateError($("#config-value"));
@@ -580,6 +584,7 @@ $(function(){
 		$("#edit-trim-checkbox").attr("checked", true);
 		resetConfigFormValidation();
 		$("#edit-select-all-env,[name='edit-config-env']").attr("checked", false);
+        $("#edit-select-all-online-env,[name='edit-config-env']").attr("checked", false);
 		$("#edit-save-btn,#edit-more-btn").attr("disabled", false);
 	}
 
