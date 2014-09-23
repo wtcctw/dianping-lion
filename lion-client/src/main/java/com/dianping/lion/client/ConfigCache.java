@@ -111,8 +111,7 @@ public class ConfigCache {
 	 */
 	public static ConfigCache getInstance() throws LionException {
 		if (instance == null) {
-			throw new LionException(
-			      "ConfigCache has not been initialized. Please invoke ConfigCache.getInstance(String address) before this operation");
+		    instance = getInstance(EnvZooKeeperConfig.getZKAddress());
 		}
 		return instance;
 	}
