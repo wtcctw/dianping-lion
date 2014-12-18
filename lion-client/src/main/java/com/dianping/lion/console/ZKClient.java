@@ -9,16 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dianping.lion.Constants;
-import com.dianping.lion.Utils;
 import com.dianping.lion.client.LionException;
 import com.dianping.lion.client.ZooKeeperWrapper;
+import com.dianping.lion.util.EncodeUtils;
 
 /**
  * <p>
@@ -33,7 +34,8 @@ import com.dianping.lion.client.ZooKeeperWrapper;
  */
 public class ZKClient {
 
-	private static Logger logger = Logger.getLogger(ZKClient.class);
+	private static Logger logger = LoggerFactory.getLogger(ZKClient.class);
+	
 	private static Map<String,ZKClient> clientMap = new ConcurrentHashMap<String,ZKClient>();
 	private ZooKeeperWrapper zk;
 
@@ -127,9 +129,9 @@ public class ZKClient {
 		try {
 			String timestampPath = this.parentPath+"/"+key+"/"+Constants.CONFIG_TIMESTAMP;
 			if(this.zk.exists(timestampPath, false) != null){
-				this.zk.setData(timestampPath, Utils.getLongBytes(new Date().getTime()), -1);
+				this.zk.setData(timestampPath, EncodeUtils.getLongBytes(new Date().getTime()), -1);
 			}else{
-				this.zk.create(timestampPath, Utils.getLongBytes(new Date().getTime()),  Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+				this.zk.create(timestampPath, EncodeUtils.getLongBytes(new Date().getTime()),  Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 			}
 			this.zk.setData(this.parentPath+"/"+key, value.getBytes(Constants.CHARSET), -1);
 

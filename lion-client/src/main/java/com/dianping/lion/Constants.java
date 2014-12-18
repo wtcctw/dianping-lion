@@ -23,6 +23,7 @@ public class Constants {
 	public static final String DP_PATH = "/DP";
 	public static final String CONFIG_PATH = "/DP/CONFIG";
 	public static final String CONFIG_TIMESTAMP = "TIMESTAMP";
+	public static final String CONFIG_CONTEXTVAL = "CONTEXTVALUE";
 	public static final String SERVICE_PATH ="/DP/SERVER";
 	public static final String WEIGHT_PATH ="/DP/WEIGHT";
 	public static final String PLACEHOLD="^";
@@ -30,6 +31,8 @@ public class Constants {
 	public static final String KEY_SWIMLANE = "swimlane";
 	public static final String ENVIRONMENT_FILE = "/data/webapps/appenv";
 	public static final String PROPERTIES_FILE = "config/applicationContext.properties";
+	
+	public static final int DEFAULT_SESSION_TIMEOUT = 60000;
 
 	public static Set<String> avatarBizKeySet = new HashSet<String>();
 

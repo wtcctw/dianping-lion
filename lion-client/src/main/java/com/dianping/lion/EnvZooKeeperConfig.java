@@ -5,10 +5,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EnvZooKeeperConfig {
-    private static Logger logger = Logger.getLogger(EnvZooKeeperConfig.class);
+    
+    private static Logger logger = LoggerFactory.getLogger(EnvZooKeeperConfig.class);
     
     private static String FILENAME = "appenv";
     private static String DEFAULT_LOCATION = "/data/webapps/appenv";

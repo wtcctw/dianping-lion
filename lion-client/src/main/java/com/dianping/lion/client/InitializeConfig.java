@@ -5,7 +5,6 @@ package com.dianping.lion.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +15,8 @@ import java.util.Set;
 
 import jodd.bean.BeanUtil;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
@@ -50,7 +50,8 @@ import com.dianping.lion.EnvZooKeeperConfig;
  */
 public class InitializeConfig implements BeanFactoryPostProcessor, PriorityOrdered, BeanNameAware, BeanFactoryAware {
 
-    private static Logger logger = Logger.getLogger(InitializeConfig.class);
+    private static Logger logger = LoggerFactory.getLogger(InitializeConfig.class);
+    
     /** Default placeholder prefix: "${" */
     public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
     /** Default placeholder suffix: "}" */

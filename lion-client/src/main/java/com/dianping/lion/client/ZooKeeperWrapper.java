@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.ConnectionLossException;
@@ -23,6 +22,8 @@ import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -38,7 +39,7 @@ import org.apache.zookeeper.data.Stat;
  */
 public class ZooKeeperWrapper implements Watcher {
 
-    private static Logger logger = Logger.getLogger(ZooKeeperWrapper.class);
+    private static Logger logger = LoggerFactory.getLogger(ZooKeeperWrapper.class);
 
     private ZooKeeper zk;
 

@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.client.zookeeper.SessionRecoverableZookeeper;
-import com.dianping.lion.client.zookeeper.ZookeeperConstants;
 import com.dianping.lion.exception.ReadFromZookeeperException;
 import com.dianping.lion.exception.RegisterToZookeeperException;
 import com.dianping.lion.exception.UnregisterFromZookeeperException;
@@ -50,15 +49,15 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 
 	private final String serverIps;
 
-	private int sessionTimeout = ZookeeperConstants.DEFAULT_SESSION_TIMEOUT;
+	private int sessionTimeout = 60000;
 
-	private String parentPath = ZookeeperConstants.PATH_CONFIG;
+	private String parentPath = "/DP/CONFIG";
 
-	private String contextNode = ZookeeperConstants.NODE_CONTEXTVAL;
+	private String contextNode = "CONTEXTVALUE";
 
-	private String timestampNode = ZookeeperConstants.NODE_TIMESTAMP;
+	private String timestampNode = "TIMESTAMP";
 
-	private String charset = ZookeeperConstants.CONFIG_CHARSET;
+	private String charset = "UTF-8";
 
 	private SessionRecoverableZookeeper zookeeper;
 

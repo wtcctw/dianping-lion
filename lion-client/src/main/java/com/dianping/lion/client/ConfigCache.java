@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,20 +14,18 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
-
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.EnvZooKeeperConfig;
-import com.dianping.lion.Utils;
+import com.dianping.lion.util.EncodeUtils;
 
 /**
  * <p>
@@ -44,7 +41,7 @@ import com.dianping.lion.Utils;
  */
 public class ConfigCache {
 
-	private static Logger logger = Logger.getLogger(ConfigCache.class);
+	private static Logger logger = LoggerFactory.getLogger(ConfigCache.class);
 
 	private static volatile ConfigCache instance;
 
@@ -167,8 +164,6 @@ public class ConfigCache {
 			
 			loadAppenv();
 			
-			registerSignalHandler();
-			
 			if(!localMode) {
     			Thread t = new Thread(new CheckConfig());
     			t.setDaemon(true);
@@ -220,33 +215,6 @@ public class ConfigCache {
 				in.close();
 			}
 		}
-	}
-	
-	private void registerSignalHandler() {
-	    try {
-    		Signal.handle(new Signal("USR2"), new SignalHandler() {
-    
-    			@Override
-    			public void handle(Signal arg0) {
-    				System.out.println("xxxxxxxxxx=====SIGNAL=====xxxxxxxxxx");
-    				System.out.println("Environment:");
-    				for(Entry entry : appenv.entrySet()) {
-    					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
-    				}
-    				System.out.println("Cached Configurations:");
-    				for(Entry<String, StringValue> entry : cache.entrySet()) {
-    					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
-    				}
-    				System.out.println("Local Properties:");
-    				for(Entry entry : localProps.entrySet()) {
-    					System.out.println("\t" + entry.getKey() + " => " + entry.getValue());
-    				}
-    			}
-    			
-    		});
-	    } catch(IllegalArgumentException e) {
-	        logger.warn("Failed to register signal handler: " + e.getMessage());
-	    }
 	}
 	
 	// FIXME if key is null, should throw NullPointerException
@@ -347,7 +315,7 @@ public class ConfigCache {
             cache.put(key, value);
             // Update path <-> timestamp
             if( exists(timestampPath) ) {
-                Long timestamp = Utils.getLong(this.zk.getData(timestampPath, false, null));
+                Long timestamp = EncodeUtils.getLong(this.zk.getData(timestampPath, false, null));
                 timestampMap.put(path, timestamp);
             }
             return value;
@@ -432,7 +400,7 @@ public class ConfigCache {
     			    String tsPath = getTimestampPath(path);
 					zk.removeWatcher(path);
 					if( exists(tsPath) ) {
-						Long timestamp = Utils.getLong(zk.getData(tsPath, false, null));
+						Long timestamp = EncodeUtils.getLong(zk.getData(tsPath, false, null));
 						Long timestamp_ = timestampMap.get(path);
 						if (timestamp_ == null || timestamp > timestamp_) {
 							timestampMap.put(path, timestamp);
@@ -540,7 +508,7 @@ public class ConfigCache {
 							    }
 								String timestampPath = getTimestampPath(path);
 								if (exists(timestampPath)) {
-									Long timestamp = Utils.getLong(zk.getData(timestampPath, false, null));
+									Long timestamp = EncodeUtils.getLong(zk.getData(timestampPath, false, null));
 									Long timestamp_ = timestampMap.get(path);
 									if (timestamp_ == null || timestamp > timestamp_) {
 										timestampMap.put(path, timestamp);
