@@ -28,9 +28,15 @@ public class Constants {
 	public static final String WEIGHT_PATH ="/DP/WEIGHT";
 	public static final String PLACEHOLD="^";
 	public static final String PATH_SEPARATOR = "/";
-	public static final String KEY_SWIMLANE = "swimlane";
 	public static final String ENVIRONMENT_FILE = "/data/webapps/appenv";
 	public static final String PROPERTIES_FILE = "config/applicationContext.properties";
+	
+	public static final String KEY_DEPLOYENV = "deployenv";
+	public static final String KEY_ZKSERVER = "zkserver";
+	public static final String KEY_SWIMLANE = "swimlane";
+	public static final String DEFAULT_DEPLOYENV = "dev";
+	public static final String DEFAULT_ZKSERVER = "dev.lion.dp:2181";
+	public static final String DEFAULT_SWIMLANE = "";
 	
 	public static final int DEFAULT_SESSION_TIMEOUT = 60000;
 
