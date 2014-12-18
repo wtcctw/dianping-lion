@@ -14,7 +14,7 @@ import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
-import com.dianping.lion.Utils;
+import com.dianping.lion.util.EncodeUtils;
 
 public class ZooKeeperWrapperMock extends ZooKeeperWrapper {
 
@@ -42,7 +42,7 @@ public class ZooKeeperWrapperMock extends ZooKeeperWrapper {
 		for(int i = 0; i < num; i ++){
 			byte[] value = ("mockdata"+i).getBytes();
 			configMap.put(PREFIX+i, value);
-			configMap.put(PREFIX+i+SUFFIX, Utils.getLongBytes(System.nanoTime()));
+			configMap.put(PREFIX+i+SUFFIX, EncodeUtils.getLongBytes(System.nanoTime()));
 		}
 	}
 	
@@ -87,7 +87,7 @@ public class ZooKeeperWrapperMock extends ZooKeeperWrapper {
 	public Stat setData(String path, byte[] data,int version) throws KeeperException, InterruptedException, IOException{
 		if(configMap.containsKey(path)){
 			configMap.put(path, data);
-			configMap.put(path+SUFFIX, Utils.getLongBytes(System.nanoTime()));
+			configMap.put(path+SUFFIX, EncodeUtils.getLongBytes(System.nanoTime()));
 			return new Stat();
 		}else{
 			return null;

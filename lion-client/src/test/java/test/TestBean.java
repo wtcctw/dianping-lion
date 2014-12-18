@@ -9,7 +9,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import com.dianping.lion.Utils;
+import com.dianping.lion.util.EncodeUtils;
 
 
 public class TestBean {
@@ -24,8 +24,8 @@ public class TestBean {
 	@Test
 	public void testNanoSeconds(){
 		long now = System.nanoTime();
-		byte[] bytes = Utils.getLongBytes(now);
-		long after = Utils.getLong(bytes);
+		byte[] bytes = EncodeUtils.getLongBytes(now);
+		long after = EncodeUtils.getLong(bytes);
 		Assert.assertEquals(true, now == after);
 	}
 }

@@ -1,15 +1,13 @@
 package com.dianping.lion.client;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.util.Random;
 
 import jodd.util.RandomStringUtil;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.junit.Test;

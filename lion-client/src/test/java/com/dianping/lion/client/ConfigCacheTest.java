@@ -1,7 +1,5 @@
 package com.dianping.lion.client;
 
-
-
 import java.io.IOException;
 
 import junit.framework.Assert;
