@@ -1,33 +1,33 @@
 package com.dianping.lion.env;
 
 public enum Env {
-	DEV{
+	dev{
 		@Override
 		public String zkAddress() {
-			return "192.168.7.41:2181";
+			return "dev.lion.dp:2181";
 		}
 	},
-	ALPHA{
+	alpha{
 		@Override
 		public String zkAddress() {
-			return "192.168.7.41:2182";
+			return "alpha.lion.dp:2182";
 		}
 	},
-	BETA{
+	qa{
 		@Override
 		public String zkAddress() {
-			return "10.1.77.10:2181";
-		}
-		
-	},
-	PRERELEASE{
-		@Override
-		public String zkAddress() {
-			return "10.1.3.163:2181";
+			return "qa.lion.dp:2181";
 		}
 		
 	},
-	PRODUCT{
+	prelease{
+		@Override
+		public String zkAddress() {
+			return "10.2.8.143:2181";
+		}
+		
+	},
+	product{
 		@Override
 		public String zkAddress() {
 			return "10.1.2.32:2181,10.1.2.37:2181,10.1.2.62:2181,10.1.2.67:2181,10.1.2.58:2181";

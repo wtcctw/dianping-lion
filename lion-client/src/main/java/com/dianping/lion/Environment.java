@@ -24,8 +24,14 @@ public class Environment {
         props = PropertiesLoader.load("classpath:META-INF/app.properties");
         if(props != null) {
             appName = props.getProperty("app.name");
+        } else {
+            props = new Properties();
         }
-        loadAppEnv();
+        props.putAll(loadAppEnv());
+    }
+    
+    public static String getProperty(String key) {
+        return props.getProperty(key);
     }
     
     public static String getAppName() {
@@ -47,7 +53,8 @@ public class Environment {
     public static Properties loadAppEnv() {
         Properties props = null;
         
-        URL url = Thread.currentThread().getContextClassLoader().getResource("/");
+        URL url = Environment.class.getProtectionDomain().getCodeSource().getLocation();
+//        URL url = Bar.class.getResource(Bar.class.getSimpleName() + ".class");
         String path = url.getPath();
         int idx = path.indexOf("WEB-INF");
         if(idx != -1) {
@@ -94,5 +101,11 @@ public class Environment {
         props.put(Constants.KEY_SWIMLANE, Constants.DEFAULT_SWIMLANE);
         props.put(Constants.KEY_ZKSERVER, Constants.DEFAULT_ZKSERVER);
         return props;
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(deployenv);
+        System.out.println(zkserver);
+        System.out.println(swimlane);        
     }
 }

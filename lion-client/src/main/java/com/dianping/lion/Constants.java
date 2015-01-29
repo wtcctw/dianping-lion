@@ -41,7 +41,8 @@ public class Constants {
 	public static final int DEFAULT_SESSION_TIMEOUT = 60000;
 
 	public static Set<String> avatarBizKeySet = new HashSet<String>();
-
+	public static String avatarBizPrefix = "avatar-biz.";
+	
 	static{
 		avatarBizKeySet.add("main.master.jdbc.url");
 		avatarBizKeySet.add("main.master.jdbc.username");

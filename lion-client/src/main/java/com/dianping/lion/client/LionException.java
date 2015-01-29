@@ -19,7 +19,7 @@ package com.dianping.lion.client;
  * @author danson.liu
  * 
  */
-public class LionException extends Exception {
+public class LionException extends RuntimeException {
 
     private static final long serialVersionUID = -277294587317829825L;
 

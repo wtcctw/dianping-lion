@@ -16,22 +16,18 @@
 package com.dianping.lion.register.zookeeper;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
+import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.KeeperException.NoNodeException;
-import org.apache.zookeeper.ZooDefs.Ids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dianping.lion.Constants;
-import com.dianping.lion.client.zookeeper.SessionRecoverableZookeeper;
 import com.dianping.lion.exception.ReadFromZookeeperException;
 import com.dianping.lion.exception.RegisterToZookeeperException;
 import com.dianping.lion.exception.UnregisterFromZookeeperException;
@@ -47,9 +43,9 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigZookeeperService.class);
 
-	private final String serverIps;
-
 	private int sessionTimeout = 60000;
+
+	private final String serverIps;
 
 	private String parentPath = "/DP/CONFIG";
 
@@ -59,10 +55,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 
 	private String charset = "UTF-8";
 
-	private SessionRecoverableZookeeper zookeeper;
-
-	private boolean parentPathExistsEnsured;
-	private Set<String> existsEnsuredPaths = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+	private CuratorFramework curatorClient;
 
 	public ConfigZookeeperService(String serverIps) {
 		this.serverIps = serverIps;
@@ -71,15 +64,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	@Override
 	public void registerContextValue(final String key, final String value) {
 		try {
-			executeOperation(new ConfigZookeeperOperation() {
-				@Override
-				public Object execute() throws KeeperException, InterruptedException, IOException {
-					ensureParentPathExists();
-					ensurePathExists(parentPath + "/" + key);
-					set(parentPath + "/" + key + "/" + contextNode, value);
-					return null;
-				}
-			});
+			set(parentPath + "/" + key + "/" + contextNode, value);
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Register config[" + key + "]'s context value to zookeeper failed.", e);
 		}
@@ -88,18 +73,10 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	@Override
 	public void registerAndPushContextValue(final String key, final String value) {
 		try {
-			executeOperation(new ConfigZookeeperOperation() {
-				@Override
-				public Object execute() throws KeeperException, InterruptedException, IOException {
-					ensureParentPathExists();
-					ensurePathExists(parentPath + "/" + key);
-					//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
-					//并且对于lion-client的客户端感知也很重要，key node变更后，如果判断timestamp的逻辑发生在更新之前就有问题，所以也需要先更新timestamp
-					set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
-					set(parentPath + "/" + key + "/" + contextNode, value);
-					return null;
-				}
-			});
+			//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
+			//并且对于lion-client的客户端感知也很重要，key node变更后，如果判断timestamp的逻辑发生在更新之前就有问题，所以也需要先更新timestamp
+			set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
+			set(parentPath + "/" + key + "/" + contextNode, value);
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Push config[" + key + "]'s context value to zookeeper failed.", e);
 		}
@@ -108,14 +85,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	@Override
 	public void registerDefaultValue(final String key, final String defaultVal) {
 		try {
-			executeOperation(new ConfigZookeeperOperation() {
-				@Override
-				public Object execute() throws KeeperException, InterruptedException, IOException {
-					ensureParentPathExists();
-					set(parentPath + "/" + key, defaultVal);
-					return null;
-				}
-			});
+			set(parentPath + "/" + key, defaultVal);
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Register config[" + key + "]'s default value to zookeeper failed.", e);
 		}
@@ -124,17 +94,9 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	@Override
 	public void registerAndPushDefaultValue(final String key, final String defaultVal) {
 		try {
-			executeOperation(new ConfigZookeeperOperation() {
-				@Override
-				public Object execute() throws KeeperException, InterruptedException, IOException {
-					ensureParentPathExists();
-					ensurePathExists(parentPath + "/" + key);
-					//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
-					set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
-					set(parentPath + "/" + key, defaultVal);
-					return null;
-				}
-			});
+			//更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
+			set(parentPath + "/" + key + "/" + timestampNode, System.currentTimeMillis());
+			set(parentPath + "/" + key, defaultVal);
 		} catch (Exception e) {
 			throw new RegisterToZookeeperException("Push config[" + key + "]'s default value to zookeeper failed.", e);
 		}
@@ -148,7 +110,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 	@Override
 	public String get(String key) {
 		try {
-			return new String(zookeeper.getData(parentPath + "/" + key, false, null), charset);
+			return new String(getData(parentPath + "/" + key), charset);
 		} catch (NoNodeException e) {
 			return null;
 		} catch (Exception e) {
@@ -158,23 +120,10 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 
 	@Override
 	public void destroy() {
-		try {
-			this.zookeeper.close();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+		this.curatorClient.close();
 	}
 
-	public void ensurePathExists(String path) throws KeeperException, InterruptedException, IOException {
-		if (!existsEnsuredPaths.contains(path)) {
-			if (zookeeper.exists(path, false) == null) {
-				zookeeper.create(path, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-			}
-			existsEnsuredPaths.add(path);
-		}
-	}
-
-	public void set(String path, String value) throws UnsupportedEncodingException, KeeperException, InterruptedException, IOException {
+	public void set(String path, String value) throws Exception {
 		if (value != null) {
 		    value = SecurityUtils.tryDecode(value);
 			set(path, value.getBytes(charset));
@@ -183,50 +132,30 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 		}
 	}
 
-	private void set(String path, long value) throws KeeperException, InterruptedException, IOException {
+	private void set(String path, long value) throws Exception {
 		set(path, EncodeUtils.getLongBytes(value));
 	}
 
-	private void set(String path, byte[] bytes) throws KeeperException, InterruptedException, IOException {
-		if (zookeeper.exists(path, false) == null) {
-			zookeeper.create(path, bytes, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+	private void set(String path, byte[] bytes) throws Exception {
+		if (exists(path)) {
+			curatorClient.setData().forPath(path, bytes);
 		} else {
-			zookeeper.setData(path, bytes, -1);
+		    curatorClient.create().creatingParentsIfNeeded().forPath(path, bytes);
 		}
 	}
 
 	public void init() throws IOException {
-		this.zookeeper = new SessionRecoverableZookeeper(serverIps, this.sessionTimeout, null);
-		ensureParentPathExists();
-	}
-
-	private void ensureParentPathExists() {
-		try {
-			if (!parentPathExistsEnsured) {
-				int fromIndex = 1;
-				int indexOfSlash = -1;
-				while ((indexOfSlash = parentPath.indexOf('/', fromIndex)) != -1) {
-					ensurePathExists(parentPath.substring(0, indexOfSlash));
-					fromIndex = indexOfSlash + 1;
-				}
-				ensurePathExists(parentPath);
-				parentPathExistsEnsured = true;
-			}
-		} catch (Exception e) {
-			logger.warn("Ensure zookeeper's config initial path is failed, pay attention.", e);
-		}
-	}
-
-	private Object executeOperation(ConfigZookeeperOperation operation)
-		throws KeeperException, InterruptedException, IOException {
-		Object result = null;
-		try {
-			result = operation.execute();
-		} catch (NoNodeException e) {
-			existsEnsuredPaths.clear();
-			result = operation.execute();
-		}
-		return result;
+	    curatorClient = CuratorFrameworkFactory.newClient(serverIps, sessionTimeout, 30*1000, 
+                new RetryNTimes(Integer.MAX_VALUE, 1000));
+        
+        curatorClient.getConnectionStateListenable().addListener(new ConnectionStateListener() {
+            @Override
+            public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                logger.info("lion zookeeper state changed to {}", newState);
+            }
+        });
+        
+        curatorClient.start();
 	}
 
 	/**
@@ -269,23 +198,11 @@ public class ConfigZookeeperService implements ConfigRegisterService {
 		return this.serverIps;
 	}
 
-	interface ConfigZookeeperOperation {
-		Object execute() throws KeeperException, InterruptedException, IOException;
-	}
-
     @Override
     public void registerGroupValue(final String key, final String group, final String value) {
         try {
-            executeOperation(new ConfigZookeeperOperation() {
-                @Override
-                public Object execute() throws KeeperException, InterruptedException, IOException {
-                    ensureParentPathExists();
-                    String path = getPath(key, group);
-                    ensurePathExists(path);
-                    set(path, value);
-                    return null;
-                }
-            });
+            String path = getPath(key, group);
+            set(path, value);
         } catch (Exception e) {
             throw new RegisterToZookeeperException("Register config[" + key
                     + "]'s context value to zookeeper failed.", e);
@@ -295,20 +212,12 @@ public class ConfigZookeeperService implements ConfigRegisterService {
     @Override
     public void registerAndPushGroupValue(final String key, final String group, final String value) {
         try {
-            executeOperation(new ConfigZookeeperOperation() {
-                @Override
-                public Object execute() throws KeeperException, InterruptedException, IOException {
-                    ensureParentPathExists();
-                    String path = getPath(key, group);
-                    String tsPath = getTimestampPath(path);
-                    ensurePathExists(path);
-                    //更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
-                    //并且对于lion-client的客户端感知也很重要，key node变更后，如果判断timestamp的逻辑发生在更新之前就有问题，所以也需要先更新timestamp
-                    set(tsPath, System.currentTimeMillis());
-                    set(path, value);
-                    return null;
-                }
-            });
+            String path = getPath(key, group);
+            String tsPath = getTimestampPath(path);
+            //更新timestamp的操作应该在前面，如果设置值的操作在前面成功，而更新timestamp在后失败而认定注册配置失败的话，对上层判断会造成混淆
+            //并且对于lion-client的客户端感知也很重要，key node变更后，如果判断timestamp的逻辑发生在更新之前就有问题，所以也需要先更新timestamp
+            set(tsPath, System.currentTimeMillis());
+            set(path, value);
         } catch (Exception e) {
             throw new RegisterToZookeeperException("Push config[" + key + "/" + group + "]'s context value to zookeeper failed.", e);
         }
@@ -318,23 +227,8 @@ public class ConfigZookeeperService implements ConfigRegisterService {
     public void unregister(String key, String group) {
         try {
             String path = getPath(key, group);
-            existsEnsuredPaths.remove(path);
-            if (zookeeper.exists(path, false) != null) {
-                List<String> children = zookeeper.getChildren(path, false);
-                if (children != null && !children.isEmpty()) {
-                    for (String child : children) {
-                        try {
-                            zookeeper.delete(path + "/" + child, -1);
-                        } catch (NoNodeException e) {
-                            //do nothing
-                        }
-                    }
-                }
-                try {
-                    zookeeper.delete(path, -1);
-                } catch (NoNodeException e) {
-                    //do nothing
-                }
+            if (exists(path)) {
+                curatorClient.delete().deletingChildrenIfNeeded().forPath(path);
             }
         } catch (Exception e) {
             throw new UnregisterFromZookeeperException("Unregister config[" + key + "] from zookeeper failed.", e);
@@ -345,7 +239,7 @@ public class ConfigZookeeperService implements ConfigRegisterService {
     public String get(String key, String group) {
         try {
             String path = getPath(key, group);
-            return new String(zookeeper.getData(path, false, null), charset);
+            return new String(getData(path), charset);
         } catch (NoNodeException e) {
             return null;
         } catch (Exception e) {
@@ -353,6 +247,14 @@ public class ConfigZookeeperService implements ConfigRegisterService {
         }
     }
 
+    private boolean exists(String path) throws Exception {
+        return curatorClient.checkExists().forPath(path) != null;
+    }
+    
+    private byte[] getData(String path) throws Exception {
+        return curatorClient.getData().forPath(path);
+    }
+    
     private String getPath(String key, String group) {
         String path = Constants.CONFIG_PATH + Constants.PATH_SEPARATOR + key;
         if(StringUtils.isNotBlank(group)) {
