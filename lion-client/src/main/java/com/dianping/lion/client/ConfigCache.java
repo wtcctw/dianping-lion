@@ -273,11 +273,11 @@ public class ConfigCache {
 	    return trimToNull(group);
 	}
 
-	private String getConfigPath(String key) throws LionException {
+	private String getConfigPath(String key) {
 	    return getConfigPath(key, null);
 	}
 	
-	private String getConfigPath(String key, String group) throws LionException {
+	private String getConfigPath(String key, String group) {
 	    String path = Constants.CONFIG_PATH + Constants.PATH_SEPARATOR + key;
 	    if(group != null)
 	        path = path + Constants.PATH_SEPARATOR + group;
@@ -378,22 +378,26 @@ public class ConfigCache {
         @Override
         public void eventReceived(CuratorFramework client, CuratorEvent event) throws Exception {
             if(event.getType() == CuratorEventType.WATCHED) {
-                process(event.getWatchedEvent());
+                WatchedEvent we = event.getWatchedEvent();
+                if(we.getPath() != null) {
+                    logger.info("zookeeper event received, path: {}, event {}", event.getPath(), event.getType());
+                    process(event.getWatchedEvent());
+                }
             }
         }
         
 		public void process(WatchedEvent event) {
-			if (event.getType() == EventType.NodeCreated || event.getType() == EventType.NodeDataChanged) {
+		    if (event.getType() == EventType.NodeCreated || event.getType() == EventType.NodeDataChanged) {
 			    try {
-			        String key = getKey(event.getPath());
-			        String group = getGroup(event.getPath());
-
+    		        String key = getKey(event.getPath());
+    		        String group = getGroup(event.getPath());
+    
     			    if(isFiltered(key, group)) {
     			        return;
     			    }
     			    String path = event.getPath();
     			    String tsPath = getTimestampPath(path);
-					
+				
 					if( exists(tsPath) ) {
 						Long timestamp = EncodeUtils.getLong(getData(tsPath));
 						Long timestamp_ = timestampMap.get(path);
@@ -413,18 +417,25 @@ public class ConfigCache {
 								}
 							}
 						} else {
+						    logger.warn("{} does not exist", tsPath);
 							watch(path);
 						}
 					} else {
 						watch(path);
 					}
 				} catch (Exception ex) {
-					logger.error("", ex);
+				    logger.error("", ex);
+				    try {
+                        watch(event.getPath());
+                    } catch (Exception e) {
+                        logger.error("", e);
+                    }
 				}
 			} else if (event.getType() == EventType.NodeDeleted) {
                 try {
                     String key = getKey(event.getPath());
                     cache.remove(key);
+                    timestampMap.remove(event.getPath());
                     watch(event.getPath());
                 } catch (Exception ex) {
                     logger.error("", ex);
@@ -432,7 +443,7 @@ public class ConfigCache {
 			}
 		}
 
-		private String getKey(String path) throws Exception {
+		private String getKey(String path) {
 		    if(path == null || !path.startsWith(Constants.CONFIG_PATH)) {
 		        return null;
 		    }
@@ -444,7 +455,7 @@ public class ConfigCache {
 		    return key;
 		}
 
-		private String getGroup(String path) throws Exception {
+		private String getGroup(String path) {
 		    String group = ConfigCache.this.getGroup();
 		    if(group == null) {
 		        return null;
