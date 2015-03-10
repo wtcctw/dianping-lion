@@ -29,6 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Message;
+import com.dianping.cat.message.Transaction;
 import com.dianping.lion.Constants;
 import com.dianping.lion.Environment;
 import com.dianping.lion.util.EncodeUtils;
@@ -48,6 +51,8 @@ import com.dianping.lion.util.EncodeUtils;
 public class ConfigCache {
 
 	private static Logger logger = LoggerFactory.getLogger(ConfigCache.class);
+	
+	private static final String MAGIC_VALUE = "~!@#$%^&*()_+";
 
 	private static volatile ConfigCache instance;
 
@@ -127,7 +132,8 @@ public class ConfigCache {
                 logger.info("lion zookeeper state changed to {}", newState);
                 if (newState == ConnectionState.RECONNECTED) {
                     try {
-                        watchAll();
+                        Cat.logEvent("lion", "zookeeper:reconnected", Message.SUCCESS, address);
+                        checkConfig();
                     } catch(Exception e) {
                         logger.error("failed to watch all lion key", e);
                     }
@@ -142,13 +148,6 @@ public class ConfigCache {
 		startCheckConfigThread();
 	}
 	
-	private void watchAll() throws Exception {
-	    for(String key : cache.keySet()) {
-	        String path = getConfigPath(key);
-	        watch(path);
-	    }
-	}
-	
 	private void watch(String path) throws Exception {
 	    curatorClient.checkExists().watched().forPath(path);
 	}
@@ -159,6 +158,7 @@ public class ConfigCache {
         t.start();
 	}
 	
+	@Deprecated
 	public void loadProperties(String propertiesFile) throws IOException {
 	    localProps = new Properties();
 	    InputStream in = null;
@@ -178,7 +178,6 @@ public class ConfigCache {
 	    }
 	}
 	
-	// FIXME if key is null, should throw NullPointerException
 	public String getProperty(String key) throws LionException {
 		key = trimToNull(key);
 		Assert.notNull(key, "invalid key, key is empty");
@@ -235,6 +234,9 @@ public class ConfigCache {
 		    }
 		}
 
+		if(MAGIC_VALUE.equals(value)) {
+		    return null;
+		}
 		return value;
 	}
 
@@ -264,6 +266,7 @@ public class ConfigCache {
             return data;
     	} catch(NoNodeException e) {
             logger.warn("{} does not exist", path);
+            curatorClient.checkExists().watched().forPath(path);
             return null;
         }
 	}
@@ -293,25 +296,36 @@ public class ConfigCache {
 	    return getValue(key, null);
 	}
 
-	//TODO: test the getDate returned value if it's a empty path
 	private String getValue(String key, String group) throws Exception {
 	    String path = getConfigPath(key, group);
         String timestampPath = getTimestampPath(path);
-
-        if( existsWatched(path) ) {
-            String value = new String(getData(path), Constants.CHARSET);
-            // Cache key <-> value
-            cache.put(key, value);
-            // Update path <-> timestamp
-            if( exists(timestampPath) ) {
-                Long timestamp = EncodeUtils.getLong(getData(timestampPath));
-                timestampMap.put(path, timestamp);
+        String value = null;
+        
+        Transaction t = Cat.getProducer().newTransaction("lion", "get");
+        try {
+            byte[] data = getDataWatched(path);
+            
+            if(data != null) {
+                value = new String(data, Constants.CHARSET);
+                // Cache key <-> value
+                cache.put(key, value);
+                // Cache path <-> timestamp
+                data = getData(timestampPath);
+                if(data != null) {
+                    Long timestamp = EncodeUtils.getLong(data);
+                    timestampMap.put(path, timestamp);
+                }
+            } else {
+                cache.put(key, MAGIC_VALUE);
             }
+            t.setStatus(Message.SUCCESS);
             return value;
+        } catch (Exception e) {
+            t.setStatus(e);
+            throw e;
+        } finally {
+            t.complete();
         }
-
-        logger.info("path {} does not exist", path);
-        return null;
 	}
 
 	public Long getLongProperty(String key) throws LionException {
@@ -395,34 +409,36 @@ public class ConfigCache {
     			    if(isFiltered(key, group)) {
     			        return;
     			    }
+    			    
     			    String path = event.getPath();
     			    String tsPath = getTimestampPath(path);
 				
-					if( exists(tsPath) ) {
-						Long timestamp = EncodeUtils.getLong(getData(tsPath));
-						Long timestamp_ = timestampMap.get(path);
-						if (timestamp_ == null || timestamp > timestamp_) {
-							timestampMap.put(path, timestamp);
-							byte[] data = getDataWatched(path);
-							if (data != null) {
-								String value = new String(data, Constants.CHARSET);
-								cache.put(key, value);
-								synchronized (value) {
-									logger.info(">>>>>>>>>>>>config changed, key: {}, value: {}", key, value);
-									if(ConfigCache.this.changeList != null) {
-										for (ConfigChange change : ConfigCache.this.changeList) {
-											change.onChange(key, value);
-										}
-									}
-								}
-							}
-						} else {
-						    logger.warn("{} does not exist", tsPath);
-							watch(path);
-						}
-					} else {
-						watch(path);
-					}
+    			    byte[] data = getData(tsPath);
+    			    if(data != null) {
+    			        Long timestamp = EncodeUtils.getLong(data);
+                        Long timestamp_ = timestampMap.get(path);
+                        if (timestamp_ == null || timestamp > timestamp_) {
+                            timestampMap.put(path, timestamp);
+                            data = getDataWatched(path);
+                            if (data != null) {
+                                String value = new String(data, Constants.CHARSET);
+                                cache.put(key, value);
+                                synchronized (value) {
+                                    logger.info(">>>>>>config changed, key: {}, value: {}", key, escape(key, value));
+                                    Cat.logEvent("lion", "zookeeper:changed", Message.SUCCESS, key);
+                                    if(ConfigCache.this.changeList != null) {
+                                        for (ConfigChange change : ConfigCache.this.changeList) {
+                                            change.onChange(key, value);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            watch(path);
+                        }
+    			    } else {
+    			        watch(path);
+    			    }
 				} catch (Exception ex) {
 				    logger.error("", ex);
 				    try {
@@ -437,12 +453,17 @@ public class ConfigCache {
                     cache.remove(key);
                     timestampMap.remove(event.getPath());
                     watch(event.getPath());
+                    // if swimlane node is deleted, watch both the default node
+                    String swimlane = getGroup(event.getPath());
+                    if(swimlane != null) {
+                        watch(getConfigPath(key));
+                    }
                 } catch (Exception ex) {
                     logger.error("", ex);
                 }
 			}
 		}
-
+		
 		private String getKey(String path) {
 		    if(path == null || !path.startsWith(Constants.CONFIG_PATH)) {
 		        return null;
@@ -481,69 +502,38 @@ public class ConfigCache {
 
 	}
 
+    private String escape(String key, String value) {
+        if(key == null)
+            return value;
+        if(key.toLowerCase().contains("password")) 
+            return "********";
+        return value;
+    }
+    
 	private class CheckConfig implements Runnable {
 
-		private long lastTime;
-		private String group;
-		
-		public CheckConfig() throws LionException {
-			lastTime = System.currentTimeMillis();
-			group = getGroup();
-		}
+		private long lastTime = System.currentTimeMillis();
 		
 		@Override
 		public void run() {
-			logger.debug("CheckConfig thread started, swimlane is " + group);
-            
 			int k = 0;
 			while (true) {
 				try {
-					long now = System.currentTimeMillis();
-					if (now - this.lastTime > 60000) {
-						for (Entry<String, String> entry : cache.entrySet()) {
-							synchronized (entry.getValue()) {
-							    String path = getConfigPath(entry.getKey());
-							    if(group != null) {
-							        String pp = getConfigPath(entry.getKey(), group);
-							        if(exists(pp))
-							            path = pp;
-							    }
-								String timestampPath = getTimestampPath(path);
-								if (exists(timestampPath)) {
-									Long timestamp = EncodeUtils.getLong(getData(timestampPath));
-									Long timestamp_ = timestampMap.get(path);
-									if (timestamp_ == null || timestamp > timestamp_) {
-										timestampMap.put(path, timestamp);
-										if (exists(path)) {
-											String value = new String(getData(path), Constants.CHARSET);
-
-											if (!value.equals(entry.getValue())) {
-												entry.setValue(value);
-												logger.info(">>>>>>>>>>>>config changed, key: {}, value: {}", entry.getKey(), value);
-												if (changeList != null) {
-													for (ConfigChange change : changeList) {
-														change.onChange(entry.getKey(), value);
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-						this.lastTime = now;
+					if (System.currentTimeMillis() - lastTime > 60000) {
+					    checkConfig();
+					    lastTime = System.currentTimeMillis();
 					} else {
-						Thread.sleep(2000);
+						Thread.sleep(1000);
 					}
 					k = 0;
 				} catch (Exception e) {
 					k++;
 					if (k > 3) {
 						try {
-							Thread.sleep(2000);
+							Thread.sleep(5000);
 							k = 0;
-						} catch (InterruptedException e1) {
-							e1.printStackTrace();
+						} catch (InterruptedException ie) {
+						    break;
 						}
 					}
 					logger.error("", e);
@@ -553,6 +543,61 @@ public class ConfigCache {
 
 	}
 
+	private String getRealConfigPath(String key, String group) throws Exception {
+	    String path = getConfigPath(key);
+        if(group != null) {
+            String path_ = getConfigPath(key, group);
+            if(exists(path_))
+                path = path_;
+        }
+        return path;
+	}
+	
+    private void checkConfig() throws Exception {
+        Transaction t = Cat.getProducer().newTransaction("lion", "sync");
+        try {
+            String group = getGroup();
+            for (Entry<String, String> entry : cache.entrySet()) {
+                synchronized (entry.getValue()) {
+                    String path = getRealConfigPath(entry.getKey(), group);
+                    String timestampPath = getTimestampPath(path);
+                    
+                    byte[] data = getData(timestampPath);
+                    if (data != null) {
+                        Long timestamp = EncodeUtils.getLong(data);
+                        Long timestamp_ = timestampMap.get(path);
+                        if (timestamp_ == null || timestamp > timestamp_) {
+                            timestampMap.put(path, timestamp);
+                            data = getDataWatched(path);
+                            if (data != null) {
+                                String value = new String(data, Constants.CHARSET);
+    
+                                if (!value.equals(entry.getValue())) {
+                                    entry.setValue(value);
+                                    logger.info(">>>>>>config changed, key: {}, value: {}", entry.getKey(), escape(entry.getKey(), value));
+                                    Cat.logEvent("lion", "sync:changed", Message.SUCCESS, entry.getKey());
+                                    if (changeList != null) {
+                                        for (ConfigChange change : changeList) {
+                                            change.onChange(entry.getKey(), value);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            watch(path);
+                        }
+                    }
+                }
+            }
+            t.setStatus(Message.SUCCESS);
+        } catch (Exception e) {
+            t.setStatus(e);
+            throw e;
+        } finally {
+            t.complete();
+        }
+    }
+    
 	/**
 	 * @param change
 	 *           the change to set
