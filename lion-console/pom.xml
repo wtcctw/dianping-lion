@@ -7,7 +7,7 @@
     <parent>
         <artifactId>lion-all</artifactId>
         <groupId>com.dianping.lion</groupId>
-        <version>0.4.7-SNAPSHOT</version>
+        <version>0.4.7</version>
     </parent>
 
     <artifactId>lion-console</artifactId>
