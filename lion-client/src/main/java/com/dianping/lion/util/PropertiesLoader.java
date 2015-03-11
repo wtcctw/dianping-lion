@@ -3,6 +3,7 @@ package com.dianping.lion.util;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -25,20 +26,27 @@ public class PropertiesLoader {
             } else {
                 return loadFromFileSystem(resource);
             }
-        } catch (Exception e) {
+        } catch(FileNotFoundException e) {
+            logger.warn(e.getMessage());
+            return null;
+        }catch (Exception e) {
             logger.error("failed to load resource from " + resource, e);
             return null;
         }
     }
     
     public static Properties loadFromFileSystem(String file) throws IOException {
+        File f = new File(file);
+        if(!f.exists())
+            throw new FileNotFoundException("file " + file + " doesn't exist");
         URL url = new File(file).toURI().toURL();
         return load(url);
     }
     
     public static Properties loadFromClassPath(String file) throws IOException {
         URL url = Thread.currentThread().getContextClassLoader().getResource(file);
-        checkNotNull(url, "no resource " + file + " found in classpath");
+        if(url == null) 
+            throw new FileNotFoundException("file " + file + " doesn't exist in classpath");
         return load(url);
     }
     

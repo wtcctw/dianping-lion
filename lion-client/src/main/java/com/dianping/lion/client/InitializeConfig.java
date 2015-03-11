@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 import com.dianping.lion.EnvZooKeeperConfig;
+import com.dianping.lion.log.LoggerLoader;
 
 /**
  * <p>
@@ -50,6 +51,10 @@ import com.dianping.lion.EnvZooKeeperConfig;
  */
 public class InitializeConfig implements BeanFactoryPostProcessor, PriorityOrdered, BeanNameAware, BeanFactoryAware {
 
+    static {
+        LoggerLoader.init();
+    }
+    
     private static Logger logger = LoggerFactory.getLogger(InitializeConfig.class);
     
     /** Default placeholder prefix: "${" */

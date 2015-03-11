@@ -34,6 +34,7 @@ import com.dianping.cat.message.Message;
 import com.dianping.cat.message.Transaction;
 import com.dianping.lion.Constants;
 import com.dianping.lion.Environment;
+import com.dianping.lion.log.LoggerLoader;
 import com.dianping.lion.util.EncodeUtils;
 
 /**
@@ -50,6 +51,10 @@ import com.dianping.lion.util.EncodeUtils;
  */
 public class ConfigCache {
 
+    static {
+        LoggerLoader.init();
+    }
+    
 	private static Logger logger = LoggerFactory.getLogger(ConfigCache.class);
 	
 	private static final String MAGIC_VALUE = "~!@#$%^&*()_+";
