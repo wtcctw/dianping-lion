@@ -3,6 +3,7 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 
 	<appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="WARN"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss}:%p %t %c - %m%n" />
 		</layout>
@@ -18,8 +19,9 @@
 	</appender>
 
 	<logger name="com.dianping.lion" additivity="true">
-		<appender-ref ref="FileAppender" />
 		<level value="INFO" />
+		<appender-ref ref="FileAppender" />
+		<appender-ref ref="ConsoleAppender" />
 	</logger>
 
 </log4j:configuration>
