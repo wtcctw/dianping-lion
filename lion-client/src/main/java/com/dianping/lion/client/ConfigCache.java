@@ -57,6 +57,9 @@ public class ConfigCache {
     
 	private static Logger logger = LoggerFactory.getLogger(ConfigCache.class);
 	
+	private static final String KEY_SYNC_INTERVAL = "lion.sync.interval";
+	private static final int DEFAULT_SYNC_INTERVAL = 120000;
+	
 	private static final String MAGIC_VALUE = "~!@#$%^&*()_+";
 
 	private static volatile ConfigCache instance;
@@ -72,6 +75,8 @@ public class ConfigCache {
 	private String address;
 
 	private Properties localProps;
+	
+	private volatile boolean isConnected = false;
 
 	public String getAppenv(String key) {
 		return Environment.getProperty(key);
@@ -135,13 +140,18 @@ public class ConfigCache {
             @Override
             public void stateChanged(CuratorFramework client, ConnectionState newState) {
                 logger.info("lion zookeeper state changed to {}", newState);
-                if (newState == ConnectionState.RECONNECTED) {
+                if (newState == ConnectionState.CONNECTED) {
+                    isConnected = true;
+                } else if (newState == ConnectionState.RECONNECTED) {
+                    isConnected = true;
                     try {
                         Cat.logEvent("lion", "zookeeper:reconnected", Message.SUCCESS, address);
-                        checkConfig();
+                        syncConfig();
                     } catch(Exception e) {
                         logger.error("failed to watch all lion key", e);
                     }
+                } else {
+                    isConnected = false;
                 }
             }
         });
@@ -150,15 +160,15 @@ public class ConfigCache {
         
 	    curatorClient.start();
 		
-		startCheckConfigThread();
+		startConfigSyncThread();
 	}
 	
 	private void watch(String path) throws Exception {
 	    curatorClient.checkExists().watched().forPath(path);
 	}
 	
-	private void startCheckConfigThread() {
-	    Thread t = new Thread(new CheckConfig(), "lion-config-check");
+	private void startConfigSyncThread() {
+	    Thread t = new Thread(new ConfigSyncer(), "lion-config-sync");
         t.setDaemon(true);
         t.start();
 	}
@@ -260,7 +270,7 @@ public class ConfigCache {
 	        byte[] data = curatorClient.getData().forPath(path);
 	        return data;
 	    } catch(NoNodeException e) {
-	        logger.warn("{} does not exist", path);
+	        // logger.warn("{} does not exist", path);
 	        return null;
 	    }
 	}
@@ -270,7 +280,7 @@ public class ConfigCache {
     	    byte[] data = curatorClient.getData().watched().forPath(path);
             return data;
     	} catch(NoNodeException e) {
-            logger.warn("{} does not exist", path);
+            // logger.warn("{} does not exist", path);
             curatorClient.checkExists().watched().forPath(path);
             return null;
         }
@@ -515,18 +525,30 @@ public class ConfigCache {
         return value;
     }
     
-	private class CheckConfig implements Runnable {
+	private class ConfigSyncer implements Runnable {
 
-		private long lastTime = System.currentTimeMillis();
-		
+		private long lastSyncTime;
+	    private int syncInterval;
+	    
+	    public ConfigSyncer() {
+	        lastSyncTime = System.currentTimeMillis();
+	        try {
+                String value = getValue(KEY_SYNC_INTERVAL);
+                syncInterval = (value == null ? DEFAULT_SYNC_INTERVAL : Integer.parseInt(value));
+            } catch (Exception e) {
+                syncInterval = DEFAULT_SYNC_INTERVAL;
+            }
+	    }
+	    
 		@Override
 		public void run() {
 			int k = 0;
 			while (true) {
 				try {
-					if (System.currentTimeMillis() - lastTime > 60000) {
-					    checkConfig();
-					    lastTime = System.currentTimeMillis();
+				    long now = System.currentTimeMillis();
+					if (isConnected && (now - lastSyncTime > syncInterval)) {
+					    syncConfig();
+					    lastSyncTime = now;
 					} else {
 						Thread.sleep(1000);
 					}
@@ -558,7 +580,7 @@ public class ConfigCache {
         return path;
 	}
 	
-    private void checkConfig() throws Exception {
+    private void syncConfig() throws Exception {
         Transaction t = Cat.getProducer().newTransaction("lion", "sync");
         try {
             String group = getGroup();
