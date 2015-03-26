@@ -519,10 +519,17 @@ public class ConfigCache {
 
     private String escape(String key, String value) {
         if(key == null)
-            return value;
+            return limitLength(value);
         if(key.toLowerCase().contains("password")) 
             return "********";
-        return value;
+        return limitLength(value);
+    }
+    
+    private String limitLength(String value) {
+        if(value == null || value.length() <= 100) {
+            return value;
+        }
+        return value.substring(0, 100);
     }
     
 	private class ConfigSyncer implements Runnable {
@@ -632,6 +639,10 @@ public class ConfigCache {
 	// FIXME return this is better
 	public void addChange(ConfigChange change) {
 		this.changeList.add(change);
+	}
+	
+	public void removeChange(ConfigChange change) {
+	    this.changeList.remove(change);
 	}
 
 	/**
