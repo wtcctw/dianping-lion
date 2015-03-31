@@ -130,6 +130,8 @@ public interface ConfigService {
 	
 	List<Config> findConfigByPrefix(String prefix);
 
+    List<Config> findConfigByProject(String project);
+
 	/**
 	 * @param configId
 	 * @return
