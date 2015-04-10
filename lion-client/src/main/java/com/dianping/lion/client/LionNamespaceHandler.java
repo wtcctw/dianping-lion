@@ -5,7 +5,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 public class LionNamespaceHandler extends NamespaceHandlerSupport {
 
     public void init() {
-        registerBeanDefinitionParser("init", new LionBeanDefinitionParser());  
+        registerBeanDefinitionParser("config", new LionConfigDefinitionParser());
     }
 
 }

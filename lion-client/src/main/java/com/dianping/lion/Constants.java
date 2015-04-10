@@ -29,14 +29,19 @@ public class Constants {
 	public static final String PLACEHOLD="^";
 	public static final String PATH_SEPARATOR = "/";
 	public static final String ENVIRONMENT_FILE = "/data/webapps/appenv";
-	public static final String PROPERTIES_FILE = "config/applicationContext.properties";
+	public static final String DEFAULT_PROPERTIES_PATH = "config/applicationContext.properties";
+	public static final boolean DEFAULT_INCLUDE_LOCAL_PROPS = false;
 	
 	public static final String KEY_DEPLOYENV = "deployenv";
 	public static final String KEY_ZKSERVER = "zkserver";
 	public static final String KEY_SWIMLANE = "swimlane";
 	public static final String DEFAULT_DEPLOYENV = "dev";
 	public static final String DEFAULT_ZKSERVER = "dev.lion.dp:2181";
-	public static final String DEFAULT_SWIMLANE = "";
+	public static final String DEFAULT_SWIMLANE = null;
+	
+	public static final int CHANNEL_PROJECT_SPECIFIC = 1 << 16;
+	public static final int CHANNEL_SWIMLANE = 1 << 8;
+	public static final int CHANNEL_DEFAULT = 1;
 	
 	public static final int DEFAULT_SESSION_TIMEOUT = 60000;
 

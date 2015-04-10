@@ -3,6 +3,8 @@
  */
 package com.dianping.lion.client;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * <p>
  * Title: BeanData.java
@@ -54,5 +56,20 @@ public class BeanData {
     public void setFieldName(String fieldName) {
         this.fieldName = fieldName;
     }
+    
+    public boolean equals(Object object) {
+        if(object instanceof BeanData) {
+            BeanData bd = (BeanData)object;
+            return (StringUtils.equals(bd.getBeanName(), beanName) && 
+                    StringUtils.equals(bd.getFieldName(), fieldName));
+        }
+        return false;
+    }
 
+    public int hashCode() {
+        int hash = 19;
+        hash = hash * 17 + beanName.hashCode();
+        hash = hash * 17 + fieldName.hashCode();
+        return hash;
+    }
 }

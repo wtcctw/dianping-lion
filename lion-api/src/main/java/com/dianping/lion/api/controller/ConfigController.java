@@ -103,12 +103,20 @@ public class ConfigController extends BaseController {
     
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
-    public Result list(@RequestParam(value="prefix") String prefix) {
-        if(prefix==null || prefix.length() < 5) {
-            return Result.createErrorResult("Prefix is too short");
+    public Result list(@RequestParam(value="prefix", required=false) String prefix,
+                       @RequestParam(value="project", required=false) String project) {
+        List<Config> configList = null;
+        if(project != null) {
+            configList = configService.findConfigByProject(project);
+        } else if(prefix != null) {
+            if(prefix.length() < 5) {
+                return Result.createErrorResult("Prefix is too short");
+            }
+            configList = configService.findConfigByPrefix(prefix);
+        } else {
+            return Result.createErrorResult("Prefix or project is required");
         }
         
-        List<Config> configList = configService.findConfigByPrefix(prefix);
         List<String> keyList = new ArrayList<String>();
         for(Config config : configList) {
             keyList.add(config.getKey());

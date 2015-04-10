@@ -12,7 +12,7 @@ import com.dianping.lion.entity.User;
 
 public class ServiceServlet extends AbstractLionServlet {
 
-	private enum Key {env, id, project, service, address, group, ip, port, updatezk};
+	private enum Key {env, id, project, service, address, group, ip, port, updatezk, app};
 	
 	private enum Action {get, set, publish, unpublish};
 	
@@ -48,7 +48,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			// setServiceAddress(env, id, service, group, address)
 			env = getParam(request, Key.env);
 			id = getParam(request, Key.id);
-			project = getParam(request, Key.project, "");
+			project = getProject(request);
 			service = getParam(request, Key.service);
 			group = getParam(request, Key.group, DEFAULT_GROUP);
 			address = getParam(request, Key.address);
@@ -59,7 +59,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			// publishService(env, id, service, group, ip, port)
 			env = getParam(request, Key.env);
 			id = getParam(request, Key.id);
-			project = getParam(request, Key.project, "");
+			project = getProject(request);
 			service = getParam(request, Key.service);
 			group = getParam(request, Key.group, DEFAULT_GROUP);
 			ip = getParam(request, Key.ip);
@@ -83,6 +83,14 @@ public class ServiceServlet extends AbstractLionServlet {
 		}
 	}
 
+	private String getProject(HttpServletRequest request) {
+	    String project = getParam(request, Key.project, "");
+	    if(StringUtils.isBlank(project)) {
+	        project = getParam(request, Key.app, "");
+	    }
+	    return project;
+	}
+	
     private String getServiceAddress(String env, String service, String group) {
         int envId = getEnvId(env);
         Service srv = serviceService.getService(envId, service, group);

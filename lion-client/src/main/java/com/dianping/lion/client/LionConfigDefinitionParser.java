@@ -9,7 +9,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
-public class LionBeanDefinitionParser implements BeanDefinitionParser {
+public class LionConfigDefinitionParser implements BeanDefinitionParser {
 
     @Override
     public BeanDefinition parse(Element element, ParserContext parserContext) {
@@ -19,7 +19,7 @@ public class LionBeanDefinitionParser implements BeanDefinitionParser {
         String order = element.getAttribute("order");
         
         GenericBeanDefinition definition = new GenericBeanDefinition();
-        definition.setBeanClass(InitializeConfig.class);
+        definition.setBeanClass(LionPlaceholderConfigurer.class);
         if (StringUtils.hasText(id)) {
             definition.getPropertyValues().addPropertyValue("id", id);
         }
@@ -33,7 +33,7 @@ public class LionBeanDefinitionParser implements BeanDefinitionParser {
             definition.getPropertyValues().addPropertyValue("order", Integer.valueOf(order));
         }
         
-        BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, "lion");
+        BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, "lion-config");
         BeanDefinitionReaderUtils.registerBeanDefinition(holder, parserContext.getRegistry());
         return null;
     }

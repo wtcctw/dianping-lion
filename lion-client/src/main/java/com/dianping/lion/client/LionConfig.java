@@ -8,7 +8,24 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface LionConfig {
+    
+    /**
+     * Pattern of value:
+     * {key} only key, default value is null
+     * {key:defaultValue} key & default value 
+     * {:defaultValue} only default value, key defaults to appName.fieldName
+     * {} no key & default value: key defaults to appName.fieldName, defaultValue is null
+     */
     String value() default "";
-    String key();
-    String defaultValue();
+    
+    /**
+     * the key part of value 
+     */
+    String key() default "";
+    
+    /**
+     * the default value part of value 
+     */
+    String defaultValue() default "";
+    
 }

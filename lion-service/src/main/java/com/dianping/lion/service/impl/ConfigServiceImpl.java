@@ -558,6 +558,15 @@ public class ConfigServiceImpl implements ConfigService {
 	    return configDao.findConfigByPrefix(prefix);
 	}
 	
+
+    public List<Config> findConfigByProject(String project) {
+        Project prj = projectDao.findProject(project);
+        if(prj == null) {
+            throw new RuntimeException("Failed to find project " + project);
+        }
+        return configDao.findConfigByProject(prj.getId());
+    }
+	
 	@Override
 	public List<Config> findConfigByKeys(List<String> keys) {
 		return configDao.findConfigByKeys(keys);

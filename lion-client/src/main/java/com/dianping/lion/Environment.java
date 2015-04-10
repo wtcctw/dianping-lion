@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dianping.lion.util.PropertiesLoader;
+import com.dianping.lion.util.StringUtils;
 
 public class Environment {
 
@@ -86,13 +87,13 @@ public class Environment {
     
     private static void checkAppEnv(Properties props) {
         deployenv = props.getProperty(Constants.KEY_DEPLOYENV);
+        deployenv = StringUtils.trimToNull(deployenv);
         checkNotNull(deployenv, Constants.KEY_DEPLOYENV + " is null");
         zkserver = props.getProperty(Constants.KEY_ZKSERVER);
+        zkserver = StringUtils.trimToNull(zkserver);
         checkNotNull(zkserver, Constants.KEY_ZKSERVER + " is null");
         swimlane = props.getProperty(Constants.KEY_SWIMLANE);
-        if(swimlane == null) {
-            swimlane = Constants.DEFAULT_SWIMLANE;
-        }
+        swimlane = StringUtils.trimToNull(swimlane);
     }
 
     private static Properties getDefaultAppEnv() {

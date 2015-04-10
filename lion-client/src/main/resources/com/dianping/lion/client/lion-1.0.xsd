@@ -5,7 +5,7 @@
 
     <xsd:import namespace="http://www.springframework.org/schema/beans" />
 
-    <xsd:element name="init">
+    <xsd:element name="config">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="beans:identifiedType">
@@ -17,4 +17,23 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:complexType name="annotationType">
+        <xsd:attribute name="id" type="xsd:ID">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The unique identifier for a bean. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="package" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The scan package. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:element name="annotation" type="annotationType">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ The annotation config ]]></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    
 </xsd:schema>
