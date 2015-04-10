@@ -120,6 +120,10 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
         // Try to get application specific configs
         if(KeyUtils.isComponentKey(key)) {
             zkValue = getProjectSpecificValue(key);
+            
+            if(zkValue == null) {
+                zkValue = getDefaultValue(key);
+            }
         } else {
             if(swimlane != null) {
                 // Try to get config for swimlane, if no value found, fall back to default

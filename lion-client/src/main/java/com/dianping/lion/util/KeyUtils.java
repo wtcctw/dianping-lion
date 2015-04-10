@@ -2,13 +2,24 @@ package com.dianping.lion.util;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.Environment;
+import com.dianping.lion.client.Lion;
 
 public class KeyUtils {
 
-    private static final String[] COMPONENTS = { "pigeon", "avatar-cache" };
-    private static String appName = Environment.getAppName();
+    private static final String appName = Environment.getAppName();
+    private static final String KEY_ARCH_COMPONENTS = "lion.arch.components";
+    private static final String DEFAULT_ARCH_COMPONENTS = "pigeon,avatar-cache";
+    private static String[] COMPONENTS = null;
 
     public static String[] getComponents() {
+        if(COMPONENTS == null) {
+            synchronized(KeyUtils.class) {
+                if(COMPONENTS == null) {
+                    String value = Lion.get(KEY_ARCH_COMPONENTS, DEFAULT_ARCH_COMPONENTS);
+                    COMPONENTS = org.apache.commons.lang.StringUtils.split(value, ',');
+                }
+            }
+        }
         return COMPONENTS;
     }
 
