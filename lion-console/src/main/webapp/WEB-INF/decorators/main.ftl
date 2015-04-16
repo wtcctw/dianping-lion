@@ -61,8 +61,10 @@
 	<div class="container-fluid" style="min-height:550px;">
 		<div class="row-fluid">
 			<div class="span12"><@decorator.body/></div>
-		</div>
-		 <@lion.MainGlobalSearch/>
+        </div>
+        <div style="position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;height:6%;width:63%;">
+            <@lion.MainGlobalSearch/>
+        </div>
 	</div>
 	
 	<div class="container">
