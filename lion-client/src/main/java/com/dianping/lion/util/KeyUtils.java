@@ -9,7 +9,7 @@ public class KeyUtils {
     private static final String appName = Environment.getAppName();
     private static final String KEY_ARCH_COMPONENTS = "lion.arch.components";
     private static final String DEFAULT_ARCH_COMPONENTS = "pigeon,avatar-cache";
-    private static String[] COMPONENTS = null;
+    private static String[] COMPONENTS = DEFAULT_ARCH_COMPONENTS.split(",");
 
     public static String[] getComponents() {
         if(COMPONENTS == null) {
@@ -40,7 +40,7 @@ public class KeyUtils {
     }
 
     public static boolean isComponentKey(String key) {
-        for (String component : COMPONENTS) {
+        for (String component : getComponents()) {
             if (key.startsWith(component + ".")) {
                 return true;
             }

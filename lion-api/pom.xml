@@ -17,6 +17,7 @@
     <properties>
         <env>dev</env>
         <spring.version>3.2.6.RELEASE</spring.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
