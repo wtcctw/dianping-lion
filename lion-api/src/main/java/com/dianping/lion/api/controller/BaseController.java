@@ -44,7 +44,7 @@ public class BaseController {
     public void verifyIdentity(HttpServletRequest request, int envId, int userId) throws SecurityException {
         if(envId == 4 || envId == 5) {
             String ip = IPUtils.getUserIP(request);
-            if(!ip.startsWith("10.1.") && !ip.startsWith("10.2.")) {
+            if(!ip.startsWith("10.1.") && !ip.startsWith("10.2.") && !ip.startsWith("10.101.")) {
                 checkAccessibility(ip);
             }
         }

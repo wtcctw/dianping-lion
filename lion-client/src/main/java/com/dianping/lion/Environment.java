@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,26 +74,27 @@ public class Environment {
         
         // using default values
         if(props == null) {
-            logger.error("failed to find appenv file, default to env [%s], swimlane [%s], zkserver [%s]", 
-                    new String[] {Constants.DEFAULT_DEPLOYENV, Constants.DEFAULT_SWIMLANE, Constants.DEFAULT_ZKSERVER});
+            logger.error(String.format("failed to find appenv file, default to env [%s], swimlane [%s], zkserver [%s]", 
+                    Constants.DEFAULT_DEPLOYENV, Constants.DEFAULT_SWIMLANE, Constants.DEFAULT_ZKSERVER));
             props = getDefaultAppEnv();
-        } else {
-            checkAppEnv(props);
-            logger.info("loaded appenv, env [%s], swimlane [%s], zkserver [%s]",
-                    new String[] {deployenv, swimlane, zkserver});
         }
+        
+        checkAppEnv(props);
+        logger.info(String.format("loaded appenv, env [%s], swimlane [%s], zkserver [%s]",
+                deployenv, swimlane, zkserver));
+        
         return props;
     }
     
     private static void checkAppEnv(Properties props) {
         deployenv = props.getProperty(Constants.KEY_DEPLOYENV);
+        deployenv = StringUtils.trimToNull(deployenv);
         checkNotNull(deployenv, Constants.KEY_DEPLOYENV + " is null");
         zkserver = props.getProperty(Constants.KEY_ZKSERVER);
+        zkserver = StringUtils.trimToNull(zkserver);
         checkNotNull(zkserver, Constants.KEY_ZKSERVER + " is null");
         swimlane = props.getProperty(Constants.KEY_SWIMLANE);
-        if(swimlane == null) {
-            swimlane = Constants.DEFAULT_SWIMLANE;
-        }
+        swimlane = StringUtils.trimToNull(swimlane);
     }
 
     private static Properties getDefaultAppEnv() {
