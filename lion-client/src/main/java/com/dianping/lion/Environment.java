@@ -88,13 +88,13 @@ public class Environment {
     
     private static void checkAppEnv(Properties props) {
         deployenv = props.getProperty(Constants.KEY_DEPLOYENV);
-        deployenv = StringUtils.trimToNull(deployenv);
+        deployenv = trimToNull(deployenv);
         checkNotNull(deployenv, Constants.KEY_DEPLOYENV + " is null");
         zkserver = props.getProperty(Constants.KEY_ZKSERVER);
-        zkserver = StringUtils.trimToNull(zkserver);
+        zkserver = trimToNull(zkserver);
         checkNotNull(zkserver, Constants.KEY_ZKSERVER + " is null");
         swimlane = props.getProperty(Constants.KEY_SWIMLANE);
-        swimlane = StringUtils.trimToNull(swimlane);
+        swimlane = trimToNull(swimlane);
     }
 
     private static Properties getDefaultAppEnv() {
@@ -103,6 +103,13 @@ public class Environment {
         props.put(Constants.KEY_SWIMLANE, Constants.DEFAULT_SWIMLANE);
         props.put(Constants.KEY_ZKSERVER, Constants.DEFAULT_ZKSERVER);
         return props;
+    }
+    
+    private static String trimToNull(String key) {
+        if(key == null)
+            return null;
+        key = key.trim();
+        return key.length() == 0 ? null : key;
     }
     
     public static void main(String[] args) {
