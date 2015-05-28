@@ -26,7 +26,7 @@
     <style type="text/css">
 		body {
 			position: relative;
-			padding-top: 60px;
+			padding-top: 0px;
 			padding-bottom: 10px;
 		}
 	</style>
@@ -34,7 +34,7 @@
 </head>
 <body data-spy="scroll" data-target=".subnav" data-offset="50">
 	<!-- Navbar================================================== -->
-    <div class="navbar navbar-fixed-top">
+    <div class="navbar navbar-default">
       <div class="navbar-inner">
         <div class="container-fluid">
 			<button type="button"class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
