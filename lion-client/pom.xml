@@ -34,7 +34,6 @@
         <dependency>
              <groupId>com.dianping.cat</groupId>
              <artifactId>cat-client</artifactId>   
-             <scope>provided</scope>
          </dependency>
         <dependency>
             <groupId>org.apache.curator</groupId>

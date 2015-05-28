@@ -1,16 +1,15 @@
 package com.dianping.lion.service.impl;
 
-import java.io.IOException;
 import java.util.List;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.RetryNTimes;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 
 import com.dianping.lion.service.ZookeeperService;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 
 /**
  * TODO: add border condition check
@@ -34,7 +33,7 @@ public class ZookeeperServiceImpl implements ZookeeperService {
         try {
             client = CuratorFrameworkFactory.builder().
                      connectString(server).
-                     retryPolicy(new ExponentialBackoffRetry(1000, 5)).
+                     retryPolicy(new RetryNTimes(5, 1000)).
                      namespace(namespace).
                      build();
             client.start();
