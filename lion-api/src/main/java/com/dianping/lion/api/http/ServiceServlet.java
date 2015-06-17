@@ -21,9 +21,6 @@ public class ServiceServlet extends AbstractLionServlet {
 	
 	private enum Action {get, set, publish, unpublish};
 	
-	@Autowired
-    protected OperationLogService opLogService;
-	
 	public ServiceServlet () {
 		this.requestIdentityRequired = false;
 	}
@@ -65,7 +62,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			response.getWriter().write("0|" + result);
 			if("product".equals(env)) {
     			message = String.format("%s updated service %s for group [%s] in env %s to address %s", IPUtils.getUserIP(request), service, group, env, address);
-    	        opLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
+    			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
 			}
 			break;
 		case publish:
@@ -82,7 +79,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			response.getWriter().write("0|" + result);
 			if("product".equals(env)) {
     			message = String.format("%s published service %s for group [%s] in env %s, address is %s", IPUtils.getUserIP(request), service, group, env, ip+":"+port);
-                opLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
+    			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
 			}
 			break;
 		case unpublish:
@@ -98,7 +95,7 @@ public class ServiceServlet extends AbstractLionServlet {
 			response.getWriter().write("0|" + result);
 			if("product".equals(env)) {
                 message = String.format("%s unpublished service %s for group [%s] in env %s, address is %s", IPUtils.getUserIP(request), service, group, env, ip+":"+port);
-                opLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
+                operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
             }
 			break;
 		}
