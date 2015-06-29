@@ -30,7 +30,7 @@ public class ZookeeperDataWatcher implements CuratorListener {
         if(event.getType() == CuratorEventType.WATCHED) {
             WatchedEvent watchedEvent = event.getWatchedEvent();
             if(watchedEvent.getPath() != null) {
-                logger.info("zookeeper event received, path: {}, event {}", event.getPath(), event.getType());
+                logger.info("zookeeper event received, path: {}, event {}", watchedEvent.getPath(), watchedEvent.getType());
                 try {
                     process(watchedEvent);
                 } catch(Exception e) {
