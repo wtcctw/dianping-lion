@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,6 @@ import com.dianping.lion.Constants;
 import com.dianping.lion.Environment;
 import com.dianping.lion.log.LoggerLoader;
 import com.dianping.lion.util.KeyUtils;
-import com.dianping.lion.util.StringUtils;
 
 /**
  * <p>

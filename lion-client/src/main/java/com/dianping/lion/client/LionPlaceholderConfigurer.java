@@ -1,7 +1,5 @@
 package com.dianping.lion.client;
 
-import static com.dianping.lion.util.StringUtils.trimToNull;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -185,7 +183,7 @@ public class LionPlaceholderConfigurer extends PropertyPlaceholderConfigurer imp
                 defaultValue = value.substring(idx + 1);
             }
         }
-        return trimToNull(defaultValue);
+        return StringUtils.trimToNull(defaultValue);
     }
 
     private String getKey(String fieldName, LionConfig lionConfig) {
@@ -201,7 +199,7 @@ public class LionPlaceholderConfigurer extends PropertyPlaceholderConfigurer imp
                 key = appName + "." + StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(fieldName), '.');
             }
         }
-        return trimToNull(key);
+        return StringUtils.trimToNull(key);
     }
 
     @Override

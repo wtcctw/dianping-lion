@@ -5,11 +5,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dianping.lion.util.PropertiesLoader;
-import com.dianping.lion.util.StringUtils;
 
 public class Environment {
 
