@@ -134,7 +134,8 @@ public class ConfigController extends BaseController {
                       @RequestParam(value="keys", required=false) String keys,
                       @RequestParam(value="project", required=false) String project,
                       @RequestParam(value="prefix", required=false) String prefix,
-                      @RequestParam(value="group", required=false, defaultValue="") String group) {
+                      @RequestParam(value="group", required=false, defaultValue="") String group,
+                      @RequestParam(value="resolveReference", required=false, defaultValue="true") String resolveReference) {
         int envId = getEnvId(env);
         if(envId == -1) {
             return Result.createErrorResult("Invalid environment " + env);
@@ -153,20 +154,20 @@ public class ConfigController extends BaseController {
             object = getConfig(envId, key, group);
             result = Result.createSuccessResult(object);
         } else if(StringUtils.isNotBlank(keys)) {
-            object = getConfigs(envId, keys, group);
+            object = getConfigs(envId, keys, group, resolveReference);
             result = Result.createSuccessResult(object);
         } else if(StringUtils.isNotBlank(project)) {
             Project prj = projectService.findProject(project);
             if(prj == null) {
                 return Result.createErrorResult(String.format("Project %s does not exist", project));
             }
-            object = getConfigsByProject(envId, prj.getId(), group);
+            object = getConfigsByProject(envId, prj.getId(), group, resolveReference);
             result = Result.createSuccessResult(object);
         } else if(StringUtils.isNotBlank(prefix)) {
             if(prefix==null || prefix.length() < 5) {
                 result = Result.createErrorResult("Prefix is too short");
             } else {
-                object = getConfigsByPrefix(envId, prefix, group);
+                object = getConfigsByPrefix(envId, prefix, group, resolveReference);
                 result = Result.createSuccessResult(object);
             }
         } else {
@@ -181,30 +182,31 @@ public class ConfigController extends BaseController {
         return SecurityUtils.tryDecode(value);
     }
     
-    private Map<String, String> getConfigs(int envId, String keys, String group) {
+    private Map<String, String> getConfigs(int envId, String keys, String group, String resolveReference) {
         List<String> keyList = convertToList(keys);
         List<ConfigInstance> ciList = configService.findInstancesByKeys(keyList, envId, group);
         
-        return toValueMap(ciList);
+        return toValueMap(ciList, resolveReference);
     }
 
-    private Map<String, String> getConfigsByProject(int envId, int projectId, String group) {
+    private Map<String, String> getConfigsByProject(int envId, int projectId, String group, String resolveReference) {
         List<ConfigInstance> ciList = configService.findInstancesByProject(projectId, envId, group);
         
-        return toValueMap(ciList);
+        return toValueMap(ciList, resolveReference);
     }
     
-    private Map<String, String> getConfigsByPrefix(int envId, String prefix, String group) {
+    private Map<String, String> getConfigsByPrefix(int envId, String prefix, String group, String resolveReference) {
         List<ConfigInstance> ciList = configService.findInstancesByPrefix(prefix, envId, group);
         
-        return toValueMap(ciList);
+        return toValueMap(ciList, resolveReference);
     }
     
-    private Map<String, String> toValueMap(List<ConfigInstance> ciList) {
+    private Map<String, String> toValueMap(List<ConfigInstance> ciList, String resolveReference) {
         Map<String, String> keyValue = new HashMap<String, String>();
+        boolean notResolve = ("false".equalsIgnoreCase(resolveReference));
         for(ConfigInstance ci : ciList) {
             String value = ci.getValue();
-            if(isReferenceValue(value)) {
+            if(isReferenceValue(value) && !notResolve) {
                 String refkey = value.substring(2, value.length()-1);
                 ConfigInstance configInst = configService.findInstance(refkey, ci.getEnvId(), ConfigInstance.NO_CONTEXT);
                 if(configInst != null) {

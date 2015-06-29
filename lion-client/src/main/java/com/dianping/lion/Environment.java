@@ -74,8 +74,8 @@ public class Environment {
         
         // using default values
         if(props == null) {
-            logger.error("failed to find appenv file, default to env [%s], swimlane [%s], zkserver [%s]", 
-                    new String[] {Constants.DEFAULT_DEPLOYENV, Constants.DEFAULT_SWIMLANE, Constants.DEFAULT_ZKSERVER});
+            logger.error(String.format("failed to find appenv file, default to env [%s], swimlane [%s], zkserver [%s]", 
+                    Constants.DEFAULT_DEPLOYENV, Constants.DEFAULT_SWIMLANE, Constants.DEFAULT_ZKSERVER));
             props = getDefaultAppEnv();
         } else {
             checkAppEnv(props);

@@ -4,11 +4,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.entity.Environment;
+import com.dianping.lion.entity.OperationLog;
+import com.dianping.lion.entity.OperationTypeEnum;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.Service;
 import com.dianping.lion.entity.User;
+import com.dianping.lion.service.OperationLogService;
+import com.dianping.lion.util.IPUtils;
 
 public class ServiceServlet extends AbstractLionServlet {
 
@@ -35,6 +40,7 @@ public class ServiceServlet extends AbstractLionServlet {
 		}
 		
 		String env, id, project, service, address, group, ip, port, result, updatezk = null;
+		String message = null;
 		switch (action) {
 		case get:
 			// getServiceAddress(env, service, group)
@@ -54,6 +60,10 @@ public class ServiceServlet extends AbstractLionServlet {
 			address = getParam(request, Key.address);
 			result = setServiceAddress(env, id, project, service, group, address);
 			response.getWriter().write("0|" + result);
+			if("product".equals(env)) {
+    			message = String.format("%s updated service %s for group [%s] in env %s to address %s", IPUtils.getUserIP(request), service, group, env, address);
+    			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
+			}
 			break;
 		case publish:
 			// publishService(env, id, service, group, ip, port)
@@ -67,6 +77,10 @@ public class ServiceServlet extends AbstractLionServlet {
 			updatezk = getParam(request, Key.updatezk, "");
 			result = publishService(env, id, project, service, group, ip, port, updatezk);
 			response.getWriter().write("0|" + result);
+			if("product".equals(env)) {
+    			message = String.format("%s published service %s for group [%s] in env %s, address is %s", IPUtils.getUserIP(request), service, group, env, ip+":"+port);
+    			operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
+			}
 			break;
 		case unpublish:
 			// unpublishService(env, id, service, group, ip, port)
@@ -79,6 +93,10 @@ public class ServiceServlet extends AbstractLionServlet {
 			updatezk = getParam(request, Key.updatezk, "");
 			result = unpublishService(env, id, service, group, ip, port, updatezk);
 			response.getWriter().write("0|" + result);
+			if("product".equals(env)) {
+                message = String.format("%s unpublished service %s for group [%s] in env %s, address is %s", IPUtils.getUserIP(request), service, group, env, ip+":"+port);
+                operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Service_Update, message));
+            }
 			break;
 		}
 	}
