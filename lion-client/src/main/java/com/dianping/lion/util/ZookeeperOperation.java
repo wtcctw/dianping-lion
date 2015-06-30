@@ -8,7 +8,10 @@ public class ZookeeperOperation {
 
     private CuratorFramework curatorClient;
 
-    public ZookeeperOperation(CuratorFramework curatorClient) {
+    public ZookeeperOperation() {
+    }
+    
+    public void setCuratorClient(CuratorFramework curatorClient) {
         this.curatorClient = curatorClient;
     }
     

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
     <display-name>Lion Console Application</display-name>
@@ -9,6 +8,8 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
 	        classpath*:config/spring/*.xml
+            classpath*:config/spring/common/appcontext-*.xml
+            classpath*:config/spring/local/appcontext-*.xml
         </param-value>
     </context-param>
 
@@ -30,6 +31,74 @@
     </context-param>
 
     <filter>
+        <filter-name>CAS Single Sign Out Filter</filter-name>
+        <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+        <init-param>
+            <param-name>artifactParameterName</param-name>
+            <param-value>SAMLart</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <filter-class>org.jasig.cas.client.authentication.Saml11AuthenticationFilter</filter-class>
+        <!-- SSO 登录页面的lion key，不用改写 -->
+        <init-param>
+            <param-name>casServerLoginUrlLionKey</param-name>
+            <param-value>cas-server-webapp.loginUrl</param-value>
+        </init-param>
+        <!-- 此处需要改写param-value，改成接入站点uri的lion key，lion的value必须是应用的完整地址且不带子路径，例如：http://my.dper.com -->
+        <init-param>
+            <param-name>serverNameLionKey</param-name>
+            <param-value>lion-console.serverName</param-value>
+        </init-param>
+        <!-- 实施安全策略，提升外网访问时的安全级别，没有外网访问的站点不建议打开 -->
+        <init-param>
+            <param-name>safe</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <!-- 免登录url，支持通配符*，多个用,分隔
+        <init-param>
+            <param-name>excludeURLs</param-name>
+            <param-value>/exclude</param-value>
+        </init-param>
+        -->
+    </filter>
+
+    <filter>
+        <filter-name>CAS Validation Filter</filter-name>
+        <filter-class>org.jasig.cas.client.validation.Saml11TicketValidationFilter</filter-class>
+        <init-param>
+            <param-name>casServerUrlPrefixLionKey</param-name>
+            <param-value>cas-server-webapp.serverName</param-value>
+        </init-param>
+        <!-- 此处需要改写param-value，改成接入站点uri的lion key，lion的value必须是应用的完整地址且不带子路径，例如：http://my.dper.com -->
+        <init-param>
+            <param-name>serverNameLionKey</param-name>
+            <param-value>lion-console.serverName</param-value>
+        </init-param>
+        <init-param>
+            <param-name>redirectAfterValidation</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <!-- 是否开启票据时间差验证，默认开启 -->
+        <init-param>
+            <param-name>validate</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <!-- 最大容忍的时间差（毫秒） -->
+        <init-param>
+            <param-name>tolerance</param-name>
+            <param-value>5000</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+        <filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+    </filter>
+
+    <filter>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
         <init-param>
@@ -41,12 +110,12 @@
             <param-value>true</param-value>
         </init-param>
     </filter>
-    
+
     <filter>
         <filter-name>cat-filter</filter-name>
         <filter-class>com.dianping.cat.servlet.CatFilter</filter-class>
     </filter>
-    
+
     <filter>
         <filter-name>securityFilter</filter-name>
         <filter-class>com.dianping.lion.web.filter.LionSecurityFilter</filter-class>
@@ -71,6 +140,23 @@
         <filter-name>struts-execute</filter-name>
         <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter</filter-class>
     </filter>
+
+    <filter-mapping>
+        <filter-name>CAS Single Sign Out Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CAS Authentication Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CAS Validation Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>

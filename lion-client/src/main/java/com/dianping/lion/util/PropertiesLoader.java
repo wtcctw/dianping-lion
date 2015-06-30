@@ -18,20 +18,12 @@ public class PropertiesLoader {
     
     private static final String SCHEMA_CLASSPATH = "classpath:";
     
-    public static Properties load(String resource) {
+    public static Properties load(String resource) throws IOException {
         checkNotNull(resource, "resource is null");
-        try {
-            if(resource.startsWith(SCHEMA_CLASSPATH)) {
-                return loadFromClassPath(resource.substring(SCHEMA_CLASSPATH.length()));
-            } else {
-                return loadFromFileSystem(resource);
-            }
-        } catch(FileNotFoundException e) {
-            logger.warn(e.getMessage());
-            return null;
-        }catch (Exception e) {
-            logger.error("failed to load resource from " + resource, e);
-            return null;
+        if(resource.startsWith(SCHEMA_CLASSPATH)) {
+            return loadFromClassPath(resource.substring(SCHEMA_CLASSPATH.length()));
+        } else {
+            return loadFromFileSystem(resource);
         }
     }
     

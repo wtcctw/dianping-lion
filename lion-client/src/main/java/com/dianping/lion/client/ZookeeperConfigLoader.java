@@ -3,6 +3,7 @@ package com.dianping.lion.client;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -27,17 +28,25 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
 
     private static final String KEY_SYNC_INTERVAL = "lion.sync.interval";
     private static final int DEFAULT_SYNC_INTERVAL = 120000;
+    private static final String KEY_FAIL_LIMIT = "lion.zookeeper.fail.limit";
+    private static final int DEFAULT_FAIL_LIMIT = 3600;
 
     private static Logger logger = LoggerFactory.getLogger(ZookeeperConfigLoader.class);
     
     private String appName;
     private String swimlane;
     private String zookeeperAddress;
+    private ConcurrentMap<String, ZookeeperValue> keyValueMap;
+
     private CuratorFramework curatorClient;
     private ZookeeperOperation zookeeperOperation;
-    private ConcurrentMap<String, ZookeeperValue> keyValueMap;
+    private ZookeeperDataWatcher zookeeperDataWatcher;
     
-    private volatile boolean isConnected;
+    private AtomicBoolean isSyncing = new AtomicBoolean(false);
+    private volatile long lastSyncTime = System.currentTimeMillis();
+    private volatile int syncInterval;
+    private volatile int failLimit;
+    private volatile int failCount = 0;
     
     public ZookeeperConfigLoader() {
         zookeeperAddress = Environment.getZKAddress();
@@ -48,40 +57,11 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
     }
     
     public void init() {
-        curatorClient = CuratorFrameworkFactory.newClient(zookeeperAddress, 60*1000, 30*1000, 
-                new RetryNTimes(Integer.MAX_VALUE, 1000));
+        zookeeperDataWatcher = new ZookeeperDataWatcher(this);
+        zookeeperOperation = new ZookeeperOperation();
         
-        zookeeperOperation = new ZookeeperOperation(curatorClient);
-        
-        curatorClient.getConnectionStateListenable().addListener(new ConnectionStateListener() {
-            @Override
-            public void stateChanged(CuratorFramework client, ConnectionState newState) {
-                logger.warn("lion zookeeper state changed to {}", newState);
-                if (newState == ConnectionState.CONNECTED) {
-                    isConnected = true;
-                } else if (newState == ConnectionState.RECONNECTED) {
-                    isConnected = true;
-                    Cat.logEvent("lion", "zookeeper:reconnected", Message.SUCCESS, zookeeperAddress);
-                    try {
-                        syncConfig();
-                    } catch (Exception e) {
-                        logger.error("failed to sync config with zookeeper", e);
-                    }
-                } else {
-                    isConnected = false;
-                }
-            }
-        });
-        
-        curatorClient.getCuratorListenable().addListener(new ZookeeperDataWatcher(this));
-        
-        curatorClient.start();
-        
-        try {
-            curatorClient.getZookeeperClient().blockUntilConnectedOrTimedOut();
-        } catch (Exception e) {
-            logger.error("failed to connect to zookeeper: " + zookeeperAddress);
-        }
+        curatorClient = newCuratorClient();
+        zookeeperOperation.setCuratorClient(curatorClient);
         
         startConfigSyncThread();
     }
@@ -97,24 +77,16 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
         try {
             ZookeeperValue zkValue = getZookeeperValue(key);
             
-            if(zkValue != null) {
-                keyValueMap.put(key, zkValue);
-            } else {
-                keyValueMap.put(key, ZookeeperValue.NOT_EXIST_VALUE);
-            }
+            keyValueMap.put(key, zkValue == null ? ZookeeperValue.NOT_EXIST_VALUE : zkValue);
             
             return zkValue == null ? null : zkValue.getValue();
         } catch (Exception ex) {
-            logger.error("failed to get value for key: {}" + key, ex);
+            logger.error("failed to get value for key: " + key, ex);
             throw ex;
         }
     }
     
     public ZookeeperValue getZookeeperValue(String key) throws Exception {
-        if(!isConnected) {
-            throw new RuntimeException("lion zookeeper is not connected: " + zookeeperAddress);
-        }
-        
         ZookeeperValue zkValue = null;
         
         // Try to get application specific configs
@@ -173,7 +145,7 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
         String timestampPath = ZookeeperUtils.getTimestampPath(path);
         ZookeeperValue zkValue = null;
         
-        Transaction t = Cat.getProducer().newTransaction("lion", "get");
+        Transaction t = Cat.newTransaction("lion", "get");
         try {
             byte[] data = zookeeperOperation.getDataWatched(path);
             
@@ -198,101 +170,149 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
     
     private class ConfigSyncer implements Runnable {
 
-        private long lastSyncTime;
-        private int syncInterval;
-        
         public ConfigSyncer() {
-            lastSyncTime = System.currentTimeMillis();
             try {
                 String value = get(KEY_SYNC_INTERVAL);
                 syncInterval = (value == null ? DEFAULT_SYNC_INTERVAL : Integer.parseInt(value));
             } catch (Exception e) {
                 syncInterval = DEFAULT_SYNC_INTERVAL;
             }
+            try {
+                String value = get(KEY_FAIL_LIMIT);
+                failLimit = (value == null ? DEFAULT_FAIL_LIMIT : Integer.parseInt(value));
+            } catch (Exception e) {
+                failLimit = DEFAULT_FAIL_LIMIT;
+            }
         }
         
         @Override
         public void run() {
-            int k = 0;
-            while (true) {
+            while (!Thread.interrupted()) {
                 try {
-                    long now = System.currentTimeMillis();
-                    if (isConnected && (now - lastSyncTime > syncInterval)) {
-                        syncConfig();
-                        lastSyncTime = now;
-                    } else {
-                        Thread.sleep(1000);
-                    }
-                    k = 0;
-                } catch (Exception e) {
-                    k++;
-                    if (k > 3) {
-                        try {
-                            Thread.sleep(5000);
-                            k = 0;
-                        } catch (InterruptedException ie) {
-                            break;
-                        }
-                    }
-                    logger.error("", e);
+                    Thread.sleep(1000);
+                    checkZookeeper();
+                    trySyncConfig(false);
+                } catch (InterruptedException e) {
+                    logger.warn("lion config sync thread is interrupted");
+                    break;
                 }
             }
         }
-
-    }
-
-//    private void syncConfig() throws Exception {
-//        Transaction t = Cat.getProducer().newTransaction("lion", "sync");
-//        try {
-//            for (Entry<String, String> entry : keyValueMap.entrySet()) {
-//                String path = getRealConfigPath(entry.getKey(), swimlane);
-//                String timestampPath = ZookeeperUtils.getTimestampPath(path);
-//                
-//                byte[] data = zookeeperOperation.getData(timestampPath);
-//                if (data != null) {
-//                    Long timestamp = EncodeUtils.getLong(data);
-//                    Long timestamp_ = timestampMap.get(path);
-//                    if (timestamp_ == null || timestamp > timestamp_) {
-//                        timestampMap.put(path, timestamp);
-//                        data = zookeeperOperation.getDataWatched(path);
-//                        if (data != null) {
-//                            String value = new String(data, Constants.CHARSET);
-//                            Cat.logEvent("lion", "sync:changed", Message.SUCCESS, entry.getKey());
-//                            fireConfigChanged(new ConfigEvent(entry.getKey(), value));
-//                        }
-//                    } else {
-//                        zookeeperOperation.watch(path);
-//                    }
-//                }
-//            }
-//            t.setStatus(Message.SUCCESS);
-//        } catch (Exception e) {
-//            t.setStatus(e);
-//            throw e;
-//        } finally {
-//            t.complete();
-//        }
-//    }
-    
-    private void syncConfig() throws Exception {
-        Transaction t = Cat.getProducer().newTransaction("lion", "sync");
-        try {
-            for (Entry<String, ZookeeperValue> entry : keyValueMap.entrySet()) {
-                String key = entry.getKey();
-                ZookeeperValue currentZkValue = entry.getValue();
-                
-                ZookeeperValue fetchedZkValue = getZookeeperValue(key);
-                if(fetchedZkValue != null && !fetchedZkValue.equals(currentZkValue)) {
-                    Cat.logEvent("lion", "config:changed:sync", Message.SUCCESS, key + ":" + fetchedZkValue.getValue());
-                    configChanged(key, fetchedZkValue);
+        
+        private void checkZookeeper() {
+            boolean isConnected = false;
+            try {
+                isConnected = curatorClient.getZookeeperClient().getZooKeeper().getState().isConnected();
+            } catch(Exception e) {
+                if(failCount % 10 == 0)
+                    logger.error("failed to check zookeeper status", e);
+            }
+            if(isConnected) {
+                failCount = 0;
+            } else {
+                if(++failCount >= failLimit) {
+                    try {
+                        renewCuratorClient();
+                        failCount = 0;
+                        logger.info("renewed curator client to " + zookeeperAddress);
+                        Cat.logEvent("lion", "zookeeper:renewSuccess", Message.SUCCESS, "" + failLimit);
+                    } catch (Exception e) {
+                        failCount = failCount / 2;
+                        logger.error("failed to renew curator client", e);
+                        Cat.logEvent("lion", "zookeeper:renewFailure", Message.SUCCESS, e.getMessage());
+                    }
                 }
             }
-            t.setStatus(Message.SUCCESS);
+        }
+    }
+    
+    private void renewCuratorClient() throws Exception {
+        CuratorFramework newCuratorClient = newCuratorClient();
+        CuratorFramework oldCuratorClient = this.curatorClient;
+        this.curatorClient = newCuratorClient;
+        zookeeperOperation.setCuratorClient(newCuratorClient);
+        trySyncConfig(true);
+        if(oldCuratorClient != null) {
+            try {
+                oldCuratorClient.close();
+            } catch(Exception e) {
+                logger.error("failed to close curator client: " + e.getMessage());
+            }
+        }
+    }
+    
+    private CuratorFramework newCuratorClient() {
+        CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(
+                zookeeperAddress, 60*1000, 30*1000, new RetryNTimes(3, 1000));
+        
+        curatorClient.getConnectionStateListenable().addListener(new ConnectionStateListener() {
+            @Override
+            public void stateChanged(CuratorFramework client, ConnectionState newState) {
+                logger.info("lion zookeeper state: " + newState);
+                Cat.logEvent("lion", "zookeeper:" + newState);
+                if (newState == ConnectionState.RECONNECTED) {
+                    try {
+                        trySyncConfig(true);
+                    } catch (Exception e) {
+                        logger.error("failed to sync lion config", e);
+                    }
+                }
+            }
+        });
+        
+        curatorClient.getCuratorListenable().addListener(zookeeperDataWatcher);
+        
+        curatorClient.start();
+        
+        try {
+            curatorClient.getZookeeperClient().blockUntilConnectedOrTimedOut();
         } catch (Exception e) {
-            t.setStatus(e);
-            throw e;
-        } finally {
-            t.complete();
+            logger.error("failed to connect to zookeeper: " + zookeeperAddress);
+        }
+        
+        return curatorClient;
+    }
+
+    private void trySyncConfig(boolean force) {
+        long now = System.currentTimeMillis();
+        if (force || (now - lastSyncTime >= syncInterval)) {
+            if (isSyncing.compareAndSet(false, true)) {
+                try {
+                    syncConfig();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (Exception e) {
+                    logger.error("failed to sync lion config", e);
+                } finally {
+                    lastSyncTime = System.currentTimeMillis();
+                    isSyncing.set(false);
+                }
+            }
+        }
+    }
+
+    private void syncConfig() throws Exception {
+        if(curatorClient.getZookeeperClient().isConnected()) {
+            Transaction t = Cat.getProducer().newTransaction("lion", "sync");
+            try {
+                for (Entry<String, ZookeeperValue> entry : keyValueMap.entrySet()) {
+                    String key = entry.getKey();
+                    ZookeeperValue currentZkValue = entry.getValue();
+                    
+                    ZookeeperValue fetchedZkValue = getZookeeperValue(key);
+                    if(fetchedZkValue != null && !fetchedZkValue.equals(currentZkValue)) {
+                        Cat.logEvent("lion", "config:changed:sync", Message.SUCCESS, 
+                                key + ":" + escape(key, fetchedZkValue.getValue()));
+                        configChanged(key, fetchedZkValue);
+                    }
+                }
+                t.setStatus(Message.SUCCESS);
+            } catch (Exception e) {
+                t.setStatus(e);
+                throw e;
+            } finally {
+                t.complete();
+            }
         }
     }
     

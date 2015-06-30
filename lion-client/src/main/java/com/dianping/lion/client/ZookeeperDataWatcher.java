@@ -1,5 +1,6 @@
 package com.dianping.lion.client;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.api.CuratorEvent;
 import org.apache.curator.framework.api.CuratorEventType;
@@ -96,70 +97,18 @@ public class ZookeeperDataWatcher implements CuratorListener {
             configLoader.configChanged(configKey.getKey(), zkValue);
         }
     }
-    
-//    public void process(WatchedEvent event) {
-//        if (event.getType() == EventType.NodeCreated || event.getType() == EventType.NodeDataChanged) {
-//            try {
-//                String key = getKey(event.getPath());
-//                String group = getGroup(event.getPath());
-//
-//                if(isFiltered(key, group)) {
-//                    return;
-//                }
-//                
-//                String path = event.getPath();
-//                String tsPath = ZookeeperUtils.getTimestampPath(path);
-//            
-//                byte[] data = zookeeperOperation.getData(tsPath);
-//                if(data != null) {
-//                    Long timestamp = EncodeUtils.getLong(data);
-//                    Long timestamp_ = timestampMap.get(path);
-//                    if (timestamp_ == null || timestamp > timestamp_) {
-//                        timestampMap.put(path, timestamp);
-//                        data = zookeeperOperation.getDataWatched(path);
-//                        if (data != null) {
-//                            String value = new String(data, Constants.CHARSET);
-//                            Cat.logEvent("lion", "zookeeper:changed", Message.SUCCESS, key);
-//                            configLoader.fireConfigChanged(new ConfigEvent(key, value));
-//                        }
-//                    } else {
-//                        zookeeperOperation.watch(path);
-//                    }
-//                } else {
-//                    zookeeperOperation.watch(path);
-//                }
-//            } catch (Exception ex) {
-//                logger.error("", ex);
-//                try {
-//                    zookeeperOperation.watch(event.getPath());
-//                } catch (Exception e) {
-//                    logger.error("", e);
-//                }
-//            }
-//        } else if (event.getType() == EventType.NodeDeleted) {
-//            // do nothing & watch again, leave the old value in cache
-//            try {
-//                String key = getKey(event.getPath());
-//                zookeeperOperation.watch(event.getPath());
-//                // if swimlane node is deleted, watch both the default node
-//                String group = getGroup(event.getPath());
-//                if(group != null) {
-//                    zookeeperOperation.watch(ZookeeperUtils.getConfigPath(key));
-//                }
-//            } catch (Exception ex) {
-//                logger.error("", ex);
-//            }
-//        }
-//    }
 
     private boolean isInterestedEvent(ConfigKey configKey) {
         ZookeeperValue currentValue = configLoader.getKeyValueMap().get(configKey.getKey());
         return (currentValue == null || configKey.getChannel() >= currentValue.getChannel());
     }
     
-    private boolean acceptChange(String key, ZookeeperValue zkValue) {
-        ZookeeperValue currentValue = configLoader.getKeyValueMap().get(key);
-        return (currentValue == null || zkValue.getTimestamp() > currentValue.getChannel());
+    private boolean acceptChange(String key, ZookeeperValue currentValue) {
+        if(StringUtils.isEmpty(currentValue.getValue()))
+            return false;
+        ZookeeperValue existValue = configLoader.getKeyValueMap().get(key);
+        return (existValue == null || 
+                currentValue.getTimestamp() > existValue.getTimestamp());
     }
     
 }

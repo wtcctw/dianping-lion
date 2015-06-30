@@ -49,7 +49,7 @@
     	</isEqual>	
     </select>
     
-    <select id="findByName" resultMap="UserResultBasic">
+    <select id="findByName" resultMap="UserWithRoleResult">
 		<![CDATA[
 		SELECT * FROM user WHERE loginName = #userName# ORDER BY id
 		]]>

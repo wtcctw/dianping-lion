@@ -10,7 +10,7 @@
     
     <groupId>com.dianping.lion</groupId>
     <artifactId>lion-all</artifactId>
-    <version>0.4.9-SNAPSHOT</version>
+    <version>0.4.9</version>
     <packaging>pom</packaging>
 
     <name>lion-all</name>
@@ -33,8 +33,7 @@
         <slf4j.version>1.6.6</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <mysql.version>5.1.26</mysql.version>
-        <curator.version>2.3.0</curator.version>
-        <zookeeper.version>3.4.5</zookeeper.version>
+        <curator.version>2.7.1</curator.version>
     </properties>
     
     <dependencyManagement>
@@ -42,7 +41,7 @@
                 <dependency>
                 <groupId>com.dianping.cat</groupId>
                 <artifactId>cat-client</artifactId>
-                <version>1.2.7</version>
+                <version>1.3.4</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -92,14 +91,10 @@
                 <version>2.6</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
-                <version>${zookeeper.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-test</artifactId>
                 <version>${curator.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.curator</groupId>

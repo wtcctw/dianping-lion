@@ -12,14 +12,6 @@ public class KeyUtils {
     private static String[] COMPONENTS = DEFAULT_ARCH_COMPONENTS.split(",");
 
     public static String[] getComponents() {
-        if(COMPONENTS == null) {
-            synchronized(KeyUtils.class) {
-                if(COMPONENTS == null) {
-                    String value = Lion.get(KEY_ARCH_COMPONENTS, DEFAULT_ARCH_COMPONENTS);
-                    COMPONENTS = org.apache.commons.lang.StringUtils.split(value, ',');
-                }
-            }
-        }
         return COMPONENTS;
     }
 

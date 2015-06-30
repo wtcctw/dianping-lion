@@ -2,6 +2,7 @@ package com.dianping.lion;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -22,9 +23,16 @@ public class Environment {
     private static String zkserver = null;
     
     static {
-        props = PropertiesLoader.load("classpath:META-INF/app.properties");
+        try {
+            props = PropertiesLoader.load("classpath:META-INF/app.properties");
+        } catch (FileNotFoundException e) {
+            logger.warn("app.properties doesn't exist");
+        } catch (Throwable e) {
+            logger.error("failed to load app.properties", e);
+        }
         if(props != null) {
             appName = props.getProperty("app.name");
+            appName = StringUtils.trimToNull(appName);
         } else {
             props = new Properties();
         }
@@ -61,27 +69,43 @@ public class Environment {
         if(idx != -1) {
             // load from WAR_ROOT
             String p = path.substring(0, idx) + "appenv";
-            props = PropertiesLoader.load(p);
+            try {
+                props = PropertiesLoader.load(p);
+            } catch (FileNotFoundException e) {
+                logger.warn(p + " doesn't exist");
+            } catch (Throwable e) {
+                logger.error("failed to load " + p, e);
+            }
         } else {
             // load from CLASSPATH
-            props = PropertiesLoader.load("classpath:appenv");
+            try {
+                props = PropertiesLoader.load("classpath:appenv");
+            } catch (FileNotFoundException e) {
+                logger.warn("appenv doesn't exist in classpath");
+            } catch (Throwable e) {
+                logger.error("failed to load appenv from classpath", e);
+            }
         }
         
         // load from /data/webapps/appenv
         if(props == null) {
-            props = PropertiesLoader.load("/data/webapps/appenv");
+            try {
+                props = PropertiesLoader.load("/data/webapps/appenv");
+            } catch (FileNotFoundException e) {
+                logger.warn("/data/webapps/appenv doesn't exist");
+            } catch (Throwable e) {
+                logger.error("failed to load /data/webapps/appenv", e);
+            }
         }
         
         // using default values
         if(props == null) {
-            logger.error(String.format("failed to find appenv file, default to env [%s], swimlane [%s], zkserver [%s]", 
-                    Constants.DEFAULT_DEPLOYENV, Constants.DEFAULT_SWIMLANE, Constants.DEFAULT_ZKSERVER));
             props = getDefaultAppEnv();
-        } else {
-            checkAppEnv(props);
-            logger.info("loaded appenv, env [%s], swimlane [%s], zkserver [%s]",
-                    new String[] {deployenv, swimlane, zkserver});
         }
+        
+        checkAppEnv(props);
+        logger.info("loaded appenv, env [%s], swimlane [%s], zkserver [%s]",
+                new String[] {deployenv, swimlane, zkserver});
         return props;
     }
     
@@ -99,7 +123,6 @@ public class Environment {
     private static Properties getDefaultAppEnv() {
         Properties props = new Properties();
         props.put(Constants.KEY_DEPLOYENV, Constants.DEFAULT_DEPLOYENV);
-        props.put(Constants.KEY_SWIMLANE, Constants.DEFAULT_SWIMLANE);
         props.put(Constants.KEY_ZKSERVER, Constants.DEFAULT_ZKSERVER);
         return props;
     }
