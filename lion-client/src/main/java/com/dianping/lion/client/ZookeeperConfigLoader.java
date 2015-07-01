@@ -12,7 +12,6 @@ import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.RetryNTimes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import com.dianping.cat.Cat;
 import com.dianping.cat.message.Message;
@@ -27,7 +26,7 @@ import com.dianping.lion.util.ZookeeperUtils;
 public class ZookeeperConfigLoader extends AbstractConfigLoader {
 
     private static final String KEY_SYNC_INTERVAL = "lion.sync.interval";
-    private static final int DEFAULT_SYNC_INTERVAL = 120000;
+    private static final int DEFAULT_SYNC_INTERVAL = 300000;
     private static final String KEY_FAIL_LIMIT = "lion.zookeeper.fail.limit";
     private static final int DEFAULT_FAIL_LIMIT = 3600;
 
@@ -49,8 +48,7 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
     private volatile int failCount = 0;
     
     public ZookeeperConfigLoader() {
-        zookeeperAddress = Environment.getZKAddress();
-        Assert.notNull(zookeeperAddress, "zookeeper address is null");
+        zookeeperAddress = System.getProperty(ConfigLoader.KEY_ZOOKEEPER_ADDRESS, Environment.getZKAddress());
         appName = Environment.getAppName();
         swimlane = Environment.getSwimlane();
         keyValueMap = new ConcurrentHashMap<String, ZookeeperValue>();
@@ -295,6 +293,7 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
     private void syncConfig() throws Exception {
         if(curatorClient.getZookeeperClient().isConnected()) {
             Transaction t = Cat.getProducer().newTransaction("lion", "sync");
+            t.addData("keyCount", keyValueMap.size());
             try {
                 for (Entry<String, ZookeeperValue> entry : keyValueMap.entrySet()) {
                     String key = entry.getKey();
@@ -303,7 +302,7 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
                     ZookeeperValue fetchedZkValue = getZookeeperValue(key);
                     if(fetchedZkValue != null && !fetchedZkValue.equals(currentZkValue)) {
                         Cat.logEvent("lion", "config:changed:sync", Message.SUCCESS, 
-                                key + ":" + escape(key, fetchedZkValue.getValue()));
+                                key + ":" + KeyUtils.escape(key, fetchedZkValue.getValue()));
                         configChanged(key, fetchedZkValue);
                     }
                 }
@@ -323,7 +322,7 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
     
     public void configChanged(String key, ZookeeperValue zkValue) {
         keyValueMap.put(key, zkValue);
-        logger.info(">>>>>>config changed, key: " + key + ", value: " + escape(key, zkValue.getValue()));
+        logger.info(">>>>>>config changed, key: " + key + ", value: " + KeyUtils.escape(key, zkValue.getValue()));
         fireConfigChanged(new ConfigEvent(key, zkValue.getValue()));
     }
     
@@ -336,20 +335,6 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
         if(configListener != null) {
             configListener.configChanged(configEvent);
         }
-    }
-    
-    private String escape(String key, String value) {
-        if(key == null)
-            return limitLength(value);
-        if(key.toLowerCase().contains("password")) 
-            return "********";
-        return limitLength(value);
-    }
-
-    private String limitLength(String value) {
-        if(value == null || value.length() <= 100)
-            return value;
-        return value.substring(0, 100);
     }
     
     public int getOrder() {

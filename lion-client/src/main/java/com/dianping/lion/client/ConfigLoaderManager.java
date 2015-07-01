@@ -6,25 +6,19 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.dianping.lion.util.KeyUtils;
+
 //TODO: config persistent to disk, load failover configs from disk
 public class ConfigLoaderManager {
 
-    private static ConfigLoaderManager instance;
+    private static final Logger logger = LoggerFactory.getLogger(ConfigLoaderManager.class);
     
     private List<ConfigLoader> configLoaders;
-
-    public static ConfigLoaderManager getInstance() {
-        if(instance == null) {
-            synchronized(ConfigLoaderManager.class) {
-                if(instance == null) {
-                    instance = new ConfigLoaderManager();
-                }
-            }
-        }
-        return instance;
-    }
     
-    private ConfigLoaderManager() {
+    ConfigLoaderManager() {
         init();
     }
     
@@ -57,6 +51,9 @@ public class ConfigLoaderManager {
             } else {
                 break;
             }
+        }
+        if(logger.isDebugEnabled()) {
+            logger.debug("loaded config: " + key + " => " + KeyUtils.escape(key, value));
         }
         return value;
     }

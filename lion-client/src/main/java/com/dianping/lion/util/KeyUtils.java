@@ -2,7 +2,6 @@ package com.dianping.lion.util;
 
 import com.dianping.lion.Constants;
 import com.dianping.lion.Environment;
-import com.dianping.lion.client.Lion;
 
 public class KeyUtils {
 
@@ -115,6 +114,20 @@ public class KeyUtils {
         public String toString() {
             return String.format("ConfigKey[key=%s, swimlane=%s, channel=%s]", key, swimlane, channel);
         }
+    } 
+    
+    public static String escape(String key, String value) {
+        if(key == null)
+            return limitLength(value);
+        if(key.toLowerCase().contains("password")) 
+            return "********";
+        return limitLength(value);
+    }
+
+    public static String limitLength(String value) {
+        if(value == null || value.length() <= 100)
+            return value;
+        return value.substring(0, 100);
     }
 
 }

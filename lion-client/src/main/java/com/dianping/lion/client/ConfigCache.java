@@ -35,13 +35,15 @@ import com.dianping.lion.util.KeyUtils;
  */
 public class ConfigCache implements ConfigListener {
 
+    private static final String NON_EXIST_VALUE = ")@!_%#%%(&&&";  // 021-53559777
+
     static {
         LoggerLoader.init();
     }
     
 	private static Logger logger = LoggerFactory.getLogger(ConfigCache.class);
 	
-	private static volatile ConfigCache instance;
+	private static ConcurrentMap<String, ConfigCache> instanceMap = new ConcurrentHashMap<String, ConfigCache>();
 
 	private static ConcurrentMap<String, String> cachedConfig = new ConcurrentHashMap<String, String>();
 
@@ -57,10 +59,6 @@ public class ConfigCache implements ConfigListener {
 	private ConfigLoaderManager configLoader;
 	
 	private String appName = Environment.getAppName();
-	
-	public String getAppenv(String key) {
-		return Environment.getProperty(key);
-	}
 
 	/**
 	 * 如果已经使用SpringConfig配置为Spring Bean，或者用getInstance(String address)成功调用过一次，
@@ -70,10 +68,7 @@ public class ConfigCache implements ConfigListener {
 	 * @throws LionException
 	 */
 	public static ConfigCache getInstance() throws LionException {
-		if (instance == null) {
-		    instance = getInstance(Environment.getZKAddress());
-		}
-		return instance;
+		return getInstance(Environment.getZKAddress());
 	}
 
 	/**
@@ -83,35 +78,41 @@ public class ConfigCache implements ConfigListener {
 	 * @throws LionException
 	 */
 	public static ConfigCache getInstance(String address) throws LionException {
+	    if(StringUtils.isBlank(address)) {
+	        throw new NullPointerException("zookeeper address is empty");
+	    }
+	    address = address.trim();
+	    ConfigCache instance = instanceMap.get(address);
 		if (instance == null) {
 			synchronized (ConfigCache.class) {
+			    instance = instanceMap.get(address);
 				if (instance == null) {
 					try {
-						ConfigCache cc = new ConfigCache();
-						cc.setAddress(address);
-						cc.init();
-						instance = cc;
+						instance = new ConfigCache(address);
+						instanceMap.put(address, instance);
 					} catch (Exception e) {
-						logger.error("Failed to initialize ConfigCache", e);
+						logger.error("failed to initialize ConfigCache(" + address + ")", e);
 						throw new LionException(e);
 					}
 				}
-			}
-		} else {
-			if (!address.equals(instance.getAddress())) {
-				throw new LionException("ConfigCache has been initialized with address " + address);
 			}
 		}
 		return instance;
 	}
 
-	private void init() throws Exception {
+	private ConfigCache(String address) throws Exception {
+	    this.address = address;
+	    System.setProperty(ConfigLoader.KEY_ZOOKEEPER_ADDRESS, address);
 	    System.setProperty(ConfigLoader.KEY_PROPERTIES_FILE, propertiesPath);
-	    System.setProperty(ConfigLoader.KEY_INCLUDE_LOCAL_PROPS, "" + includeLocalProps);
-	    configLoader = ConfigLoaderManager.getInstance();
-	    configLoader.addConfigListener(this);
+        System.setProperty(ConfigLoader.KEY_INCLUDE_LOCAL_PROPS, "" + includeLocalProps);
+        configLoader = new ConfigLoaderManager();
+        configLoader.addConfigListener(this);
 	}
-	
+
+    public String getAppenv(String key) {
+        return Environment.getProperty(key);
+    }
+    
 	@Deprecated
 	public void loadProperties(String propertiesFile) throws IOException {
 	    localProps = new Properties();
@@ -143,14 +144,13 @@ public class ConfigCache implements ConfigListener {
 		if(value == null) {
 		    try {
                 value = configLoader.get(key);
-                if(value != null) 
-                    cachedConfig.put(key, value);
+                cachedConfig.put(key, value == null ? NON_EXIST_VALUE : value);
             } catch (Exception e) {
                 throw new LionException(e);
             }
 		}
 
-        return value;
+        return NON_EXIST_VALUE.equals(value) ? null : value;
 	}
 
 	private String fixKey(String key) {
@@ -281,6 +281,7 @@ public class ConfigCache implements ConfigListener {
 
     @Override
     public void configChanged(ConfigEvent configEvent) {
+        cachedConfig.put(configEvent.getKey(), configEvent.getValue());
         for(ConfigChange configChange : changeList) {
             configChange.onChange(configEvent.getKey(), configEvent.getValue());
         }

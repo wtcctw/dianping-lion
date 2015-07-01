@@ -9,6 +9,7 @@ public interface ConfigLoader {
     
     public static final String KEY_PROPERTIES_FILE = "propertiesFile";
     public static final String KEY_INCLUDE_LOCAL_PROPS = "includeLocalProps";
+    public static final String KEY_ZOOKEEPER_ADDRESS = "zookeeperAddress";
 
     public static final String DEFAULT_PROPERTIES_FILE = "config/applicationContext.properties";
     public static final String DEFAULT_INCLUDE_LOCAL_PROPS = "false";
