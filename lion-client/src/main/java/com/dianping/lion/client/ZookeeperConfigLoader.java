@@ -146,6 +146,7 @@ public class ZookeeperConfigLoader extends AbstractConfigLoader {
         ZookeeperValue zkValue = null;
         
         Transaction t = Cat.newTransaction("lion", "get");
+        t.addData(key);
         try {
             byte[] data = zookeeperOperation.getDataWatched(path);
             
