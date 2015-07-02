@@ -10,7 +10,7 @@
         <div class="tab-pane<@s.if test="%{#env.id == envId}"> active</@s.if>" id="tab-content-${label}">
             <input type="hidden" id="env-id" value="${env.id}"/>
             <input type="hidden" id="env-label" value="${env.label}"/>
-            <table class="table table-bordered table-condensed">
+            <table class="table table-bordered table-condensed" style="table-layout:fixed;width:100%;">
                 <thead>
                     <tr>
                         <th width="50">序号</th>
@@ -29,10 +29,8 @@
                             ${context}
                         </td>
                         <td>${desc}</td>
-                        <td id="value">
-                            <span<@s.if test="%{#inst.isLongValue()}"> rel="tooltip" data-original-title="${moreValue?html}"</@s.if>>
-                                <@s.property value="%{#inst.getAbbrevValue(80)}"/>
-                            </span>
+                        <td id="value" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            ${inst.value}
                         </td>
                         <td style="vertical-align: middle;">
                             <a href="#" class="edit-context-btn"><i class="icon-edit" rel="tooltip" data-original-title="编辑配置值"></i></a>
@@ -45,11 +43,8 @@
                         <td>${instStatus.index}</td>
                         <td style="color:grey">[默认]</td>
                         <td>${desc}</td>
-                        <td>
-                            <span<@s.if test="%{#inst.isLongValue()}"> rel="tooltip"
-                                data-original-title="${moreValue?html}"</@s.if>>
-                                <@s.property value="%{#inst.getAbbrevValue(80)}"/>
-                            </span>
+                        <td style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            ${inst.value}
                         </td>
                         <td></td>
                     </tr>
