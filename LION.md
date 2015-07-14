@@ -6,7 +6,7 @@
 Lion 是一个配置管理平台，可以实时推送配置变更。
 
 ### 1.1 Lion 架构
-![Lion 架构](http://code.dianpingoa.com/arch/lion/blob/master/lion-arch.png)
+![Lion 架构](http://code.dianpingoa.com/arch/lion/raw/master/lion-arch.png)
 
 ### 1.2 Lion 配置加载顺序
 1. 环境变量
