@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="GlobalConfigDiff">
+	<typeAlias alias="GlobalConfigDiff" type="com.dianping.lion.entity.GlobalConfigDiff" />
+
+	<resultMap id="GlobalConfigDiffResult" class="GlobalConfigDiff">
+		<result column="teamName" property="teamName"/>
+		<result column="productName" property="productName"/>
+		<result column="projectName" property="projectName"/>
+        <result column="projectId" property="projectId"/>
+        <result column="diffNum" property="diffNum"/>
+		<result column="omitNum" property="omitNum"/>
+		<result column="updateTime" property="updateTime"/>
+	</resultMap>
+
+    <select id="getGlobalConfigDiffList" resultMap="GlobalConfigDiffResult" parameterClass="map">
+        SELECT t.name as teamName, pd.name as productName, pj.name as projectName, gcd.projectId, gcd.diffNum, gcd.omitNum, gcd.updateTime
+        FROM global_config_diff gcd INNER JOIN project pj ON gcd.projectId = pj.id
+                                    INNER JOIN product pd ON pj.productId = pd.id
+                                    INNER JOIN team t ON pd.teamId = t.id
+        WHERE gcd.lenvId = #lenvId# AND
+              gcd.renvId = #renvId# AND
+              gcd.projectId in <iterate property="projectIds" open="(" close=")" conjunction=",">#projectIds[]#</iterate>
+    </select>
+
+	<insert id="setGlobalConfigDiff" parameterClass="GlobalConfigDiff">
+		INSERT INTO global_config_diff(projectId, lenvId, renvId, diffNum, omitNum, updateTime)
+		VALUES(#projectId#, #lenvId#, #renvId#, #diffNum#, #omitNum#, #updateTime#)
+	</insert>
+
+	<update id="updateGlobalConfigDiff" parameterClass="GlobalConfigDiff">
+		UPDATE global_config_diff SET updateTime=#updateTime#
+		WHERE projectId = #projectId#
+	</update>
+</sqlMap>

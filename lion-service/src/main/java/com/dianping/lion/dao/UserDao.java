@@ -31,8 +31,6 @@ public interface UserDao {
 	
 	User findByName(String userName);
 	
-	void insertUser(User user);
-	
 	void updatePassword(User user);
 
 	long getUserCount(UserCriteria userCriteria, Paginater<User> paginater);
@@ -40,5 +38,7 @@ public interface UserDao {
 	List<User> getUserList(UserCriteria userCriteria, Paginater<User> paginater);
 
 	int update(User user);
+	
+	int insertUser(User user);
 	
 }

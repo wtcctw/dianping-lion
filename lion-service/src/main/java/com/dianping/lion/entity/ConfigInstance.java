@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-11
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -18,6 +18,7 @@ package com.dianping.lion.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.util.StringUtils;
 
 
@@ -45,10 +46,10 @@ public class ConfigInstance implements Serializable {
 	protected Date createTime;
 	protected Date modifyTime;
 	protected int seq;
-	
+
 	public ConfigInstance() {
 	}
-	
+
 	public ConfigInstance(int configId, int envId, String context, String value) {
 		this.configId = configId;
 		this.envId = envId;
@@ -246,5 +247,5 @@ public class ConfigInstance implements Serializable {
 	public void setRefkey(String refkey) {
 		this.refkey = refkey;
 	}
-	
+
 }

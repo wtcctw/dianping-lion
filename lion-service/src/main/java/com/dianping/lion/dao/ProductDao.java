@@ -8,6 +8,8 @@ public interface ProductDao {
     
 	List<Product> findAll();
 	
+	Product findProduct(String name);
+	
 	Product findProductByID(int id);
 	
 	List<Product> findProductByTeamID(int teamId);

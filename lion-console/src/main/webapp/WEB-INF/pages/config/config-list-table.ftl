@@ -1,3 +1,4 @@
+<#include "/WEB-INF/pages/common/paginater.ftl">
 <table class="table table-bordered table-striped table-condensed">
 	<thead>
     <tr>
@@ -63,6 +64,12 @@
 	  			</@s.if>
 				<@s.else><i class="icon-trash icon-white"></i></@s.else>
 	  			<a href="#" class="remove-config-btn"><i class="icon-remove" rel="tooltip" data-original-title="删除配置项"></i></a>
+	  			<@s.if test="%{#configVo.isJdbcUrl()}">
+	  			<a href="#" class="test-connection-btn"><i class="icon-flag" rel="tooltip" data-original-title="测试数据库连接"></i></a>
+	  			</@s.if>
+	  			<@s.if test="%{#configVo.needDecode()}">
+                <a href="#" class="decode-password-btn"><i class="icon-qrcode" rel="tooltip" data-original-title="显示明文密码"></i></a>
+                </@s.if>
   				<a href="#" class="edit-config-attr optional hide"><i class="icon-list-alt" rel="tooltip" title="属性编辑"></i></a>
 	  			<a href="#" class="moveup-config-btn optional hide"><i class="icon-arrow-up" rel="tooltip" data-original-title="上移"></i></a>
 	  			<a href="#" class="movedown-config-btn optional hide"><i class="icon-arrow-down" rel="tooltip" data-original-title="下移"></i></a>
@@ -72,3 +79,4 @@
   	</@s.iterator>
   </tbody>
 </table>
+<#include "/WEB-INF/pages/common/paginater.ftl">

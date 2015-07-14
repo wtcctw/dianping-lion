@@ -29,7 +29,11 @@ public interface UserService {
 
 	List<User> findAll();
 	
+	User findUser(String name);
+	
 	User findById(int id);
+	
+	User findByName(String name);
 	
 	User findNoPasswdById(int id);
 	
@@ -44,5 +48,7 @@ public interface UserService {
 	Paginater<User> getUsers(UserCriteria userCriteria, Paginater<User> paginater);
 
 	int update(User user);
+
+    int insertUser(User user);
 
 }

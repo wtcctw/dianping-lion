@@ -13,7 +13,7 @@
 			      	<span rel="tooltip" data-original-title="仅用于Value输入值校验">类型:</span>
 			      </label>
 			      <div class="controls lion-controls">
-			        <select id="edit-config-type-selector" disabled="disabled">
+			        <select id="edit-config-type-selector">
 			        	<@s.iterator value="%{@com.dianping.lion.entity.ConfigTypeEnum@values()}">
 			        		<option value="${value}">${label?html}</option>
 			        	</@s.iterator>
@@ -27,6 +27,8 @@
 			      <div class="controls lion-controls2" style="width:390px;">
 			      		<input type="checkbox" id="edit-select-all-env"/><label for="edit-select-all-env" class="help-inline">全选线下</label>
 			      		&nbsp;&nbsp;
+                   <input type="checkbox" id="edit-select-all-online-env"/><label for="edit-select-all-online-env" class="help-inline">全选线上</label>
+                   &nbsp;&nbsp;
 			      	<@s.iterator value="environments" status="envStatus">
 			      		<input type="checkbox" name="edit-config-env" online="${online?string("true","false")}" id="edit-config-env-${id}" value="${id}"
 			      		><label for="edit-config-env-${id}" class="help-inline">${label}</label>
@@ -61,6 +63,6 @@
     <div class="modal-footer">
       <a href="#" class="btn" data-dismiss="modal">关闭</a>
       <input id="edit-save-btn" type="button" class="btn btn-primary" value=" 保存 ">
-      <input id="edit-more-btn" type="button" class="btn btn-info" value=" 编辑上下文相关配置 ">
+      <input id="edit-more-btn" type="button" class="btn btn-info" value=" 编辑泳道配置 ">
     </div>
 </div>

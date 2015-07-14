@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-12
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -30,69 +30,42 @@ import com.dianping.lion.vo.Paginater;
  */
 public interface ConfigDao {
 
-	List<Config> findConfigByProject(int projectId);
-
 	/**
-	 * 获取Config
+	 * 获取配置项
 	 * @param configId
 	 * @return
 	 */
 	Config getConfig(int configId);
-	
+
 	/**
-	 * 获取下一个Config(按seq排序)
+	 * 获取下一个配置项(按seq排序)
 	 * @param configId
 	 * @return
 	 */
 	Config getNextConfig(int configId);
-	
+
 	/**
-	 * 获取上一个Config(按seq排序)
+	 * 获取上一个配置项(按seq排序)
 	 * @param configId
 	 * @return
 	 */
 	Config getPrevConfig(int configId);
-	
-	/**
-	 * 获取指定项目下所有配置的最大seq值
-	 * @param projectId
-	 * @return
-	 */
-	int getMaxSeq(int projectId);
 
 	/**
-	 * @param configId
-	 * @param envId
-	 * @return
-	 */
-	int getMaxInstSeq(int configId, int envId);
-
-	/**
-	 * @param config
-	 */
-	int update(Config config);
-
-	/**
+	 * 获取存在配置实例的配置项
 	 * @param projectId
 	 * @param envId
-	 * @return
-	 */
-	Map<Integer, ConfigInstance> findDefaultInstance(int projectId, int envId);
-
-	/**
-	 * 获取存在configInstance的Config
-	 * @param projectId
 	 */
 	List<Integer> findHasInstanceConfigs(int projectId, int envId);
 
 	/**
-	 * 获取存在context config instance的Config
+	 * 获取存在泳道配置实例的配置项
 	 * @param projectId
 	 * @param envId
 	 * @return
 	 */
 	List<Integer> findHasContextInstConfigs(int projectId, int envId);
-	
+
 	/**
 	 * 获取指定key的配置项
 	 * @param key
@@ -101,45 +74,100 @@ public interface ConfigDao {
 	Config findConfigByKey(String key);
 
 	/**
+	 * 获取指定项目的所有配置项
+	 * @param projectId
+	 * @return
+	 */
+	List<Config> findConfigByProject(int projectId);
+
+	/**
+	 * 获取指定key列表的所有配置项
 	 * @param keys
 	 * @return
 	 */
 	List<Config> findConfigByKeys(List<String> keys);
-	
+
+	List<Config> findConfigByKeyPattern(String keyPattern);
+
+	/**
+	 * 更新配置项
+	 * @param config
+	 */
+	int updateConfig(Config config);
+
+    /**
+     * 删除配置项
+     * @param configId
+     */
+    int deleteConfig(int configId);
+
+    /**
+     * 创建配置项
+     * @param config
+     */
+    int createConfig(Config config);
+
+	/**
+	 * 获取指定项目下所有配置项的最大seq值
+	 * @param projectId
+	 * @return
+	 */
+	int getMaxConfigSeq(int projectId);
+
+	/**
+	 * 获取指定配置项在指定环境下的最大实例seq值
+	 * @param configId
+	 * @param envId
+	 * @return
+	 */
+	int getMaxConfigInstSeq(int configId, int envId);
+
+	/**
+	 * 获取指定项目在指定环境下的所有默认泳道配置实例
+	 * @param projectId
+	 * @param envId
+	 * @return
+	 */
+	Map<Integer, ConfigInstance> findDefaultInstances(int projectId, int envId);
+
+	/**
+     * 删除指定配置项在指定环境下指定泳道的配置实例
+     * @param configId
+     * @param envId
+     * @param group 泳道名
+     */
+	int deleteInstance(int configId, int envId, String group);
+
 	/**
 	 * 删除指定配置项在指定环境下的所有配置实例，envId=null表示删除所有环境下的
 	 * @param configId
 	 * @param envId
 	 */
-	int deleteInstance(int configId, Integer envId);
-	
-	/**
-	 * 删除指定配置项
-	 * @param configId
-	 */
-	int delete(int configId);
+	int deleteInstances(int configId, Integer envId);
 
 	/**
-	 * 创建配置项
-	 * @param config
-	 */
-	int create(Config config);
-
-	/**
-	 * 获取指定配置项在指定环境下具有指定context值的配置实例
+	 * 获取指定配置项在指定环境和泳道下的配置实例
 	 * @param configId
 	 * @param envId
-	 * @param context
+	 * @param context 配置所在泳道
 	 */
 	ConfigInstance findInstance(int configId, int envId, String context);
-	
+
+	/**
+	 * 获取指定配置项在指定环境和泳道下的配置实例
+	 * @param key
+	 * @param envId
+	 * @param context 配置所在泳道
+	 */
+	ConfigInstance findInstance(String key, int envId, String context);
+
 	/**
 	 * 创建配置实例
 	 * @param instance
 	 * @return
 	 */
 	int createInstance(ConfigInstance instance);
-	
+
 	/**
 	 * @param instance
 	 */
@@ -149,14 +177,14 @@ public interface ConfigDao {
 	 * 获取指定配置在各环境下至多maxPerEnv个配置实例
 	 * @return
 	 */
-	List<ConfigInstance> findInstanceByConfig(int configId, Integer maxPerEnv);
+	List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv);
 
 	/**
 	 * @param projectId
 	 * @param envId
 	 * @return
 	 */
-	List<ConfigInstance> findInstanceByProjectAndEnv(int projectId, int envId);
+	List<ConfigInstance> findInstancesByProjectAndEnv(int projectId, int envId);
 
 	/**
 	 * 获取指定配置在指定环境下至多maxPerEnv个配置实例(必定包含default config instance)
@@ -165,12 +193,14 @@ public interface ConfigDao {
 	 * @param maxPerEnv
 	 * @return
 	 */
-	List<ConfigInstance> findInstanceByConfig(int configId, int envId, Integer maxPerEnv);
-	
+	List<ConfigInstance> findInstancesByConfig(int configId, int envId, Integer maxPerEnv);
+
+	int getConfigInstCount(int configId, int envId);
+
 	int updateModifyStatus(int configId, int envId);
-	
+
 	int createStatus(ConfigStatus status);
-	
+
 	int deleteStatus(int configId, int envId);
 
 	/**
@@ -186,14 +216,28 @@ public interface ConfigDao {
 	 */
 	List<ConfigStatus> findModifyTime(int projectId, int envId);
 
+
+
 	long getConfigCount(ConfigCriteria criteria);
 
-	List<Config> getConfigList(ConfigCriteria criteria, Paginater<Config> paginater);
+	List<Config> getConfigList(ConfigCriteria criteria, Paginater paginater);
+
+	long getSearchConfigCount(ConfigCriteria criteria);
+
+	List<Config> getSearchConfigList(ConfigCriteria criteria, Paginater paginater);
 
 	boolean hasConfigReferencedTo(String configKey, int envId);
-	
+
 	List<Integer> getProjectHasReferencedConfigs(int projectId);
 
 	List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId);
+
+    List<Config> findConfigByPrefix(String prefix);
+
+    List<ConfigInstance> findInstancesByKeys(List<String> keys, int envId, String group);
+
+    List<ConfigInstance> findInstancesByPrefix(String prefix, int envId, String group);
+
+    List<ConfigInstance> findInstancesByProject(int projectId, int envId, String group);
 
 }

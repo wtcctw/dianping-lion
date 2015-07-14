@@ -70,4 +70,5 @@ public interface ProjectDao {
 
     void deleteOperator(int projectId, int userId);
 
+	 Project getProjectExtra(int projectid);
 }

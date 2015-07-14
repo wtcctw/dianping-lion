@@ -89,7 +89,7 @@ public class Storager {
 					config.setKey(entry.getKey());
 					config.setType(ConfigTypeEnum.String.getValue());
 					config.setProjectId(ServiceConstants.PROJECT_DB_ID);
-					configService.create(config);
+					configService.createConfig(config);
 				}
 			}
 		}
@@ -107,7 +107,7 @@ public class Storager {
 			if(entry.getValue()) {
 				//delete the instance
 				try {
-					configService.deleteInstance(ci.getConfigId(), ci.getEnvId());
+					configService.deleteInstances(ci.getConfigId(), ci.getEnvId());
 				} catch (ReferencedConfigForbidDeleteException e) {
 					operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Job_DSFetcher, "移除数据源失败，存在对它的引用配置.").key(null, null, dsContent));
 				}
@@ -138,7 +138,7 @@ public class Storager {
 				if(configs == null || configs.size() == 0) {
 					//no instance related, considering to the remove the config
 					try {
-						configService.delete(configId);
+						configService.deleteConfig(configId);
 					} catch (ReferencedConfigForbidDeleteException e) {
 						operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Job_DSFetcher, "移除数据源失败，存在对它的引用配置.").key(null, null, dsContent));
 					}

@@ -286,4 +286,7 @@ public class ProjectServiceImpl implements ProjectService {
 		this.projectCacheClient = projectCacheClient;
 	}
 
+	public Project getProjectExtra(int projectId) {
+		 return projectDao.getProjectExtra(projectId);
+	}
 }

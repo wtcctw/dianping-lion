@@ -15,17 +15,19 @@
  */
 package com.dianping.lion.api.http;
 
-import com.dianping.lion.ServiceConstants;
-import com.dianping.lion.entity.Config;
-import com.dianping.lion.entity.ConfigInstance;
-import com.dianping.lion.entity.Environment;
-import com.dianping.lion.exception.RuntimeBusinessException;
-import com.dianping.lion.util.IPUtils;
-import org.apache.commons.lang.StringUtils;
+import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.dianping.lion.ServiceConstants;
+import com.dianping.lion.entity.Config;
+import com.dianping.lion.entity.Environment;
+import com.dianping.lion.exception.RuntimeBusinessException;
+import com.dianping.lion.util.IPUtils;
+import com.dianping.lion.util.SecurityUtils;
 
 
 /**
@@ -48,11 +50,15 @@ public class GetConfigServlet extends AbstractLionServlet {
         if (environment.isOnline()) {
             checkAccessibility(req);
         }
+        
         PrintWriter writer = resp.getWriter();
         String key = getNotBlankParameter(req, PARAM_KEY);
+        String group = getGroupParameter(req);
+        
         Config config = configService.findConfigByKey(key);
         if (config != null) {
-            String configVal = configService.getConfigValue(config.getId(), environment.getId(), ConfigInstance.NO_CONTEXT);
+            String configVal = configService.resolveConfigValue(config.getId(), environment.getId(), group);
+            configVal = SecurityUtils.tryDecode(configVal);
             if (configVal != null) {
                 writer.print(configVal);
                 return;
@@ -61,7 +67,7 @@ public class GetConfigServlet extends AbstractLionServlet {
         writer.print("<null>");
     }
 
-    private void checkAccessibility(HttpServletRequest req) {
+    protected void checkAccessibility(HttpServletRequest req) {
         String userIP = IPUtils.getUserIP(req);
         String whiteList = systemSettingService.getSetting(ServiceConstants.SETTING_GETCONFIG_WHITELIST);
         if (StringUtils.isBlank(whiteList)) {

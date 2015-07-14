@@ -6,8 +6,9 @@
 	    	<!--
     		<li><a href="<@s.url value="/"/>">工作台</a></li>
     		<li><a href="<@s.url value="/"/>">操作日志</a></li>
-    		-->
     		<li><a href="<@s.url value="/logout.vhtml"/>">登出</a></li>
+    		-->
+    		<li><a href="${logoutUrl}">登出</a></li>
 	    </ul>
     </li>
 </@s.else>

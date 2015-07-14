@@ -65,18 +65,18 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 		User user = null;
 		LdapContext ctx = null;
 		Hashtable<String, String> env = null;
-		String shortName = null;
+		String fullName = null;
 		try {
-			shortName = getShortName(userName);
+			fullName = getFullName(userName);
 		} catch (NamingException e1) {
 			logger.error(userName+" doesn't exist.", e1);
 		}
-		if(shortName != null) {
+		if(fullName != null) {
 			env = new Hashtable<String, String>();
 	        env.put(Context.INITIAL_CONTEXT_FACTORY,ldapFactory);
 	        env.put(Context.PROVIDER_URL, ldapUrl);//LDAP server
 	        env.put(Context.SECURITY_AUTHENTICATION, "simple");
-	        env.put(Context.SECURITY_PRINCIPAL, "cn="+shortName+","+ldapBaseDN);
+	        env.put(Context.SECURITY_PRINCIPAL, fullName);
 	        env.put(Context.SECURITY_CREDENTIALS, password);
 	        try{
 	            ctx = new InitialLdapContext(env,connCtls);
@@ -88,7 +88,7 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	        	throw e;
 	        }
 	        if(ctx != null) {
-	        	user = getUserInfo(shortName, ctx, userName);
+	        	user = getUserInfo(fullName, ctx, userName);
 	        }
 		}
 		return user;
@@ -100,7 +100,7 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 		try {
 			SearchControls constraints = new SearchControls();
 			constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-			NamingEnumeration en = ctx.search("", "cn=" + cn, constraints);
+			NamingEnumeration en = ctx.search("", cn.substring(0, cn.indexOf(',')), constraints);
 			if (en == null || !en.hasMoreElements()) {
 				logger.warn("Have no NamingEnumeration.");
 			}
@@ -133,8 +133,8 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private String getShortName(String sAMAccountName) throws NamingException {
-		String shortName = null;
+	private String getFullName(String sAMAccountName) throws NamingException {
+		String fullName = null;
 		
 		Hashtable<String, String> solidEnv = new Hashtable<String, String>();
 		solidEnv.put(Context.INITIAL_CONTEXT_FACTORY, ldapFactory);
@@ -148,11 +148,11 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 		NamingEnumeration en = solidContext.search("", loginAttribute+"=" + sAMAccountName, constraints);
 		if (en == null) {
 			logger.warn("Have no NamingEnumeration.");
-			return shortName;
+			return fullName;
 		}
 		if (!en.hasMoreElements()) {
 			logger.warn("Have no element.");
-			return shortName;
+			return fullName;
 		}
 		while (en != null && en.hasMoreElements()) {
 			Object obj = en.nextElement();
@@ -160,10 +160,10 @@ public class LDAPAuthenticationServiceImpl implements LDAPAuthenticationService 
 				SearchResult sr = (SearchResult) obj;
 				logger.debug(sr);
 				Attributes attrs = sr.getAttributes();
-				shortName = (String)attrs.get("cn").get();
+				fullName = sr.getNameInNamespace();
 			}
 		}
-		return shortName;
+		return fullName;
 	}
 
 	public void setLdapUrl(String ldapUrl) {

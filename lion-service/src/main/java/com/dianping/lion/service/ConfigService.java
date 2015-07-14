@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-12
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -33,12 +33,14 @@ import com.dianping.lion.vo.Paginater;
 public interface ConfigService {
 
 	/**
-	 * @param criteria 
+	 * @param criteria
 	 * @param env
 	 * @return
 	 */
 	List<ConfigVo> findConfigVos(ConfigCriteria criteria);
 	
+    Paginater findConfigVos(ConfigCriteria criteria, Paginater paginater);
+
 	/**
 	 * @param projectId
 	 * @param configId
@@ -52,29 +54,38 @@ public interface ConfigService {
 	void moveUp(int projectId, Integer configId);
 
 	/**
-	 * 清除指定配置项在指定环境下的值
+	 * 清除指定配置项在指定环境下的所有值
 	 * @param configId
 	 * @param envId
 	 */
-	void deleteInstance(int configId, int envId);
+	void deleteInstances(int configId, int envId);
 
 	/**
+	 * 清除指定配置项在指定环境下的所有值
 	 * @param config
 	 * @param envId
 	 */
-	void deleteInstance(Config config, int envId);
+	void deleteInstances(Config config, int envId);
+
+	/**
+     * 清除指定配置项在指定环境中指定泳道下的值
+     * @param config 配置项
+     * @param envId  环境
+     * @param group  泳道
+     */
+	void deleteInstance(int configId, int envId, String group);
 
 	/**
 	 * 删除指定配置项
 	 * @param configId
 	 */
-	ConfigDeleteResult delete(int configId);
+	ConfigDeleteResult deleteConfig(int configId);
 
 	/**
 	 * 创建配置项
 	 * @param config
 	 */
-	int create(Config config);
+	int createConfig(Config config);
 
 	/**
 	 * 创建配置项实例
@@ -88,7 +99,7 @@ public interface ConfigService {
 	 * @return
 	 */
 	int createInstance(ConfigInstance instance, ConfigSetType setType);
-	
+
 	/**
 	 * 获取指定key配置的所有环境下的配置值, 若指定maxPerEnv则每个环境下至多获取maxPerEnv条(按照seq倒序)
 	 * @param configKey
@@ -98,24 +109,41 @@ public interface ConfigService {
 	List<ConfigInstance> findInstancesByConfig(int configId, Integer maxPerEnv);
 
 	/**
+	 * 获取指定key列表在指定环境下的配置值
+	 * @param keyList
+	 * @param envId
+	 * @param group
+	 * @return
+	 */
+	List<ConfigInstance> findInstancesByKeys(List<String> keyList, int envId, String group);
+
+	/**
 	 * @param key
 	 */
 	Config findConfigByKey(String key);
-	
+
+	List<Config> findConfigByKeyPattern(String keyPattern);
+
 	List<Config> findConfigByKeys(List<String> keys);
-	
+
 	List<Config> findConfigs(int projectId);
+	
+	List<Config> findConfigByPrefix(String prefix);
+
+    List<Config> findConfigByProject(String project);
 
 	/**
 	 * @param configId
 	 * @return
 	 */
 	Config getConfig(int configId);
-	
+
 	int updateConfig(Config config);
-	
+
 	String getConfigFromRegisterServer(int envId, String key);
-	
+
+	String getConfigFromRegisterServer(int envId, String key, String group);
+
 	/**
 	 * 指定配置项在指定环境下的注册值(包含所有context-based config value的json结构)
 	 * @param configId
@@ -140,7 +168,7 @@ public interface ConfigService {
      * @return
      */
     String getConfigValue(int configId, int envId, String context);
-	
+
 	/**
 	 * 查询配置项默认实例
 	 * @param configId
@@ -148,11 +176,11 @@ public interface ConfigService {
 	 * @return
 	 */
 	ConfigInstance findDefaultInstance(int configId, int envId);
-	
+
 	List<ConfigInstance> findInstances(int projectId, int envId);
 
 	int updateInstance(ConfigInstance instance);
-	
+
 	/**
 	 * 设置指定配置在指定环境和context下的值
 	 * @param configId
@@ -161,7 +189,7 @@ public interface ConfigService {
 	 * @param value
 	 */
 	void setConfigValue(int configId, int envId, String context, String value);
-	
+
 	/**
 	 * @param configId
 	 * @param envId
@@ -198,8 +226,28 @@ public interface ConfigService {
 	 */
 	void registerAndPush(int configId, int envId);
 
+	/**
+     * @param configInstance
+     */
+    void register(ConfigInstance configInstance);
+
+    /**
+     * @param configInstance
+     */
+    void registerAndPush(ConfigInstance configInstance);
+
 	Paginater<Config> paginateConfigs(ConfigCriteria criteria, Paginater<Config> paginater);
 
 	List<ConfigInstance> getInstanceReferencedTo(String configKey, int envId);
+
+    ConfigInstance findInstance(String key, int envId, String group);
+
+    List<ConfigInstance> findInstancesByPrefix(String prefix, int envId, String group);
+
+    List<ConfigInstance> findInstancesByProject(int projectId, int envId, String group);
+
+    String resolveConfigValue(int configId, int envId, String context);
+    
+    String resolveConfigValue(String key, int envId, String context);
 
 }

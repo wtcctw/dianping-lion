@@ -17,6 +17,15 @@
 			ORDER BY seq
 		]]>
     </select>
+    
+    <select id="find" resultMap="TeamResult">
+        <![CDATA[
+            SELECT id, name, createTime, modifyTime
+            FROM team
+            WHERE name=#name#
+        ]]>
+    </select>
+    
     <select id="findByID" resultMap="TeamResult">
 		<![CDATA[
 			SELECT id, name, createTime, modifyTime

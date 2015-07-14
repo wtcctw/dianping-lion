@@ -27,6 +27,13 @@
 		<result column="modifyTime" property="modifyTime"/>
 		<result column="seq" property="seq"/>
 	</resultMap>
+
+	<resultMap id="ProjectResultExtra" class="Project">
+		<result column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="productName" property="productName"/>
+		<result column="teamName" property="teamName"/>
+	</resultMap>
 	
 	<resultMap id="ProductResult" class="Product" extends="ProductResultBasic">
 		<result property="projects" column="id" select="Project.selectProjectsByProduct"/>
@@ -100,6 +107,13 @@
 		ORDER BY t.seq,pd.seq,pj.seq
 		]]>
     </select>
+
+	<select id="getProjectsExtra" resultMap="ProjectResultExtra">
+		SELECT pj.id, pj.name, pd.name as productName, t.name as teamName
+		FROM project pj INNER JOIN product pd ON pj.productId = pd.id
+		                INNER JOIN team t ON pd.teamId = t.id
+		WHERE pj.id = #projectId#
+	</select>
     
     <select id="getProjectsByTeamAndProduct" resultMap="ProjectResult" parameterClass="java.util.Map">
 		

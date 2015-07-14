@@ -70,17 +70,17 @@ public class ConfigIbatisDaoTest extends AbstractConfigRelatedDaoTestSupport {
 
     @Test
     public void testGetMaxSeq() {
-        int maxSeq = configDao.getMaxSeq(Project_Foo_Id);
+        int maxSeq = configDao.getMaxConfigSeq(Project_Foo_Id);
         assertEquals(Config_Foo2_Seq, maxSeq);
-        maxSeq = configDao.getMaxSeq(Project_Koo_Id);
+        maxSeq = configDao.getMaxConfigSeq(Project_Koo_Id);
         assertEquals(0, maxSeq);
     }
 
     @Test
     public void testGetMaxInstSeq() {
-        int maxSeq = configDao.getMaxInstSeq(foo1ConfigId, Env1_Id);
+        int maxSeq = configDao.getMaxConfigInstSeq(foo1ConfigId, Env1_Id);
         assertEquals(Config_Foo1_Env1_Inst_Seq2, maxSeq);
-        maxSeq = configDao.getMaxInstSeq(NotExists_Config_Id, Env1_Id);
+        maxSeq = configDao.getMaxConfigInstSeq(NotExists_Config_Id, Env1_Id);
         assertEquals(0, maxSeq);
     }
 
@@ -92,7 +92,7 @@ public class ConfigIbatisDaoTest extends AbstractConfigRelatedDaoTestSupport {
         config.setPrivatee(true);
         config.setDesc(newDesc);
         config.setModifyUserId(newModifyUserId);
-        int updateCount = configDao.update(config);
+        int updateCount = configDao.updateConfig(config);
         assertEquals(1, updateCount);
         Config configFound = configDao.getConfig(foo1ConfigId);
         assertNotNull(configFound);
@@ -103,7 +103,7 @@ public class ConfigIbatisDaoTest extends AbstractConfigRelatedDaoTestSupport {
 
     @Test
     public void testFindDefaultInstance() {
-        Map<Integer, ConfigInstance> defaultInstances = configDao.findDefaultInstance(Project_Foo_Id, Env1_Id);
+        Map<Integer, ConfigInstance> defaultInstances = configDao.findDefaultInstances(Project_Foo_Id, Env1_Id);
         assertNotNull(defaultInstances);
         assertEquals(1, defaultInstances.size());
         assertTrue(defaultInstances.containsKey(foo1ConfigId));
@@ -156,25 +156,25 @@ public class ConfigIbatisDaoTest extends AbstractConfigRelatedDaoTestSupport {
 
     @Test
     public void testDeleteInstance() {
-        int deleteCount = configDao.deleteInstance(foo1ConfigId, Env1_Id);
+        int deleteCount = configDao.deleteInstances(foo1ConfigId, Env1_Id);
         assertEquals(2, deleteCount);
         ConfigInstance instance = configDao.findInstance(foo1ConfigId, Env1_Id, ConfigInstance.NO_CONTEXT);
         assertNull(instance);
         instance = configDao.findInstance(foo1ConfigId, Env1_Id, Foo_Context);
         assertNull(instance);
-        deleteCount = configDao.deleteInstance(foo1ConfigId, Env2_Id);
+        deleteCount = configDao.deleteInstances(foo1ConfigId, Env2_Id);
         assertEquals(1, deleteCount);
-        deleteCount = configDao.deleteInstance(foo1ConfigId, -1090022);
+        deleteCount = configDao.deleteInstances(foo1ConfigId, -1090022);
         assertEquals(0, deleteCount);
     }
 
     @Test
     public void testDelete() {
-        int deleteCount = configDao.delete(foo1ConfigId);
+        int deleteCount = configDao.deleteConfig(foo1ConfigId);
         assertEquals(1, deleteCount);
         Config config = configDao.getConfig(foo1ConfigId);
         assertNull(config);
-        deleteCount = configDao.delete(-12222);
+        deleteCount = configDao.deleteConfig(-12222);
         assertEquals(0, deleteCount);
     }
 
@@ -202,21 +202,21 @@ public class ConfigIbatisDaoTest extends AbstractConfigRelatedDaoTestSupport {
 
     @Test
     public void testFindInstanceByConfig() {
-        List<ConfigInstance> instances = configDao.findInstanceByConfig(foo1ConfigId, 10);
+        List<ConfigInstance> instances = configDao.findInstancesByConfig(foo1ConfigId, 10);
         assertNotNull(instances);
         assertEquals(3, instances.size());
     }
 
     @Test
     public void testFindInstanceByProjectAndEnv() {
-        List<ConfigInstance> instances = configDao.findInstanceByProjectAndEnv(Project_Foo_Id, Env1_Id);
+        List<ConfigInstance> instances = configDao.findInstancesByProjectAndEnv(Project_Foo_Id, Env1_Id);
         assertNotNull(instances);
         assertEquals(2, instances.size());
     }
 
     @Test
     public void testFindInstanceByConfigAndEnv() {
-        List<ConfigInstance> instances = configDao.findInstanceByConfig(foo1ConfigId, Env1_Id, 10);
+        List<ConfigInstance> instances = configDao.findInstancesByConfig(foo1ConfigId, Env1_Id, 10);
         assertNotNull(instances);
         assertEquals(2, instances.size());
     }

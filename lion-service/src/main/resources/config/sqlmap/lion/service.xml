@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Service">
+
+	<typeAlias alias="Service" type="com.dianping.lion.entity.Service" />
+
+	<resultMap id="ServiceResult" class="Service">
+		<result column="id" property="id"/>
+		<result column="projectId" property="projectId"/>
+		<result column="envId" property="envId"/>
+		<result column="name" property="name"/>
+		<result column="desc" property="desc"/>
+		<result column="group" property="group"/>
+		<result column="hosts" property="hosts"/>
+	</resultMap>
+
+    <select id="getProjectId" parameterClass="string" resultClass="int">
+        SELECT `projectId` FROM `service` WHERE `name` = #name# LIMIT 1;
+    </select>
+
+    <select id="getServiceById" parameterClass="int" resultMap="ServiceResult">
+    	SELECT * FROM service WHERE `id` = #id#
+    </select>
+
+    <select id="getServiceByEnvNameGroup" parameterClass="map" resultMap="ServiceResult">
+    	SELECT * FROM service WHERE `envId` = #envId# AND `name` = #name# AND `group` = #group#
+    </select>
+
+    <select id="getServiceListByEnvName" parameterClass="map" resultMap="ServiceResult">
+    	SELECT * FROM service WHERE `envId` = #envId# AND `name` = #name#
+    </select>
+
+    <select id="getServiceList" parameterClass="map" resultMap="ServiceResult">
+    	SELECT * FROM service WHERE `projectId` = #projectId# AND `envId` = #envId#
+    </select>
+
+    <update id="updateService" parameterClass="Service">
+    	UPDATE service
+    	SET `projectId` = #projectId#, `envId` = #envId#, `name` = #name#, `desc` = #desc#, `group` = #group#, `hosts` = #hosts#
+    	WHERE `id` = #id#
+    </update>
+
+    <insert id="createService" parameterClass="Service">
+    	INSERT INTO service VALUES (NULL, #projectId#, #envId#, #name#, #desc#, #group#, #hosts#)
+    </insert>
+
+    <delete id="deleteServiceById" parameterClass="int">
+    	DELETE FROM service WHERE `id` = #id#
+    </delete>
+
+    <delete id="deleteService" parameterClass="Service">
+        DELETE FROM service WHERE `id` = #id#
+    </delete>
+
+</sqlMap>

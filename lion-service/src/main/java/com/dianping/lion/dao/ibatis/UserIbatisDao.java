@@ -73,8 +73,8 @@ public class UserIbatisDao extends SqlMapClientDaoSupport implements UserDao {
 	}
 
 	@Override
-	public void insertUser(User user) {
-		getSqlMapClientTemplate().insert("User.insertUser", user);
+	public int insertUser(User user) {
+		return (Integer)getSqlMapClientTemplate().insert("User.insertUser", user);
 	}
 	
 	@Override

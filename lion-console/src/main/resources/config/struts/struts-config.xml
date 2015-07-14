@@ -5,72 +5,95 @@
 <struts>
 
 	<package name="config" namespace="/config" extends="default">
-		
-		<action name="configList" class="com.dianping.lion.web.action.config.ConfigListAction" method="list">
+
+		<action name="configList" class="com.dianping.lion.web.action.config.ConfigListAction" method="listPage">
 			<result name="success">/WEB-INF/pages/config/config-list.ftl</result>
 		</action>
-		
+
 		<action name="configListAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="ajaxList">
 			<result name="success">/WEB-INF/pages/config/config-list-table.ftl</result>
 		</action>
-		
+
 		<action name="configList2Ajax" class="com.dianping.lion.web.action.config.ConfigListAction" method="ajaxSimpleList">
 			<result name="success">/WEB-INF/pages/config/config-list-table2.ftl</result>
 		</action>
-		
+
 		<action name="moveUpConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveUp">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="moveDownConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="moveDown">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="configRefListAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="refList">
 			<result name="success">/WEB-INF/pages/config/config-reflist-table.ftl</result>
 		</action>
-		<!-- 
+		<!--
 		<action name="deployConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="deploy">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="pushConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="push">
 			<result name="success" type="stream"/>
 		</action>
 		 -->
-		
+
 		<action name="clearInstanceAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="clearInstance">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="deleteAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="delete">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="defaultValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="loadDefaultValue">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="loadConfigAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="ajaxLoad">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="editConfigAttrAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="editConfigAttr">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="saveDefaultValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="saveDefaultValue">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="createConfigAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="create">
 			<result name="success" type="stream"/>
 		</action>
-		
+
 		<action name="editMore" class="com.dianping.lion.web.action.config.ConfigListAction" method="editMore">
 			<result name="success">/WEB-INF/pages/config/config-edit-more.ftl</result>
 		</action>
-		
+
+        <action name="saveContextValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="saveContextValue">
+            <result name="success" type="stream"/>
+        </action>
+
+        <action name="deleteContextValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="deleteContextValue">
+            <result name="success" type="stream"/>
+        </action>
+
+        <action name="updateContextValueAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="updateContextValue">
+            <result name="success" type="stream"/>
+        </action>
+
+        <action name="getContextListAjax" class="com.dianping.lion.web.action.config.ConfigListAction" method="getContextList">
+            <result name="success">/WEB-INF/pages/config/context-list-table.ftl</result>
+        </action>
+
+        <action name="testConnectionAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="testJdbcConnection">
+            <result name="success" type="stream"/>
+        </action>
+
+        <action name="decodePasswordAjax" class="com.dianping.lion.web.action.config.ConfigEditAction" method="decodePassword">
+            <result name="success" type="stream"/>
+        </action>
 	</package>
 
 </struts>

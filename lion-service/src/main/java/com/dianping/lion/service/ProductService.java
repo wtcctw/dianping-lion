@@ -23,6 +23,8 @@ public interface ProductService {
 	
 	List<Product> findAll();
 	
+	Product findProduct(String name);
+	
 	Product findProductByID(int id);
 	
 	List<Product> findProductByTeamID(int teamId);

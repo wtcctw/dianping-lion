@@ -33,6 +33,8 @@ public class NavigationAction extends ActionSupport implements ServletRequestAwa
 
 	private String menu;
 	
+	private int pid;
+	
 	private String redirectUrl;
 
 	private HttpServletRequest request;
@@ -57,6 +59,14 @@ public class NavigationAction extends ActionSupport implements ServletRequestAwa
 	 */
 	public void setMenu(String menu) {
 		this.menu = menu;
+	}
+
+	public int getPid() {
+		return pid;
+	}
+
+	public void setPid(int pid) {
+		this.pid = pid;
 	}
 
 	/**

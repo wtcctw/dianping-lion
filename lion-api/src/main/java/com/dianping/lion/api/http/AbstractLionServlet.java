@@ -31,9 +31,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.dianping.lion.dao.ConfigReleaseDao;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.Project;
 import com.dianping.lion.entity.User;
@@ -55,6 +57,7 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	public static final String 		PARAM_PROJECT 	= "p";		//项目名
 	public static final String 		PARAM_ENV 		= "e";		//环境名
 	public static final String 		PARAM_KEY 		= "k";		//配置名，不包含项目名前缀
+	public static final String		PARAM_GROUP		= "g";		//泳道名
 	public static final String 		PARAM_FEATURE 	= "f";		//项目feature名称
 	public static final String 		PARAM_VALUE 	= "v";		//配置项值
 	public static final String 		PARAM_TASK 		= "t";		//项目任务id
@@ -66,6 +69,8 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	public static final String 		SUCCESS_CODE 	= "0|";		//正确返回码
 	public static final String 		ERROR_CODE 		= "1|";		//错误返回码
 	
+	public static final String		DEFAULT_GROUP	= "";		//默认泳道为空
+	
 	protected ApplicationContext 	applicationContext;
 	protected ProjectService 		projectService;
 	protected EnvironmentService 	environmentService;
@@ -73,6 +78,11 @@ public abstract class AbstractLionServlet extends HttpServlet {
 	protected ConfigRelaseService	configReleaseService;
 	protected OperationLogService   operationLogService;
     protected SystemSettingService  systemSettingService;
+    protected ServiceService		serviceService;
+    protected UserService			userService;
+    protected ProductService        productService;
+    protected TeamService           teamService;
+    protected ConfigReleaseDao		configReleaseDao;
     protected boolean               requestIdentityRequired = true;
 	
 	@Override
@@ -84,6 +94,11 @@ public abstract class AbstractLionServlet extends HttpServlet {
 		configReleaseService = getBean(ConfigRelaseService.class);
 		operationLogService = getBean(OperationLogService.class);
         systemSettingService = getBean(SystemSettingService.class);
+        serviceService = getBean(ServiceService.class);
+        userService = getBean(UserService.class);
+        productService = getBean(ProductService.class);
+        teamService = getBean(TeamService.class);
+        configReleaseDao = getBean(ConfigReleaseDao.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -137,6 +152,18 @@ public abstract class AbstractLionServlet extends HttpServlet {
 			throw new RuntimeBusinessException("Only support user with system level.");
 		}
 		return user;
+	}
+	
+	protected String getGroupParameter(HttpServletRequest servletRequest) {
+		String group = servletRequest.getParameter(PARAM_GROUP);
+        if(StringUtils.isBlank(group)) {
+        	group = DEFAULT_GROUP;
+        }
+        return group;
+	}
+	
+	protected String getKeyWithGroup(String key, String group) {
+		return StringUtils.isBlank(group) ? key : key + "/" + group;
 	}
 	
 	@SuppressWarnings("unused")

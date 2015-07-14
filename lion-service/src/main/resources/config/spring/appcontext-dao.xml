@@ -7,49 +7,65 @@
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
-	
+
 	<bean id="environmentDao" class="com.dianping.lion.dao.ibatis.EnvironmentIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="projectDao" class="com.dianping.lion.dao.ibatis.ProjectIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="jobExecTimeDao" class="com.dianping.lion.dao.ibatis.JobExecTimeIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="configDao" class="com.dianping.lion.dao.ibatis.ConfigIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="configReleaseDao" class="com.dianping.lion.dao.ibatis.ConfigReleaseIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="operationLogDao" class="com.dianping.lion.dao.ibatis.OperationLogIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="userDao" class="com.dianping.lion.dao.ibatis.UserIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="productDao" class="com.dianping.lion.dao.ibatis.ProductIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="teamDao" class="com.dianping.lion.dao.ibatis.TeamIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="systemSettingDao" class="com.dianping.lion.dao.ibatis.SystemSettingIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
 	<bean id="privilegeDao" class="com.dianping.lion.dao.ibatis.PrivilegeIbatisDao">
 		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
 	</bean>
-	
+
+    <bean id="serviceDao" class="com.dianping.lion.dao.ibatis.ServiceIbatisDao">
+        <property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+    </bean>
+
+    <bean id="globalSearchDao" class="com.dianping.lion.dao.ibatis.GlobalSearchIbatisDao">
+        <property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+    </bean>
+
+    <bean id="localConfigDiffDao" class="com.dianping.lion.dao.ibatis.LocalConfigDiffIbatisDao">
+        <property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+    </bean>
+
+	<bean id="globalConfigDiffDao" class="com.dianping.lion.dao.ibatis.GlobalConfigDiffIbatisDao">
+		<property name="sqlMapClient" ref="Lion.SqlMapClient"/>
+	</bean>
+
 </beans>

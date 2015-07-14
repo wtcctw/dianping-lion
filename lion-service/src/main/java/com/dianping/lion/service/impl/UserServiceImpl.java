@@ -58,6 +58,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+    public User findUser(String name) {
+	    return userDao.findByName(name);
+	}
+	
+	@Override
 	public User findById(int id) {
 		User user = cacheClient.get(ServiceConstants.CACHE_USER_PREFIX + id);
 		if (user == null) {
@@ -69,6 +74,18 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 
+	@Override
+    public User findByName(String loginName) {
+        User user = cacheClient.get(ServiceConstants.CACHE_USER_PREFIX + loginName);
+        if (user == null) {
+            user = userDao.findByName(loginName);
+            if (user != null) {
+                cacheClient.set(ServiceConstants.CACHE_USER_PREFIX + loginName, user);
+            }
+        }
+        return user;
+    }
+	
     @Override
     public User loadById(int id) {
         User user = findById(id);
@@ -159,6 +176,15 @@ public class UserServiceImpl implements UserService {
 			cacheClient.remove(ServiceConstants.CACHE_USER_PREFIX + user.getId());
 		}
 	}
+
+    @Override
+    public int insertUser(User user) {
+        try {
+            return userDao.insertUser(user);
+        } finally {
+            cacheClient.remove(ServiceConstants.CACHE_USER_PREFIX + user.getLoginName());
+        }
+    }
 
     @Override
     public List<User> findByNameOrLoginNameLike(String name, boolean includeSystem) {

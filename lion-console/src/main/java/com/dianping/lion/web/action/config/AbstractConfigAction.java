@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-17
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -25,6 +25,7 @@ import com.dianping.lion.entity.Project;
 import com.dianping.lion.service.ConfigService;
 import com.dianping.lion.service.EnvironmentService;
 import com.dianping.lion.service.ProjectService;
+import com.dianping.lion.service.ServiceService;
 import com.dianping.lion.util.SecurityUtils;
 import com.dianping.lion.util.UrlUtils;
 import com.dianping.lion.web.action.common.AbstractLionAction;
@@ -37,21 +38,24 @@ import com.dianping.lion.web.action.common.AbstractLionAction;
 public class AbstractConfigAction extends AbstractLionAction {
 
 	protected Integer envId;
-	
+
 	protected int projectId;
-	
+
 	protected Project project;
-	
+
 	protected Environment environment;
-	
+
 	protected String query;
-	
+
 	@Autowired
 	protected ConfigService configService;
-	
+
+	@Autowired
+	protected ServiceService serviceService;
+
 	@Autowired
 	protected ProjectService projectService;
-	
+
 	@Autowired
 	protected EnvironmentService environmentService;
 
@@ -64,27 +68,27 @@ public class AbstractConfigAction extends AbstractLionAction {
 	protected void createQueryParam2() {
 		query = UrlUtils.resolveUrl(request.getParameterMap(), "menu", "pid", "envId", "criteria.key", "criteria.status");
 	}
-	
+
 	public boolean hasAddPrivilege(int projectId, int envId) {
 	    return privilegeDecider.hasAddConfigPrivilege(projectId, envId, SecurityUtils.getCurrentUserId());
 	}
-	
+
 	public boolean hasEditPrivilege(int projectId, int envId, int configId) {
 	    return privilegeDecider.hasEditConfigPrivilege(projectId, envId, configId, SecurityUtils.getCurrentUserId());
 	}
-	
+
 	public Map<Integer, Boolean> getEditPrivileges(int projectId, int configId) {
         Map<Integer, Boolean> editPrivilegeMap = new HashMap<Integer, Boolean>();
     	    for (Environment env : environmentService.findAll()) {
 	        editPrivilegeMap.put(env.getId(), hasEditPrivilege(projectId, env.getId(), configId));
     	    }
-        return editPrivilegeMap;  
+        return editPrivilegeMap;
 	}
-	
+
 	public boolean hasLockPrivilege() {
         return privilegeDecider.hasLockConfigPrivilege(SecurityUtils.getCurrentUserId());
 	}
-	
+
 	public boolean hasEditAttrPrivilege(int projectId) {
 		return privilegeDecider.hasEditConfigAttrPrivilege(projectId, SecurityUtils.getCurrentUserId());
 	}
@@ -167,6 +171,10 @@ public class AbstractConfigAction extends AbstractLionAction {
         this.configService = configService;
     }
 
+    public void setServiceService(ServiceService serviceService) {
+        this.serviceService = serviceService;
+    }
+
     public void setProjectService(ProjectService projectService) {
         this.projectService = projectService;
     }
@@ -174,5 +182,5 @@ public class AbstractConfigAction extends AbstractLionAction {
     public void setEnvironmentService(EnvironmentService environmentService) {
         this.environmentService = environmentService;
     }
-	
+
 }

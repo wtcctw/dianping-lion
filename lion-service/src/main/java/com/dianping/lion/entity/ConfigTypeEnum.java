@@ -26,8 +26,10 @@ import java.util.List;
 public enum ConfigTypeEnum {
 	
 	//这里添加配置类型时需要在config-*.js中相应添加Type_*常量
-	String(10, "string"), Number(20, "number"), Boolean(30, "boolean"), List_Str(40, "list<string>"), List_Num(45, "list<number>"), Map(50, "map/pojo"),
-	Ref_Shared(60, "ref_shared"), Ref_DB(70, "ref_db");
+	String(10, "string"), 
+	Number(20, "number"), 
+	Boolean(30, "boolean"), 
+	Ref_Shared(60, "reference");
 
     private static volatile List<ConfigTypeEnum> Non_Ref_Types;
 
@@ -74,9 +76,9 @@ public enum ConfigTypeEnum {
                 if (Non_Ref_Types == null) {
                     Non_Ref_Types = new ArrayList<ConfigTypeEnum>();
                     for (ConfigTypeEnum typeEnum : values()) {
-                        if (typeEnum != ConfigTypeEnum.Ref_DB && typeEnum != ConfigTypeEnum.Ref_Shared) {
+//                        if (typeEnum != ConfigTypeEnum.Ref_DB && typeEnum != ConfigTypeEnum.Ref_Shared) {
                             Non_Ref_Types.add(typeEnum);
-                        }
+//                        }
                     }
                 }
             }

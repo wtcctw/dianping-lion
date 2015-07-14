@@ -16,6 +16,11 @@ public class TeamIbatisDao extends SqlMapClientDaoSupport implements TeamDao {
 	}
 	
 	@Override
+	public Team findTeam(String name) {
+	    return (Team)getSqlMapClientTemplate().queryForObject("Team.find", name);
+	}
+	
+	@Override
 	public void delete(int id) {
 		getSqlMapClientTemplate().delete("Team.deleteTeam", id);
 	}

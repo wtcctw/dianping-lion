@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-6
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -20,14 +20,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.xwork.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.dianping.lion.ServiceConstants;
+import com.dianping.lion.client.ConfigCache;
+import com.dianping.lion.client.LionException;
 import com.dianping.lion.entity.Config;
 import com.dianping.lion.entity.ConfigInstance;
 import com.dianping.lion.entity.Environment;
 import com.dianping.lion.entity.OperationLog;
 import com.dianping.lion.entity.OperationTypeEnum;
+import com.dianping.lion.entity.Service;
 import com.dianping.lion.entity.User;
 import com.dianping.lion.exception.EntityNotFoundException;
 import com.dianping.lion.exception.NoPrivilegeException;
@@ -46,25 +49,27 @@ import com.dianping.lion.web.vo.ConfigAttribute;
  */
 @SuppressWarnings("serial")
 public class ConfigListAction extends AbstractConfigAction {
-	
-	private Integer configId;
-	
-	private ConfigCriteria criteria = new ConfigCriteria();
-	
-	private List<Environment> environments;
-	
-	private List<ConfigVo> configVos;
-	
-	private Paginater<Config> paginater = new Paginater<Config>();
-	
-	private Config config;
-	
-	private ConfigAttribute configAttr;
-	
-	private Map<Integer, List<ConfigInstance>> instanceMap;
-	
-	private Map<Environment, List<ConfigInstance>> refList = new HashMap<Environment, List<ConfigInstance>>();
 
+	private Integer configId;
+
+	private ConfigCriteria criteria = new ConfigCriteria();
+
+	private List<Environment> environments;
+
+	private List<ConfigVo> configVos;
+
+	private List<Service> services;
+
+	private Paginater paginater = new Paginater();
+
+	private Config config;
+
+	private ConfigAttribute configAttr;
+
+	private Map<Integer, List<ConfigInstance>> instanceMap;
+
+	private Map<Environment, List<ConfigInstance>> refList = new HashMap<Environment, List<ConfigInstance>>();
+	
 	public String list() {
 		this.environments = environmentService.findAll();
 		this.project = projectService.getProject(projectId);
@@ -79,29 +84,67 @@ public class ConfigListAction extends AbstractConfigAction {
 			criteria.setProjectId(projectId);
 			criteria.setEnvId(envId);
 			configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), configService.findConfigVos(criteria));
+
+			services = serviceService.getServiceList(projectId, envId);
 		}
 		return SUCCESS;
 	}
+	
+   public String listPage() {
+        this.environments = environmentService.findAll();
+        this.project = projectService.getProject(projectId);
+        if (envId == null) {
+            envId = !environments.isEmpty() ? environments.get(0).getId() : null;
+        }
+        if (envId != null) {
+            environment = environmentService.findEnvByID(envId);
+            if (environment == null) {
+                throw new RuntimeBusinessException("该环境已不存在!");
+            }
+            criteria.setProjectId(projectId);
+            criteria.setEnvId(envId);
+            paginater.setMaxResults(getItemsPerPage());
+            paginater = configService.findConfigVos(criteria, paginater);
+            configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), paginater.getResults());
+
+            services = serviceService.getServiceList(projectId, envId);
+        }
+        return SUCCESS;
+    }
 
     public String ajaxList() {
 		criteria.setProjectId(projectId);
 		criteria.setEnvId(envId);
-		configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), configService.findConfigVos(criteria));
+		paginater.setMaxResults(getItemsPerPage());
+        paginater = configService.findConfigVos(criteria, paginater);
+		configVos = enrichWithPrivilege(projectId, envId, SecurityUtils.getCurrentUser(), paginater.getResults());
 		return SUCCESS;
 	}
+
+    private int getItemsPerPage() {
+        try {
+            String value = ConfigCache.getInstance().getProperty("lion-console.items.per.page");
+            if(value == null) {
+                return 50;
+            }
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return 50;
+        }
+    }
     
     public String ajaxSimpleList() {
     	paginater.setMaxResults(13);
     	paginater = configService.paginateConfigs(criteria, paginater);
     	return SUCCESS;
     }
-	
+
 	public String ajaxLoad() {
 	    Config config = configService.getConfig(configId);
 	    createSuccessStreamResponse(config);
 	    return SUCCESS;
 	}
-	
+
 	public String editConfigAttr() {
 	    try {
     	    Config config = configService.getConfig(configId);
@@ -118,7 +161,7 @@ public class ConfigListAction extends AbstractConfigAction {
     	    		}
     	    	}
     	        configService.updateConfig(config);
-    	        String logcontent = "设置配置属性: " + config.getKey() + ", [公开: " + configAttr.isPublic() 
+    	        String logcontent = "设置配置属性: " + config.getKey() + ", [公开: " + configAttr.isPublic()
     	        	+ (desclog != null ? desclog : "") + "]";
 				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_EditAttr, config.getProjectId(), logcontent)
 					.key(config.getKey()));
@@ -129,7 +172,7 @@ public class ConfigListAction extends AbstractConfigAction {
 	    }
 	    return SUCCESS;
 	}
-	
+
 	public String clearInstance() {
 		try {
 			Config configFound = configService.getConfig(configId);
@@ -138,9 +181,9 @@ public class ConfigListAction extends AbstractConfigAction {
 					throw NoPrivilegeException.INSTANCE;
 				}
 			}
-			configService.deleteInstance(configId, envId);
+			configService.deleteInstances(configId, envId);
 			if (configFound != null) {
-				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Clear, configFound.getProjectId(), envId, 
+				operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Clear, configFound.getProjectId(), envId,
 						"清除配置项值[" + configFound.getKey() + "]").key(configFound.getKey()));
 			}
 			createSuccessStreamResponse();
@@ -151,18 +194,18 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	public String delete() {
 		if (!checkDeletePrivilege(configId)) {
 			createErrorStreamResponse("删除失败: 线上环境无权限，且已设置值.");
 			return SUCCESS;
 		}
 		try {
-			ConfigDeleteResult deleteResult = configService.delete(configId);
+			ConfigDeleteResult deleteResult = configService.deleteConfig(configId);
 			if (deleteResult.isSucceed()) {
 			    Config configDeleted = deleteResult.getConfig();
 			    if (configDeleted != null) {
-			        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, configDeleted.getProjectId(), 
+			        operationLogService.createOpLog(new OperationLog(OperationTypeEnum.Config_Delete, configDeleted.getProjectId(),
 			                "删除配置项[" + configDeleted.getKey() + "]").key(configDeleted.getKey()));
 			    }
 				createSuccessStreamResponse();
@@ -172,7 +215,7 @@ public class ConfigListAction extends AbstractConfigAction {
 				for (int i = 0; i < failedEnvs.size(); i++) {
 					failedEnvStr += (i > 0 ? "," : "") + failedEnvs.get(i);
 				}
-				createErrorStreamResponse("[" + failedEnvStr + "]配置清除失败" + (deleteResult.isHasReference() ? "[存在对该配置的引用]" : "") 
+				createErrorStreamResponse("[" + failedEnvStr + "]配置清除失败" + (deleteResult.isHasReference() ? "[存在对该配置的引用]" : "")
 						+ "，其他环境成功.");
 			}
 		} catch (RuntimeException e) {
@@ -180,7 +223,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	private boolean checkDeletePrivilege(int configId) {
 		Config config = configService.getConfig(configId);
 		if (config != null) {
@@ -206,7 +249,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		createSuccessStreamResponse();
 		return SUCCESS;
 	}
-	
+
 	public String moveDown() {
 		try {
 			configService.moveDown(projectId, configId);
@@ -215,7 +258,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		createSuccessStreamResponse();
 		return SUCCESS;
 	}
-	
+
 	public String refList() {
 		this.environments = environmentService.findAll();
 		for (Environment environment : environments) {
@@ -227,7 +270,7 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-	
+
 	public String editMore() {
 		this.project = projectService.getProject(projectId);
 		this.environments = environmentService.findAll();
@@ -244,7 +287,23 @@ public class ConfigListAction extends AbstractConfigAction {
 		}
 		return SUCCESS;
 	}
-    
+
+    public String getContextList() {
+        this.environments = environmentService.findAll();
+        this.environment = environmentService.findEnvByID(envId);
+        this.config = configService.getConfig(configId);
+        List<ConfigInstance> instances = configService.findInstancesByConfig(configId, ServiceConstants.MAX_AVAIL_CONFIG_INST);
+        this.instanceMap = new HashMap<Integer, List<ConfigInstance>>();
+        for (ConfigInstance instance : instances) {
+            int envId = instance.getEnvId();
+            if (!instanceMap.containsKey(envId)) {
+                instanceMap.put(envId, new ArrayList<ConfigInstance>());
+            }
+            instanceMap.get(envId).add(instance);
+        }
+        return SUCCESS;
+    }
+
     private List<ConfigVo> enrichWithPrivilege(int projectId, int envId, User user, List<ConfigVo> configVos) {
         boolean hasLockPrivilege = user != null && privilegeDecider.hasLockConfigPrivilege(user.getId());
         Integer userId = user != null ? user.getId() : null;
@@ -264,6 +323,10 @@ public class ConfigListAction extends AbstractConfigAction {
 	 */
 	public List<ConfigVo> getConfigVos() {
 		return configVos;
+	}
+
+	public List<Service> getServices() {
+	    return services;
 	}
 
 	public Paginater<Config> getPaginater() {
@@ -354,5 +417,5 @@ public class ConfigListAction extends AbstractConfigAction {
     public void setConfigAttr(ConfigAttribute configAttr) {
         this.configAttr = configAttr;
     }
-	
+
 }

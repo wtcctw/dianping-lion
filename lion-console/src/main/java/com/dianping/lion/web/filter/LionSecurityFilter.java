@@ -4,6 +4,8 @@
 package com.dianping.lion.web.filter;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -14,7 +16,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.xwork.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -43,22 +45,44 @@ public class LionSecurityFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
         throws IOException, ServletException {
-    	//TODO remove me!
-//    	long begin = System.currentTimeMillis();
         Object securityChecked = request.getAttribute(SECURITY_CHECKED);
         boolean authEntry = false;
         if (securityChecked == null) {
-            Cookie authCookie = WebUtils.getCookie((HttpServletRequest) request, LoginUtils.AUTH_COOKIE_NAME);
-            Integer userId = null;
-            if (authCookie != null) {
-                userId = LoginUtils.getUserId(authCookie.getValue());
-            }
-            if (userId != null) {
-                User user = userService.findById(userId);
-                if (user != null) {
-                    SecurityUtils.setCurrentUser(user);
+//            Cookie authCookie = WebUtils.getCookie((HttpServletRequest) request, LoginUtils.AUTH_COOKIE_NAME);
+//            Integer userId = null;
+//            if (authCookie != null) {
+//                userId = LoginUtils.getUserId(authCookie.getValue());
+//            }
+//            if (userId != null) {
+//                User user = userService.findById(userId);
+//                if (user != null) {
+//                    SecurityUtils.setCurrentUser(user);
+//                }
+//            } 
+            // 接入方可以通过HttpServletRequest对象获取身份信息，方法是request.getRemoteUser()，
+            // 返回是一个字符串，类似"zhijun.ding|-44215|0009562|丁志君"，此处的身份信息用竖线隔开，从左到右依次是 点评通行证，LoginId，工号，姓名。
+            String userInfo = ((HttpServletRequest) request).getRemoteUser();
+            if(userInfo != null) {
+                String[] parts = userInfo.split("\\|");
+                if(parts.length == 4) {
+                    User user = userService.findByName(parts[0]);
+                    if (user != null) {
+                        SecurityUtils.setCurrentUser(user);
+                    } else {
+                        user = new User();
+                        user.setLoginName(parts[0]);
+                        user.setEmail(parts[0] + "@dianping.com");
+                        user.setName(parts[3]);
+                        user.setSystem(false);
+                        user.setLocked(false);
+                        user.setOnlineConfigView(false);
+                        user.setCreateTime(new Date());
+                        int userId = userService.insertUser(user);
+                        user.setId(userId);
+                        SecurityUtils.setCurrentUser(user);
+                    }
                 }
-            } 
+            }
             authEntry = true;
             request.setAttribute(SECURITY_CHECKED, securityObj);
         }
@@ -73,7 +97,6 @@ public class LionSecurityFilter implements Filter {
                 request.removeAttribute(SECURITY_CHECKED);
             }
         }
-//        System.out.println("Cost " + (System.currentTimeMillis() - begin) + "ms.");
     }
 
     private void checkIfHasUrlPrivilege(HttpServletRequest request) {

@@ -1,111 +1,74 @@
 /**
- * 
+ *
  */
 package com.dianping.lion.client;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.log4j.Logger;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.Watcher.Event.EventType;
-import org.apache.zookeeper.Watcher.Event.KeeperState;
-import org.apache.zookeeper.ZooDefs.Ids;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dianping.lion.Constants;
-import com.dianping.lion.Utils;
+import com.dianping.lion.Environment;
+import com.dianping.lion.log.LoggerLoader;
+import com.dianping.lion.util.KeyUtils;
 
 /**
  * <p>
- * Title: ConfigPuller.java
+ * Title: ConfigCache.java
  * </p>
  * <p>
  * Description: 描述
  * </p>
- * 
+ *
  * @author saber miao
  * @version 1.0
  * @created 2010-12-30 下午06:12:36
  */
-public class ConfigCache {
+public class ConfigCache implements ConfigListener {
 
-	private static Logger logger = Logger.getLogger(ConfigCache.class);
+    private static final String NON_EXIST_VALUE = ")@!_%#%%(&&&";  // 021-53559777
 
-	private static ConfigCache configCache;
+    static {
+        LoggerLoader.init();
+    }
+    
+	private static Logger logger = LoggerFactory.getLogger(ConfigCache.class);
+	
+	private static ConcurrentMap<String, ConfigCache> instanceMap = new ConcurrentHashMap<String, ConfigCache>();
 
-	private static Map<String, StringValue> cache = new ConcurrentHashMap<String, StringValue>();
+	private static ConcurrentMap<String, String> cachedConfig = new ConcurrentHashMap<String, String>();
 
-	private static Map<String, Long> timestampMap = new ConcurrentHashMap<String, Long>();
-
-	private ZooKeeperWrapper zk;
-
-	private List<ConfigChange> changeList = new ArrayList<ConfigChange>(); // CopyOnWriteArrayList
-
-	private boolean isInit = false;
-
-	private int timeout = 60000;
+	private List<ConfigChange> changeList = new CopyOnWriteArrayList<ConfigChange>();
 
 	private String address;
 
-	private String avatarBizPrefix = "avatar-biz.";
+	private Properties localProps;
+	
+    private String propertiesPath = Constants.DEFAULT_PROPERTIES_PATH;
+    private boolean includeLocalProps = Constants.DEFAULT_INCLUDE_LOCAL_PROPS; // 是否使用本地的propertiesPath指定的配置文件中的配置
 
-	private Properties pts;
-
-	private Properties env;
-
-	public String getAppenv(String key) {
-		if (env != null) {
-			return env.getProperty(key);
-		} else {
-			return null;
-		}
-	}
-
-	private static class StringValue {
-		String value;
-
-		StringValue(String value) {
-			this.value = value;
-		}
-
-		public String getValue() {
-			return value;
-		}
-	}
-
-	void reset() {
-		cache.clear();
-		timestampMap.clear();
-		changeList.clear();
-	}
+	private ConfigLoaderManager configLoader;
+	
+	private String appName = Environment.getAppName();
 
 	/**
 	 * 如果已经使用SpringConfig配置为Spring Bean，或者用getInstance(String address)成功调用过一次，
 	 * 则用此方法可以成功返回ConfigCache，否则必须使用getInstance(String address)获取ConfigCache
-	 * 
+	 *
 	 * @return
 	 * @throws LionException
 	 */
 	public static ConfigCache getInstance() throws LionException {
-		if (configCache == null) {
-			throw new LionException(
-			      "you must config SpringConfig or use getInstance(String address) before this operation");
-		}
-		return configCache;
-	}
-
-	static ConfigCache getMockInstance() {
-		configCache = new ConfigCache();
-		return configCache;
+		return getInstance(Environment.getZKAddress());
 	}
 
 	/**
@@ -115,111 +78,102 @@ public class ConfigCache {
 	 * @throws LionException
 	 */
 	public static ConfigCache getInstance(String address) throws LionException {
-		if (configCache == null) {
-			synchronized (cache) {
-				if (configCache == null) {
+	    if(StringUtils.isBlank(address)) {
+	        throw new NullPointerException("zookeeper address is empty");
+	    }
+	    address = address.trim();
+	    ConfigCache instance = instanceMap.get(address);
+		if (instance == null) {
+			synchronized (ConfigCache.class) {
+			    instance = instanceMap.get(address);
+				if (instance == null) {
 					try {
-						configCache = new ConfigCache();
-						configCache.setAddress(address);
-						configCache.init();
-					} catch (IOException e) {
+						instance = new ConfigCache(address);
+						instanceMap.put(address, instance);
+					} catch (Exception e) {
+						logger.error("failed to initialize ConfigCache(" + address + ")", e);
 						throw new LionException(e);
 					}
 				}
 			}
-		} else {
-			if (!address.equals(configCache.getAddress())) {
-				throw new LionException("error address:" + address);
-			}
 		}
-		return configCache;
+		return instance;
 	}
 
-	private void init() throws IOException {
-		if (!this.isInit) {
-			this.zk = new ZooKeeperWrapper(this.address, this.timeout, new ConfigWatcher());
-			try {
-				if (this.zk.exists(Constants.DP_PATH, false) == null) {
-					this.zk.create(Constants.DP_PATH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-				}
-				if (this.zk.exists(Constants.CONFIG_PATH, false) == null) {
-					this.zk.create(Constants.CONFIG_PATH, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-				}
-				Thread t = new Thread(new CheckConfig());
-				t.setDaemon(true);
-				t.start();
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-			}
-			this.isInit = true;
-		}
-
-		try {
-			env = new Properties();
-			FileInputStream fis = new FileInputStream("/data/webapps/appenv");
-			env.load(fis);
-		} catch (Exception e) {
-			logger.warn("no appenv in this machine", e);
-		}
+	private ConfigCache(String address) throws Exception {
+	    this.address = address;
+	    System.setProperty(ConfigLoader.KEY_ZOOKEEPER_ADDRESS, address);
+	    System.setProperty(ConfigLoader.KEY_PROPERTIES_FILE, propertiesPath);
+        System.setProperty(ConfigLoader.KEY_INCLUDE_LOCAL_PROPS, "" + includeLocalProps);
+        configLoader = new ConfigLoaderManager();
+        configLoader.addConfigListener(this);
 	}
 
-	// FIXME if key is null, should throw NullPointerException
+    public String getAppenv(String key) {
+        return Environment.getProperty(key);
+    }
+    
+	@Deprecated
+	public void loadProperties(String propertiesFile) throws IOException {
+	    localProps = new Properties();
+	    InputStream in = null;
+	    try {
+	        in = new FileInputStream(propertiesFile);
+	        localProps.load(in);
+	    } catch(IOException e) {
+	        logger.error("failed to load properties file " + propertiesFile);
+	        throw e;
+	    } finally {
+	        if(in != null) {
+	            try {
+                    in.close();
+                } catch (IOException e) {
+                }
+	        }
+	    }
+	}
+	
 	public String getProperty(String key) throws LionException {
-		if (key != null) {
-			key = key.trim();
-		} else {
-			return null;
+		key = StringUtils.trimToNull(key);
+		if(key == null)
+		    throw new LionException("key is null");
+		
+		key = fixKey(key);
+		
+		String value = cachedConfig.get(key);
+		if(value == null) {
+		    try {
+                value = configLoader.get(key);
+                cachedConfig.put(key, value == null ? NON_EXIST_VALUE : value);
+            } catch (Exception e) {
+                throw new LionException(e);
+            }
 		}
-		if (Constants.avatarBizKeySet.contains(key)) {
-			key = this.avatarBizPrefix + key;
-		}
-		String v = null;
-		if (this.pts != null) {
-			v = this.pts.getProperty(key);
-			if (v != null && !v.startsWith("${") && !v.endsWith("}")) {
-				return v;
-			}
-			if (v != null && v.startsWith("${") && v.endsWith("}")) {
-				v = v.substring(2);
-				v = v.substring(0, v.length() - 1);
-				return getZKValue(v);
-			}
-		}
-		if (v == null) {
-			v = getZKValue(key);
-		}
-		return v;
+
+        return NON_EXIST_VALUE.equals(value) ? null : value;
 	}
 
-	private String getZKValue(String key) throws LionException {
-		StringValue value = cache.get(key);
-		if (value == null) {
-			String path = Constants.CONFIG_PATH + "/" + key;
-			String timestampPath = path + "/" + Constants.CONFIG_TIMESTAMP;
-			try {
-				if (this.zk.exists(path, false) != null) {
-					Watcher watcher = new ConfigDataWatcher(path, timestampPath, key);
-					value = new StringValue(new String(this.zk.getData(path, watcher, null), Constants.CHARSET));
-					cache.put(key, value);
-					logger.info(">>>>>>>>>>>>getProperty key:" + key + "  value:" + value.getValue());
-					if (this.zk.exists(timestampPath, false) != null) {
-						Long timestamp = Utils.getLong(this.zk.getData(timestampPath, false, null));
-						timestampMap.put(path, timestamp);
-					}
-				} else {
-					cache.put(key, new StringValue(null));
-					logger.info(">>>>>>>>>>>getProperty key:" + key + "   value is null*******");
-				}
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-				throw new LionException(e);
-			}
-		}
-		if (value != null) {
-			return value.getValue();
-		}
-		return null;
+	private String fixKey(String key) {
+	    if (Constants.avatarBizKeySet.contains(key)) {
+            key = Constants.avatarBizPrefix + key;
+            return key;
+        }
+	    
+	    if(appName == null) {
+	        return key;
+	    }
+	    
+	    // For keys like "{appName}.{archComponent}.xxx.xxx", regulate key to "{archComponent}.xxx.xxx",
+	    // ConfigLoader will load application specific configurations
+	    for(String archComponent : KeyUtils.getComponents()) {
+    	    if(key.startsWith(appName + "." + archComponent + ".")) {
+    	        return key.substring(appName.length() + 1);
+    	    }
+	    }
+	    
+	    return key;
 	}
+	
 
 	public Long getLongProperty(String key) throws LionException {
 		String value = getProperty(key);
@@ -277,190 +231,60 @@ public class ConfigCache {
 		return Boolean.parseBoolean(value);
 	}
 
-	class ConfigWatcher implements Watcher {
-		@Override
-		public void process(WatchedEvent event) {
-			if (event.getState() == KeeperState.Expired) {
-				logger.info("Session Expried init,Invoke ZooKeeperWrapper method!");
-				try {
-					zk.sessionExpiredReConnect();
-				} catch (Exception e) {
-					logger.error(e.getMessage(), e);
-				}
-				return;
-			}
-		}
-	}
-
-	private class ConfigDataWatcher implements Watcher {
-
-		private String path;
-
-		private String timestampPath;
-
-		private String key;
-
-		public ConfigDataWatcher(String path, String timestampPath, String key) {
-			this.path = path;
-			this.timestampPath = timestampPath;
-			this.key = key;
-		}
-
-		@Override
-		public void process(WatchedEvent event) {
-			if (event.getType() == EventType.NodeCreated || event.getType() == EventType.NodeDataChanged) {
-				try {
-					zk.removeWatcher(this.path);
-					if (zk.exists(this.timestampPath, false) != null) {
-						Long timestamp = Utils.getLong(zk.getData(this.timestampPath, false, null));
-						Long timestamp_ = timestampMap.get(this.path);
-						if (timestamp_ == null || timestamp > timestamp_) {
-							timestampMap.put(this.path, timestamp);
-							byte[] data = zk.getData(this.path, this, null);
-							if (data != null) {
-								String value = new String(data, Constants.CHARSET);
-								logger.info(">>>>>>>>>>>>pushProperty key:" + key + "  value:" + value);
-								StringValue sv = cache.get(this.key);
-								if (sv == null) {
-									sv = new StringValue(value);
-									cache.put(this.key, sv);
-								}
-								synchronized (sv) {
-									sv.value = value;
-									if (ConfigCache.this.changeList != null) {
-										for (ConfigChange change : ConfigCache.this.changeList) {
-											change.onChange(this.key, value);
-										}
-									}
-								}
-							}
-						} else {
-							zk.getData(this.path, this, null);
-						}
-					} else {
-						zk.getData(this.path, this, null);
-					}
-				} catch (KeeperException e) {
-					logger.error(e.getMessage(), e);
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage(), e);
-				} catch (UnsupportedEncodingException e) {
-					logger.error(e.getMessage(), e);
-				} catch (IOException e) {
-					logger.error(e.getMessage(), e);
-				}
-			} else if (event.getType() == EventType.NodeDeleted) {
-				cache.remove(this.key);
-			}
-		}
-
-	}
-
-	private class CheckConfig implements Runnable {
-
-		private long lastTime = System.currentTimeMillis();
-
-		@Override
-		public void run() {
-			int k = 0;
-			while (true) {
-				try {
-					long now = System.currentTimeMillis();
-					if (now - this.lastTime > 20000) {
-						for (Entry<String, StringValue> entry : cache.entrySet()) {
-							synchronized (entry.getValue()) {
-
-								String path = Constants.CONFIG_PATH + "/" + entry.getKey();
-								String timestampPath = path + "/" + Constants.CONFIG_TIMESTAMP;
-								if (zk.exists(timestampPath, false) != null) {
-									Long timestamp = Utils.getLong(zk.getData(timestampPath, false, null));
-									Long timestamp_ = timestampMap.get(path);
-									if (timestamp_ == null || timestamp > timestamp_) {
-										timestampMap.put(path, timestamp);
-										if (zk.exists(path, false) != null) {
-											String value = new String(zk.getData(path, false, null), Constants.CHARSET);
-
-											if (!value.equals(entry.getValue().value)) {
-												logger.info(">>>>>>>>>>>>syncProperty key:" + entry.getKey() + "  value:" + value);
-												entry.getValue().value = value;
-												if (changeList != null) {
-													for (ConfigChange change : changeList) {
-														change.onChange(entry.getKey(), value);
-													}
-												}
-											}
-										}
-									}
-								}
-
-							}
-						}
-						this.lastTime = now;
-					} else {
-						Thread.sleep(2000);
-					}
-					k = 0;
-				} catch (Exception e) {
-					k++;
-					if (k > 3) {
-						try {
-							Thread.sleep(2000);
-							k = 0;
-						} catch (InterruptedException e1) {
-							e1.printStackTrace();
-						}
-					}
-					logger.error(e.getMessage(), e);
-				}
-			}
-		}
-
-	}
-
+    
 	/**
 	 * @param change
 	 *           the change to set
 	 */
-	// FIXME return this is better
 	public void addChange(ConfigChange change) {
 		this.changeList.add(change);
 	}
+	
+	public void removeChange(ConfigChange change) {
+	    this.changeList.remove(change);
+	}
 
 	/**
-	 * @return the address
+	 * @return the zookeeper address
 	 */
 	public String getAddress() {
 		return address;
 	}
 
-	/**
-	 * @param address
-	 *           the address to set
-	 */
 	public void setAddress(String address) {
 		this.address = address;
 	}
 
-	/**
-	 * @param pts
-	 *           the pts to set
-	 */
 	public void setPts(Properties pts) {
-		this.pts = pts;
+		this.localProps = pts;
 	}
 
 	public Properties getPts() {
-		return pts;
+		return localProps;
 	}
+	
+    public void setPropertiesPath(String propertiesPath) {
+        this.propertiesPath = propertiesPath;
+    }
+    
+    public String getPropertiesPath() {
+        return propertiesPath;
+    }
 
-	/**
-	 * @return the zk
-	 */
-	public ZooKeeperWrapper getZk() {
-		return zk;
-	}
+    public void setIncludeLocalProps(boolean includeLocalProps) {
+        this.includeLocalProps = includeLocalProps;
+    }
+    
+    public boolean getIncludeLocalProps() {
+        return includeLocalProps;
+    }
 
-	public void setZk(ZooKeeperWrapper zk) {
-		this.zk = zk;
-	}
+    @Override
+    public void configChanged(ConfigEvent configEvent) {
+        cachedConfig.put(configEvent.getKey(), configEvent.getValue());
+        for(ConfigChange configChange : changeList) {
+            configChange.onChange(configEvent.getKey(), configEvent.getValue());
+        }
+    }
+
 }

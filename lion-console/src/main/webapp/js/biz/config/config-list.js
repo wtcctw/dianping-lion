@@ -26,7 +26,7 @@ $(function(){
 	bindConfigTableEvents();
 	$config_list_editor = $("#list-editor").listeditor();
 	$config_map_editor = $("#map-editor").mapeditor();
-	
+
 	$clearAlert = $("<div>确认清除该配置项值? [<font color='green'>不可恢复</font>]</div>")
 		.dialog({
 			autoOpen : false,
@@ -56,7 +56,7 @@ $(function(){
 			}
 		}
 	);
-		
+
 	$deleteAlert = $("<div>确认删除该配置项? [<font color='green'>不可恢复</font>]<br/>将清除所有环境的配置值.</div>")
 		.dialog({
 			autoOpen : false,
@@ -85,10 +85,10 @@ $(function(){
 			}
 		}
 	);
-		
+
 	$commonAlert = $("<div class='alert-body'></div>")
 		.dialog({
-			autoOpen : false, 
+			autoOpen : false,
 			resizable : false,
 			modal : true,
 			title : "信息框",
@@ -98,19 +98,19 @@ $(function(){
 			}
 		}
 	);
-		
+
 	$("#add-config-modal").on("hidden", function() {
 		resetConfigForm();
 		if (modal_config_created) {
 			reloadConfigListTable();
 		}
 	});
-	
+
 	$("#add-config-modal").on("show", function() {
 		modal_config_created = false;
 		resetConfigForm();	//fix firefox bug: 选中下拉项，刷新页面，再打开下拉项仍是刚才的选中项
 	});
-	
+
 	$("#edit-config-modal").on("show", function() {
 		modal_config_edited = false;
 		var config_id = $("#edit-config-modal [name='config-id']").val();
@@ -144,13 +144,13 @@ $(function(){
 			}
 		});
 	});
-	
+
 	$("#edit-config-modal").on("hidden", function() {
 		if (modal_config_edited) {
 			reloadConfigListTable();
 		}
 	});
-	
+
 	$("#edit-config-attr-modal").on("show", function() {
 		var config_id = $("#edit-config-attr-modal [name='config-id']").val();
 		$.ajax("/config/loadConfigAjax.vhtml".prependcontext(), {
@@ -175,25 +175,25 @@ $(function(){
 			error : function() {loadConfigAttrFailed("加载数据失败.");}
 		});
 	});
-	
+
 	$("#edit-config-attr-modal").on("hidden", function() {
 		$("#edit-config-attr-modal").hideAlerts();
 	});
-	
+
 	$("#refshared-editor").on("show", function() {
 		$("[name='ref-config-key']").val("");
-		loadSelectableConfigs(sharedProjectId, 0, $(this));
+		loadSelectableConfigs(dsProjectId, 0, $(this));
 	});
-	
+
 	$("#refdb-editor").on("show", function() {
 		$("[name='ref-config-key']").val("");
 		loadSelectableConfigs(dsProjectId, 0, $(this));
 	});
-	
+
 	$("#ref-list-modal").on("show", function() {
-		
+
 	});
-	
+
 	function loadSelectableConfigs(projectId, pageNo, $container) {
 		$.ajax("/config/configList2Ajax.vhtml".prependcontext(), {
 			data : $.param({
@@ -210,7 +210,7 @@ $(function(){
 			}
 		});
 	}
-	
+
 	jump2Page = function(pageNo, this_) {
 		var elements = $(this_).parents("#refdb-editor");
 		if (elements.length > 0) {
@@ -219,22 +219,26 @@ $(function(){
 		}
 		elements = $(this_).parents("#refshared-editor");
 		if (elements.length > 0) {
-			loadSelectableConfigs(sharedProjectId, pageNo, $("#refshared-editor"));
+			loadSelectableConfigs(dsProjectId, pageNo, $("#refshared-editor"));
 			return;
 		}
+		$("#configForm [name='paginater.pageNumber']").val(pageNo);
+		$("#configForm").submit();
+		event.preventDefault();
 	};
-	
+
 	function loadConfigAttrFailed(error) {
 		$("#edit-config-attr-modal .form-error").showAlert(error);
 		$("#attr-save-btn").attr("disabled", true);
 	}
-	
+
 	$("#edit-save-btn").click(function() {
 		if (validateEditConfigForm()) {
 			var envs = new Array();
 			$(":checkbox[name='edit-config-env']:checked").each(function() {envs.push($(this).val());});
 			if (envs.length > 0) {
 				$.ajax("/config/saveDefaultValueAjax.vhtml".prependcontext(), {
+					type : "POST",
 					data : $.param({
 						"configId" : $("#edit-config-modal [name='config-id']").val(),
 						"envIds" : envs,
@@ -258,12 +262,12 @@ $(function(){
 			}
 		}
 	});
-	
+
 	$("#edit-more-btn").click(function() {
-		$(location).attr("href", ("/config/editMore.vhtml?" + $("#queryStr").val() + "&" + $("#criteriaStr").val()).prependcontext() 
+		$(location).attr("href", ("/config/editMore.vhtml?" + $("#queryStr").val() + "&" + $("#criteriaStr").val()).prependcontext()
 			+ "&configId=" + $("#edit-config-modal [name='config-id']").val());
 	});
-	
+
 	$("#save-btn").click(function() {
 		if (validateConfigForm()) {
 			var envs = new Array();
@@ -296,7 +300,7 @@ $(function(){
 			});
 		}
 	});
-	
+
 	$("#attr-save-btn").click(function() {
 		var config_id = $("#edit-config-attr-modal [name='config-id']").val();
 		$.ajax("/config/editConfigAttrAjax.vhtml".prependcontext(), {
@@ -317,7 +321,7 @@ $(function(){
 			}
 		});
 	});
-	
+
 	$("#refshared-ok-btn,#refdb-ok-btn").click(function() {
 		var $modal = $(this).parents(".modal");
 		var configKey = $modal.find("[name='configkey']:checked").val();
@@ -326,25 +330,25 @@ $(function(){
             if ($(this).attr("id") == "refdb-ok-btn") {
                 $("#" + backfill).val("$ref{" + configKey + "?i=15&m=5&M=30}");
             } else {
-                $("#" + backfill).val("$ref{" + configKey + "}");
+                $("#" + backfill).val("${" + configKey + "}");
             }
             $modal.modal("hide");
         }
 		return false;
 	});
-	
+
 	$("#refshared-search").click(function() {
 		var $modal = $(this).parents(".modal");
-		loadSelectableConfigs(sharedProjectId, 0, $modal);
+		loadSelectableConfigs(dsProjectId, 0, $modal);
 		return false;
 	});
-	
+
 	$("#refdb-search").click(function() {
 		var $modal = $(this).parents(".modal");
 		loadSelectableConfigs(dsProjectId, 0, $modal);
 		return false;
 	});
-	
+
 	$("#refshared-clear-btn,#refdb-clear-btn").click(function() {
 		var $modal = $(this).parents(".modal");
 		var backfill = $modal.data("backfill");
@@ -352,34 +356,53 @@ $(function(){
 		$modal.modal("hide");
 		return false;
 	});
-	
+
+    $("#submit-button").click(function() {
+        $("#configForm [name='paginater.pageNumber']").val(1);
+    });
+
 	function reloadConfigListTable() {
 		$("#config-list-container").load("/config/configListAjax.vhtml".prependcontext(), $.param({
 			"pid" : $("[name='pid']").val(),
 			"envId" : $("[name='envId']").val(),
 			"criteria.key" : $("#key").val(),
 			"criteria.value" : $("#value").val(),
-			"criteria.status" : $("#status").val()
+			"criteria.status" : $("#status").val(),
+			"paginater.pageNumber" : $("#configForm [name='paginater.pageNumber']").val()
 		}, true), function() {
 			bindConfigTableEvents();
 			$("#display-all-btn").attr("checked", display_all_btn).triggerHandler("click");
 		});
 	}
-	
+
 	$("#select-all-env").click(function() {
 		$(":checkbox[name='config-env'][online='false']:enabled").attr("checked", $(this).is(":checked"));
 	});
-	
+
 	$("#edit-select-all-env").click(function() {
 		$(":checkbox[name='edit-config-env'][online='false']:enabled").attr("checked", $(this).is(":checked"));
 	});
-	
+
+    $("#edit-select-all-online-env").click(function() {
+        $(":checkbox[name='edit-config-env'][online='true']:enabled").attr("checked", $(this).is(":checked"));
+    });
+
 	$("#config-type-selector").change(function() {
 		var type = parseInt($(this).val());
 		clearValidateError($("#config-value"));
 		$("#config-value-container").html(generateValueComponent(type, "config-value"));
 	});
-	
+
+	$("#edit-config-type-selector").change(function() {
+		var type = parseInt($(this).val());
+		clearValidateError($("#edit-config-value"));
+		$("#edit-config-value-container").html(generateValueComponent(type, "edit-config-value"));
+	});
+
+    $("#submit-button").click(function() {
+        $("#configForm [name='paginater.pageNumber']").val(1);
+    })
+
 	function generateValueComponent(type, inputId) {
 		switch (type) {
 			case Type_String : return generateStringComponent(inputId);
@@ -392,56 +415,56 @@ $(function(){
 			case Type_Ref_DB : return generateRefDBComponent(inputId);
 		}
 	}
-	
+
 	function generateStringComponent(inputId) {
 		return "<textarea id='" + inputId + "' rows='7' style='width:350px;'></textarea>";
 	}
-	
+
 	function generateNumberComponent(inputId) {
 		return "<input type='text' id='" + inputId + "' class='input-medium'>"
 			+ "<span class='help-inline hide message'>数字,必填!</span>";
 	}
-	
+
 	function generateBoolComponent(inputId) {
 		return "<input type='radio' name='" + inputId + "' id='" + inputId + "-yes' value='true' checked='checked'"
 			+ "><label for='" + inputId + "-yes' class='help-inline'>true</label>"
 			+ "<input type='radio' name='" + inputId + "' id='" + inputId + "-no' value='false'"
 			+ "><label for='" + inputId + "-no' class='help-inline'>false</label>";
 	}
-	
+
 	function generateListComponent(inputId, numberlist) {
 		return "<textarea id='" + inputId + "' rows='7' style='width:350px;'></textarea>"
 			+ "<a href='#' onclick='openListEditor(\"" + inputId + "\", " + numberlist + ", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>"
 			+ "<br/><span class='help-inline hide message'>非法的数据格式, 例: " + (numberlist ? "[\"3\", \"5.5\", \"7\"]" : "[\"hello\", \"world\"]") + "!</span>";
 	}
-	
+
 	function generateMapComponent(inputId) {
 		return "<textarea id='" + inputId + "' rows='7' style='width:350px;'></textarea>"
 			+ "<a href='#' onclick='openMapEditor(\"" + inputId + "\", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>"
 			+ "<br/><span class='help-inline hide message'>非法的数据格式, 例: {\"url\":\"xx\", \"con\":{\"min\":\"3\",\"max\":\"6\"}}</span>";
 	}
-	
+
 	function generateRefSimpleComponent(inputId) {
 		return "<input type='text' id='" + inputId + "' style='width:350px;' readonly='readonly'>"
 			+ "<a href='#' onclick='openSharedSelector(\"" + inputId + "\", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>"
 			+ "<span class='help-inline hide message'>必选!</span>";
 	}
-	
+
 	function generateRefDBComponent(inputId) {
 		return "<input type='text' id='" + inputId + "' style='width:350px;' readonly='readonly'>"
 			+ "<a href='#' onclick='openDBSelector(\"" + inputId + "\", event);'><i class='icon-edit' style='vertical-align:bottom;'></i></a>"
 			+ "<span class='help-inline hide message'>必选!</span><br/>"
-			+ "连接数(初始/最小/最大，默认15/5/30): <br/>" 
-			+ "<input type='radio' id='cs1' name='db-conn' value='1/1/5' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:0px;margin-top:0px;'>" 
+			+ "连接数(初始/最小/最大，默认15/5/30): <br/>"
+			+ "<input type='radio' id='cs1' name='db-conn' value='1/1/5' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:0px;margin-top:0px;'>"
 			+ "<label class='help-inline' for='cs1'>1/1/5</label>"
-			+ "<input type='radio' id='cs2' name='db-conn' value='5/3/15' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>" 
+			+ "<input type='radio' id='cs2' name='db-conn' value='5/3/15' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>"
 			+ "<label class='help-inline' for='cs2'>5/3/15</label>"
-			+ "<input type='radio' id='cs3' name='db-conn' value='15/5/30' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>" 
+			+ "<input type='radio' id='cs3' name='db-conn' value='15/5/30' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>"
 			+ "<label class='help-inline' for='cs3'>15/5/30</label>"
-			+ "<input type='radio' id='cs4' name='db-conn' value='15/10/50' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>" 
+			+ "<input type='radio' id='cs4' name='db-conn' value='15/10/50' onclick='changeDbParam(\"" + inputId + "\", this);' style='margin-left:10px;margin-top:0px;'>"
 			+ "<label class='help-inline' for='cs4'>15/10/50</label>";
 	}
-	
+
 	function validateConfigForm() {
 		var checkPass = true;
 		resetConfigFormValidation();
@@ -456,7 +479,7 @@ $(function(){
 			}
 		});
 		var configType = parseInt($("#config-type-selector").val());
-		var configVal = null; 
+		var configVal = null;
 		try {configVal = $("#config-value").val().trim()} catch(err) {};
 		if (configType == Type_Number && !configVal.isNumber()) {
 			setValidateError($("#config-value"));
@@ -495,7 +518,7 @@ $(function(){
 		}
 		return checkPass;
 	}
-	
+
 	function validateEditConfigForm() {
 		var checkPass = true;
 		resetConfigFormValidation();
@@ -539,35 +562,36 @@ $(function(){
 		}
 		return checkPass;
 	}
-	
+
 	function setValidateError($element) {
 		$element.parents(".control-group").addClass("error");
 		$element.nextAll(".message").show();
 	}
-	
+
 	function clearValidateError($element) {
 		$element.parents(".control-group").removeClass("error");
 		$element.nextAll(".message").hide();
 	}
-	
+
 	function resetConfigForm(excepts) {
 		resetConfigFormInput(excepts);
 		resetConfigFormValidation();
 		resetConfigAlerts();
 	}
-	
+
 	function resetEditConfigForm() {
 		$("#edit-config-modal").hideAlerts();
 		$("#edit-trim-checkbox").attr("checked", true);
 		resetConfigFormValidation();
 		$("#edit-select-all-env,[name='edit-config-env']").attr("checked", false);
+        $("#edit-select-all-online-env,[name='edit-config-env']").attr("checked", false);
 		$("#edit-save-btn,#edit-more-btn").attr("disabled", false);
 	}
-	
+
 	function resetConfigAlerts() {
 		$("#add-config-modal").hideAlerts();
 	}
-	
+
 	function resetConfigFormInput(excepts) {
 		var excepts_ = typeof excepts != "undefined" ? excepts : [];
 		$("#config-type-selector").val($("#config-type-selector option:first").val()).change();
@@ -579,27 +603,27 @@ $(function(){
 			$("#select-all-env").attr("checked", false);
 		}
 	}
-	
+
 	function resetConfigFormValidation() {
 		$(".control-group").removeClass("error");
 		$(".message").hide();
 	}
-	
+
 	function getConfigKey($element_in_row) {
 		return $element_in_row.parents(".config_row").find("[name='config_key']").val();
 	}
-	
+
 	function getConfigType($element_in_row) {
 		return $element_in_row.parents(".config_row").find("[name='config_type']").val();
 	}
-	
+
 	function getConfigId($element_in_row) {
 		return $element_in_row.parents(".config_row").find("[name='config_id']").val();
 	}
-	
+
 	function bindConfigTableEvents() {
 		$("[rel=tooltip]").tooltip({delay : {show : 800}});
-		
+
 		$("#display-all-btn").click(function() {
 			display_all_btn = $(this).is(":checked");
 			if (display_all_btn) {
@@ -608,16 +632,44 @@ $(function(){
 				$(".config-btn-group .optional").addClass("hide");
 			}
 		});
-		
+
 		$(".clear-config-btn").click(function() {
 			$clearAlert.dialog("open");
 			$clearAlert.data("configId", getConfigId($(this)));
 			return false;
 		});
-		
+
 		$(".remove-config-btn").click(function() {
 			$deleteAlert.dialog("open");
 			$deleteAlert.data("configId", getConfigId($(this)));
+			return false;
+		});
+
+		$(".test-connection-btn").click(function() {
+			$.ajax("/config/testConnectionAjax.vhtml".prependcontext(), {
+				data : $.param({
+					"configId" : getConfigId($(this)),
+					"envId" : $("#envId").val()
+				}, true),
+				dataType : "json",
+				success : function(result) {
+					$commonAlert.html(result.msg).dialog("open");
+				}
+			});
+			return false;
+		});
+		
+		$(".decode-password-btn").click(function() {
+			$.ajax("/config/decodePasswordAjax.vhtml".prependcontext(), {
+				data : $.param({
+					"configId" : getConfigId($(this)),
+					"envId" : $("#envId").val()
+				}, true),
+				dataType : "json",
+				success : function(result) {
+					$commonAlert.html(result.msg).dialog("open");
+				}
+			});
 			return false;
 		});
 		
@@ -636,7 +688,7 @@ $(function(){
 			});
 			return false;
 		});
-		
+
 		$(".movedown-config-btn").click(function() {
 			$.ajax("/config/moveDownConfigAjax.vhtml".prependcontext(), {
 				data : $.param({
@@ -652,15 +704,15 @@ $(function(){
 			});
 			return false;
 		});
-		
+
 		$("#add-config-btn").click(function() {
 			$("#add-config-modal").modal({
-				backdrop : "static", 
+				backdrop : "static",
 				keyboard : false
 			});
 			return false;
 		});
-		
+
 		$(".edit-config-btn").click(function() {
 			resetEditConfigForm();
 			$("#edit-config-modal [name='config-id']").val(getConfigId($(this)));
@@ -669,21 +721,21 @@ $(function(){
 			$("#edit-config-type-selector").val(config_type);
 			$("#edit-config-value-container").html(generateValueComponent(parseInt(config_type), "edit-config-value"));
 			$("#edit-config-modal").modal({
-				backdrop : "static", 
+				backdrop : "static",
 				keyboard : false
 			});
 			return false;
 		});
-		
+
 		$(".edit-config-attr").click(function() {
 			$("#edit-config-attr-modal [name='config-id']").val(getConfigId($(this)));
 			$("#edit-config-attr-modal").modal({
-				backdrop : "static", 
+				backdrop : "static",
 				keyboard : false
 			});
 			return false;
 		});
-		
+
 		$(".view-ref-link").click(function() {
 			var configKey = getConfigKey($(this));
 			$modal = $("#ref-list-modal");
@@ -789,7 +841,7 @@ function changeDbParam(inputId, radio) {
 		$("#" + inputId).val(newRefExpr);
 	}
 }
-	
+
 function generateDbParam(paramstr) {
 	var frags = paramstr.split("/");
 	return "i=" + frags[0] + "&m=" + frags[1] + "&M=" + frags[2];

@@ -1,9 +1,9 @@
 /**
  * Project: com.dianping.lion.lion-console-0.0.1
- * 
+ *
  * File Created at 2012-7-12
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -32,8 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dianping.lion.exception.RuntimeBusinessException;
 import com.dianping.lion.service.OperationLogService;
-import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.dianping.lion.service.PrivilegeService;
+import com.dianping.lion.service.ProjectPrivilegeDecider;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
@@ -44,37 +44,41 @@ import com.opensymphony.xwork2.Preparable;
  */
 @SuppressWarnings("serial")
 public class AbstractLionAction extends ActionSupport implements ServletRequestAware, Preparable {
-	
+
+    public static final int INFO_CODE = 0;
+    public static final int WARN_CODE = 1;
+    public static final int ERROR_CODE = -1;
+
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected String menu;
-	
+
 	protected String warnMessage;
-	
+
 	protected String errorMessage;
-	
+
 	protected String infoMessage;
 
 	protected HttpServletRequest request;
-	
+
 	protected InputStream inputStream;
-	
+
 	@Autowired
 	protected OperationLogService operationLogService;
-	
+
 	@Autowired
 	protected ProjectPrivilegeDecider privilegeDecider;
-	
+
 	@Autowired
 	protected PrivilegeService privilegeService;
-	
+
 	@Override
 	public void prepare() throws Exception {
 		if (!isAjaxRequest()) {
 			checkModulePrivilege();
 		}
 	}
-	
+
 	protected void checkModulePrivilege() {
 	}
 
@@ -157,7 +161,7 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 	public void setInputStream(InputStream inputStream) {
 		this.inputStream = inputStream;
 	}
-	
+
 	protected void createStreamResponse(String content) {
 		try {
 			this.inputStream = new ByteArrayInputStream(content.getBytes("UTF-8"));
@@ -166,27 +170,39 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 			throw new RuntimeException("Create content inputstream[response fetch content from] failed.", e);
 		}
 	}
-	
+
 	protected void createErrorStreamResponse(String errorMsg) {
-		createStreamResponse(String.format("{\"code\":-1, \"msg\":\"%s\"}", errorMsg));
+	    createStreamResponse(ERROR_CODE, errorMsg);
 	}
-	
+
 	protected void createErrorStreamResponse() {
 		createErrorStreamResponse("");
 	}
-	
+
 	protected void createWarnStreamResponse(String warnMsg) {
-		createStreamResponse(String.format("{\"code\":1, \"msg\":\"%s\"}", warnMsg));
+	    createStreamResponse(WARN_CODE, warnMsg);
 	}
-	
+
 	protected void createSuccessStreamResponse(String infoMsg) {
-		createStreamResponse(String.format("{\"code\":0, \"msg\":\"%s\"}", infoMsg));
+	    createStreamResponse(INFO_CODE, infoMsg);
 	}
-	
+
+	protected void createStreamResponse(int code, String msg) {
+	    try {
+            JSONObject result = new JSONObject();
+            result.put("code", code);
+            result.put("msg", msg);
+            createStreamResponse(result.toString());
+        } catch (Exception e) {
+            logger.error("Failed to create response", e);
+            throw new RuntimeBusinessException(e);
+        }
+	}
+
 	protected void createSuccessStreamResponse() {
 		createSuccessStreamResponse("");
 	}
-	
+
 	protected void createSuccessStreamResponse(Object result) {
 	    JSONObject resultJSON = new JSONObject();
 	    try {
@@ -198,7 +214,7 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
             throw new RuntimeBusinessException(e);
         }
 	}
-	
+
 	protected void createJsonStreamResponse(Object result) {
 	    try {
             createStreamResponse(JSONUtil.serialize(result));
@@ -219,5 +235,5 @@ public class AbstractLionAction extends ActionSupport implements ServletRequestA
 	public void setPrivilegeService(PrivilegeService privilegeService) {
 		this.privilegeService = privilegeService;
 	}
-	
+
 }

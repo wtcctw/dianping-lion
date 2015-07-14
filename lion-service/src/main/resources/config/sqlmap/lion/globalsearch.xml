@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="GlobalSearch">
+	<typeAlias alias="GlobalSearch" type="com.dianping.lion.entity.GlobalSearch" />
+
+	<resultMap id="GlobalSearchResult" class="GlobalSearch">
+        <result column="label" property="envLabel"/>
+        <result column="projectId" property="id"/>
+        <result column="name" property="name"/>
+        <result column="key" property="key"/>
+        <result column="value" property="value"/>
+		<result column="envId" property="envId"/>
+		<result column="configId" property="configId"/>
+	</resultMap>
+
+    <select id="getGlobalSearchList" resultMap="GlobalSearchResult" parameterClass="map">
+        SELECT e.label, p.id AS projectId, p.name, c.key, ci.value, c.id AS configId, e.id AS envId
+        FROM config_instance ci INNER JOIN config c ON ci.configId = c.id INNER JOIN project p ON c.projectId = p.id INNER JOIN environment e ON ci.envId = e.id
+        WHERE ci.value LIKE CONCAT('%',#value#,'%')
+        <isNotNull property="key">AND c.key LIKE CONCAT('%',#key#,'%')</isNotNull>
+        <isNotNull property="envId">AND ci.envId = #envId#</isNotNull>
+    </select>
+
+</sqlMap>

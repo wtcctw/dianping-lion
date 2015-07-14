@@ -17,20 +17,22 @@ package com.dianping.lion.client;
 
 /**
  * @author danson.liu
- *
+ * 
  */
-public class LionException extends Exception {
+public class LionException extends RuntimeException {
 
-	private static final long serialVersionUID = -277294587317829825L;
-	
-	public LionException(String msg){
-		super(msg);
-	}
-	public LionException(String msg,Throwable cause){
-		super(msg,cause);
-	}
-	public LionException(Throwable cause){
-		super(cause);
-	}
-	
+    private static final long serialVersionUID = -277294587317829825L;
+
+    public LionException(String msg) {
+        super(msg);
+    }
+
+    public LionException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
+    public LionException(Throwable cause) {
+        super(cause);
+    }
+
 }

@@ -1,9 +1,9 @@
 /**
  * Project: lion-console
- * 
+ *
  * File Created at 2012-7-11
  * $Id$
- * 
+ *
  * Copyright 2010 dianping.com.
  * All rights reserved.
  *
@@ -26,7 +26,7 @@ import com.dianping.lion.util.EnumUtils;
  *
  */
 public enum OperationTypeEnum {
-    
+
 //    Project_Related_All("项目相关---------------全部日志", -1000, 600, true),
 //    Config_All("项目相关-配置----------全部日志", 1, 20, true),
     Config_All("配置管理", 1, 20, true),
@@ -37,10 +37,11 @@ public enum OperationTypeEnum {
     Config_Clear("配置-清除", 17, true),
 //    API_All("项目相关-api-----------全部日志", 101, 120, true),
     API_All("API调用", 101, 120, true),
+    API_SetWeight("API-setweight", 104, true),
     API_SetConfig("API-setconfig", 105, true),
     API_TakeEffect("API-takeeffect", 106, true),
     API_Rollback("API-rollback", 107, true),
-    
+
     Job_DSFetcher("Job-DS-Fetcher", 660, false, true),
     Env_All("环境管理", 701, 720, false),
     Env_Add("环境-新增", 705, false),
@@ -63,8 +64,12 @@ public enum OperationTypeEnum {
     Job_All("Job管理", 1001, 1020, false),
     Job_Add("Job-新增", 1005, false),
     Job_Delete("Job-删除", 1006, false),
-    Job_Edit("Job-修改", 1007, false);
-	
+    Job_Edit("Job-修改", 1007, false),
+    Service_All("服务管理", 1101, 1120, false),
+    Service_Create("服务-新增", 1105, false),
+    Service_Delete("服务-删除", 1106, false),
+    Service_Update("服务-修改", 1107, false);
+
     private final String label;
     private int begin;
     private int end;
@@ -73,11 +78,11 @@ public enum OperationTypeEnum {
     private boolean forPageSelect;
     private static volatile List<OperationTypeEnum> pageSelectTypes;
     private static volatile List<OperationTypeEnum> projectPageSelectTypes;
-    
+
     OperationTypeEnum(String label, int value, boolean projectRelated) {
         this(label, value, projectRelated, false);
     }
-    
+
     OperationTypeEnum(String label, int value, boolean projectRelated, boolean forPageSelect) {
     	this.label = label;
         this.value = value;
@@ -86,7 +91,7 @@ public enum OperationTypeEnum {
         this.projectRelated = projectRelated;
         this.forPageSelect = forPageSelect;
     }
-    
+
     OperationTypeEnum(String label, int begin, int end, boolean projectRelated) {
         this.label = label;
         this.begin = begin;
@@ -94,11 +99,11 @@ public enum OperationTypeEnum {
         this.projectRelated = projectRelated;
         this.forPageSelect = true;
     }
-    
+
     public String getLabel() {
         return label;
     }
-    
+
     public int getBegin() {
         return begin;
     }
@@ -142,7 +147,7 @@ public enum OperationTypeEnum {
 	public static OperationTypeEnum fromValue(int value) {
         return EnumUtils.fromEnumProperty(OperationTypeEnum.class, "value", value);
     }
-	
+
 	public static List<OperationTypeEnum> pageSelectTypes() {
 		if (pageSelectTypes == null) {
             synchronized (OperationTypeEnum.class) {
@@ -158,7 +163,7 @@ public enum OperationTypeEnum {
         }
         return pageSelectTypes;
 	}
-    
+
     public static List<OperationTypeEnum> projectPageSelectTypes() {
         if (projectPageSelectTypes == null) {
             synchronized (OperationTypeEnum.class) {
@@ -174,5 +179,5 @@ public enum OperationTypeEnum {
         }
         return projectPageSelectTypes;
     }
-    
+
 }

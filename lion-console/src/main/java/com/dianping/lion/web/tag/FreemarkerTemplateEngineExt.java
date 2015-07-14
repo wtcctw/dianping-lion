@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +51,10 @@ public class FreemarkerTemplateEngineExt extends FreemarkerTemplateEngine {
 	
 	private static Logger logger = LoggerFactory.getLogger(FreemarkerTemplateEngineExt.class);
 
+	private boolean freemarkerCaching = false;
+    private final Map<String, freemarker.template.Template> templates = new ConcurrentHashMap<String, freemarker.template.Template>();
+    private final Set<String> missingTemplates = new CopyOnWriteArraySet<String>();
+    
 	@SuppressWarnings("rawtypes")
 	public void renderTemplate(TemplateRenderingContext templateContext_) throws Exception {
     	TemplateRenderingContextExt templateContext = (TemplateRenderingContextExt) templateContext_;
@@ -157,5 +164,24 @@ public class FreemarkerTemplateEngineExt extends FreemarkerTemplateEngine {
             stack.pop();
         }
     }
+	
+
+    protected void addToMissingTemplateCache(String templateName) {
+        missingTemplates.add(templateName);
+    }
+    
+    protected boolean isTemplateMissing(String templateName) {
+        return missingTemplates.contains(templateName);
+    }
+
+    protected void addToCache(String templateName,
+        freemarker.template.Template template) {
+        templates.put(templateName, template);
+    }
+    
+    protected freemarker.template.Template findInCache(String templateName) {
+        return templates.get(templateName);
+    }
+    
 	
 }
