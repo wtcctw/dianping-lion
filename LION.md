@@ -32,6 +32,7 @@ Lion 是一个配置管理平台，可以实时推送配置变更。
 * E:/data/webapps/appenv 等
 
 #### appenv 文件格式如下
+
 Key       | Desc         | Value
 ----------|--------------|--------------------
 deployenv | 环境         | 如 dev
@@ -61,7 +62,7 @@ zkserver=qa.lion.dp:2181
 ```
 
 ### API 使用方式
-```Java
+```java
 public class Lion {
 
     public static String get(String key)
