@@ -158,6 +158,7 @@ applicationContext.properties 有两个功能：
 这时在 Spring 配置文件中遇到占位符`${lion-test.local}`时，会自动使用`${lion-test.remote}`的配置
 
 #### 2.4.3 通过占位符使用 Lion 配置
+
 如上面的例子所示，在 Spring 配置文件中通过占位符 **${lion-test.local}** 来使用 Lion 上的配置
 
 #### 2.4.4 通过 annotation 使用 Lion 配置
