@@ -1,4 +1,4 @@
 Lion
 ====
 
-[Release notes](RELEASE.md)
+[Release notes](http://code.dianpingoa.com/arch/lion/blob/master/RELEASE.md)
