@@ -34,9 +34,9 @@ Lion 是一个配置管理平台，可以实时推送配置变更。
 #### 2.2.2 appenv 文件格式如下
 
 <table>
-<tr><td>deployenv</td><td> 环境，如 dev</td></tr>
-<tr><td>zkserver</td><td> ZK 服务器地址，如 dev.lion.dp:2181</td></tr>
-<tr><td>swimlane</td><td> 泳道（可选），一般为空</td></tr>
+<tr><td>deployenv</td><td>：环境，如 dev</td></tr>
+<tr><td>zkserver</td><td>：ZK 服务器地址，如 dev.lion.dp:2181</td></tr>
+<tr><td>swimlane</td><td>：泳道（可选），一般为空</td></tr>
 </table>
 
 #### 2.2.3 各环境标准 appenv 文件如下
@@ -193,9 +193,9 @@ key = app.name + "." + (camel case => dotted string)
 
 <table>
 <tr><td>Field</td><td> Key</td></tr>
-<tr><td>zookeeperAddress</td><td> lion-test.zookeeper.address</td></tr>
-<tr><td>propertiesPath</td><td> lion-test.properties.path</td></tr>
-<tr><td>includeLocalProps</td><td> lion-test.include.local.props</td></tr>
+<tr><td>zookeeperAddress</td><td>=> lion-test.zookeeper.address</td></tr>
+<tr><td>propertiesPath</td><td>=> lion-test.properties.path</td></tr>
+<tr><td>includeLocalProps</td><td>=> lion-test.include.local.props</td></tr>
 </table>
 
 
