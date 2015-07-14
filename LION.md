@@ -1,4 +1,5 @@
 # Lion 使用文档
+-----
 
 ## Lion 简介
 
@@ -17,3 +18,91 @@ Lion 是一个配置管理平台，可以实时推送配置变更。
 </dependency>
 ```
 ### 定义 Lion 运行环境
+#### 环境信息从以下文件读取
+1. **$WAR_ROOT**/appenv
+2. /data/webapps/appenv
+
+**$WAR_ROOT**/appenv 的存在是为了兼容老版本，优先读取<br/>
+如果文件不存在则读取 /data/webapps/appenv<br/>
+如果这个文件也不存在，则默认 **dev** 环境。<br/><br/>
+在 Windows 环境下，根据程序运行目录的不同，appenv 文件需要放在
+
+* C:/data/webapps/appenv 或者
+* D:/data/webapps/appenv 或者
+* E:/data/webapps/appenv 等
+
+#### appenv 文件格式如下
+Key       | Desc         | Value
+----------|--------------|--------------------
+deployenv | 环境         | 如 dev
+zkserver  | ZK 服务器地址 | 如 dev.lion.dp:2181
+swimlane  | 泳道（可选）   |
+
+#### 各环境标准 appenv 文件如下
+* dev
+
+```
+deployenv=dev
+zkserver=dev.lion.dp:2181
+```
+
+* alpha
+
+```
+deployenv=alpha
+zkserver=alpha.lion.dp:2182
+```
+
+* qa
+
+```
+deployenv=qa
+zkserver=qa.lion.dp:2181
+```
+
+### API 使用方式
+```Java
+public class Lion {
+
+    public static String get(String key)
+
+    public static String get(String key, String defaultValue)
+
+    public static String getStringValue(String key)
+
+    public static String getStringValue(String key, String defaultValue)
+
+    public static byte getByteValue(String key)
+
+    public static byte getByteValue(String key, byte defaultValue) 
+
+    public static short getShortValue(String key)
+
+    public static short getShortValue(String key, short defaultValue)
+
+    public static int getIntValue(String key)
+
+    public static int getIntValue(String key, int defaultValue)
+
+    public static long getLongValue(String key)
+
+    public static long getLongValue(String key, long defaultValue)
+
+    public static float getFloatValue(String key)
+
+    public static float getFloatValue(String key, float defaultValue)
+
+    public static double getDoubleValue(String key)
+
+    public static double getDoubleValue(String key, double defaultValue)
+
+    public static boolean getBooleanValue(String key)
+
+    public static boolean getBooleanValue(String key, boolean defaultValue) 
+
+    public static void addConfigChangeListener(ConfigChange configChange)
+
+    public static void removeConfigChangeListener(ConfigChange configChange)
+
+}
+```
