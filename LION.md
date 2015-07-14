@@ -8,6 +8,11 @@ Lion 是一个配置管理平台，可以实时推送配置变更。
 ### 1.1 Lion 架构
 ![Lion 架构](http://code.dianpingoa.com/arch/lion/blob/master/lion-arch.png)
 
+### 1.2 Lion 配置加载顺序
+1. 环境变量
+2. 本地配置文件
+3. zookeeper
+
 ## 2 Lion 使用
 ### 2.1 引入 Maven 依赖
 ```xml
@@ -134,10 +139,28 @@ public class Lion {
     
 </beans>
 ```
-#### 2.4.2 通过占位符使用 Lion 配置
+
+\<lion:config /\> 可以指定属性：
+
+* propertiesPath 用于指定自定义的配置文件的位置，默认值是`config/applicationContext.properties`
+* includeLocalProps 用于指定是否需要在线上环境使用自定义配置文件中的值，默认值是 `false`
+* order 用于指定 Lion 配置的加载顺序
+
+#### 2.4.2 自定义配置文件说明
+applicationContext.properties 有两个功能：
+
+1. 配置覆盖<br/>
+配置覆盖只在dev和alpha环境有效，其它环境自动失效，除非在 Lion 初始化时指定`includeLocalProps=true`<br/>
+比如在配置文件中指定:`lion-test.local=local`<br/>
+可以用上面的 key-value 覆盖dev环境开发时 Lion 系统上的配置，可以在本地开发调试时自己定义自己的配置信息，在上其他测试环境和生产环境时自动失效，避免忘记删除此配置导致其他环境使用自定义配置信息
+2. 配置引用<br/>
+配置引用在所有环境中有效，比如在配置文件中指定:`lion-test.local=${lion-test.remote}`<br/>
+这时在 Spring 配置文件中遇到占位符`${lion-test.local}`时，会自动使用`${lion-test.remote}`的配置
+
+#### 2.4.3 通过占位符使用 Lion 配置
 如上面的例子所示，在 Spring 配置文件中通过占位符 **${lion-test.local}** 来使用 Lion 上的配置
 
-#### 2.4.3 通过 annotation 使用 Lion 配置
+#### 2.4.4 通过 annotation 使用 Lion 配置
 ```java
 public class ConfigHolder {
 
