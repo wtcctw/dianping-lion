@@ -1,15 +1,15 @@
 # Lion 使用文档
 -----
 
-## Lion 简介
+## 1 Lion 简介
 
 Lion 是一个配置管理平台，可以实时推送配置变更。
 
-### Lion 架构
+### 1.1 Lion 架构
 ![Lion 架构](http://code.dianpingoa.com/arch/lion/blob/master/lion-arch.png)
 
-## Lion 使用
-### 引入 Maven 依赖
+## 2 Lion 使用
+### 2.1 引入 Maven 依赖
 ```xml
 <dependency>
      <groupId>com.dianping.lion</groupId>
@@ -17,8 +17,8 @@ Lion 是一个配置管理平台，可以实时推送配置变更。
      <version>0.5.0</version>
 </dependency>
 ```
-### 定义 Lion 运行环境
-#### 环境信息从以下文件读取
+### 2.2 定义 Lion 运行环境
+#### 2.2.1 环境信息从以下文件读取
 1. **$WAR_ROOT**/appenv
 2. /data/webapps/appenv
 
@@ -31,13 +31,13 @@ Lion 是一个配置管理平台，可以实时推送配置变更。
 * D:/data/webapps/appenv 或者
 * E:/data/webapps/appenv 等
 
-#### appenv 文件格式如下
+#### 2.2.2 appenv 文件格式如下
 
 deployenv：环境，如 dev <br/>
 zkserver：ZK 服务器地址，如 dev.lion.dp:2181 <br/>
 swimlane：泳道（可选），一般为空 <br/>
 
-#### 各环境标准 appenv 文件如下
+#### 2.2.3 各环境标准 appenv 文件如下
 * dev
 
 ```
@@ -59,7 +59,7 @@ deployenv=qa
 zkserver=qa.lion.dp:2181
 ```
 
-### API 使用方式
+### 2.3 API 使用方式
 ```java
 public class Lion {
 
@@ -105,3 +105,94 @@ public class Lion {
 
 }
 ```
+
+### 2.4 Spring 集成
+#### 2.4.1 初始化 Lion
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:context="http://www.springframework.org/schema/context"
+            xmlns:tx="http://www.springframework.org/schema/tx" 
+            xmlns:lion="http://code.dianping.com/schema/lion"
+            xsi:schemaLocation="
+                http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+                http://code.dianping.com/schema/lion http://code.dianping.com/schema/lion/lion-1.0.xsd">
+
+    <context:component-scan base-package="com.dianping" />
+    
+    <lion:config />
+
+    <bean name="configHolder" class="com.dianping.lion.ConfigHolder">
+        <property name="local" value="${lion-test.local}" />
+        <property name="remote" value="${lion-test.remote}" />
+    </bean>
+    
+</beans>
+```
+#### 2.4.2 通过占位符使用 Lion 配置
+如上面的例子所示，在 Spring 配置文件中通过 **${lion-test.local}** 来使用 Lion 上的配置
+
+#### 2.4.3 通过 annotation 使用 Lion 配置
+```java
+public class ConfigHolder {
+
+    private String local;
+    @LionConfig("lion-test.remote")
+    private String remote;
+    @LionConfig(":mmmmmm")
+    private String multi;
+
+    public String getLocal() {
+        return local;
+    }
+
+    public void setLocal(String local) {
+        this.local = local;
+    }
+
+    public String getRemote() {
+        return remote;
+    }
+
+    public void setRemote(String remote) {
+        this.remote = remote;
+    }
+
+    public String getMulti() {
+        return multi;
+    }
+
+    public void setMulti(String multi) {
+        this.multi = multi;
+    }
+
+}
+```
+
+Annotation 为 **@LionConfig**，需要指定在 field 上。可以通过 Annotation 指定 key 和默认值。<br/>
+
+**@LionConfig** 的 pattern 如下：
+
+* @LionConfig("key") 指定 key，没有默认值
+* @LionConfig("key:defaultValue") 指定 key 和默认值，当 key 不存在时使用默认值
+* @LionConfig(":defaultValue") 只指定默认值，key 由 Lion 生成，生成规则见下
+* @LionConfig 什么都不指定，key 由 Lion 生成<br/>
+
+Lion 生成 key 的前提是必须要有 app.name，规则如下：<br>
+
+```
+key = app.name + "." + (camel case => dotted string)
+```
+
+假设 app.name = "lion-test"，示例如下：
+
+Field	|Key
+-------|-------
+zookeeperAddress|lion-test.zookeeper.address
+propertiesPath|lion-test.properties.path
+includeLocalProps|lion-test.include.local.props
+
+
