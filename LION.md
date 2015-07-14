@@ -33,11 +33,12 @@ Lion 是一个配置管理平台，可以实时推送配置变更。
 
 #### appenv 文件格式如下
 
-Key       | Desc         | Value
-----------|--------------|--------------------
-deployenv | 环境         | 如 dev
-zkserver  | ZK 服务器地址 | 如 dev.lion.dp:2181
-swimlane  | 泳道（可选）   |
+|Key       | Desc         | Value              |
+|----------|--------------|--------------------|
+|deployenv | 环境          | 如 dev             |
+|zkserver  | ZK 服务器地址  | 如 dev.lion.dp:2181|
+|swimlane  | 泳道（可选）   | 一般为空            |
+
 
 #### 各环境标准 appenv 文件如下
 * dev
@@ -62,7 +63,7 @@ zkserver=qa.lion.dp:2181
 ```
 
 ### API 使用方式
-```java
+```cpp
 public class Lion {
 
     public static String get(String key)
