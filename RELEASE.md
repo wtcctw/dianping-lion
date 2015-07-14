@@ -3,7 +3,7 @@
 ### 0.5.0
 * 增加了 @LionConfig Annotation 支持
 * 增加了 Lion 包装类，方便代码直接使用，不再需要使用 ConfigCache.getInstance()
-* 增加了 Lion 自身的 xmlns 和 schema，可以使用 <lion:config/> 和 Spring 集成
+* 增加了 Lion 自身的 xmlns 和 schema，可以使用 \<lion:config/\> 和 Spring 集成
 * 对于公用组件的配置（如 pigeon，avatar-cache 的配置），支持优先取用项目相关的值，即会优先去找 appName.pigeon.xxx 的配置
 * 增加了 Lead 选举的实现，用于分布式选举 Leader
 * 优化 zookeeper 连接管理，周期性检测 zookeeper 连接，对于假死的连接会自动重连
