@@ -133,7 +133,7 @@ public class Lion {
 </beans>
 ```
 #### 2.4.2 通过占位符使用 Lion 配置
-如上面的例子所示，在 Spring 配置文件中通过 **${lion-test.local}** 来使用 Lion 上的配置
+如上面的例子所示，在 Spring 配置文件中通过占位符 **${lion-test.local}** 来使用 Lion 上的配置
 
 #### 2.4.3 通过 annotation 使用 Lion 配置
 ```java
@@ -189,10 +189,9 @@ key = app.name + "." + (camel case => dotted string)
 
 假设 app.name = "lion-test"，示例如下：
 
-Field	|Key
--------|-------
-zookeeperAddress|lion-test.zookeeper.address
-propertiesPath|lion-test.properties.path
-includeLocalProps|lion-test.include.local.props
+**Field** ==>> **Key** <br/>
+zookeeperAddress ==>> lion-test.zookeeper.address <br/>
+propertiesPath ==>> lion-test.properties.path <br/>
+includeLocalProps ==>> lion-test.include.local.props <br/>
 
 
