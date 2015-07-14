@@ -150,11 +150,11 @@ public class Lion {
 applicationContext.properties 有两个功能：
 
 1. 配置覆盖
-<br/>配置覆盖只在dev和alpha环境有效，其它环境自动失效，除非在 Lion 初始化时指定`includeLocalProps=true`<br/>
-比如在配置文件中指定:`lion-test.local=local`<br/>
+配置覆盖只在dev和alpha环境有效，其它环境自动失效，除非在 Lion 初始化时指定`includeLocalProps=true`
+比如在配置文件中指定:`lion-test.local=local`
 可以用上面的 key-value 覆盖dev环境开发时 Lion 系统上的配置，可以在本地开发调试时自己定义自己的配置信息，在上其他测试环境和生产环境时自动失效，避免忘记删除此配置导致其他环境使用自定义配置信息
 2. 配置引用
-<br/>配置引用在所有环境中有效，比如在配置文件中指定:`lion-test.local=${lion-test.remote}`<br/>
+<br/>配置引用在所有环境中有效，比如在配置文件中指定:`lion-test.local=${lion-test.remote}`
 这时在 Spring 配置文件中遇到占位符`${lion-test.local}`时，会自动使用`${lion-test.remote}`的配置
 
 #### 2.4.3 通过占位符使用 Lion 配置
