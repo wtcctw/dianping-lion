@@ -340,9 +340,7 @@ key = app.name + "." + (camel case => dotted string)
     以项目名加一个前缀"/"来命名 
     总共两种锁 ReentrantLock 和 ReentrantReadWriteLock 含义与 Java 中的锁相同
     使用方式
-    ```java
     String lockName = "/testlock";
     lock = new ReentrantLock(lockName);
-    ```
-    使用接口见接口 com.dianping.lion.lock 
+    包名 com.dianping.lion.lock 
     
