@@ -221,3 +221,126 @@ key = app.name + "." + (camel case => dotted string)
 <tr><td>propertiesPath</td><td>=> lion-test.properties.path</td></tr>
 <tr><td>includeLocalProps</td><td>=> lion-test.include.local.props</td></tr>
 </tbody></table>
+
+
+## 3 Lion-API 接口说明
+
+### 3.1.lion sso 权限验证
+
+为了保证接口的调用安全，调用 lion-api 需要通过 sso 接口获得 token 或者 使用点评账号密码调用 lion-api
+下面两种调用方式二选一
+
+当使用下面两种方式中任意一种调用 lion-api 接口的时候，任何接口中所需的参数 id 可以不必填写。
+
+#### 3.1.1 传递access_token 方法:
+从 sso 获得 token 的文档参考 5.2 节: http://code.dianpingoa.com/ba-base/cas-server/tree/master
+	SSO 需要的参数  
+    		client_id=lion_api
+    		client_secret=4qSXANX2wHdMVzcr
+    		
+获得 token 之后在 调用时增加参数 access_token=XXXXXX 
+例如 http://lionapi.dp:8080/product2/list?team=架构&access_token=XXXXX
+
+#### 3.1.2.直接传递账号密码的方法:
+在调用lion-api的接口的时候添加参数account和参数password
+	account为你的点评账号
+	password为你的密码
+	例如 http://lionapi.dp:8080/product2/list?team=架构&account=myaccount&password=mypassword
+
+### 3.2.Lion-API 接口
+
+#### 公共参数
+	1. id 标识调用者身份，用于记录操作日志 例如 id=2
+	2. env 指定环境 可选值：dev | alpha | qa | prelease | product | performance
+
+#### 返回值
+	
+	返回值是一个 json 格式的对象，字段如下
+	1. status 值为 success 或者 error
+	2. message 具体出错信息
+	3. result 调用返回值， json 格式
+#### 团队接口
+	- 路径 /team2
+	- 动作 
+		/list 列出团队 
+	- 样例 http://lionapi.dp:8080/team2/list
+	
+#### 产品线接口
+	- 路径 /product2
+	- 动作
+		/list 获取团队列表
+	- 参数
+		team
+	- 样例 http://lionapi.dp:8080/product2/list?team=架构
+	
+#### 项目管理接口
+	- 路径 /project2
+	- 动作
+		/list 	获取项目列表 	参数 product, team
+		/create 创建项目 		参数 id, project, product, owner
+		/delete 删除项目 		参数 id, project
+		/update 更新项目 		参数 id, project, product, name, owner, member, operator
+	- 参数
+		project 	项目名 		project=lion
+		team		团队名		team=架构
+		product		产品线名		product=中间件
+		owner		项目负责人	owner=chen.hua
+		member		项目成员		member=chen.hua
+		operator	项目运维		operator=chen.hua
+		name		新项目名		name=pigeon2
+	- URL样例
+		* 创建项目 http://lionapi.dp:8080/project2/create?id=2&project=lion-xxx&product=中间件&owner=enlight.chen
+		* 获取项目列表：http://lionapi.dp:8080/project2/list?product=中间件
+#### 配置管理接口
+	- 路径 /config2
+	- 动作
+		/get	获取配置			参数 env, id, key, keys, prefix, group
+		/set 	设置配置			参数 env, id, key, group, value
+		/list 	获取配置列表		参数 prefix
+		/create 创建配置			参数 id, project, key, desc
+	- 参数
+		key		配置名		样例 key=pigeon.timeline.enabled
+		keys	配置列表		样例 keys=pigeon.timeline.enabled,pigeon.monitor.enabled
+		prefix	配置前缀		样例 prefix=pigeon
+		group 	泳道名		样例 group=tuangou
+		value	配置值		样例 value=enabled
+	- URL 样例：
+		* 获取配置列表：http://lionapi.dp:8080/config2/list?prefix=pigeon
+		* 获取单个配置值：http://lionapi.dp:8080/config2/get?env=dev&id=2&key=pigeon.timeline.enabled
+		* 获取多个配置值：http://lionapi.dp:8080/config2/get?env=dev&id=2&keys=pigeon.timeline.enabled,pigeon.monitor.enabled
+		* 获取项目配置值：http://lionapi.dp:8080/config2/get?env=dev&id=2&prefix=pigeon
+		* 设置配置：http://lionapi.dp:8080/config2/set?env=dev&id=2&key=lion-test.host&value=1.1.1.1
+		* 创建配置：http://lionapi.dp:8080/config2/create?id=2&project=lion-test&key=lion-test.xxx&desc=xxx		
+
+#### 服务管理接口
+     - 路径 /service2
+     - 动作
+     	/get	获取配置		参数 env, service, group
+		/set 	设置配置		参数 env, id, project, service, group, address
+		/list	获取服务列表	参数 env, project
+	 - 参数
+	 	service		服务名		样例		service=http://service.dianping.com/test/testService_1.0.0
+		group 		泳道名		样例		group=tuangou
+		address		服务地址列表	样例 	address=1.1.1.1:1111,2.2.2.2:2222
+		project		项目名		样例		project=pigeon
+	 - URL 样例
+	 	* 获取服务列表：http://lionapi.dp:8080/service2/list?env=dev&project=pigeon
+        * 获取服务地址：http://lionapi.dp:8080/service2/get?env=dev&service=http://service.dianping.com/test/testService_1.0.0 
+        * 设置服务地址：http://lionapi.dp:8080/service2/set?id=2&env=dev&service=http://service.dianping.com/test/testService_1.0.0&address=1.1.1.1:1111,2.2.2.2:2222
+
+#### 密文，明文转换接口
+    - URL 样例:
+    	* 获取明文：http://lionapi.dp:8080/encode?text=abcde
+    	* 获取密文：http://lionapi.dp:8080/decode?text=~{f4f7f2d48796b0f270f65900f0f0e6b64f10396}
+
+## 4 分布式锁使用
+### 4.1 分布式锁使用事项
+ 
+### 4.2 分布式锁使用方式
+    以项目名加一个前缀"/"来命名 
+    总共两种锁 ReentrantLock 和 
+    String lockName = "/testlock";
+    lock = new ReentrantLock(lockName);
+    
+    使用接口见 包种的接口 com.dianping.lion.lock 
+    
