@@ -335,12 +335,14 @@ key = app.name + "." + (camel case => dotted string)
 
 ## 4 分布式锁使用
 ### 4.1 分布式锁使用事项
- 
+    锁的个数要 O(1) 不能随着请求的增长而增长
 ### 4.2 分布式锁使用方式
     以项目名加一个前缀"/"来命名 
-    总共两种锁 ReentrantLock 和 
+    总共两种锁 ReentrantLock 和 ReentrantReadWriteLock 含义与 Java 中的锁相同
+    使用方式
+    ```java
     String lockName = "/testlock";
     lock = new ReentrantLock(lockName);
-    
-    使用接口见 包种的接口 com.dianping.lion.lock 
+    ```
+    使用接口见接口 com.dianping.lion.lock 
     
