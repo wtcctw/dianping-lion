@@ -67,6 +67,10 @@ zkserver=qa.lion.dp:2181
 ```
 
 ### 2.3 API 使用方式
+
+setSwimlaneReadRollback 设置为 false 则对应 swimlane 为 null 时不从 default 泳道中读取数值
+setReadFromCache 设置为 false 则不从本地 cache 中读取，从数据源直接拿数据
+
 ```java
 public class Lion {
 
@@ -109,6 +113,10 @@ public class Lion {
     public static void addConfigChangeListener(ConfigChange configChange)
 
     public static void removeConfigChangeListener(ConfigChange configChange)
+    
+    public static void setSwimlaneReadRollback(Boolean swimlaneReadRollback)
+    
+    public static void setReadFromCache(Boolean readFromCache)
 
 }
 ```
