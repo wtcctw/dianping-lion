@@ -320,22 +320,6 @@ key = app.name + "." + (camel case => dotted string)
 		* 设置配置：http://lionapi.dp:8080/config2/set?env=dev&id=2&key=lion-test.host&value=1.1.1.1
 		* 创建配置：http://lionapi.dp:8080/config2/create?id=2&project=lion-test&key=lion-test.xxx&desc=xxx		
 
-#### 服务管理接口
-     - 路径 /service2
-     - 动作
-     	/get	获取配置		参数 env, service, group
-		/set 	设置配置		参数 env, id, project, service, group, address
-		/list	获取服务列表	参数 env, project
-	 - 参数
-	 	service		服务名		样例		service=http://service.dianping.com/test/testService_1.0.0
-		group 		泳道名		样例		group=tuangou
-		address		服务地址列表	样例 	address=1.1.1.1:1111,2.2.2.2:2222
-		project		项目名		样例		project=pigeon
-	 - URL 样例
-	 	* 获取服务列表：http://lionapi.dp:8080/service2/list?env=dev&project=pigeon
-        * 获取服务地址：http://lionapi.dp:8080/service2/get?env=dev&service=http://service.dianping.com/test/testService_1.0.0 
-        * 设置服务地址：http://lionapi.dp:8080/service2/set?id=2&env=dev&service=http://service.dianping.com/test/testService_1.0.0&address=1.1.1.1:1111,2.2.2.2:2222
-
 #### 密文，明文转换接口
     - URL 样例:
     	* 获取明文：http://lionapi.dp:8080/encode?text=abcde
