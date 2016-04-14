@@ -335,4 +335,9 @@ key = app.name + "." + (camel case => dotted string)
     String lockName = "/testlock";
     lock = new ReentrantLock(lockName);
     包名 com.dianping.lion.lock 
-    
+   
+## 5 接手美团的项目的配置问题
+### 5.1 有默认值的配置 比如 ${localKey:abc} 
+    在lion 的地方 加上    <property name="useDefaultValue" value="true" />
+### 5.2 美团侧不同环境 import 不同的配置文件
+    参考 http://stackoverflow.com/questions/16481206/spring-property-placeholder-not-working
