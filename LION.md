@@ -338,6 +338,6 @@ key = app.name + "." + (camel case => dotted string)
    
 ## 5 接手美团的项目的配置问题
 ### 5.1 有默认值的配置 比如 ${localKey:abc} 
-    在spring 配置 lion initializeConfig 这个 bean 的地方 加上    <property name="useDefaultValue" value="true" />
+    版本升级至 0.6.1-SNAPSHOT 在spring 配置 lion initializeConfig 这个 bean 的地方 加上    <property name="useDefaultValue" value="true" />
 ### 5.2 美团侧不同环境 import 不同的配置文件
     参考 http://stackoverflow.com/questions/16481206/spring-property-placeholder-not-working
