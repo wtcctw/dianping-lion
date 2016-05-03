@@ -341,3 +341,17 @@ key = app.name + "." + (camel case => dotted string)
     版本升级至 0.6.1-SNAPSHOT 在spring 配置 lion initializeConfig 这个 bean 的地方 加上    <property name="useDefaultValue" value="true" />
 ### 5.2 美团侧不同环境 import 不同的配置文件
     参考 http://stackoverflow.com/questions/16481206/spring-property-placeholder-not-working
+
+    
+## 6 客户端鉴权 
+### 6.1 作用
+  防止zookeeper上面的值被随意修改 加上鉴权后只有带着账号密码的lion客户端才能访问zookeeper上面的值
+  访问的账号为项目在 lion 上面的名称,密码在 lion web 端进入项目配置管理界面查看
+### 6.2使用方法
+```
+    <bean class="com.dianping.lion.client.InitializeConfig" lazy-init="false">
+        <property name="encrypt" value="true"/>
+        <property name="account" value="lion-acl-test"/>
+        <property name="password" value="123456"/>
+    </bean>
+```
